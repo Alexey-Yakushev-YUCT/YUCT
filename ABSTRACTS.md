@@ -32,7 +32,7 @@ This work presents a groundbreaking formulation of the Yakushev Framework, a coo
 
 **Folder:** `02. Appendix A. Practical Guide to Using YUCT V35.0 Interdisciplinary Modeling & Predictions`
 
-### \textbf{Appendix A2A: Resolution of the Pragmatic Paradox of the Yakushev Unified Coordination Theory. From Computational Collapse to Navigation in Large Language Models
+### Appendix A2A: Resolution of the Pragmatic Paradox of the Yakushev Unified Coordination Theory. From Computational Collapse to Navigation in Large Language Models
 
 **File:** `Appendix_A2A_Practical_alharythm_to_Using_YUCT Lagrangian_en.tex`  
 
@@ -40,7 +40,7 @@ We resolve the fundamental paradox of YUCT: how an algorithm of fixed complexity
 
 ---
 
-### \textbf{YUCT Core v36.0.MOD: High‑Efficiency Coordination Protocol for Large Language Models
+### YUCT Core v36.0.MOD: High‑Efficiency Coordination Protocol for Large Language Models
 
 **File:** `YUCT_AI_MASTER_PROMPT_with_filled_Lagrangian_en.tex`  
 
@@ -147,7 +147,7 @@ This appendix presents a comprehensive application of the Yakushev Unified Coord
 
 **Folder:** `08. Appendix D. YUCT BIOLOGICAL PREDICTIONS 2.5`
 
-### \Huge\textbf{Appendix D. YUCT BIOLOGICAL PREDICTIONS
+### Appendix D. YUCT BIOLOGICAL PREDICTIONS
 
 **File:** `Appendix_D_ YUCT_BIOLOGICAL_PREDICTIONS_2.5_en.tex`  
 
@@ -231,7 +231,7 @@ This article provides a philosophical foundation for solving the "hard problem o
 
 **Folder:** `17. Appendix J Complete Derivation of Standard Model Flavor Parameters from YUCT Topological Offsets`
 
-### \textbf{Appendix J (Revised): Half-Integer Quantization of Fermion Masses from the YUCT Scaling Quantum
+### Appendix J (Revised): Half-Integer Quantization of Fermion Masses from the YUCT Scaling Quantum
 
 **File:** `Appendix_J_Complete_Derivation_Standard_Model_Flavor_Parameters_from_YUCT_en.tex`  
 
@@ -351,7 +351,7 @@ This appendix extends the Yakushev Unified Coordination Theory (YUCT) to nuclear
 
 **Folder:** `28. Appendix S. Negative Time Delay of Photons in Cold Atoms`
 
-### \textbf{Appendix S. Negative Time Delay of Photons in Cold Atoms as a Manifestation of Coordinated Quantum Dynamics: \\ A Revised Analysis within the Yakushev Unified Coordination Theory (YUCT)
+### Appendix S. Negative Time Delay of Photons in Cold Atoms as a Manifestation of Coordinated Quantum Dynamics: \\ A Revised Analysis within the Yakushev Unified Coordination Theory (YUCT)
 
 **File:** `Appendix_S_Negative_Time_Delay_of_Photons_in_Cold_Atoms_YUCT_en.tex`  
 
@@ -431,7 +431,7 @@ This appendix brings the generalised information theory of the YPSDC protocol in
 
 ---
 
-### \textbf{YPSDC: Quantum Mechanics Without Mysticism \\ A Guide for Students and AI
+### YPSDC: Quantum Mechanics Without Mysticism \\ A Guide for Students and AI
 
 **File:** `Eliminating_quantum_mysticism_by_YUCT_en.tex`  
 
@@ -443,7 +443,7 @@ Standard textbooks on quantum mechanics are full of ``mysteries'': a particle in
 
 **Folder:** `35. Appendix Y. Mathematical Foundations of YUCT`
 
-### \Huge\textbf{Appendix Y. Mathematical Foundations of YUCT
+### Appendix Y. Mathematical Foundations of YUCT
 
 **File:** `Appendix_Y_Mathematical_Foundations_of_YUCT_en.tex`  
 
@@ -503,7 +503,7 @@ The Yakushev Unified Coordination Theory (YUCT) posits that our observed Univers
 
 **Folder:** `39. Appendix NC YUCT Negative coordination and constructive instability`
 
-### \Huge\textbf{Appendix NC: Negative Coordination and Constructive Instability
+### Appendix NC: Negative Coordination and Constructive Instability
 
 **File:** `Appendix_NC_Negative_coordination_and_constructive_instability_en.tex`  
 
@@ -515,7 +515,7 @@ The core YUCT framework describes stable, well‑coordinated systems with $> 1$.
 
 **Folder:** `40. Critical Mass of Big Bang Exact Derivation from YUCT First Principles`
 
-### \textbf{YUCT Critical Mass and Cosmic Hierarchy: A Self-Contained Summary for Human and AI Readers
+### YUCT Critical Mass and Cosmic Hierarchy: A Self-Contained Summary for Human and AI Readers
 
 **File:** `Critical_Mass_of_Local_Big_Bang_as_Coordination_YUCT_F_Principles_en.tex`  
 
@@ -588,7 +588,7 @@ We present a refined analysis of Standard Model fermion masses within the Yakush
 
 **Folder:** `46. YUCT and the Theory of Dissipative Structures A Mathematical Unification`
 
-### \huge\textbf{YUCT and Dissipative Structures
+### YUCT and Dissipative Structures
 
 **File:** `YUCT_and_Theory_of_Dissipative_Structures_Mathematical_Unification_en.tex`  
 
@@ -741,7 +741,7 @@ We present a rigorous algebraic derivation that unifies the universal constants 
 
 **Folder:** `58. Appendix Photon Masse`
 
-### \Huge\textbf{Appendix Photon Mass: Quantized Masses of Gauge Bosons within YUCT
+### Appendix Photon Mass: Quantized Masses of Gauge Bosons within YUCT
 
 **File:** `Appendix Photon Masse_en.tex`  
 
@@ -749,7 +749,7 @@ The Yakushev Unified Coordination Theory (YUCT) quantizes all masses according t
 
 ---
 
-### \textbf{Photon Hypothesis of the Yakushev Unified Coordination Theory (YUCT):\\
+### Photon Hypothesis of the Yakushev Unified Coordination Theory (YUCT):\\
 		The Electromagnetic Quantum as an Interface between\\
 		the Multidimensional Coordination Manifold and Three-Dimensional Physical Reality
 
