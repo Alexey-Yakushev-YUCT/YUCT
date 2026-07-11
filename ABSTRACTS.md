@@ -122,7 +122,7 @@ This appendix presents the complete mathematical formulation of the Yakushev Uni
 ---
 
 ### Appendix C2: Universal Scaling of Phase Transitions\\
-	\large A Consequence of Coordination Efficiency and Its Implications for Spectroscopy and Cosmology
+	A Consequence of Coordination Efficiency and Its Implications for Spectroscopy and Cosmology
 
 **File:** `Appendix_C2_YUCT_Universal_scaling_of_phase_transitions_of_elements_en.tex`  
 
@@ -135,7 +135,7 @@ We demonstrate that the melting and boiling temperatures of pure elements obey a
 **Folder:** `07. Appendix Climat01 Coordination Climatology of YUCT`
 
 ### Appendix Climat01: Coordination Climatology of YUCT\\
-	\large Universal scaling of climatic fluctuations, atmospheric heat capacity, oceanic coordination and prediction of threshold transitions
+	 Universal scaling of climatic fluctuations, atmospheric heat capacity, oceanic coordination and prediction of threshold transitions
 
 **File:** `Appendix_Climat01_Coordination_Climatology_of_YUCT_en.tex`  
 
@@ -576,7 +576,7 @@ The Yakushev Unified Coordination Theory (YUCT) postulates a universal scaling l
 **Folder:** `45. YUCT Relation for Fermion Masses and the Hierarchy Problem`
 
 ### Half-Integer Quantization of Fermion Masses and the Hierarchy Problem \\ 
-		\large A Fundamental Scaling Law within the Yakushev Unified Coordination Theory
+		 A Fundamental Scaling Law within the Yakushev Unified Coordination Theory
 
 **File:** `YUCT_Relation_for_Fermion_Masses_and_the_Hierarchy_Problem_en.tex`  
 
