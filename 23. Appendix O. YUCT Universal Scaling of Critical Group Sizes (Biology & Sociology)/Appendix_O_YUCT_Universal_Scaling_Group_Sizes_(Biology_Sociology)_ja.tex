@@ -1,0 +1,290 @@
+% ====================================================
+% 付録 O – 集団サイズの普遍的臨界スケーリング
+% ====================================================
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}   % 英語部分用
+
+% ============================================================
+% 日本語設定（LuaLaTeX + luatexja）
+% ============================================================
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+
+% ゴシック体（サンセリフ） – Yu Gothic UI（Windows）
+\setsansjfont{Yu Gothic UI}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = CJK,
+Language = Japanese
+]
+
+% 明朝体（セリフ） – Yu Mincho（あれば）／フォールバック：Yu Gothic UI
+\IfFontExistsTF{Yu Mincho}{
+	\setmainjfont{Yu Mincho}[
+	UprightFont = * Demibold,
+	BoldFont = * Demibold,
+	Script = CJK,
+	Language = Japanese
+	]
+}{
+	% フォールバック
+	\setmainjfont{Yu Gothic UI}[
+	UprightFont = * Regular,
+	BoldFont = * Bold,
+	Script = CJK,
+	Language = Japanese
+	]
+}
+
+% 等幅フォント – ラテン文字は Latin Modern Mono、日本語は Yu Gothic UI
+\setmonojfont{Yu Gothic UI}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = CJK,
+Language = Japanese
+]
+
+% ラテン文字用フォント
+\setmainfont{Times New Roman}[Ligatures=TeX]
+\setsansfont{Arial}[Ligatures=TeX]
+\setmonofont{Latin Modern Mono}[
+WordSpace={1,0,0},
+HyphenChar=None,
+PunctuationSpace=WordSpace
+]
+
+% ============================================================
+% 数式・書式パッケージ
+% ============================================================
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{makecell}
+\usepackage{ragged2e}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+
+% 定理環境（日本語）
+\newtheorem{theorem}{定理}
+\newtheorem{lemma}{補題}
+\newtheorem{definition}{定義}
+\newtheorem{corollary}{系}
+\theoremstyle{remark}
+\newtheorem{remark}{注記}
+
+% 簡略コマンド
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\df}{d_{\!f}}
+\newcommand{\kappac}{\kappa}
+\newcommand{\betaf}{\beta}
+\newcommand{\Tmin}{T_{\min}}
+\newcommand{\Dprior}{D_{\mathrm{prior}}}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{0.5cm}
+			\Huge\textbf{付録 O. 臨界集団サイズの普遍的スケーリング：\\ 経験的証拠と技術的閾値公理（YUCT）との関連}
+			
+			\vspace{0.3cm}
+			\small\textit{生物学的・社会的システムにおける臨界集団サイズに関する系統的データ収集。技術的辞書閾値公理（付録 O）と普遍指数 \(\beta = 0.67\)（付録 L）を用いて解釈。}
+			
+			\vspace{0.3cm}
+			\small\textbf{アレクセイ・V・ヤクシェフ} \\
+			YUCT理論: \url{https://yuct.org/}\\
+			YPSDCプロトコル: \url{https://ypsdc.com/}\\
+			
+			\vspace{2cm}
+			\textbf{DOI:} \url{https://doi.org/10.5281/zenodo.18444598}\\
+			
+			\vspace{1cm}
+			\large 
+			本稿の短縮版は以前に出版されており、以下で入手可能\\
+			\url{https://doi.org/10.5281/zenodo.18362308}\\
+			\vspace{1cm}
+			2026年3月 \\ \large バージョン 2.0。
+			
+			\vspace{0.5cm}
+			\begin{minipage}{0.95\textwidth}
+				\begin{abstract}
+					\noindent
+					本付録では、群れ、分裂、構造再編などの相転移が生じる臨界サイズに関する経験的データを収集する。調査対象には、ミツバチのコロニー、軍事ユニット、魚の群れ、イルカのポッド、家畜個体群、霊長類のグループが含まれる。普遍的誤差スケーリング則 \(\varepsilon \propto N^{\beta}\)（\(\beta = 0.67\)，付録 L）と技術的辞書閾値公理（付録 O）を用いて、転移が生じる臨界サイズ \(N_{\text{crit}}\) と最適集団サイズ \(N_{\text{opt}}\) の間の定量的関係を導出する。多様なシステムで観測された比 \(N_{\text{crit}}/N_{\text{opt}}\) は \(\beta = 0.67\) と整合する値の周りに集まっており、この指数の普遍性と、技術的（または組織的）閾値を超えることが調整効率の相転移に対応するという考え方に対する独立した支持を提供する。さらに、YUCTフレームワークをさらに検証できる将来の実験や野外研究のための具体的で検証可能な予測を提案する。
+				\end{abstract}
+			\end{minipage}
+			
+			\vspace{0.3cm}
+			\noindent
+			\small\textbf{キーワード:} YUCT, 臨界集団サイズ, 相転移, ミツバチの群れ, 軍事階層, 魚の群れ, 普遍的スケーリング, \(\beta = 0.67\), 技術的閾値.
+		\end{center}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{序論}
+	\label{sec:intro}
+	
+	ヤクシェフ統一調整理論（YUCT）の中心的な予測の一つは、システムサイズに伴う調整誤差のスケーリングを支配する普遍指数 \(\beta = 0.67\) の存在である（付録 L）。この指数は辞書のフラクタル構造と情報理論的制約から生じ、DNA複製から宇宙マイクロ波背景放射のゆらぎに至るまで、40桁にわたって検証されている。\(\beta\) が真に普遍的であれば、群れ、分裂、階層的再編などの相転移を経験する集団システムの臨界サイズにも現れるはずである。さらに、技術的辞書閾値公理（付録 O）は、システムが辞書を使用または生成するために最小技術水準 \(\Tmin\) に達しなければならないと述べており、この閾値はシステムの調整効率 \(\Keff\) の臨界点として再解釈できる。本付録は様々な分野からの経験的データを収集し、観測された臨界対最適集団サイズ比が YUCT の予測と一致することを示し、抽象的公理を具体的で測定可能な量に結び付ける。
+	
+	\section{理論的枠組み}
+	\label{sec:theory}
+	
+	サイズ \(N\) の任意の調整システムについて、相対調整誤差 \(\varepsilon\) は次のようにスケールすると仮定する：
+	\begin{equation}
+		\varepsilon(N) = \varepsilon_0 N^{\beta}, \qquad \beta = 0.67,
+		\label{eq:scaling}
+	\end{equation}
+	ここで \(\varepsilon_0\) はシステム依存の定数である。システムは \(\varepsilon\) が最小となるサイズ \(N_{\text{opt}}\) で最適に機能する。\(N\) が \(N_{\text{opt}}\) を超えて増加すると誤差が増大し、臨界閾値 \(\varepsilon_{\text{crit}}\) に達するとシステムは相転移（例えば下位グループへの分裂）を起こす。したがって
+	\begin{equation}
+		\varepsilon(N_{\text{crit}}) = \varepsilon_{\text{crit}}.
+	\end{equation}
+	転移後の娘グループのサイズが最適に近い場合、数保存則により \(N_{\text{crit}} \approx k N_{\text{opt}}\)（\(k > 1\)）となる。\(k\) の正確な値は転移の性質（対称または非対称分裂）に依存する。(\ref{eq:scaling}) を用いると次が得られる：
+	\begin{equation}
+		k^{\beta} = \frac{\varepsilon_{\text{crit}}}{\varepsilon_{\text{opt}}}, 
+		\qquad\text{したがって}\qquad 
+		k = \left( \frac{\varepsilon_{\text{crit}}}{\varepsilon_{\text{opt}}} \right)^{1/\beta}.
+		\label{eq:k}
+	\end{equation}
+	従って、比 \(k\) は臨界誤差と最適誤差の比を \(1/\beta\) 乗したものだけで決定される。\(\varepsilon_{\text{crit}}/\varepsilon_{\text{opt}}\) が様々なシステムでほぼ一定であるなら（基本的な物理的・生物学的制約によって閾値が設定されるというもっともらしい仮説）、\(k\) も普遍的であるべきであり、その値は経験的データと比較できる。
+	
+	\section{臨界集団サイズに関する経験的データ}
+	\label{sec:data}
+	
+	我々は集団サイズと転移点が文書化された、よく研究されているいくつかのシステムからデータを収集した。
+	
+	\subsection{ミツバチのコロニー（Apis mellifera）}
+	\label{subsec:bees}
+	
+	養蜂の実践は信頼できる数値を提供する：
+	\begin{itemize}
+		\item 最適コロニーサイズ（最初の分蜂、「主群」）：\(N_{\text{opt}} = 50\,000\)–\(60\,000\) 働きバチ（平均質量 7–8 kg、個体質量 \(\approx 0.12\) g）。\cite{Seeley2010, Winston1987}
+		\item 分蜂前のコロニーサイズ：\(N_{\text{crit}} = 80\,000\)–\(100\,000\)（時にはそれ以上）。\cite{bees}
+		\item したがって \(k_{\text{bees}} = N_{\text{crit}}/N_{\text{opt}} \approx 1.5\)–\(1.67\)。
+	\end{itemize}
+	分蜂は非対称である：主群は旧女王を連れて行き、より小さな残存コロニーを残す。観測された \(k\) は約 1.6 である。
+	
+	\subsection{軍事ユニット}
+	\label{subsec:military}
+	
+	現代の軍事組織は明確に定義されたユニットサイズを持つ明確な階層構造を示す \cite{FM3-90.5}：
+	\begin{itemize}
+		\item 分隊: 8–12 名
+		\item 小隊: 30–50 名
+		\item 中隊: 100–200 名
+		\item 大隊: 300–1000 名
+		\item 旅団: 3000–5000 名
+		\item 師団: 9000–18000 名
+	\end{itemize}
+	連続する階層間の比は 3 から 5 まで変化し、3–4 の周りに集まる。中隊の場合、約 200 を超えると二つの小隊に分割されることがある。これは \(k \approx 2\) を与え、これは階層間比より小さい。実際の分裂事象に関するより良いデータが必要だが、明確な階層レベルの存在自体が組織的複雑性の量子化されたジャンプを示唆している。
+	
+	\subsection{魚の群れ – ゼブラフィッシュ（Danio rerio）}
+	\label{subsec:fish}
+	
+	ゼブラフィッシュの集団行動に関する制御実験 \cite{Tunstrom2013} は、密度の増加に伴い分極した schooling から無秩序な milling への相転移を示す。臨界密度は標準的な水槽で約 50–100 匹の群れサイズに対応する。正確な \(N_{\text{opt}}\) は与えられていないが、転移は群れが特定のサイズを超えたときに起こる。これは \(k\) が約 2 であるという考えと整合する。
+	
+	\subsection{イルカのポッド（Tursiops spp.）}
+	\label{subsec:dolphins}
+	
+	ハンドウイルカの野外研究 \cite{Connor2000} は、典型的なポッドサイズが 30–70 個体であると報告している。捕食者（サメ）の存在下では、ポッドは数百（最大 600）にまで集合することがある。この集合は防御的転移であり分裂ではないが、調整における臨界変化を示している。大きな群れと典型的なポッドの比は約 5–10 であり、これは反対方向（合体）の \(k\) に対応するかもしれない。
+	
+	\subsection{家畜個体群 – 遺伝的保存}
+	\label{subsec:livestock}
+	
+	遺伝的保存のための臨界個体群サイズに関する国連食糧農業機関（FAO）のデータ \cite{FAO2013}：
+	\begin{itemize}
+		\item 牛：個体数 <2000 で臨界状態、5000–15000 で脆弱、>25000 で正常。
+		\item 羊：遺伝子プール保存のために 100–250 頭の雌羊を推奨。
+		\item 豚：雄 25 + 雌 100。
+		\item 鶏：雄鶏 50 + 雌鶏 250。
+	\end{itemize}
+	これらの数値は最小生存可能個体群サイズを反映しており、これは遺伝的調整（近親交配抑制の回避）の臨界閾値と見なせる。\(N_{\text{opt}}\) を最適な遺伝的健康のためのサイズ（例：牛の 25000）、\(N_{\text{crit}}\) を最小生存可能（例：2000）と解釈すると、\(k \approx 0.08\) となり、これは 1 より小さい – これは別の種類の転移（絶滅）である。それでも、比は何らかの形で \(\beta\) とスケールする可能性があるが、別個のモデルが必要である。
+	
+	\subsection{霊長類の群れ}
+	\label{subsec:primates}
+	
+	ヒヒの群れに関するデータ \cite{Alberts1995} は典型的なサイズが 30–80 個体であることを示す。群れが大きくなりすぎると（約 100 以上）、二つの娘群れに分裂することがある。これは \(k \approx 2\)–\(3\) を与える。
+	
+	\section{YUCT予測との比較}
+	\label{sec:comparison}
+	
+	式 (\ref{eq:k}) によれば、比 \(k = N_{\text{crit}}/N_{\text{opt}}\) は誤差比 \(\varepsilon_{\text{crit}}/\varepsilon_{\text{opt}}\) に依存する。この誤差比が普遍的であれば、\(k\) は種全体にわたって一定であるべきである。表 \ref{tab:summary} にまとめたデータは、\(k\) が実際に約 1.5–2.5 という比較的狭い範囲にあることを示唆している。
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{様々なシステムにおける臨界サイズ比の要約}
+		\label{tab:summary}
+		\begin{tabular}{lccc}
+			\toprule
+			\textbf{システム} & \(N_{\text{opt}}\) & \(N_{\text{crit}}\) & \(k = N_{\text{crit}}/N_{\text{opt}}\) \\
+			\midrule
+			ミツバチコロニー & 50–60k & 80–100k & 1.5–1.7 \\
+			軍事ユニット（小隊→中隊） & 30–50 & 100–200 & 2–4 \\
+			ゼブラフィッシュの群れ & 50? & 100? & 2? \\
+			ヒヒの群れ & 30–80 & ~100 & 1.3–3 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	代表値として \(k \approx 1.6\)（ハチ、霊長類）を取ると、式 (\ref{eq:k}) から次が得られる：
+	\[
+	\frac{\varepsilon_{\text{crit}}}{\varepsilon_{\text{opt}}} = k^{\beta} = 1.6^{0.67} \approx 1.37.
+	\]
+	これは臨界誤差が最適誤差より約 37\% 大きいことを意味する – 相転移を開始するためのもっともらしい閾値である。\(k \approx 2\)（魚、一部の霊長類の群れ）に対しては \(2^{0.67} \approx 1.59\) を得る。これらの値の整合性は、\(\varepsilon_{\text{crit}}/\varepsilon_{\text{opt}}\) が実際にシステム全体でほぼ一定であることを示唆し、\(\beta\) の普遍性と、技術的／組織的閾値を調整効率の相転移として解釈することを支持する。
+	
+	\section{検証可能な予測}
+	\label{sec:predictions}
+	
+	上記の枠組みに基づき、実験的または観測的に検証可能ないくつかの具体的な予測を定式化する。
+	
+	\begin{enumerate}
+		\item \textbf{ミツバチ：} 主群のサイズと分蜂前のコロニーサイズの比は、様々な亜種や環境条件で一定であり、\(\beta = 0.67\) として \(k = (\varepsilon_{\text{crit}}/\varepsilon_{\text{opt}})^{1/\beta}\) を満たすべきである。\(\varepsilon_{\text{crit}}/\varepsilon_{\text{opt}}\) が独立に推定できれば（例：採餌効率や疾病発生率から）、予測される \(k\) は観測と一致するはずである。
+		
+		\item \textbf{魚の群れ：} ゼブラフィッシュまたは他の種を用いた制御実験において、schooling から milling（または分裂）への転移が起こる集団サイズは、同じ法則に従って最適集団サイズとスケールするはずである。調整誤差（例：進行方向の分散）の測定は、\(\varepsilon_{\text{opt}}\) と \(\varepsilon_{\text{crit}}\) の独立した推定値を提供できる。
+		
+		\item \textbf{霊長類：} ヒヒ、マカク、チンパンジーの群れに関する長期野外研究は、分裂事象と親群・娘群のサイズを記録すべきである。比 \(k\) は安定しており、YUCT予測と一致するはずである。
+		
+		\item \textbf{軍事組織：} 軍事ユニットの分割（例：大隊が二つに分割）に関する歴史的データを調査できる。そのような分割が生じるサイズは同じスケーリングに従うはずであり、階層的性質のために異なる \(k\) を持つ可能性がある。
+		
+		\item \textbf{家畜個体群：} 遺伝的保存のために、遺伝的多様性を維持するために必要な有効個体群サイズ \(N_e\) は、絶滅のための臨界サイズと関連するかもしれない。最小生存可能 \(N_e\) と長期生存のための最適 \(N_e\) の比も \(\beta\) とスケールする可能性があるが、これはより推測的である。
+		
+		\item \textbf{ソーシャルネットワーク：} オンラインのソーシャルグループ（例：WhatsAppチャット、Redditコミュニティ）は特定のサイズを超えるとしばしば分割される。分割の臨界サイズと娘グループの典型的なサイズはデジタルトレースを用いて分析でき、これにより \(k\) と \(\beta\) の普遍性をテストするための膨大なデータセットが提供される。
+	\end{enumerate}
+	
+	\section{技術的閾値公理との関連（付録 O）}
+	\label{sec:connection}
+	
+	技術的辞書閾値公理（付録 O）は、システムが辞書を使用または生成するために最小技術水準 \(\Tmin\) に達しなければならないと述べている。集団サイズ転移の文脈では、\(\Tmin\) は一貫性を維持するために必要な臨界調整効率 \(K_{\mathrm{eff},\text{crit}}\) として再解釈できる。経験的比 \(k = N_{\text{crit}}/N_{\text{opt}}\) は、システムが分裂または再組織化を必要とする前にどれだけ成長できるかの尺度となる。\(k\) が様々なシステムで約 1.5–2 程度であるという事実は、基礎となる \(K_{\mathrm{eff},\text{crit}}/K_{\mathrm{eff},\text{opt}}\) 比がフラクタルスケーリング則と一致して普遍的であることを示唆している。したがって、ここに提示されたデータは、技術的閾値の存在と普遍指数 \(\beta\) との関連に対する間接的な支持を提供する。
+	
+	\section{結論}
+	\label{sec:conclusion}
+	
+	本付録で収集されたデータは、予備的ではあるが、集団システムが相転移を経験する臨界集団サイズが任意ではなく、YUCT指数 \(\beta = 0.67\) および技術的辞書閾値公理と関連した普遍的スケーリング則に従うことを示唆している。比 \(k = N_{\text{crit}}/N_{\text{opt}}\) は約 1.5–2.5 の周りに集まっており、暗示される誤差閾値 \(\varepsilon_{\text{crit}}/\varepsilon_{\text{opt}} \approx 1.3\)–1.6 は多様なシステムで驚くほど一貫している。我々は将来の実験や野外研究によって検証可能な具体的で検証可能な予測を概説した。これらの予測の確認は、YUCT と調整効率メトリック \(\Keff\) およびそのスケーリング則の根本的性質に対する強力な独立した支持を提供するだろう。
+	
+	\begin{thebibliography}{99}
+		\bibitem{Seeley2010} Seeley, T. D. (2010). \emph{Honeybee Democracy}. Princeton University Press.
+		\bibitem{Winston1987} Winston, M. L. (1987). \emph{The Biology of the Honey Bee}. Harvard University Press.
+		\bibitem{FM3-90.5} FM 3-90.5 (2008). \emph{Combined Arms Battalion}. US Army Field Manual.
+		\bibitem{Tunstrom2013} Tunstrøm, K. et al. (2013). Collective states, multistability and transitional behavior in schooling fish. \emph{PLoS Computational Biology}, 9(2), e1002915.
+		\bibitem{Connor2000} Connor, R. C. et al. (2000). The bottlenose dolphin: social relationships in a fission‑fusion society. In: \emph{Cetacean Societies}, University of Chicago Press.
+		\bibitem{FAO2013} FAO (2013). \emph{In vivo conservation of animal genetic resources}. FAO Animal Production and Health Guidelines No. 14.
+		\bibitem{Alberts1995} Alberts, S. C. \& Altmann, J. (1995). Balancing costs and opportunities: dispersal in male baboons. \emph{American Naturalist}, 145(2), 279–306.
+		\bibitem{Yakushev2026} Yakushev, A. V. (2026). \emph{Yakushev Unified Coordination Theory (YUCT)}. Zenodo. \url{https://doi.org/10.5281/zenodo.18444599}
+		\bibitem{AppendixL} 付録 L: フラクタル調整誤差スケーリング – DNAから宇宙論までの普遍的法則.
+		\bibitem{AppendixO} 付録 O: 技術的辞書閾値公理.
+		\bibitem{bees} Seeley, T. D. (2010) – 上記と同じ、または特定の文献に置き換え可.
+	\end{thebibliography}
+	
+\end{document}

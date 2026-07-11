@@ -1,0 +1,64 @@
+import numpy as np
+import math
+
+# Planck mass (GeV)
+M_Pl = 1.2209e19
+base = 3/2
+sigma = 0.20
+
+def log_base(x, base):
+    return math.log(x) / math.log(base)
+
+def Leff(m):
+    return -log_base(m / M_Pl, base)
+
+def CAB(mA, mB, sigma):
+    delta = abs(log_base(mA / mB, base))
+    n = round(delta)
+    return math.exp(-((delta - n)**2) / (2 * sigma**2))
+
+# Массы элементов в том же порядке, что в таблице L_eff (Z=1..118)
+masses = [
+    0.9388, 3.727, 6.534, 8.393, 10.25, 11.18, 13.04, 14.90, 17.70, 18.63,
+    21.41, 22.66, 25.13, 26.09, 28.86, 29.80, 33.02, 37.22, 36.39, 37.21,
+    44.96, 46.96, 47.92, 51.99, 54.94, 52.10, 58.62, 58.09, 58.62, 60.55,
+    68.99, 72.18, 74.92, 77.88, 79.54, 83.80, 85.47, 87.62, 88.91, 91.22,
+    92.91, 95.95, 98.00, 101.1, 102.9, 106.4, 107.9, 112.4, 114.8, 118.7,
+    121.8, 127.6, 126.9, 131.3, 132.9, 137.3, 138.9, 140.1, 140.9, 144.2,
+    145.0, 150.4, 152.0, 157.3, 158.9, 162.5, 164.9, 167.3, 168.9, 173.0,
+    175.0, 178.5, 180.9, 183.8, 186.2, 190.2, 192.2, 195.1, 197.0, 200.6,
+    204.4, 207.2, 209.0, 209.0, 210.0, 222.0, 223.0, 226.0, 227.0, 232.0,
+    231.0, 238.0, 237.0, 244.0, 243.0, 247.0, 247.0, 251.0, 252.0, 257.0,
+    258.0, 259.0, 262.0, 267.0, 268.0, 269.0, 270.0, 269.0, 278.0, 281.0,
+    280.0, 285.0, 284.0, 289.0, 288.0, 293.0, 292.0, 294.0
+]
+
+# Символы в том же порядке (Z=1..118)
+symbols = [
+    "H","He","Li","Be","B","C","N","O","F","Ne","Na","Mg","Al","Si","P","S",
+    "Cl","Ar","K","Ca","Sc","Ti","V","Cr","Mn","Fe","Co","Ni","Cu","Zn","Ga",
+    "Ge","As","Se","Br","Kr","Rb","Sr","Y","Zr","Nb","Mo","Tc","Ru","Rh","Pd",
+    "Ag","Cd","In","Sn","Sb","Te","I","Xe","Cs","Ba","La","Ce","Pr","Nd","Pm",
+    "Sm","Eu","Gd","Tb","Dy","Ho","Er","Tm","Yb","Lu","Hf","Ta","W","Re","Os",
+    "Ir","Pt","Au","Hg","Tl","Pb","Bi","Po","At","Rn","Fr","Ra","Ac","Th","Pa",
+    "U","Np","Pu","Am","Cm","Bk","Cf","Es","Fm","Md","No","Lr","Rf","Db","Sg",
+    "Bh","Hs","Mt","Ds","Rg","Cn","Nh","Fl","Mc","Lv","Ts","Og"
+]
+
+n = len(masses)
+C = np.zeros((n, n))
+
+for i in range(n):
+    for j in range(i, n):  # symmetric
+        c = CAB(masses[i], masses[j], sigma)
+        C[i, j] = c
+        C[j, i] = c
+
+# Сохраняем CSV с заголовком-символами
+header = ",".join(symbols)
+with open("full_CAB_matrix.csv", "w") as f:
+    f.write(header + "\n")
+    for i, row in enumerate(C):
+        f.write(symbols[i] + "," + ",".join(f"{x:.4f}" for x in row) + "\n")
+
+print("Матрица сохранена в full_CAB_matrix.csv")

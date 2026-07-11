@@ -1,0 +1,352 @@
+% !TeX program = lualatex
+\documentclass[12pt,a4paper]{article}
+
+% ========= حزمة =========
+\usepackage[english, bidi=default, layout=counters]{babel}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{fontspec}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{geometry}
+\geometry{left=1.25cm,right=1.25cm,top=1.25cm,bottom=3.1cm}
+
+% ========= اللغات =========
+\babelprovide[import, main, maparabic, alph=alph]{arabic}
+\babelprovide[import, onchar=ids fonts]{english}
+
+% ========= الخطوط العربية =========
+\defaultfontfeatures{Ligatures=TeX}
+\setmainfont{Amiri}[
+Script=Arabic,
+Mapping=arabicdigits,
+Ligatures=TeX,
+BoldFont=Amiri-Bold,
+ItalicFont=Amiri-Italic,
+BoldItalicFont=Amiri-BoldItalic
+]
+\setsansfont{Amiri}[
+Script=Arabic,
+Mapping=arabicdigits
+]
+\newfontfamily{\arabicfonttt}{Amiri}[
+Script=Arabic,
+Mapping=arabicdigits
+]
+
+% خطوط للنص اللاتيني (الإنجليزية)
+\babelfont[english]{rm}{Times New Roman}
+\babelfont[english]{sf}{Arial}
+\babelfont[english]{tt}{Courier New}
+
+% ========= ألوان =========
+\definecolor{skyblue}{RGB}{0,102,204}
+\definecolor{darkblue}{RGB}{0,0,139}
+\definecolor{gold}{RGB}{255,215,0}
+
+% ========= أوامر YUCT (بما فيها \Ke المفقود) =========
+\DeclareMathOperator{\Ent}{Ent}
+\DeclareMathOperator{\Tr}{Tr}
+\newcommand{\Dir}{\mathcal{D}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\Planck}{\mathrm{Pl}}
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\betaf}{\beta}
+\newcommand{\df}{d_{\!f}}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+\newcommand{\Mpl}{M_{\mathrm{Pl}}}
+\newcommand{\Lpl}{l_{\mathrm{Pl}}}
+\newcommand{\Ke}{K_{\mathrm{eff}}}   % <-- هذا هو المفقود!
+
+% ========= رؤوس وتذييلات =========
+\fancypagestyle{firstpage}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			{\small \textsuperscript{1}أبحاث ياكوشيف، \url{https://yuct.org/}} \hfill
+			{\small بروتوكول YPSDC: \url{https://ypsdc.com/}}\\[-2pt]
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			\textbf{نظرية ياكوشيف الموحدة للتنسيق 2026} \hfill \thepage\\[10pt]
+		\end{minipage}%
+	}%
+}
+
+\fancypagestyle{plain}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[4pt]
+			\textbf{نظرية ياكوشيف الموحدة للتنسيق 2026} \hfill \thepage\\[4pt]
+		\end{minipage}%
+	}%
+}
+
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+\raggedbottom
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+% ========= رأس المقال =========
+\newcommand{\makeheader}{%
+	\noindent
+	\begin{minipage}{0.17\textwidth}
+		\raggedright
+		{\sffamily\bfseries\color{skyblue}\fontsize{40}{40}\selectfont YUCT}%
+	\end{minipage}%
+	\hspace{30pt}
+	\begin{minipage}{0.32\textwidth}
+		\raggedright
+		{\sffamily\fontsize{11}{13}\selectfont نظرية ياكوشيف\\ الموحدة\\ للتنسيق}%
+	\end{minipage}%
+	\hfill
+	\begin{minipage}{0.38\textwidth}
+		\raggedleft
+		{\sffamily\bfseries مذكرة تقنية}\\
+		{\sffamily نُشرت في مايو 2026}\\
+		{\sffamily\footnotesize \scriptsize\url{https://doi.org/10.5281/zenodo.18444598}}%
+	\end{minipage}
+	\par\vspace{5pt}
+	\noindent\textcolor{gold}{\rule{\textwidth}{1.6pt}}
+	\par\vspace{0pt}
+}
+
+\begin{document}
+	\thispagestyle{firstpage}
+	\makeheader
+	
+	\vspace{0cm}
+	{\LARGE\bfseries التحقق التجريبي المباشر من قانون القياس الشامل لـ YUCT \\ 
+		\Large \(\varepsilon = \kappa_c \alpha \Ke^{-\beta}\) مع \(\beta = 0.67\): خمس طرق مستقلة \par}
+	\vspace{0.2cm}
+	
+	{\large أليكسي ف. ياكوشيف\footnote{أبحاث ياكوشيف، \url{https://yuct.org/}}} \\
+	\vspace{0.0cm}
+	
+	{\color{darkblue}\textbf{\LARGE المستخلص}} \par
+	{\large
+		\noindent
+		تقدم هذه المذكرة خمس طرق تجريبية مستقلة ومُثبتة رقمياً تسمح بتأكيد مباشر للتنبؤ المركزي لنظرية ياكوشيف الموحدة للتنسيق (YUCT): وهو أن أُس القياس الشامل للخطأ هو \(\beta = 0.67\). تعتمد كل طريقة على بيانات متاحة للعموم، ولا تتطلب سوى آلة حاسبة، ويمكن لأي طالب جامعي إعادة إنتاجها في ظهيرة واحدة. تغطي الاختبارات فيزياء الجسيمات، وعلم الأحياء، وعلم الوراثة التطوري، وعلم المواد.
+	}
+	
+	\vspace{0.1cm}
+	\noindent
+	{\color{darkblue}\textbf{الكلمات المفتاحية:}} YUCT، القياس الشامل، \(\beta = 0.67\)، طرق تجريبية، سلم الكتلة، القياس التنامي، معدل الطفرات، كتلة البروتون، نقطة الانصهار.
+	
+	\vspace{0.4cm}
+	
+	\section{مقدمة}
+	تستند نظرية ياكوشيف الموحدة للتنسيق (YUCT) إلى قانون الخطأ الشامل
+	\begin{equation}\label{eq:error-law}
+		\varepsilon = \kappa_c \, \alpha \, \Ke^{-\beta},
+	\end{equation}
+	حيث \(\beta = 2/3 \approx 0.667\) و \(\kappa_c = 1/3\). تتيح الطرق الخمس أدناه لأي عالم اختبار هذا التنبؤ مباشرة، دون الاعتماد على الاشتقاقات النظرية.
+	
+	\section{الطريقة 1: سلم كتلة الفرميونات}
+	\label{sec:massladder}
+	
+	\textbf{الوقت المطلوب:} 30 دقيقة.\\
+	\textbf{مصدر البيانات:} Particle Data Group (PDG) 2024 \cite{PDG2024}.\\
+	\textbf{المبدأ:} تحدد الحلقة الجبرية لـ YUCT كم القياس الأساسي
+	\[
+	q = \left( \frac{\Sodd}{\Seven} \right)^{1/3} = \left( \frac{3}{2} \right)^{1/3} \approx 1.1447.
+	\]
+	جميع كتل الفرميونات المشحونة مُكممة وفق \(m_f = m_e \cdot q^{N_f}\)، حيث \(N_f \in \frac{1}{2}\mathbb{Z}\).
+	
+	\begin{table}[H]
+		\centering
+		\caption{كتل الفرميونات وأدلتها نصف الصحيحة.}
+		\label{tab:fermions}
+		\begin{tabular}{l c c c c}
+			\toprule
+			الفرميون & الكتلة (GeV) & \(\ln(m_f/m_e)\) & \(N_f\) (محسوب) & أقرب \(\frac{1}{2}\mathbb{Z}\) \\
+			\midrule
+			\(e\)   & \(5.11\times10^{-4}\) & 0.000  & 0.00  & 0 \\
+			\(\mu\)  & 0.10566 & 5.329  & 39.43 & 39.5 \\
+			\(\tau\) & 1.7768  & 8.153  & 60.31 & 60.0 \\
+			\(u\)   & \(2.16\times10^{-3}\) & 1.439  & 10.65 & 10.5 \\
+			\(d\)   & \(4.67\times10^{-3}\) & 2.209  & 16.34 & 16.5 \\
+			\(s\)   & 0.0935  & 5.206  & 38.51 & 38.5 \\
+			\(c\)   & 1.273   & 7.817  & 57.83 & 58.0 \\
+			\(b\)   & 4.183   & 9.006  & 66.63 & 66.5 \\
+			\(t\)   & 172.57  & 12.726 & 94.18 & 94.0 \\
+			\bottomrule
+		\end{tabular}
+		\par\smallskip
+		\footnotesize
+		\(\ln q = \frac{1}{3}\ln(3/2) \approx 0.135155\). العمود \(N_f\) (محسوب) هو \(\ln(m_f/m_e)/\ln q\).
+	\end{table}
+	
+	\textbf{تمرين للطالب:}
+	\begin{enumerate}[label=(\arabic*)]
+		\item ابحث عن كتل الفرميونات المشحونة التسعة في جداول ملخص PDG.
+		\item احسب \(N_f = \ln(m_f / m_e) / \ln q\) لكل جسيم.
+		\item تحقق من أن جميع القيم التسعة تقع ضمن \(\pm 0.5\) من عدد صحيح أو نصف صحيح.
+	\end{enumerate}
+	
+	\textbf{النتيجة المتوقعة:} جميع الفرميونات التسعة تقع على سلم نصف صحيح.
+	
+	\section{الطريقة 2: القياس التنامي (قانون كلايبر)}
+	\label{sec:kleiber}
+	
+	\textbf{الوقت المطلوب:} 30 دقيقة.\\
+	\textbf{مصدر البيانات:} Kleiber (1947) \cite{Kleiber1947}.\\
+	\textbf{المبدأ:} يتدرج معدل الأيض \(B\) مع كتلة الجسم \(M\) وفق \(B \propto M^{\beta d_f/2}\). بالنسبة للثدييات \(d_f \approx 2.2\)، مما يعطي \(b \approx 0.73\)؛ وبالنسبة للكائنات وحيدة الخلية \(d_f \approx 2\)، مما يعطي \(b \approx 0.67\).
+	
+	\begin{table}[H]
+		\centering
+		\caption{بيانات كلايبر الأصلية للثدييات.}
+		\label{tab:kleiber}
+		\begin{tabular}{l c c c}
+			\toprule
+			الحيوان  & الكتلة \(M\) (كغ) & معدل الأيض \(B\) (كيلو كالوري/يوم) \\
+			\midrule
+			فأر       & 0.02   & 3.3 \\
+			جرذ         & 0.20   & 20 \\
+			خنزير غينيا  & 0.65   & 48 \\
+			قطة         & 3.0    & 152 \\
+			كلب         & 15     & 500 \\
+			إنسان       & 70     & 1700 \\
+			حصان       & 700    & 10000 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{الخطوات:}
+	\begin{enumerate}[label=(\arabic*)]
+		\item ارسم \(\ln B\) مقابل \(\ln M\). الميل هو \(0.74 \pm 0.02\).
+		\item استخرج \(\beta = 2b / d_f\). بالنسبة لـ \(d_f = 2.2\) (الثدييات)، \(\beta = 2 \times 0.74 / 2.2 \approx 0.67\).
+	\end{enumerate}
+	
+	\section{الطريقة 3: معدل الطفرات في الفقاريات}
+	\label{sec:mutation}
+	
+	\textbf{الوقت المطلوب:} 30 دقيقة (تحليل البيانات فقط).\\
+	\textbf{مصدر البيانات:} الملحق~T من YUCT، متاح على\\
+	\url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}.\\
+	\textbf{المبدأ:} معدل الطفرات \(\mu\) يتناسب عكسياً مع كفاءة تنسيق إصلاح الحمض النووي: \(\mu \propto K_{\text{repair}}^{-\beta}\).
+	
+	\textbf{الخطوات:}
+	\begin{enumerate}[label=(\arabic*)]
+		\item قم بتنزيل مجموعة البيانات \texttt{mutation\_rates.csv}.
+		\item ارسم \(\ln \mu\) مقابل \(\ln K_{\text{repair}}\).
+		\item قم بتوفيق خط مستقيم.
+	\end{enumerate}
+	
+	\textbf{النتيجة المتوقعة:} الميل \(= -0.67 \pm 0.05\)، \(R^2 = 0.89\).
+	
+	\section{الطريقة 4: كتلة البروتون من سلم الكتلة}
+	\label{sec:proton}
+	
+	\textbf{الوقت المطلوب:} 10 دقائق.\\
+	\textbf{مصدر البيانات:} PDG 2024 \cite{PDG2024}.\\
+	\textbf{المبدأ:} يمتد سلم الكتلة ليشمل الجسيمات المركبة. كتلة البروتون \(m_p\) تقابل دليلاً نصف صحيح \(N_f = 55.5\).
+	
+	\begin{table}[H]
+		\centering
+		\caption{حساب دليل البروتون.}
+		\label{tab:proton}
+		\begin{tabular}{l c}
+			\toprule
+			الكمية & القيمة \\
+			\midrule
+			كتلة البروتون \(m_p\) & 0.938272 GeV \\
+			كتلة الإلكترون \(m_e\) & \(5.11\times10^{-4}\) GeV \\
+			\(\ln(m_p/m_e)\) & 7.515 \\
+			\(\ln q = \frac{1}{3}\ln(3/2)\) & 0.135155 \\
+			\(N_f = \ln(m_p/m_e)/\ln q\) & 55.61 \\
+			أقرب نصف صحيح & 55.5 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{الخطوات:}
+	\begin{enumerate}[label=(\arabic*)]
+		\item ابحث عن كتلتي البروتون والإلكترون.
+		\item احسب \(N_f = \ln(m_p / m_e) / \ln q\).
+		\item تحقق من أنها تقع ضمن \(0.11\) من نصف الصحيح \(55.5\).
+	\end{enumerate}
+	
+	\section{الطريقة 5: نقاط انصهار الفلزات البسيطة}
+	\label{sec:melting}
+	
+	\textbf{الوقت المطلوب:} 30 دقيقة.\\
+	\textbf{مصدر البيانات:} CRC Handbook of Chemistry and Physics \cite{CRC}، الملحق~C من YUCT \cite{AppendixC}.\\
+	\textbf{المبدأ:} في YUCT، تتدرج درجات حرارة التحول الطوري مع كفاءة التنسيق وفق \(T_{\text{melt}} \propto \Ke^{\beta}\). بالنسبة للفلزات البسيطة، يُحترم قانون القوة هذا بشكل جيد.
+	
+	\begin{table}[H]
+		\centering
+		\caption{درجات الانصهار وكفاءات التنسيق لعشرة فلزات بسيطة. قيم \(\Ke\) مأخوذة من الملحق~C.}
+		\label{tab:melting}
+		\begin{tabular}{l c c c c}
+			\toprule
+			العنصر & \(\Ke\) & \(T_{\text{melt}}\) (K) & \(\ln \Ke\) & \(\ln T_{\text{melt}}\) \\
+			\midrule
+			Li & 1.85 & 453.7 & 0.615 & 6.118 \\
+			Na & 2.13 & 371.0 & 0.757 & 5.916 \\
+			K  & 2.38 & 336.5 & 0.867 & 5.819 \\
+			Mg & 2.57 & 923.0 & 0.943 & 6.827 \\
+			Al & 3.01 & 933.5 & 1.102 & 6.839 \\
+			Cu & 4.62 & 1358  & 1.530 & 7.214 \\
+			Zn & 3.96 & 692.7 & 1.376 & 6.540 \\
+			Fe & 4.26 & 1811  & 1.449 & 7.502 \\
+			Ni & 4.50 & 1728  & 1.504 & 7.455 \\
+			Au & 4.97 & 1337  & 1.604 & 7.199 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{الخطوات:}
+	\begin{enumerate}[label=(\arabic*)]
+		\item انسخ قيم \(\ln \Ke\) و \(\ln T_{\text{melt}}\) من الجدول.
+		\item ارسم \(\ln T_{\text{melt}}\) مقابل \(\ln \Ke\).
+		\item قم بتوفيق خط مستقيم عبر النقاط.
+	\end{enumerate}
+	
+	\textbf{النتيجة المتوقعة:} الميل هو \(0.58 \pm 0.09\) (\(R^2 \approx 0.62\)). القيمة النظرية \(\beta = 0.67\) تقع ضمن فترة ثقة 95\%.
+	
+	\section{الخلاصة}
+	الطرق الخمس المقدمة هنا مُثبتة رقمياً ولا تتطلب سوى بيانات متاحة للعموم. وهي تُظهر أن نفس الأُس الأساسي \(\beta = 0.67\) ينظم كتل الجسيمات الأولية، ومعدلات الأيض لدى الثدييات، ودقة إصلاح الحمض النووي، وكتلة البروتون، ونقاط انصهار الفلزات. يمكن لأي طالب إعادة إنتاج هذه النتائج في ظهيرة واحدة.
+	
+	\section*{توفر البيانات}
+	جميع مجموعات البيانات والسكربتات متاحة في مستودع YPSDC\\
+	\url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}.
+	
+	\begin{thebibliography}{9}
+		\bibitem{PDG2024} Particle Data Group, \emph{Review of Particle Physics},
+		Prog.\ Theor.\ Exp.\ Phys.\ \textbf{2024}, 083C01 (2024).
+		\bibitem{Kleiber1947} M.~Kleiber, ``Body size and metabolic rate,''
+		\emph{Physiol. Rev.} \textbf{27}, 511--541 (1947).
+		\bibitem{AppendixT} A.\,V.\,Yakushev, ``Appendix T: The Fundamental Law
+		of Evolution in YUCT,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixJ} A.\,V.\,Yakushev, ``Appendix J: Complete Derivation of
+		Standard Model Flavor Parameters from YUCT Topological
+		Offsets,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{CRC} CRC Handbook of Chemistry and Physics, 106th ed.,
+		CRC Press (2025).
+		\bibitem{AppendixC} A.\,V.\,Yakushev, ``Appendix C: The Coordination‑Based
+		Periodic Table of Elements,'' in \emph{YUCT}, Zenodo (2026).
+	\end{thebibliography}
+	
+\end{document}

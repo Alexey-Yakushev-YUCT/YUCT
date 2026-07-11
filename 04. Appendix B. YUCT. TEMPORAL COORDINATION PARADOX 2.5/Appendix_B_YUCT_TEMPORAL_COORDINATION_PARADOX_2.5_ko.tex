@@ -1,0 +1,593 @@
+% !TEX program = lualatex
+\documentclass[12pt,a4paper]{article}
+
+% ============================================================
+% 한국어 설정 (polyglossia)
+% ============================================================
+\usepackage{polyglossia}
+\setmainlanguage{korean}
+\setotherlanguage{english}
+
+% ========= 한국어 폰트 =========
+\newfontfamily\hangulfont{Noto Serif CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\hangulfontsf{Noto Sans CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\hangulfonttt{Noto Sans Mono CJK KR}[Script=Hangul, Language=Korean]
+
+% ========= 추가 폰트 (선택적) =========
+\newfontfamily\koreanfont{Noto Serif CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\koreanfonttt{Noto Sans Mono CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\englishfont{Times New Roman}
+\setmonofont{Latin Modern Mono}
+
+% ========= 패키지 =========
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\geometry{a4paper,left=2cm,right=2cm,top=2.5cm,bottom=2.5cm}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{array}
+
+% ========= TikZ 라이브러리 =========
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, calc}
+
+% ========= 정리 환경 (한국어) =========
+\newtheorem{definition}{정의}
+\newtheorem{theorem}{정리}
+\newtheorem{lemma}{보조정리}
+\newtheorem{corollary}{따름정리}
+\newtheorem{axiom}{공리}
+
+% ========= 섹션 제목 서식 =========
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+\renewcommand{\baselinestretch}{1.1}
+
+% ========= YUCT 매크로 =========
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\betaf}{\beta}
+\newcommand{\df}{d_{\!f}}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+\newcommand{\Mpl}{M_{\mathrm{Pl}}}
+\newcommand{\Lpl}{l_{\mathrm{Pl}}}
+\newcommand{\piYUCT}{\pi_{\mathrm{YUCT}}}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{0cm}
+			\Huge\textbf{부록 B. YUCT\\
+				시간적 조정 패러독스}
+			
+			\vspace{0cm}
+			\LARGE\textit{정보 이론적 기초에서 실험적 검증까지 \\[0.3cm]
+				$K_{\text{eff}} > 1$ 패러독스의 수학적 해결}
+			
+			\vspace{1cm}
+			\Large
+			Alexey V. Yakushev\\
+			Yakushev Research\\
+			YUCT 이론: \url{https://yuct.org/}\\
+			YPSDC 프로토콜: \url{https://ypsdc.com/}\\
+			
+			\vspace{2cm}
+			\textbf DOI: \url{https://doi.org/10.5281/zenodo.18444598}\\
+			
+			\vspace{1cm}
+			\large 
+			본 작업의 단축 버전이 이전에 출판되었으며\\ \url{https://doi.org/10.5281/zenodo.18362308}에서 확인할 수 있습니다.\\
+			\vspace{1cm}
+			2026년 3월 \\ \large V.2.1.
+			
+			\vspace{5cm}
+			\textcopyright~2026 Yakushev Research. All rights reserved.
+			
+			\newpage
+			\vfill
+			\normalsize
+			\begin{minipage}{0.8\textwidth}
+				\centering
+				\textbf{초록:} \\ 본 문서는 Yakushev 통일 조정 이론(YUCT)에서 시간적 조정 패러독스의 완전한 형식 수학적 모델을 제시한다. 이 패러독스는 조정 효율 $K_{\text{eff}}$이 1을 초과할 때 발생하며, 고전적 정보 전송 한계를 위반하는 것으로 보인다. 우리는 엄격한 정의, 정리 및 증명을 제공하여 사전 지식으로서의 사전 사전이 어떻게 시간적으로 역설적으로 보이면서도 물리 법칙과 일관된 조정을 가능하게 하는지 보여준다. 주요 결과는 다음과 같다: (1) 채널 용량 대 조정 용량의 형식적 분리 정리, (2) $K_{\text{eff}} = R \cdot \eta$ (여기서 $R = n/m$은 지식 압축비)의 수학적 유도, (3) $K_{\text{eff}}$이 인과율을 위반하지 않고 1을 초과할 수 있는 정확한 조건, (4) 확장 가능한 시스템을 위한 다중 노드 조정 정리, (5) 조정 효율의 엔트로피적 해석, (6) 실제 시스템에서 $K_{\text{eff}}$을 측정하기 위한 실험 프로토콜.
+			\end{minipage}
+			
+			\vspace{0.5cm}
+			\normalsize
+			\textbf{키워드:} 시간적 조정 패러독스, YUCT 형식 모델, $K_{\text{eff}} > 1$, 사전 지식, 사전 사전, 정보 이론적 조정, 채널 용량 분리, YPSDC 프로토콜, 인과율 보존, 조정 엔트로피.
+			
+			\vspace{0cm}
+			\normalsize
+			
+			\textbf{범위:} 시간적 조정의 형식 수학적 기초 \\
+			\textbf{주요 정리:} 완전한 증명을 갖춘 8개의 형식 정리 \\
+			\textbf{실험 프로토콜:} $K_{\text{eff}}$ 측정을 위한 3가지 방법 \\
+			
+			\vspace{0.5cm}
+			\normalsize
+			
+		\end{center}
+	\end{titlepage}
+	
+	\begin{center}
+		\vspace*{0.5cm}
+		\Huge\textbf{시간적 조정 패러독스}
+		\vspace{1cm}
+	\end{center}
+	
+	\section{시간적 조정 패러독스의 완전한 형식 모델}
+	\label{app:formal-model}
+	
+	\subsection{형식적 정의}
+	\label{app:definitions}
+	
+	\subsubsection{기본 객체}
+	
+	조정 시스템을 튜플 $\mathcal{S} = (\mathcal{A}, \mathcal{O}, \mathcal{D}, \mathcal{C}, \mathcal{T})$로 정의한다. 여기서:
+	
+	\begin{itemize}
+		\item $\mathcal{A} = \{a_1, a_2, \dots, a_N\}$은 가능한 행동(지식 활성화)의 유한 집합,
+		\item $\mathcal{O} = \{O_1, O_2, \dots, O_M\}$은 관찰자(노드)의 집합,
+		\item $\mathcal{D} = \{\kappa_i \to a_i\}_{i=1}^N$은 사전 사전(코드에서 행동으로의 전단사 사상),
+		\item $\mathcal{C}$는 지정된 매개변수를 가진 물리적 전송 채널,
+		\item $\mathcal{T}$는 시간적 제약의 집합이다.
+	\end{itemize}
+	
+	\subsubsection{정보 이론적 측도}
+	
+	\begin{definition}[행동의 정보량]
+		각 행동 $a \in \mathcal{A}$에 대해, 그 완전한 기술은 다음을 필요로 한다:
+		\[
+		I(a) = n \ \text{비트},
+		\]
+		여기서 $n$은 사전 지식 없이 $a$를 모호함 없이 기술하는 데 필요한 최소 비트 수이다.
+	\end{definition}
+	
+	\begin{definition}[코드 길이]
+		각 코드 $\kappa \in \mathcal{K}$($\mathcal{D}$ 내의 코드 집합)에 대해:
+		\[
+		|\kappa| = m \ \text{비트}, \quad \text{단} \ m \ll n.
+		\]
+	\end{definition}
+	
+	\begin{definition}[지식 압축비]
+		지식 압축비는 다음과 같이 정의된다:
+		\[
+		R = \frac{n}{m} \gg 1.
+		\]
+	\end{definition}
+	
+	\subsection{물리적 채널 모델}
+	\label{app:channel-model}
+	
+	\subsubsection{기본 제약}
+	
+	\begin{axiom}[광속 한계]
+		거리 $L_{ij}$로 분리된 임의의 두 노드 $O_i, O_j \in \mathcal{O}$에 대해, 신호 전파 속도는 다음을 만족한다:
+		\[
+		v_{\text{signal}} \leq c,
+		\]
+		여기서 $c$는 진공에서의 광속이다.
+	\end{axiom}
+	
+	\begin{axiom}[채널 용량]
+		채널 $\mathcal{C}$는 다음의 최대 채널 용량을 갖는다:
+		\[
+		C_{\text{max}} = \lim_{T \to \infty} \frac{1}{T} \max_{X} I(X; Y) \quad \text{[비트/초]},
+		\]
+		여기서 $X$는 입력 신호, $Y$는 출력 신호이다.
+	\end{axiom}
+	
+	\subsubsection{전송 시간 모델}
+	
+	$I$ 비트의 메시지를 전송하는 데 필요한 시간은:
+	\[
+	T_{\text{transmit}}(I) = \frac{I}{C_{\text{eff}}} + \frac{L}{c} + \tau_{\text{proc}},
+	\]
+	여기서 $C_{\text{eff}} \leq C_{\text{max}}$는 실효 채널 용량, $\tau_{\text{proc}}$는 처리 지연이다.
+	
+	\subsection{조정 프로세스}
+	\label{app:coordination-processes}
+	
+	\subsubsection{순수한 조정 (사전 없음)}
+	
+	\textbf{시나리오 1:} 노드 $O_1$이 노드 $O_2$에게 행동 $a$를 수행하기를 원한다.
+	
+	\begin{enumerate}
+		\item $O_1$은 $a$의 완전한 기술을 공식화한다: $I(a) = n$ 비트.
+		\item $O_1$은 이 기술을 $O_2$에게 전송한다: 시간 $T_1 = T_{\text{transmit}}(n)$.
+		\item $O_2$는 복호화하여 행동을 이해한다: 시간 $T_2 = \alpha n$ ($\alpha > 0$).
+		\item $O_2$는 행동을 실행한다: 시간 $T_3$.
+		\item $O_2$는 확인 응답을 전송한다: 시간 $T_4 = T_{\text{transmit}}(p)$ ($p$는 확인 응답의 크기).
+	\end{enumerate}
+	
+	총 순수 조정 시간:
+	\[
+	T_{\text{naive}}(a) = T_1 + T_2 + T_3 + T_4.
+	\]
+	
+	\begin{theorem}[순수 조정의 하한]
+		\label{thm:naive-lower-bound}
+		임의의 노드 쌍 $O_1, O_2$와 행동 $a$에 대해, 순수 조정 시간은 다음에 의해 아래로 제한된다:
+		\[
+		T_{\text{naive}}(a) \geq \frac{n + p}{C_{\text{eff}}} + \frac{2L}{c} + \alpha n.
+		\]
+	\end{theorem}
+	
+	\subsubsection{사전 기반 조정 (YPSDC)}
+	
+	\textbf{시나리오 2:} 노드 $O_1$과 $O_2$는 사전 사전 $\mathcal{D}$를 공유한다.
+	
+	\begin{enumerate}
+		\item $O_1$은 행동 $a$에 해당하는 코드 $\kappa$를 선택한다: $|\kappa| = m$ 비트.
+		\item $O_1$은 $\kappa$를 $O_2$에게 전송한다: 시간 $T_1' = T_{\text{transmit}}(m)$.
+		\item $O_2$는 $\mathcal{D}$에서 행동을 찾는다: 시간 $T_2' = \beta m$ ($\beta \ll \alpha$).
+		\item $O_2$는 행동을 실행한다: 시간 $T_3' = T_3$.
+	\end{enumerate}
+	
+	중요한 관찰: $O_1$은 $\kappa$를 보낸 직후에 마치 $O_2$가 이미 $a$를 수행한 것처럼 행동할 수 있다.
+	
+	사전을 사용한 실효 조정 시간은:
+	\[
+	T_{\text{coord}}(a) = T_1' + T_2'.
+	\]
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[node distance=2cm, auto, >=Stealth]
+			\node (O1) [draw, rectangle, rounded corners, minimum width=2cm, minimum height=1cm] {관찰자 1};
+			\node (O2) [draw, rectangle, rounded corners, minimum width=2cm, minimum height=1cm, right=of O1] {관찰자 2};
+			\node (dict) [draw, ellipse, below=2cm of $(O1)!0.5!(O2)$] {사전 사전 $\mathcal{D}$};
+			\draw[->, thick] (O1) -- node[above] {짧은 코드 $\kappa$} (O2);
+			\draw[->, dashed] (O1) -- node[left, near start] {공유} (dict);
+			\draw[->, dashed] (O2) -- node[right, near start] {공유} (dict);
+			\node[below=0.3cm of O1, align=center] {$t_0$ 시점:\\ $a$가 수행될 것을 앎};
+			\node[below=0.3cm of O2, align=center] {$t_0 + L/c$ 시점:\\ $a$를 실행};
+		\end{tikzpicture}
+		\caption{기본 YPSDC 조정 방식. 사전 지식은 공유 사전으로부터 $t_0$에 발생한다.}
+		\label{fig:basic}
+	\end{figure}
+	
+	\subsection{조정 시간 패러독스}
+	\label{app:paradox}
+	
+	\begin{definition}[사전 지식]
+		코드 $\kappa$가 전송된 시각 $t_0$에서, 노드 $O_1$은 $O_2$의 미래 행동에 대한 사전 지식을 갖는다:
+		\[
+		K_{\text{advance}}(O_1, O_2, a, t_0) = \text{참}
+		\]
+		인 것은 $\mathcal{D}(\kappa) = a$가 되는 공유 사전 $\mathcal{D}$가 존재할 때, 그리고 그때만이다.
+	\end{definition}
+	
+	\begin{lemma}[사전 지식의 존재]
+		\label{lem:advance-knowledge}
+		임의의 $O_1, O_2, a$와 공유 사전 $\mathcal{D}$에 대해:
+		\[
+		K_{\text{advance}}(O_1, O_2, a, t_0) = \text{참}
+		\]
+		이 $\kappa$를 보낸 순간 $t_0$에 성립한다.
+	\end{lemma}
+	
+	\begin{proof}
+		$\mathcal{D}$의 구성에 의해, $\kappa$를 보내는 것은 $O_2$가 시각 $t_0 + T_{\text{coord}}(a)$에 $a$를 수행할 것임을 보장한다. 따라서 $t_0$에서 $O_1$은 $O_2$의 미래 상태를 확실히 예측할 수 있다.
+	\end{proof}
+	
+	\subsection{조정의 정보 용량}
+	\label{app:capacities}
+	
+	\begin{definition}[채널 정보 용량]
+		\[
+		C_{\text{channel}} = C_{\text{eff}} \quad \text{[비트/초]}.
+		\]
+	\end{definition}
+	
+	\begin{definition}[조정 정보 용량]
+		\[
+		C_{\text{coord}} = \lim_{T \to \infty} \frac{1}{T} \sum_{t=1}^{T} I(a_t) \quad \text{[비트/초]},
+		\]
+		여기서 $a_t$는 시각 $t$에 활성화되는 행동이다.
+	\end{definition}
+	
+	\begin{theorem}[용량 분리 정리]
+		\label{thm:capacity-separation}
+		지식 압축비 $R = n/m$을 갖는 조정 시스템 $\mathcal{S}$에 대해:
+		\[
+		C_{\text{coord}} = R \cdot C_{\text{channel}} \cdot \eta,
+		\]
+		여기서 $\eta = \frac{T_{\text{channel}}}{T_{\text{coord}}} \leq 1$은 시간 효율 계수이다.
+	\end{theorem}
+	
+	\begin{proof}
+		시간 간격 $\Delta T$ 동안, 채널은 다음을 전송할 수 있다:
+		\[
+		N_{\text{codes}} = \frac{C_{\text{channel}} \cdot \Delta T}{m} \quad \text{개의 코드}.
+		\]
+		각 코드는 정보량 $n$ 비트의 행동을 활성화하므로, 총 조정 정보량은:
+		\[
+		I_{\text{total}} = N_{\text{codes}} \cdot n = \frac{C_{\text{channel}} \cdot \Delta T}{m} \cdot n.
+		\]
+		따라서,
+		\[
+		C_{\text{coord}} = \frac{I_{\text{total}}}{\Delta T} = C_{\text{channel}} \cdot \frac{n}{m} = R \cdot C_{\text{channel}}.
+		\]
+		시간 지연(예: 처리, 전파)을 고려하면 효율 계수 $\eta$가 도입된다.
+	\end{proof}
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[node distance=2.5cm, auto, >=Stealth]
+			\node (O1) [draw, rectangle, rounded corners, minimum width=2.2cm, minimum height=1.2cm] {관찰자 1 $O_1$};
+			\node (O2) [draw, rectangle, rounded corners, minimum width=2.2cm, minimum height=1.2cm, right=of O1] {관찰자 2 $O_2$};
+			\node (dict) [draw, ellipse, below=2.5cm of $(O1)!0.5!(O2)$] {사전 사전 $\mathcal{D} = \{\kappa_i \to \mathcal{A}_i\}$};
+			\draw[->, thick] (O1) -- node[above] {$\kappa_1$} (O2);
+			\draw[->, thick] (O2) -- node[below] {$\kappa_2$ (확인)} (O1);
+			\draw[->, dashed] (O1) -- (dict);
+			\draw[->, dashed] (O2) -- (dict);
+			\node[below=0.2cm of O1, align=center] {$t_0$에서 $\mathcal{A}_2$를 앎};
+			\node[below=0.2cm of O2, align=center] {$t_0+L/c$에서 $\mathcal{A}_2$를 실행};
+		\end{tikzpicture}
+		\caption{사전 사전을 이용한 양방향 조정. 두 노드 모두 동일한 사전을 공유하여 양방향 사전 지식을 가능하게 한다.}
+		\label{fig:duplex}
+	\end{figure}
+	
+	\subsection{조정 효율 계수 \(K_{\mathrm{eff}}\)와 용량 분리}
+	
+	\begin{definition}[조정 효율]
+		YPSDC 시스템의 \emph{조정 효율}은
+		\begin{equation}
+			K_{\mathrm{eff}} = \frac{H(\mathcal{A})}{H(\mathcal{K})},
+			\label{eq:Kdef}
+		\end{equation}
+		여기서 \(H(\mathcal{A})\)는 행동 공간의 엔트로피, \(H(\mathcal{K})\)는 인덱스 분포의 엔트로피이다.
+	\end{definition}
+	
+	\begin{definition}[조정 용량]
+		\emph{조정 용량} \(C_{\mathrm{coord}}\)은 수신자가 사전으로부터 의미 있는 정보를 추출할 수 있는 최대 비율이다:
+		\begin{equation}
+			C_{\mathrm{coord}} = \lim_{\Delta t \to \infty} \frac{1}{\Delta t} \sum_{t=1}^{N_{\mathrm{actions}}} I(A_{i_t}),
+		\end{equation}
+		여기서 \(A_{i_t}\)는 $t$번째 전송 중에 활성화되는 행동이다.
+	\end{definition}
+	
+	\begin{theorem}[용량 분리]
+		\label{thm:capacity-separation}
+		조정 효율 \(K_{\mathrm{eff}}\)과 오버헤드 계수 \(\eta \le 1\)을 갖는 YPSDC 시스템에 대해, 조정 용량과 채널 용량은 다음 관계를 갖는다:
+		\begin{equation}
+			\boxed{C_{\mathrm{coord}} = K_{\mathrm{eff}} \cdot C_{\mathrm{channel}} \cdot \eta}.
+			\label{eq:capacity-separation}
+		\end{equation}
+	\end{theorem}
+	
+	\begin{proof}
+		시간 간격 \(\Delta T\) 동안, 채널은 최대 \(C_{\mathrm{channel}} \Delta T\) 비트를 전송할 수 있다. 고정 길이 인덱스의 크기를 \(\ell\)이라 하면, 전송되는 인덱스의 수는 \(N = \lfloor C_{\mathrm{channel}} \Delta T / \ell \rfloor\)이다. 각 인덱스는 평균 \(H(\mathcal{A})\) 비트의 정보를 가진 행동을 활성화한다. 전달되는 총 의미 정보량은 \(I_{\mathrm{total}} = N \cdot H(\mathcal{A}) \approx \frac{C_{\mathrm{channel}} \Delta T}{\ell} H(\mathcal{A})\)이다. 평균 비율은 \(C_{\mathrm{coord}} = \frac{I_{\mathrm{total}}}{\Delta T} = C_{\mathrm{channel}} \cdot \frac{H(\mathcal{A})}{\ell} = C_{\mathrm{channel}} \cdot K_{\mathrm{eff}}\)이다. 계수 \(\eta\)는 처리 및 사전 접근 오버헤드를 고려한다.
+	\end{proof}
+	
+	\begin{theorem}[역]
+		크기 \(M = 2^\ell\)의 고정 사전 \(D\)를 사용하고 용량 \(C_{\mathrm{channel}}\)의 DMC를 통해 인덱스를 전송하는 임의의 방식에 대해, 조정 용량은 다음을 만족한다:
+		\[
+		C_{\mathrm{coord}} \le K_{\mathrm{eff}} \cdot C_{\mathrm{channel}}.
+		\]
+	\end{theorem}
+	
+	\begin{proof}
+		인덱스 소스의 엔트로피를 \(H(\mathcal{K})\)라 하자. 데이터 처리 부등식에 의해, \(I(\kappa;\hat{\kappa}) \le I(X;Y) \le C_{\mathrm{channel}}\)이다. 신뢰할 수 있는 동작을 위해, 인덱스는 소멸하는 오차로 복호화되어야 하며, 인덱스 비율 \(R_{\mathcal{K}} \le C_{\mathrm{channel}}\)이 필요하다(섀넌의 잡음 부호화 정리). 평균 의미 정보 비율은 \(R_{\mathcal{A}} = R_{\mathcal{K}} \cdot K_{\mathrm{eff}} \le K_{\mathrm{eff}} \cdot C_{\mathrm{channel}}\)이다. 따라서 \(C_{\mathrm{coord}} \le K_{\mathrm{eff}} \cdot C_{\mathrm{channel}}\)을 얻는다.
+	\end{proof}
+	
+	\subsection{조정의 엔트로피적 해석}
+	\label{app:entropy}
+	
+	\begin{definition}[사전 엔트로피]
+		사전 $\mathcal{D}$의 엔트로피는:
+		\[
+		H(\mathcal{D}) = - \sum_{i=1}^{N} p_i \log_2 p_i,
+		\]
+		여기서 $p_i$는 행동 $a_i$가 사용될 확률이다.
+	\end{definition}
+	
+	\begin{lemma}[최대 조정 용량]
+		최대 조정 용량은 다음에 의해 위로 제한된다:
+		\[
+		C_{\text{coord}}^{\text{max}} = H(\mathcal{D}) \cdot \nu_{\text{max}},
+		\]
+		여기서 $\nu_{\text{max}} = 1 / T_{\text{coord}}^{\text{min}}$은 최대 조정 빈도이다.
+	\end{lemma}
+	
+	\begin{definition}[조정 엔트로피]
+		조정으로 인한 시스템의 엔트로피 변화는:
+		\[
+		\Delta S_{\text{coord}} = k_B \ln(K_{\mathrm{eff}}),
+		\]
+		여기서 $k_B$는 볼츠만 상수이다.
+	\end{definition}
+	
+	해석: $K_{\mathrm{eff}}$의 증가는 조정된 시스템의 엔트로피 감소(질서 증가)에 해당한다.
+	
+	\subsection{형식 모델로부터의 검증 가능한 예측}
+	\label{app:predictions}
+	
+	\begin{enumerate}
+		\item \textbf{$K_{\mathrm{eff}}$의 양자화:} 최적으로 설계된 시스템에서는 $K_{\mathrm{eff}} = 2^k$ ($k \in \mathbb{N}$)이며, 이상적 조건에서 $k = \log_2 R$이다.
+		
+		\item \textbf{시스템 크기에 따른 스케일링:} $M$ 노드 시스템에 대해, $K_{\mathrm{eff}}(M) \propto M \log_2 R$.
+		
+		\item \textbf{기본 한계:} 다음과 같은 기본 한계가 존재한다:
+		\[
+		K_{\mathrm{eff}}^{\text{max}} = \frac{c}{\Delta x \cdot \Delta t},
+		\]
+		여기서 $\Delta x$는 최소 공간 분해능, $\Delta t$는 시스템의 최소 시간 분해능이다.
+	\end{enumerate}
+	
+	\subsection{$K_{\mathrm{eff}}$ 측정을 위한 실험 프로토콜}
+	\label{app:experiment}
+	
+	\begin{enumerate}
+		\item \textbf{$C_{\text{channel}}$ 측정:} 표준 네트워크 측정 도구(예: iperf, ping)를 사용하여 실효 채널 용량을 추정한다.
+		
+		\item \textbf{$C_{\text{coord}}$ 측정:}
+		\begin{itemize}
+			\item 대표적인 행동 집합 $\mathcal{A}$를 정의한다.
+			\item 일련의 조정된 행동을 실행하는 총 시간 $T_{\text{total}}$을 측정한다.
+			\item $C_{\text{coord}} = \frac{\sum I(a_i)}{T_{\text{total}}}$를 계산한다.
+		\end{itemize}
+		
+		\item \textbf{$K_{\mathrm{eff}}$ 계산:}
+		\[
+		K_{\mathrm{eff}} = \frac{C_{\text{coord}}}{C_{\text{channel}}}.
+		\]
+	\end{enumerate}
+	
+	다양한 시스템에 대한 예상 범위:
+	\begin{itemize}
+		\item 인간 명령 시스템: $K_{\mathrm{eff}} \approx 10^2 - 10^3$.
+		\item 컴퓨터 네트워크: $K_{\mathrm{eff}} \approx 10^3 - 10^6$.
+		\item 생물학적 시스템: $K_{\mathrm{eff}} \approx 10^6 - 10^9$.
+	\end{itemize}
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{데이터 전송과 상태 조정의 근본적 분리}
+		\label{tab:separation}
+		\begin{tabular}{lp{6cm}p{6cm}}
+			\toprule
+			\textbf{측면} & \textbf{데이터 전송} & \textbf{조정} \\
+			\midrule
+			물리적 신호 & 있음 & 없음 (상태 지식) \\
+			속도 한계 & $v \leq c$ & $v_{\text{coord}} \to \infty$* \\
+			정보 & $I > 0$ & $K_{\text{eff}} > I$ \\
+			에너지 & $E > 0$ & $\Delta S_{\text{coord}}$ \\
+			\bottomrule
+			\multicolumn{3}{l}{*사전 지식을 통한 순간적 상태 정렬의 의미에서.}
+		\end{tabular}
+	\end{table}
+	
+	\subsection{형식 모델의 결론}
+	
+	본 부록에서 제시된 형식 수학적 모델은 다음을 엄격하게 확립한다:
+	
+	\begin{enumerate}
+		\item 조정의 정보 용량 $C_{\text{coord}}$와 채널 용량 $C_{\text{channel}}$은 서로 다른 물리량이라는 것.
+		
+		\item 조정 시간 패러독스: 선험적 사전은 노드가 다른 노드의 미래 행동이 실제로 실행되기 전에 그에 대한 사전 지식을 가질 수 있게 한다는 것.
+		
+		\item 정량적 관계:
+		\[
+		K_{\mathrm{eff}} = \frac{C_{\text{coord}}}{C_{\text{channel}}} = R \cdot \eta \gg 1,
+		\]
+		여기서 $R = n/m \gg 1$은 지식 압축비이다.
+		
+		\item 기본 원리: $K_{\mathrm{eff}}$의 성장은 사전의 생성과 유지의 복잡성에 의해서만 제약되며, 정보 전송의 물리 법칙에 의해서는 제약되지 않는다는 것.
+	\end{enumerate}
+	
+	이 모델은 물리학, 생물학, 사회학, 기술 전반에 걸친 고효율 조정 시스템을 분석하고 설계하기 위한 엄격한 수학적 기초를 제공한다.
+	
+	
+	\section{시간적 조정 패러독스의 실험 프로토콜과 사고 실험}
+	\label{app:experimental-protocols}
+	
+	시간적 조정 패러독스의 형식 모델(섹션 \ref{app:formal-model}--\ref{app:keff})은 명확한 수학적 틀을 제공하지만, 그 실증에는 구체적인 실험 프로토콜이 필요하다. 본 절에서는 단순한 "사고 실험"에서 실현 가능한 실험실 테스트에 이르기까지 조정 효율 \(K_{\mathrm{eff}}\)을 직접 측정하고 사전 지식의 패러독스를 보여주는 여러 실험을 제안한다.
+	
+	\subsection{사고 실험: 2FA 유추 재고찰}
+	\label{subsec:thought-2fa}
+	
+	두 관찰자, 앨리스와 밥을 생각하자. 그들은 암호 사전 \(\mathcal{D}\)(예: \(M\)개의 사전 공유 키를 가진 일회성 패드)를 공유한다. 앨리스는 밥이 \(M\)개의 가능한 행동 중 하나(예: 일정 금액 송금, 로켓 발사, 특정 메시지 전송)를 수행하기를 원한다. 순수한 프로토콜에서 앨리스는 행동의 완전한 기술을 보내야 하며, \(n\) 비트가 필요하다. 공유 사전을 사용하면 그녀는 길이 \(\ell = \log_2 M\) 비트의 짧은 인덱스 \(\kappa\)만 보낸다.
+	
+	\textbf{설정:}
+	\begin{itemize}
+		\item 앨리스와 밥은 알려진 거리 \(L\)(예: 1 km)로 분리되어 있다.
+		\item 통신 채널은 측정된 대역폭과 전파 지연 \(L/c\)를 가진다.
+		\item 사전 \(\mathcal{D}\)는 오프라인으로(신뢰할 수 있는 전달자 또는 이전의 안전한 채널을 통해) 배포된다(임의로 긴 시간이 걸리지만 실험 전에 완료된다).
+		\item 세 번째 관찰자 찰리는 두 대의 동기화된 원자 시계를 갖추고, 앨리스가 전송을 시작한 정확한 시간과 밥이 행동을 완료한 시간을 기록한다.
+	\end{itemize}
+	
+	\textbf{절차:}
+	\begin{enumerate}
+		\item 앨리스는 완전한 기술 길이 \(n\)을 가진 행동 \(a_i\)를 선택한다.
+		\item 시각 \(t_0\)에, 그녀는 해당 인덱스 \(\kappa_i\)를 밥에게 전송한다.
+		\item 인덱스는 속도 \(c\)로 전파되어 시각 \(t_0 + L/c + \tau_{\text{tx}}\)에 밥에게 도착한다. 여기서 \(\tau_{\text{tx}} = \ell / C_{\text{eff}}\)이다.
+		\item 밥은 사전에서 행동을 즉시 찾아보고(찾기 시간 \(\tau_{\text{lookup}} \ll \tau_{\text{tx}}\)), 시각 \(t_0 + L/c + \tau_{\text{tx}} + \tau_{\text{lookup}}\)에 그것을 실행한다.
+	\end{enumerate}
+	
+	\textbf{패러독스의 관찰:}
+	시각 \(t_0\)에서, 앨리스는 밥이 미래 시각 \(t_0 + L/c + \tau_{\text{tx}} + \tau_{\text{lookup}}\)에 행동 \(a_i\)를 수행할 것을 \emph{알고 있다}. 이 사전 지식은 초광속 신호에 기반한 것이 아니라 사전 공유된 사전에 기반한다. 사전을 갖지 않은 찰리는 인덱스가 전송될 때까지 행동을 예측할 수 없다. 따라서 패러독스는 사전에 관한 정보(오프라인)와 인덱스(온라인)를 분리함으로써 해결된다.
+	
+	\textbf{정량적 측정:}
+	조정 효율은
+	\[
+	K_{\mathrm{eff}} = \frac{n}{\ell} \cdot \frac{\tau_{\text{naive}}}{\tau_{\text{actual}}},
+	\]
+	여기서 \(\tau_{\text{naive}}\)는 완전한 기술을 보내는 데 필요한 시간(전파와 처리 포함)이다. 빠른 검색과 인덱스 전송 시간이 무시될 수 있는 극한에서, \(K_{\mathrm{eff}} \approx n/\ell\)이며, 사전 크기를 크게 함으로써 임의로 크게 만들 수 있다.
+	
+	\subsection{실현 가능한 실험실 실험: 지연 선택 통신}
+	\label{subsec:lab-delayed-choice}
+	
+	\textbf{목표:} 제어된 디지털 통신 시스템에서 \(K_{\mathrm{eff}}\)을 직접 측정하고, \(K_{\mathrm{eff}} > 1\)이 인과율을 위반하지 않고 달성될 수 있음을 검증한다.
+	
+	\textbf{장치:}
+	\begin{itemize}
+		\item 알려진 용량과 가변 지연선(예: 긴 광섬유)으로 연결된 두 대의 컴퓨터(앨리스와 밥).
+		\item \(M\)개의 메시지로 구성된 사전 공유 사전. 각 메시지의 길이는 \(n\) 비트(예: \(M = 2^{20}\), \(n = 10^6\) 비트).
+		\item GPS 동기화 시계를 사용한 고정밀 타임스탬프(나노초 분해능).
+		\item 인덱스 전송부터 행동 완료 확인 수신까지의 시간을 측정하는 소프트웨어.
+	\end{itemize}
+	
+	\textbf{프로토콜:}
+	\begin{enumerate}
+		\item 보정 단계: 동일한 링크를 통해 전체 메시지를 보내는(순수 프로토콜) 왕복 시간을 측정한다. \(T_{\text{naive}}\)를 기록한다.
+		\item 조정 단계: 각 시도에서 앨리스는 무작위로 메시지를 선택하고, 그 인덱스를 전송하며, 밥이 실행을 확인할 때까지의 시간 \(T_{\text{coord}}\)를 기록한다.
+		\item 다양한 사전 크기 \(M\)과 메시지 길이 \(n\)에 대해 반복한다. \(K_{\mathrm{eff}} = T_{\text{naive}} / T_{\text{coord}}\)를 계산한다.
+		\item 또한 채널 용량 \(C_{\text{channel}}\)과 사전 검색 시간을 측정하여 용량 분리 정리를 검증한다.
+	\end{enumerate}
+	
+	\textbf{기대 결과:} 충분히 큰 사전에 대해, \(K_{\mathrm{eff}}\)는 1을 크게 초과하여 의미 있는 정보 전송의 실효 비율이 채널 용량을 초과할 수 있음을 보여준다. 실험은 또한 인덱스의 전파가 \(v \le c\)를 따르는 것을 확인하며, 사전이 오프라인으로 배포되었기 때문에 인과율이 보존됨을 보여준다.
+	
+	\subsection{사회적 조정 실험: 공유 문맥을 통한 인간 반응 시간}
+	\label{subsec:social-experiment}
+	
+	\textbf{목표:} 인간 사회적 환경에서 시간적 조정 패러독스를 보여준다. 이는 2FA 사고 실험과 유사하다.
+	
+	\textbf{설정:}
+	\begin{itemize}
+		\item 피험자의 두 그룹(예: 학생)에게 \(M\)개의 복잡한 명령(예: "집 그리기", "퍼즐 풀기", "시 낭송")을 훈련시킨다. 각 명령의 실행에는 몇 초가 걸리며, 그 완전한 기술(텍스트 + 지침)은 약 \(n\) 비트이다.
+		\item 훈련 단계는 공유 "사전"을 확립한다.
+		\item 실험 중, 한 그룹("송신자")은 명령을 제시받고, 훈련 중에 합의한 짧은 단어(인덱스)만을 사용하여 다른 그룹("수신자")에게 전달해야 한다.
+		\item 그룹 간 거리를 변화시켜(예: 다른 방, 건물) 소리나 빛 신호의 전파 지연을 측정 가능하게 한다.
+		\item 송신자가 명령을 받은 순간부터 수신자가 행동을 완료할 때까지의 시간을 측정한다.
+	\end{itemize}
+	
+	\textbf{대조 실험:} 동일한 명령을, 사전 훈련 없이 상세한 행동 설명으로 전달한다(순수한 방법).
+	
+	\textbf{측정:} 사전 사전 유무에 따른 조정 시간을 비교한다. 순수 시간과 조정 시간의 비율로 \(K_{\mathrm{eff}}\)를 계산한다. 인덱스가 유한 속도(음속 또는 광속)로 전파됨에도 불구하고, 실효 조정은 순수한 방법에 비해 거의 순간적으로 보임을 보여준다.
+	
+	\textbf{기대 결과:} \(K_{\mathrm{eff}}\)는 명령의 복잡성과 공유 사전의 크기에 따라 스케일링되어 이론적 예측을 확인한다.
+	
+	\subsection{용량 분리 정리의 실험적 검증}
+	\label{subsec:capacity-theorem}
+	
+	용량 분리 정리(정리 \ref{thm:capacity-separation})는 \(C_{\text{coord}} = K_{\mathrm{eff}} \cdot C_{\text{channel}} \cdot \eta\)를 주장한다. 이를 검증하려면 \(C_{\text{coord}}\)와 \(C_{\text{channel}}\)을 독립적으로 측정해야 한다.
+	
+	\textbf{방법:}
+	\begin{itemize}
+		\item 섹션 \ref{subsec:lab-delayed-choice}와 동일한 설정을 사용하지만, 채널 대역폭을 변화시킨다(예: 인위적인 속도 제한 도입).
+		\item 각 대역폭 설정에 대해, 인덱스를 신뢰성 있게 전송할 수 있는 최대 비율 (\(C_{\text{channel}}\))을 측정한다.
+		\item 동시에, 초당 성공적으로 활성화된 행동의 수를 세어 의미 있는 행동이 완료되는 비율 (\(C_{\text{coord}}\))을 측정한다.
+		\item 다른 사전 크기에 대해 \(C_{\text{coord}}\)를 \(C_{\text{channel}}\)에 대해 플롯한다. 기울기는 \(K_{\mathrm{eff}}\)이며, 절편은 0(시간 효율 계수 \(\eta\)까지)이어야 한다.
+	\end{itemize}
+	
+	\subsection{해석과 함의}
+	
+	이러한 실험들은 YPSDC의 핵심 개념——오프라인 사전 배포와 온라인 인덱스 전송의 분리——이 인과율을 깨지 않고 조정 효율 \(K_{\mathrm{eff}} > 1\)을 가능하게 함을 직접적으로 입증한다. 사전 지식의 패러독스는 사전이 사전에 공유되어 있고, 인덱스 자체는 기존 항목을 가리키는 것 외에 새로운 정보를 전달하지 않기 때문에 해결된다.
+	
+	또한, 이 실험들은 제어된 조건에서 \(K_{\mathrm{eff}}\)의 정량적 측정을 제공하여 이론의 보정과 실제 시스템(예: 인터넷 프로토콜, 금융 네트워크, 생물학적 신호 전달)과의 비교를 가능하게 한다. 또한 고효율 조정의 직관에 반하지만 인과적인 성질을 설명하는 교육 도구로도 기능한다.
+	
+	\subsection{실험 섹션의 결론}
+	
+	이러한 프로토콜들——단순한 사고 실험에서 실험실 테스트, 사회적 테스트에 이르기까지——을 구현함으로써, 연구자들은 시간적 조정 패러독스와 용량 분리 정리를 경험적으로 검증할 수 있다. 결과는 \(K_{\mathrm{eff}}\)가 단순한 이론적 구성물이 아니라 1을 초과할 수 있는 측정 가능한 양임을 확인하며, 통신, 분산 컴퓨팅, 집단 의사 결정에서의 실용적 응용을 위한 길을 연다.
+	
+\end{document}

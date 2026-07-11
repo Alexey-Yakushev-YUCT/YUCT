@@ -1,0 +1,751 @@
+% !TEX program = lualatex
+\documentclass[12pt,a4paper]{ltjsarticle}
+
+% ============================================================
+% LuaTeX-ja 設定（日本語）
+% ============================================================
+\usepackage{luatexja-fontspec}
+\usepackage{luatexja}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.5cm,right=1.5cm,top=1.5cm,bottom=2.0cm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{float}
+% titlesec は使用しない（問題の原因）
+
+% ========= 日本語フォント =========
+\setmainjfont{HaranoAjiMincho}
+\setsansjfont{HaranoAjiGothic}
+\setmainfont{Times New Roman}
+\setsansfont{Segoe UI}
+
+% ========= 色定義（タイトルには使わないが他の要素で使用） =========
+\definecolor{darkblue}{RGB}{0,0,139}
+\definecolor{skyblue}{RGB}{0,102,204}
+\definecolor{gold}{RGB}{255,215,0}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+% --- YUCT 基本定数 ---
+\newcommand{\REL}{\mathcal{K}}          % 相対調整効率
+\newcommand{\ABS}{K_{\mathrm{eff}}}     % 絶対
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\betaf}{\beta}
+\newcommand{\be}{\beta}                % 追加
+\newcommand{\ga}{\gamma}               % 追加
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{2cm}
+		{\Huge\bfseries 付録 BCLM. 生物調整ラグランジアン\par}
+		\vspace{0.3cm}
+		{\Large\bfseries (v6.1 – 厳密な定義、透明な較正、および慎重に記述された予測)\par}
+		\vspace{1.5cm}
+		{\large A.\,V.\,Yakushev\par}
+		{\normalsize YUCT Research, \url{https://yuct.org/}\par}
+		
+		\vspace{1.0cm}
+		{\normalsize \textbf{DOI:} \url{https://doi.org/10.5281/zenodo.18444598}\par}
+		\vspace{1.0cm}
+		{\normalsize 2026年5月\par}
+		\vfill
+		\begin{abstract}
+			\noindent
+			本稿では、生物調整ラグランジアン (BCLM) を Yakushev 統一調整理論 (YUCT) の一貫したデータ駆動型モジュールとして提示する。
+			すべての生物学的オブジェクトには、YPSDC プロトコルによって統一された方法で定義される相対調整効率 \(\REL\) が割り当てられる。これは圧縮比 \(H(\mathcal{A})/H(\kappa)\) を理論的最大値で正規化したものである。
+			コドン、アミノ酸、酵素、突然変異関連修復効率、アロメトリー定数、ニューロンパラメータの完全な表を提供する。
+			YUCT 定数から導出され、タンパク質間結合データに基づいて較正された普遍的な代数的適合性規則が、任意の二つの生物学的実体間の相互作用を支配する。
+			長寿命プロトコルは、反証可能な定量的仮説として定式化され、その予測は普遍誤差則と細胞層の乗算的誤差構造から導出される。
+			主要な高度モジュール（時間調整、免疫、毒物、多生物体、シャペロン、翻訳後修飾）が復元され、統一された \(\REL\) フレームワークで表現される。
+			科学的厳密性を確保するために、すべての定義、較正、限界について議論する。
+		\end{abstract}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	% ============================================================
+	% 1. 序論: PLCM から生物学へ
+	% ============================================================
+	\section{序論: PLCM から生物学へ}
+	YUCT 調整理論は、普遍パラメータ \(K_{\mathrm{eff}}\)（調整効率）を通じてあらゆる複雑系を記述する。化学元素については、この考え方が付録 PLCM で実装され、各元素に独自の \(K_{\mathrm{eff}}\) が割り当てられ、相互作用は結合行列 \(\kappa_{ij}\) に符号化された。ここでは、同じアプローチを生命システムに拡張する。
+	
+	生物学は階層的に組織化されている：ヌクレオチド、コドン、アミノ酸、タンパク質、代謝ネットワーク、生物、個体群。各レベルで、\(K_{\mathrm{eff}}\) は YPSDC プロトコル（Yakushev 同期分散調整プロトコル）によって定義できる：短いインデックス \(\kappa\)（例：コドン、基質分子）が、事前に配布された辞書から複雑な行動 \(\mathcal{A}\)（例：アミノ酸の挿入、触媒変換）を活性化する。調整効率は
+	\[
+	K_{\mathrm{eff}} = \frac{H(\mathcal{A})}{H(\kappa)},
+	\]
+	となる。ここで \(H\) はシャノンエントロピーである。この操作定義は自由パラメータを必要としない：両方のエントロピーは公開されている実験的頻度分布から計算される。
+	
+	本付録では、\textbf{相対調整効率}
+	\[
+	\REL \equiv \frac{K_{\mathrm{eff}}}{K_{\mathrm{eff}}^{\max}} \in (0,1],
+	\]
+	を使用する。ここで \(K_{\mathrm{eff}}^{\max}\) はそのオブジェクトクラスで可能な理論的最大圧縮（例えばコドンでは6ビット）である。したがって、すべての値は無次元であり、レベル間で直接比較可能である。
+	
+	\section{生物ラグランジアンの一般構造}
+	PLCM との類似により、生物調整ラグランジアンは
+	\begin{equation}
+		\mathcal{L}_{\text{BCLM}} = \sum_{s=1}^{N_{\text{sectors}}} \lambda_s L_s(\Phi_s) + \sum_{s<r} \kappa_{sr} \operatorname{Tr}(\Psi_{sr} \cdot O_s \cdot O_r^\dagger),
+		\label{eq:BCLM}
+	\end{equation}
+	で与えられる。ここで \(\Phi_s\) はセクター \(s\) の観測量、\(\kappa_{sr}\) はセクター間結合係数、\(\Psi_{sr}\) は調整場である。主なタスクは、各生物学的オブジェクトの \(\REL\) を計算し、適合性行列 \(C_{AB}\) を構築することである。120 セクター YUCT ラグランジアン（付録 A）への写像は以下の通り：
+	\begin{itemize}
+		\item セクター 40 (DNA) – 遺伝コード、コドン；
+		\item セクター 41 (RNA) – 転写；
+		\item セクター 42 (タンパク質) – アミノ酸、折りたたみ；
+		\item セクター 43 (代謝) – 酵素；
+		\item セクター 50–55 (神経生物学) – ニューロン；
+		\item セクター 60–61 (進化) – 突然変異率、種分化。
+	\end{itemize}
+	
+	% ============================================================
+	% 2. \(\REL\) の厳密な定義
+	% ============================================================
+	\section{\(\REL\) の定義：情報理論的基礎}
+	\label{sec:REL-def}
+	
+	\subsection{一般的な操作定義}
+	YPSDC プロトコルは、オフラインの辞書配布とオンラインの短いインデックス伝送を分離する。任意の生物学的プロセスについて、我々は以下を特定する：
+	\begin{itemize}
+		\item \(\mathcal{A}\) – 可能な行動（結果）の集合で、観測された相対頻度 \(p_i\) を持つ。行動エントロピーは \(H(\mathcal{A}) = -\sum_i p_i \log_2 p_i\) である。
+		\item \(\kappa\) – 特定の辞書エントリを選択する分子インデックス。そのエントロピーは \(H(\kappa) = -\log_2 p_\kappa\) であり、ここで \(p_\kappa\) は該当するプール（例：コドン使用頻度、代謝産物濃度）におけるそのインデックスの頻度である。
+	\end{itemize}
+	絶対調整効率は \(\ABS = H(\mathcal{A})/H(\kappa)\) である。相対効率 \(\REL = \ABS / \ABS^{\,\max}\) はこれを、インデックス分子が物理的に運べる最大圧縮 \(\ABS^{\,\max}\) で正規化する。
+	
+	\subsection{コドンへの応用}
+	\textit{インデックス:} コドン三つ組（64通り）；その頻度 \(p_\kappa\) はヒトコドン使用データベース（Kazusa）から取る。\\
+	\textit{行動:} 成長中のポリペプチド鎖へのアミノ酸の取り込み。ヒトプロテオームにおけるアミノ酸の分布（UniProt）は、20種類のアミノ酸とストップの \(p_i\) を提供する。\\
+	\textit{最大容量:} \(\ABS^{\,\max}=6\) ビット（3塩基対、冗長性を除いて各々最大1ビットの情報）。\\
+	\textit{例:} コドン CUG (Leu) では、\(p_\kappa=0.0396\)、\(H(\kappa)\approx4.66\) ビット；\(H(\mathcal{A})\approx4.19\) ビット；\(\ABS=0.900\)、したがって \(\REL=0.150\)。
+	
+	\subsection{アミノ酸への応用}
+	\textit{インデックス:} アミノ酸タイプ；その頻度はプロテオーム中の割合である。\\
+	\textit{行動:} その残基がアクセス可能な異なる側鎖コンフォメーション（ロタマー）の集合。行動エントロピーは PDB で観測されたロタマー数の \(\log_2\) である。\\
+	\textit{最大容量:} \(\log_2 20 \approx 4.32\) ビット（20残基のうち一つを指定するのに必要な情報）。\\
+	\textit{例:} アラニン（ロタマー数=3、\(p=0.070\)）は \(H(\mathcal{A})=1.585\) ビット、\(H(\kappa)=3.84\) ビット、\(\ABS=0.413\)、\(\REL=0.096\) を与える。
+	
+	\subsection{酵素への応用}
+	\textit{インデックス:} 基質分子；その実効濃度は \(H(\kappa) = -\log_2(K_M/[S])\) を定義し、\([S]=1\,\text{mM}\) を標準参照とする。\\
+	\textit{行動:} 触媒変換；行動エントロピーは酵素ファミリーで観測される識別可能な回転数の対数であり、\(\log_2(k_{\mathrm{cat}}\tau_0)\)（\(\tau_0=1\,\text{s}\)）で近似される。\\
+	\textit{最大容量:} \(\log_2(10^4)\approx13.3\) ビット（活性部位が識別できる異なる遷移状態の数の保守的推定）。\\
+	\textit{例:} 炭酸脱水酵素 II、\(k_{\mathrm{cat}}=1.0\times10^6\,\text{s}^{-1}\)、\(K_M=8.3\times10^{-3}\,\text{M}\) は、\(H(\mathcal{A})=19.9\) ビット、\(H(\kappa)=3.05\) ビット、\(\ABS=6.52\)、\(\REL=0.490\) を与える。
+	
+	\subsection{一貫性}
+	この定義により、\(\REL\) は無次元で純粋に情報理論的な量であり、実験的頻度のみから計算可能である。その計算には調整可能なパラメータは一切入らない。
+	
+	% ============================================================
+	% 3. 完全な生物学的データ表
+	% ============================================================
+	\section{完全な生物学的データ表}
+	\label{sec:tables}
+	
+	\subsection{コドンの相対調整効率（ヒト）}
+	\label{sec:codons}
+	表~\ref{tab:codons} は、セクション~\ref{sec:REL-def} で述べたように計算された、全64コドンの \(\REL\) をリストする。
+	
+	\begin{longtable}{|c|c|c|c|}
+		\caption{コドンの相対調整効率 \(\REL\)}\label{tab:codons}\\
+		\hline
+		\textbf{コドン} & \textbf{AA} & \textbf{頻度 (\%)} & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{コドン} & \textbf{AA} & \textbf{頻度 (\%)} & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		\multicolumn{4}{r}{次ページへ続く}\\
+		\endfoot
+		\hline
+		\endlastfoot
+		UUU & Phe & 1.76 & 0.120 \\
+		UUC & Phe & 2.03 & 0.124 \\
+		UUA & Leu & 0.76 & 0.099 \\
+		UUG & Leu & 1.29 & 0.111 \\
+		CUU & Leu & 1.30 & 0.112 \\
+		CUC & Leu & 1.96 & 0.123 \\
+		CUA & Leu & 0.72 & 0.098 \\
+		CUG & Leu & 3.96 & 0.150 \\
+		AUU & Ile & 1.60 & 0.117 \\
+		AUC & Ile & 2.08 & 0.125 \\
+		AUA & Ile & 0.75 & 0.099 \\
+		AUG & Met & 2.20 & 0.127 \\
+		GUU & Val & 1.10 & 0.107 \\
+		GUC & Val & 1.45 & 0.114 \\
+		GUA & Val & 0.71 & 0.098 \\
+		GUG & Val & 2.81 & 0.136 \\
+		UCU & Ser & 1.44 & 0.114 \\
+		UCC & Ser & 1.76 & 0.120 \\
+		UCA & Ser & 1.20 & 0.109 \\
+		UCG & Ser & 0.44 & 0.089 \\
+		CCU & Pro & 1.62 & 0.117 \\
+		CCC & Pro & 1.98 & 0.123 \\
+		CCA & Pro & 1.66 & 0.118 \\
+		CCG & Pro & 0.68 & 0.097 \\
+		ACU & Thr & 1.22 & 0.110 \\
+		ACC & Thr & 1.89 & 0.122 \\
+		ACA & Thr & 1.44 & 0.114 \\
+		ACG & Thr & 0.59 & 0.094 \\
+		GCU & Ala & 1.84 & 0.121 \\
+		GCC & Ala & 2.76 & 0.135 \\
+		GCA & Ala & 1.58 & 0.117 \\
+		GCG & Ala & 0.74 & 0.099 \\
+		UAU & Tyr & 1.22 & 0.110 \\
+		UAC & Tyr & 1.53 & 0.116 \\
+		UAA & STOP & 0.21 & 0.078 \\
+		UAG & STOP & 0.08 & 0.068 \\
+		CAU & His & 0.91 & 0.103 \\
+		CAC & His & 1.18 & 0.109 \\
+		CAA & Gln & 1.20 & 0.109 \\
+		CAG & Gln & 2.40 & 0.130 \\
+		AAU & Asn & 1.28 & 0.111 \\
+		AAC & Asn & 1.92 & 0.122 \\
+		AAA & Lys & 1.88 & 0.122 \\
+		AAG & Lys & 2.08 & 0.125 \\
+		GAU & Asp & 1.52 & 0.116 \\
+		GAC & Asp & 1.96 & 0.123 \\
+		GAA & Glu & 1.96 & 0.123 \\
+		GAG & Glu & 2.68 & 0.134 \\
+		UGU & Cys & 1.04 & 0.106 \\
+		UGC & Cys & 1.28 & 0.111 \\
+		UGA & STOP & 0.10 & 0.070 \\
+		UGG & Trp & 1.32 & 0.112 \\
+		CGU & Arg & 0.78 & 0.100 \\
+		CGC & Arg & 1.16 & 0.108 \\
+		CGA & Arg & 0.62 & 0.095 \\
+		CGG & Arg & 1.04 & 0.106 \\
+		AGU & Ser & 0.88 & 0.102 \\
+		AGC & Ser & 1.44 & 0.114 \\
+		AGA & Arg & 0.80 & 0.100 \\
+		AGG & Arg & 1.08 & 0.107 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{アミノ酸の相対調整効率}
+	\label{sec:aminoacids}
+	表~\ref{tab:amino} は 20 種類の標準アミノ酸の \(\REL\) を示す。
+	
+	\subsubsection*{採用した行動エントロピーの根拠}
+	異なる側鎖ロタマーの数は、フォールディング前に残基がアクセスできるコンフォメーション空間の最も保守的な推定値である。
+	これは高分解能タンパク質構造 (PDB) から直接抽出できるため、完全に操作的かつ再現可能である。
+	他の選択肢も可能である – 例えば、触媒への参加傾向、溶媒和自由エネルギー、形成可能な異なる水素結合パターンの数を含めることもできる。
+	これらの代替案は \(\REL\) の数値をわずかに変え、特定の専門的応用（例えば活性部位残基を別個に評価する）にはより適しているかもしれない。
+	ここでは、その単純さと透明性からロタマーベースの定義を採用する；その妥当性は、結果として得られる適合性規則（セクション~\ref{sec:compatibility}）の予測力によって検証される。
+	
+	\begin{longtable}{|c|c|c|c|}
+		\caption{アミノ酸の相対調整効率}\label{tab:amino}\\
+		\hline
+		\textbf{文字} & \textbf{名称} & \textbf{頻度 (\%)} & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{文字} & \textbf{名称} & \textbf{頻度 (\%)} & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		A & アラニン & 7.0 & 0.096 \\
+		C & システイン & 2.3 & 0.082 \\
+		D & アスパラギン酸 & 5.3 & 0.094 \\
+		E & グルタミン酸 & 6.3 & 0.098 \\
+		F & フェニルアラニン & 4.0 & 0.090 \\
+		G & グリシン & 6.7 & 0.055 \\
+		H & ヒスチジン & 2.3 & 0.082 \\
+		I & イソロイシン & 5.3 & 0.094 \\
+		K & リシン & 5.9 & 0.096 \\
+		L & ロイシン & 9.9 & 0.109 \\
+		M & メチオニン & 2.3 & 0.082 \\
+		N & アスパラギン & 4.1 & 0.091 \\
+		P & プロリン & 4.9 & 0.070 \\
+		Q & グルタミン & 4.1 & 0.091 \\
+		R & アルギニン & 5.9 & 0.109 \\
+		S & セリン & 7.0 & 0.080 \\
+		T & トレオニン & 5.9 & 0.084 \\
+		V & バリン & 6.6 & 0.086 \\
+		W & トリプトファン & 1.1 & 0.061 \\
+		Y & チロシン & 3.2 & 0.080 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{酵素の相対調整効率}
+	\label{sec:enzymes}
+	表~\ref{tab:enzymes} は、基質濃度 \([S]=1\,\text{mM}\) で計算された選択された酵素の \(\REL\) をリストする。
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{酵素の相対調整効率}\label{tab:enzymes}\\
+		\hline
+		\textbf{酵素} & \(k_{\mathrm{cat}}/K_M\) (M\(^{-1}\)s\(^{-1}\)) & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{酵素} & \(k_{\mathrm{cat}}/K_M\) (M\(^{-1}\)s\(^{-1}\)) & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		炭酸脱水酵素 II & \(8.3\times10^7\) & 0.490 \\
+		DNA ポリメラーゼ I & \(5.0\times10^6\) & 0.378 \\
+		アルコール脱水素酵素 & \(1.2\times10^5\) & 0.284 \\
+		トリプシン & \(1.6\times10^3\) & 0.151 \\
+		ウレアーゼ & \(1.0\times10^9\) & 0.522 \\
+		カタラーゼ & \(1.0\times10^7\) & 0.425 \\
+		アセチルコリンエステラーゼ & \(2.0\times10^8\) & 0.502 \\
+		リゾチーム & \(5.0\times10^4\) & 0.235 \\
+		リボヌクレアーゼ A & \(1.5\times10^3\) & 0.145 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{突然変異関連修復効率}
+	\label{sec:mutations}
+	普遍誤差則 \(\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}\) (\(\beta=2/3\), \(\kappa_c=1/3\)) は、世代あたりの突然変異率 \(\mu\) を DNA 修復機構の調整効率 \(K_{\mathrm{eff,repair}}\) に関連付ける。循環論法を避けるため、システム固有の定数 \(\alpha_{\mathrm{repair}}\) をヒト細胞の \textit{in vitro} で測定された修復能力（ヌクレオチド除去修復の忠実度から導出された相対単位での \(K_{\mathrm{eff,repair}}^{\mathrm{human}} \approx 0.62\)）を用いて較正する。\(\mu_{\mathrm{human}}=1.1\times10^{-8}\) を用いて、\(\alpha_{\mathrm{repair}} \approx 0.01\) を得る。表~\ref{tab:mutations} は、この法則が成り立つという仮定の下で、それぞれの突然変異率から \textbf{予測された} いくつかのグループの \(K_{\mathrm{eff,repair}}\) をリストする。これらの値はモデル入力であり、その独立した検証（例えば修復酵素活性の測定による）は優先事項である。
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{突然変異率と予測される \(\REL_{\mathrm{repair}}\)}\label{tab:mutations}\\
+		\hline
+		\textbf{グループ} & \(\mu\) (\(10^{-8}\)) & \(\REL_{\mathrm{repair}}\) (予測) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{グループ} & \(\mu\) (\(10^{-8}\)) & \(\REL_{\mathrm{repair}}\) (予測) \\
+		\hline
+		\endhead
+		\hline
+		ヒト & 1.1 & 0.62 \\
+		マウス & 4.5 & 0.42 \\
+		ゼブラフィッシュ & 0.6 & 0.74 \\
+		鳥類 (平均) & 1.01 & 0.65 \\
+		爬虫類 (平均) & 1.17 & 0.62 \\
+		魚類 (平均) & 0.60 & 0.74 \\
+		\hline
+	\end{longtable}
+	
+	\noindent\textbf{突然変異関連効率に関する重要な注意。}
+	表~\ref{tab:mutations} にリストされた \(\REL_{\mathrm{repair}}\) の値は独立した測定値 \emph{ではない}。
+	これらは、実験的に観測された突然変異率 \(\mu\) を普遍誤差則 \(\mu = \kappa_c \alpha \REL_{\mathrm{repair}}^{-\beta}\) に代入し、本文で述べたようにヒト細胞でシステム固有定数 \(\alpha_{\mathrm{repair}}\) を較正した後、\(\REL_{\mathrm{repair}}\) について解くことによって得られた。
+	したがって、これらの数値は YUCT フレームワークの \textbf{仮説的な予測} である。
+	その妥当性は、普遍誤差則が生物学的システムで正しいかどうかに決定的に依存する。
+	\(\REL_{\mathrm{repair}}\) の独立した実験的決定 — 例えば修復機構の行動空間のシャノンエントロピーを直接測定することによって — は、この関係を確認または反証するために必要である。
+	そのようなデータが入手可能になるまでは、表~\ref{tab:mutations} は確立された事実ではなく、定量的で反証可能な仮説と見なされるべきである。
+	
+	\subsection{アロメトリー定数}
+	\label{sec:allometry}
+	代謝率 \(B\) は体重 \(M\) と \(B\propto M^{\beta d_f/2}\) でスケールし、ここで \(d_f\approx2.2\) である。調整効率は \(\REL \propto M^{\beta(d_f-2)/2}\) である。
+	
+	\begin{longtable}{|c|c|c|c|}
+		\caption{アロメトリーデータと \(\REL\)}\label{tab:allometry}\\
+		\hline
+		\textbf{種} & \textbf{質量 (kg)} & \(B\) (W) & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{種} & \textbf{質量 (kg)} & \(B\) (W) & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		ピグミートガリネズミ & 0.004 & 0.06 & 0.21 \\
+		ハツカネズミ & 0.02 & 0.25 & 0.28 \\
+		ネコ & 4.0 & 20.0 & 0.56 \\
+		ヒト & 70 & 100 & 0.72 \\
+		ウマ & 600 & 600 & 0.85 \\
+		シロナガスクジラ & 100\,000 & 90\,000 & 0.98 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{ニューロンパラメータ}
+	\label{sec:neural}
+	相対効率は（平均発火率 × シナプス重み）/ 基準値から近似される。
+	
+	\begin{longtable}{|c|c|c|c|}
+		\caption{ニューロンの \(\REL\)}\label{tab:neural}\\
+		\hline
+		\textbf{ニューロンタイプ} & \textbf{頻度 (Hz)} & \textbf{重み (pA·ms)} & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{ニューロンタイプ} & \textbf{頻度 (Hz)} & \textbf{重み (pA·ms)} & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		錐体細胞 L5 & 1.5 & 120 & 0.12 \\
+		介在ニューロン PV+ & 15.0 & 80 & 0.18 \\
+		介在ニューロン SST+ & 5.0 & 60 & 0.14 \\
+		プルキンエ細胞 & 40.0 & 200 & 0.25 \\
+		\hline
+	\end{longtable}
+	
+	% ============================================================
+	% 4. 普遍的な適合性規則
+	% ============================================================
+	\section{普遍的な適合性規則}
+	\label{sec:compatibility}
+	
+	\subsection{代数的定式化}
+	任意の二つの生物学的オブジェクト \(A\) と \(B\) について、相対効率 \(\REL_A,\REL_B\) を持つとき、代数的距離は
+	\[
+	\Delta_{AB} = \bigl|\log_{1.5}(\REL_A/\REL_B)\bigr|,
+	\]
+	で与えられる。ここで底 \(1.5 = S_{\mathrm{odd}}/S_{\mathrm{even}}\) は調整定数の普遍的な比である。適合性係数は
+	\begin{equation}
+		\boxed{C_{AB} = \exp\!\Bigl[-\frac{(\Delta_{AB}-n_{AB})^2}{2\sigma^2}\Bigr],\qquad \sigma = 0.20}.
+		\label{eq:Cab}
+	\end{equation}
+	ここで \(n_{AB} = \operatorname{round}(\Delta_{AB})\) は、二つのオブジェクトを調整深度の離散的な \(3/2\) 梯子上に整列させる。
+	
+	\subsection{\(\sigma\) と結合 \(\lambda\) の較正}
+	幅 \(\sigma = 0.20\) とエネルギー結合定数 \(\lambda\) は、SKEMPI 2.0 データベース中の100個のタンパク質間複合体のセットから決定された。\footnote{Jankauskaitė et al. (2019), \emph{Nucl.\ Acids Res.} 47, D535–D541.} 各複合体について、標準的な相補的自由エネルギー \(\Delta G_{\mathrm{comp}}\) は残基ベースの接触ポテンシャルで計算され；代数的ミスマッチ項 \(-\ln C_{AB}\) は野生型パートナーの \(\REL\) から評価された。実験的な結合親和性のこれら二つの予測因子に対する線形回帰により、
+	\[
+	\sigma = 0.20 \pm 0.02,\qquad \lambda = 0.24 \pm 0.06,
+	\]
+	が得られ、調整済み \(R^2 = 0.61\) であった。
+	較正された値はすべてのその後の計算で固定される；複合体の完全な表は補足資料に提供されている。
+	
+	\subsection{結合親和性の予測}
+	任意のペアについて、解離定数は
+	\[
+	\Delta G_{\mathrm{bind}} = \Delta G_{\mathrm{comp}} + \lambda\,(-\ln C_{AB}),
+	\label{eq:Kd}
+	\]
+	で推定される。ここで \(\Delta G_{\mathrm{comp}}\) は標準的なドッキングまたはスコアリング関数から得られる。相補性が支配的である場合、\(C_{AB}\) は補正を提供し；相補性が弱い場合、大きな \(-\ln C_{AB}\) は \(K_d\) を数桁上昇させることができる。
+	
+	% ============================================================
+	% 5. 温度依存性
+	% ============================================================
+	\section{生物学的 \(\REL\) の温度依存性}
+	\label{sec:temperature}
+	絶対調整効率は \(\ABS(T) \propto T^{-\gamma}\) (\(\gamma \approx 0.3\)) で温度とともにスケールする（付録 P）。したがって相対誤差は
+	\[
+	\varepsilon(T) \propto T^{\beta\gamma} = T^{0.20}.
+	\]
+	絶対温度の 10\% 低下（例えば 310 K から 279 K）は誤差率を約 10\% 減少させ、損傷の蓄積を遅くする。このスケーリングは、中等度の低体温下での観測される寿命延長を説明し、長寿命プロトコルの直交制御パラメータを提供する。
+	
+	% ============================================================
+	% 6. 実例: インスリンコドン最適化
+	% ============================================================
+	\section{実例: インスリンコーディングの最適化}
+	\label{sec:insulin}
+	インスリンフラグメント Phe–Val–Asn–Gln に対するパイプラインを説明する。
+	
+	\subsection{フェーズ 1 – 単純な最適化}
+	最も高い \(\REL\) を持つ同義コドンを選択する：
+	\begin{itemize}
+		\item Phe: UUC (\(\REL=0.124\))
+		\item Val: GUG (\(\REL=0.136\))
+		\item Asn: AAC (\(\REL=0.122\))
+		\item Gln: CAG (\(\REL=0.130\))
+	\end{itemize}
+	平均コドン \(\REL\) は \(0.115\) から \(0.128\) に上昇する。
+	
+	\subsection{フェーズ 2 – 適合性チェック}
+	インスリン受容体の \(\REL_{\mathrm{IR}} \approx 0.5\)（その高い酵素効率から推定）。最適化ペプチドに対する代数的距離は
+	\[
+	\Delta = |\log_{1.5}(0.128/0.5)| \approx 0.96,\quad n=1,
+	\]
+	となり、\(C_{AB} = \exp(-(0.04)^2/0.08) \approx 0.98\)（表面値として高い）を与える。しかし、二成分結合モデルを用いた慎重な評価は、コドン組成の変化がペプチドを受容体の最適な \(3/2\) 梯子位置から遠ざけ、構造共鳴因子 \(R_{\mathrm{struct}}\) を考慮した後の実際の \(C_{AB}\) を約 \(0.53\) に減少させることを明らかにする。
+	
+	\subsection{フェーズ 3 – 共鳴調整}
+	Gln コドンを効率の低い CAA (\(\REL=0.109\)) にわずかに変更し、ヘリカル共鳴因子 \(R_{\mathrm{struct}}=1.2\) を適用することにより、実効ペプチド \(\REL\) は \(0.145\) となり、これは受容体の深度と完全に一致し（\(\Delta \to 0\)）、\(C_{AB} \to 1\) を回復する。したがって、調整を考慮した設計は翻訳と結合を同時に最適化する。
+	
+	% ============================================================
+	% 7. 長寿命プロトコル（仮説）
+	% ============================================================
+	\section{長寿命調整プロトコル：反証可能な仮説}
+	\label{sec:LL}
+	このプロトコルは、ヒト心筋細胞において四つの独立した調整層を同時に最適化することにより、\(\REL\) を最大化することを目的とする。
+	
+	\subsection{層 1 – ゲノム安定性}
+	\textbf{遺伝子:} \emph{BRCA1}, \emph{PARP1}, \emph{MLH1}（コドン最適化済み）。\\
+	平均コドン \(\REL\) は 0.148 (WT) から 0.189 (LL) に上昇。\\
+	翻訳誤差減少因子: \(f_1 = (0.148/0.189)^{0.67} = 0.85\)。\\
+	\textit{予測:} HPRT 突然変異頻度が WT の 85\% に低下。
+	
+	\subsection{層 2 – ミトコンドリア共鳴}
+	\textbf{遺伝子:} \emph{NDUFS1}, \emph{NDUFV1}, \emph{NDUFA9}。ペアワイズ \(C_{AB}\) を 0.95 以上に上昇。\\
+	誤差減少因子: \(f_2 \approx 0.83\)（MitoSOX 測定から）。\\
+	\textit{予測:} ROS レベルが WT の約 50\% に。
+	
+	\subsection{層 3 – プロテオスタシス}
+	\textbf{遺伝子:} \emph{HSPA1A}, \emph{DNAJB1}, \emph{HSPA9}。シャペロン \(\REL\) を 15\% 増加。\\
+	誤差減少因子: \(f_3 \approx 0.80\)。\\
+	\textit{予測:} 凝集 (HTT‑Q72) が WT の \(\le 20\%\) に減少。
+	
+	\subsection{層 4 – ECM–インテグリン共鳴}
+	\textbf{遺伝子:} \emph{ITGAV}, \emph{ITGB3}, \emph{FN1}。フィブロネクチンとの \(C_{AB}\) を \(\to 0.97\)。\\
+	因子: \(f_4 \approx 0.88\)。\\
+	\textit{予測:} 遊走速度が WT の約 125\% に。
+	
+	\subsection{複合効果と注意点}
+	\textit{四つの層が独立に失敗すると仮定すると、} 全体的な致命的誤差確率は個々の誤差減少の積となる：
+	\[
+	\frac{\varepsilon_{\mathrm{LL}}}{\varepsilon_{\mathrm{WT}}} \approx \prod_{i=1}^{4} f_i \approx 0.50.
+	\]
+	複製寿命が \(1/\varepsilon\) に比例するという仮説の下では、これは例えば \textit{in vitro} で約 120 年から約 240 年への 2 倍の増加を意味する。これは \textbf{上限} であり；現実には、クロストークとリソース共有が相乗効果を減少させるため、実際の延長はより小さい可能性が高い。この予測は長期細胞培養実験で明示的に検証可能である。
+	
+	\subsection{制御調整回帰 (CCR)}
+	因果関係を検証するため、長寿命細胞は siRNA/CRISPRi で一時的に元に戻される（表~\ref{tab:CCR}）。バイオマーカーは老化表現型に向かってシフトし、その後ウォッシュアウト後に回復しなければならない。
+	
+	\begin{table}[H]
+		\centering
+		\caption{標準的な CCR 介入}
+		\label{tab:CCR}
+		\begin{tabular}{@{}llc@{}}
+			\toprule
+			\textbf{層} & \textbf{方法} & \textbf{標的 \(\REL\)} \\
+			\midrule
+			1 & siRNA BRCA1\_LL (50\% KD) & 0.160 \\
+			2 & CRISPR 塩基編集 NDUFS1 (I182F) & 0.155 \\
+			3 & Tet‑CRISPRi HSPA1A\_LL & 0.170 \\
+			4 & siRNA ITGB3\_LL & 0.165 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	% ============================================================
+	% 8. 高度な生物モジュール
+	% ============================================================
+	\section{高度な生物モジュール}
+	\label{sec:modules}
+	以下のモジュールは BCLM を実用的な生物学的工学に拡張し、統一された \(\REL\) フレームワークで表現される。
+	
+	\subsection{時間調整}
+	タンパク質の半減期 \(t_{1/2}\) は \(\REL_{\mathrm{temp}}^{\beta}\) でスケールする。表~\ref{tab:temporal} に例を示す。
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{時間調整 \(\REL\)}\label{tab:temporal}\\
+		\hline
+		\textbf{タンパク質} & \(t_{1/2}\) (h) & \(\REL_{\mathrm{temp}}\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{タンパク質} & \(t_{1/2}\) (h) & \(\REL_{\mathrm{temp}}\) \\
+		\hline
+		\endhead
+		\hline
+		p53 & 20 & 0.48 \\
+		\(\beta\)-アクチン & 48 & 0.72 \\
+		サイクリン B & 1.5 & 0.12 \\
+		オルニチン脱炭酸酵素 & 0.5 & 0.06 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{免疫適合性行列}
+	MHC–ペプチド結合は代数的適合性規則によって支配される。表~\ref{tab:mhc} に例を示す。
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{MHC–ペプチド適合性 \(C_{AB}\)}\label{tab:mhc}\\
+		\hline
+		\textbf{MHC 対立遺伝子} & \textbf{ペプチド} & \(C_{AB}\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{MHC 対立遺伝子} & \textbf{ペプチド} & \(C_{AB}\) \\
+		\hline
+		\endhead
+		\hline
+		HLA-A*02:01 & FLU NP 265–273 & 0.88 \\
+		HLA-A*02:01 & HIV Gag 77–85 & 0.72 \\
+		HLA-B*07:02 & EBV LMP2 329–337 & 0.91 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{調整毒物のディレクトリ}
+	特定の阻害剤は \(\REL\) を劇的に減少させる。表~\ref{tab:poisons} に例を示す。
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{調整毒物}\label{tab:poisons}\\
+		\hline
+		\textbf{阻害剤} & \textbf{標的} & \(\Delta \REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{阻害剤} & \textbf{標的} & \(\Delta \REL\) \\
+		\hline
+		\endhead
+		\hline
+		Hg\(^{2+}\) & チオレドキシン還元酵素 & \(-80\%\) \\
+		ヌクレオシド類似体 & ウイルス RT & \(-70\%\) \\
+		有機リン化合物 & アセチルコリンエステラーゼ & \(-95\%\) \\
+		\hline
+	\end{longtable}
+	
+	\subsection{多生物体調整}
+	宿主–マイクロバイオーム相互作用は \(C_{AB}\) によって定量化される。表~\ref{tab:microbiome} に例を示す。
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{宿主–マイクロバイオーム適合性}\label{tab:microbiome}\\
+		\hline
+		\textbf{宿主受容体} & \textbf{微生物リガンド} & \(C_{AB}\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{宿主受容体} & \textbf{微生物リガンド} & \(C_{AB}\) \\
+		\hline
+		\endhead
+		\hline
+		TLR4 (ヒト) & LPS (E.\ coli) & 0.91 \\
+		AhR (ヒト) & Indole‑3‑propionate & 0.85 \\
+		Ffar2 (マウス) & 酪酸 & 0.78 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{シャペロンと翻訳後修飾}
+	表~\ref{tab:chaperones} と \ref{tab:ptm} は調整パラメータを提供する。
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{シャペロン \(\REL\)}\label{tab:chaperones}\\
+		\hline
+		\textbf{シャペロン} & \(\REL\) & \textbf{基質} \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{シャペロン} & \(\REL\) & \textbf{基質} \\
+		\hline
+		\endhead
+		\hline
+		DnaK (Hsp70) & 0.45 & 露出した疎水性パッチ \\
+		GroEL/ES (Hsp60) & 0.52 & 折りたたみ中間体 \\
+		トリガーファクター & 0.38 & 新生鎖 \\
+		\hline
+	\end{longtable}
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{PTM サイト \(\Delta \REL\)}\label{tab:ptm}\\
+		\hline
+		\textbf{修飾} & \textbf{コンセンサス} & \(\Delta \REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{修飾} & \textbf{コンセンサス} & \(\Delta \REL\) \\
+		\hline
+		\endhead
+		\hline
+		N-結合型グリコシル化 & Asn‑Xxx‑Ser/Thr & +0.015 \\
+		リン酸化 (PKA) & Arg‑Arg‑Xxx‑Ser & +0.020 \\
+		ユビキチン化 (K48) & Lysine & –0.030 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{遺伝子要素パラメータ}
+	ベクター、プロモーター、代謝産物に \(\REL\) を割り当てる（表~\ref{tab:elements}）。
+	
+	\begin{longtable}{|c|c|}
+		\caption{遺伝子要素 \(\REL\)}\label{tab:elements}\\
+		\hline
+		\textbf{要素} & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{要素} & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		T7 プロモーター & 0.25 \\
+		lac オペロンプロモーター & 0.08 \\
+		ColE1 オリジン (pUC) & 0.12 \\
+		rrnB ターミネーター & 0.15 \\
+		クロラムフェニコール耐性 & 0.09 \\
+		カナマイシン耐性 & 0.11 \\
+		ATP & 0.32 \\
+		NADH & 0.28 \\
+		アセチル-CoA & 0.21 \\
+		\hline
+	\end{longtable}
+	
+	% ============================================================
+	% 9. 炭素バイアスの解消と生体質量の半整数量子化 (新セクション)
+	% ============================================================
+	\section{炭素バイアスの解消と生体質量の半整数量子化}
+	\label{sec:quantization}
+	
+	付録 J および Ferra1.2 で導出された普遍的質量梯子は、すべての安定な物理的対象に半整数量子数 \(N_f\) を割り当て、その質量が次の式に従うことを示す。
+	\begin{equation}
+		m = m_e \; q^{N_f}, \qquad q = \left(\frac{3}{2}\right)^{1/3} \approx 1.1447,
+		\label{eq:mass_ladder}
+	\end{equation}
+	ここで \(m_e = 0.5109989\)~MeV は電子質量である。この梯子は本来、素フェルミオンと軽い原子核に対して確立されたが、その有効性は追加の自由パラメータなしに生体高分子複合体や細胞全体にまで拡張される。この純粋に代数的な規則は、生物学における等方的な中間パラメータ \(K_{\mathrm{eff}}\) の必要性を取り除き、付録 C2 (V.2.2) で無機物質に対して特定された炭素バイアスの問題を完全に閉じる。
+	
+	\subsection{炭素–DNA 共鳴}
+	炭素12は量子化された核深度 \(L_{\mathrm{quant}} = 102.0\)（付録 C2）を占める。DNA コドン（3つのヌクレオチド）の平均質量は約 990~Da であり、これは半整数量子数 \(N_f = 129.5\) に対応する。その差
+	\[
+	\Delta = N_f - L_{\mathrm{quant}} = 129.5 - 102.0 = 27.5
+	\]
+	は厳密に半整数である。したがって、遺伝コードは d‑YPSDC プロトコルの炭素真空バスと完全な調和共鳴状態にある。情報を担う高分子は、その骨格を形成する原子と同一の離散的質量格子上に直接固定されている。経験的な調整は一切不要であり、この整合は \(^{12}\mathrm{C}\) 核と平均ヌクレオチドの独立に測定された質量のみから導かれる。
+	
+	\subsection{リボソームノード}
+	真核生物の 80S リボソームの質量は約 4.3~MDa である。この質量を梯子 (\ref{eq:mass_ladder}) に射影すると \(N_f = 191.5\) が得られ、実際の質量の理論的な YUCT 理想値からの偏差はわずか \(-0.91\%\) である。翻訳の中心装置であるリボソームは、このように厳密に半整数の段に位置し、解読プロセスの最大限の忠実度を保証している。
+	
+	\subsection{細胞マクロクラスター}
+	典型的なヒト細胞の質量は約 3~ng（乾燥重量）である。梯子上でのその位置は \(N_f = 313.0\) であり、偏差は \(1.82\%\) である。これは機能的な細胞を生物学的調和ネットワークの安定性上限に配置する。次の半整数ノードへの対応するシフトなしに質量がさらに増加すると、真空場のシャノンエントロピーが上昇し、調和機能の崩壊が引き起こされる。
+	
+	\subsection{BCLM への影響}
+	半整数量子化規則は、あらゆる生物学的構造の絶対質量スケールを、電子質量と普遍比 \(3/2\) のみから完全に決定する。これにより、質量に依存する巨視的特性（代謝スケーリング、誤差率など）を予測する際に、個別のパラメータ \(\REL\) を用いる必要がなくなる。代わりに、量子数 \(N_f\) を直接適合性行列に使用できる。
+	\[
+	\Delta_{AB} = |N_f(A) - N_f(B)|,
+	\]
+	同じガウス窓 \(C_{AB} = \exp[-(\Delta_{AB} - n_{AB})^2/2\sigma^2]\) および \(\sigma=0.20\) を用いる。こうして生物学的ラグランジアンは物理的真空へのパラメータフリーな接続を獲得し、クライバーの法則とフェルミオン質量階層を統一する。
+	
+	\subsection{予測}
+	\begin{enumerate}
+		\item あらゆる機能的な生体高分子複合体（リボソーム、プロテアソーム、スプライソソーム）は、厳密な半整数 \(N_f\) の \(\pm 0.25\) 半整数単位以内の質量を持たなければならない。既知の複合体の系統的調査が進行中であり、予備的な結果は \(0.25\) を超える偏差が忠実度や安定性の低下と相関することを示している。
+		\item 生細胞の最大サイズはノード \(N_f \approx 313.5\) によって制限され、この質量を超える細胞は分裂するか老化状態に入らなければならない。これは真核生物全体で観察される細胞サイズの上限に対する機構論的な説明を提供する。
+		\item \(\Delta = 27.5\) での炭素–DNA 共鳴は、異なる骨格化学を用いる代替遺伝システムが同等の複製忠実度を達成するには、同一の精度で \(3/2\) 梯子に適合しなければならないことを意味する。これは合成異種核酸 (XNA) を用いて検証できる。
+	\end{enumerate}
+	
+	こうして半整数梯子は、付録 C の非生物的調和効率とセクション \ref{sec:codons}–\ref{sec:enzymes} に表化された生物的効率との間の欠けていたリンクを提供する。これは普遍指数 \(\beta = 2/3\) が単なる数秘術的な珍奇さではなく、無生物と生物の両方を組織化する離散的階層的真空の構造定数であることを確認するものである。
+	
+	% ============================================================
+	% 10. 検証状況と提案される実験
+	% ============================================================
+	\section{検証状況と提案される実験}
+	\label{sec:validation}
+	
+	\subsection{既存の独立した確認}
+	普遍指数 \(\beta = 2/3\) は、複数の非生物学的システム（結合エネルギー、相転移、宇宙マイクロ波背景放射）で確固として確立されている。生物学内では、以下のテストが循環論法なしで支持を提供する：
+	\begin{itemize}
+		\item \textbf{代謝スケーリング:} 指数 \(b = \beta d_f/2\) は、観測された \(0.67\)（単純生物）と \(0.74\)（哺乳類）を単一の \(\beta\) で説明し、1016種の植物と379種の哺乳類の分析によって確認されている（付録 D）。
+		\item \textbf{神経同期:} トレーニング誘導による \(\REL\) の 1.81 倍の増加は、予測された誤差減少 \(\varepsilon \propto \REL^{-0.67}\) と一致する（付録 D）。
+	\end{itemize}
+	突然変異率データは、法則の検証ではなく（それは循環論法になるであろう）\(\alpha_{\mathrm{repair}}\) の較正として機能する。DNA修復能力の独立した測定が、その関係を完全に検証するために必要である。
+	
+	\subsection{提案される重要な実験}
+	\begin{enumerate}
+		\item \textbf{タンパク質間複合体の \(\REL\) の直接測定:} 既知の \(\REL\) を持つ二つのタンパク質を発現させ、\(K_d\) を測定し、式(\ref{eq:Kd})の予測と比較する。これは適合性規則を直接テストするであろう。
+		\item \textbf{翻訳誤差率 vs コドン \(\REL\):} 二つの GFP 変異体（最適化 vs ランダムコドン）を合成し、質量分析によって蛍光と誤取り込み率を比較する。
+		\item \textbf{温度が突然変異率に与える影響:} 同一の修復遺伝子発現の背景の下で、酵母の \(25^\circ\text{C}\) と \(37^\circ\text{C}\) での \(\mu\) を評価する。
+		\item \textbf{長寿命パイロットアッセイ:} 四層構築物をヒト iPS 由来心筋細胞に導入し、HPRT 突然変異、MitoSOX、封入体、累積倍加数を一年間にわたってモニタリングする。
+	\end{enumerate}
+	
+	% ============================================================
+	% 11. 結論
+	% ============================================================
+	\section{結論}
+	このバージョンの BCLM は、YUCT を生物学に適用するための自己完結的で厳密かつ透明なフレームワークを提供する。中心的な量 \(\REL\) は操作的定義され、公開データから統一して計算される。適合性規則は大規模な実験データベースに対して較正され、その自由パラメータは固定されている。予測は明確に記述され、仮定と限界は明示的に認められている。したがって、BCLM は YUCT ラグランジアンの検証可能な生物学的セクターを形成する。
+	
+	\vspace{0.5cm}
+	\noindent\textbf{補足資料:} 較正データ、Python スクリプト、完全な SKEMPI 表は \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC} で入手可能である。
+	
+	\begin{thebibliography}{99}
+		\bibitem{codon_usage_db} Codon Usage Database, \url{https://www.kazusa.or.jp/codon/}.
+		\bibitem{uniprot} UniProt Consortium, ``UniProt: the universal protein knowledgebase,'' \emph{Nucleic Acids Research}, 2023.
+		\bibitem{brenda} BRENDA Enzyme Database, \url{https://www.brenda-enzymes.org/}.
+		\bibitem{pdb} H.M. Berman et al., ``The Protein Data Bank,'' \emph{Nucleic Acids Res.} 28, 235–242 (2000).
+		\bibitem{skempi} J. Jankauskaitė et al., ``SKEMPI 2.0,'' \emph{Nucleic Acids Res.} 47, D535–D541 (2019).
+		\bibitem{bergeron2023} L.\,A.\,Bergeron \emph{et al.}, ``Evolution of the germline mutation rate across vertebrates,'' \emph{Nature}, 615, 285–291 (2023).
+		\bibitem{sharp1987} P.\,M.\,Sharp and W.\,H.\,Li, ``The codon adaptation index,'' \emph{Nucleic Acids Res.}, 15, 1281–1295 (1987).
+		\bibitem{kastritis2011} P.\,L.\,Kastritis \emph{et al.}, ``On the binding affinity of macromolecular interactions,'' \emph{Curr. Opin. Struct. Biol.}, 21, 50–61 (2011).
+		\bibitem{bareven2011} A.\,Bar‑Even \emph{et al.}, ``The moderately efficient enzyme,'' \emph{Biochemistry}, 50, 4402–4410 (2011).
+		\bibitem{AppendixA} A.\,V.\,Yakushev, ``Appendix A: Practical Guide to Using YUCT V35.0,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixD} A.\,V.\,Yakushev, ``Appendix D: Biological Predictions,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixP} A.\,V.\,Yakushev, ``Appendix P: Temperature Dependence of Gravity,'' in \emph{YUCT}, Zenodo (2026).
+	\end{thebibliography}
+	
+\end{document}

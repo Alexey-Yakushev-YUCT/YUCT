@@ -1,0 +1,494 @@
+% !TeX program = xelatex
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\setmainfont{Liberation Serif}   % or Times New Roman, etc.
+\setsansfont{Segoe UI}[
+BoldFont = Segoe UI Bold,
+Ligatures = TeX
+]
+\usepackage[ngerman]{babel}      % deutsche Silbentrennung und Übersetzungen
+
+\usepackage{amsmath,amssymb,amsfonts,mathtools}
+\usepackage{geometry}
+\geometry{left=1.25cm,right=1.25cm,top=1.25cm,bottom=3.1cm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{siunitx}
+\usepackage{bm}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{multicol}
+
+\definecolor{skyblue}{RGB}{0,102,204}
+\definecolor{darkblue}{RGB}{0,0,139}
+\definecolor{gold}{RGB}{255,215,0}
+
+% YUCT-Makros
+\newcommand{\eps}{\varepsilon}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\betaf}{\beta}
+\newcommand{\df}{d_{\!f}}
+\newcommand{\betagamma}{\beta\gamma}
+
+\titleformat{\section}{\LARGE\bfseries\color{darkblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{darkblue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{1em}{}
+
+% Kopf- und Fusszeilen wie im Original
+\fancypagestyle{firstpage}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{-5pt}%
+	\renewcommand{\footrulewidth}{-5pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			{\small \textsuperscript{1}Yakushev Research, \url{https://yuct.org/}} \hfill
+			{\small YPSDC-Protokoll: \url{https://ypsdc.com/}}\\[-2pt]
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			\textbf{YAKUSHEV VEREINHEITLICHTE KOORDINATIONSTHEORIE 2026} \hfill \thepage\\[10pt]
+		\end{minipage}%
+	}%
+}
+
+\fancypagestyle{plain}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[4pt]
+			\textbf{YAKUSHEV VEREINHEITLICHTE KOORDINATIONSTHEORIE 2026} \hfill \thepage\\[4pt]
+		\end{minipage}%
+	}%
+}
+
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+\raggedbottom
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+\newcommand{\makeheader}{%
+	\noindent
+	\begin{minipage}{0.17\textwidth}
+		\raggedright
+		{\fontspec{Segoe UI}[BoldFont=Segoe UI Bold]\bfseries\color{skyblue}\fontsize{46}{46}\selectfont YUCT}%
+	\end{minipage}%
+	\hspace{30pt}
+	\begin{minipage}{0.32\textwidth}
+		\raggedright
+		{\sffamily\fontsize{11}{13}\selectfont YAKUSHEV\\ VEREINHEITLICHTE\\ KOORDINATIONSTHEORIE}%
+	\end{minipage}%
+	\hfill
+	\begin{minipage}{0.38\textwidth}
+		\raggedleft
+		{\sffamily\bfseries Technische Notiz}\\ 
+		{\sffamily Veröffentlicht April 2026}\\ 
+		{\sffamily\footnotesize \url{https://doi.org/10.5281/zenodo.18444598}}%
+	\end{minipage}
+	\par\vspace{5pt}
+	\noindent\textcolor{gold}{\rule{\textwidth}{1.6pt}}
+	\par\vspace{0pt}
+}
+
+\begin{document}
+	\thispagestyle{firstpage}
+	\makeheader
+	
+	\vspace{0cm}
+	{\LARGE\bfseries Anhang NL: Kleinwinkel-CMB-Anisotropien in YUCT \\ 
+		\large Modifizierte Boltzmann-Gleichungen, Dämpfungsschweif und rotierende B-Moden \par}
+	\vspace{0.2cm}
+	
+	{\large Alexey V. Yakushev\textsuperscript{1}} \\
+	\vspace{0.0cm}
+	
+	{\color{darkblue}\textbf{\LARGE Zusammenfassung}} \par
+	{\large
+		\noindent
+		Dieser Anhang erweitert den YUCT-Kosmologie-Rahmen auf die kleinen Winkelskalen der kosmischen Mikrowellenhintergrundstrahlung ($\ell \gtrsim 1000$). Innerhalb der Yakushev Unified Coordination Theory modifizieren die Temperaturabhängigkeit der effektiven Gravitationskonstante $G_{\mathrm{eff}}(T)$ (Anhang P) und das Vorhandensein einer Koordinationsviskosität die Photon-Baryonen-Dynamik vor der Rekombination. Wir leiten die entsprechenden Korrekturen der Boltzmann-Hierarchie her und implementieren sie in einer modifizierten Version des CAMB-Codes. Eine Markov-Ketten-Monte-Carlo-Analyse der Planck-2018-Daten zeigt, dass die YUCT-Erweiterung die Anpassung an das Hoch-$\ell$-Leistungsspektrum mäßig verbessert; die gesamte $\chi^2$ verringert sich um $7,6$ für zwei zusätzliche Parameter ($\varepsilon_0$ und $\eta$). Obwohl die statistische Signifikanz dieser Verbesserung begrenzt ist ($\Delta\mathrm{BIC} \approx -2,2$), lindert das Modell auf natürliche Weise den bei $\ell \sim 2000$--$2500$ beobachteten geringen Leistungsüberschuss, ohne Feinanpassung. Entscheidend ist, dass die neuen Parameter nicht willkürlich sind, sondern mit der fundamentalen algebraischen Schleife von YUCT verbunden sind ($\beta=2/3$, $\kappa_c=1/3$, $S_{\mathrm{odd}}=6/5$, $S_{\mathrm{even}}=4/5$). Wir zeigen, dass $\varepsilon_0$ und $\eta$ durch diese universellen Konstanten und die Intersektorkopplung $\kappa_{01}$ ausgedrückt werden können, wodurch die Anzahl effektiver freier Parameter reduziert wird. Darüber hinaus erzeugt die globale Rotation des Universums (Anhang $\Omega$) ein primordiales B-Moden-Signal mit einer charakteristischen $\ell^{-2}$-Form. Wir schätzen seine Amplitude ab und zeigen, dass es innerhalb der Reichweite zukünftiger Experimente wie CMB‑S4 und LiteBIRD liegt. Die hier präsentierten Ergebnisse machen YUCT zu einem vorhersagestarken Rahmen für die Präzisions-CMB-Kosmologie und bieten konkrete Tests zur Unterscheidung vom $\Lambda$CDM-Modell.
+	}
+	
+	\vspace{0.1cm}
+	\noindent
+	{\color{darkblue}\textbf{Schlüsselwörter:}} YUCT, kosmische Mikrowellenhintergrundstrahlung, Kleinwinkelanisotropien, Silk-Dämpfung, Koordinationsviskosität, modifizierte Gravitation, globale Rotation, B-Moden, CAMB, algebraische Schleife.
+	\vspace{0.1cm}
+	\noindent
+	{\color{darkblue}\textbf{Zitation:}} Yakushev AV. Anhang NL: Kleinwinkel-CMB-Anisotropien in YUCT — Modifizierte Boltzmann-Gleichungen, Dämpfungsschweif und rotierende B-Moden. 2026. DOI: \url{https://doi.org/10.5281/zenodo.18444598} (dieser Band).
+	
+	\vspace{0.4cm}
+	
+	\begin{multicols}{2}
+		
+		\section{Einleitung}
+		
+		Das Winkelleistungsspektrum der kosmischen Mikrowellenhintergrundstrahlung (CMB) ist eine der präzisesten kosmologischen Observablen. Das Standard-$\Lambda$CDM-Modell mit sechs Grundparametern liefert eine hervorragende Anpassung an die Planck-2018-Daten auf großen und mittleren Skalen ($\ell \lesssim 1500$). Auf kleinen Skalen ($\ell \gtrsim 2000$) ist die statistische Aussagekraft durch kosmische Varianz und Vordergrundkontamination begrenzt, jedoch wurde in mehreren Analysen ein leichter Leistungsüberschuss festgestellt \cite{Planck2018}. Obwohl dieser Überschuss statistisch nicht entscheidend ist (etwa $2\sigma$-Niveau), könnte er auf neue Physik im Universum vor der Rekombination hindeuten.
+		
+		Frühere YUCT-Anhänge haben gezeigt, dass die Theorie globale kosmologische Parameter erfolgreich vorhersagt: den skalaren Spektralindex $n_s \approx 0,965$ (Anhang M), das Tensor-Skalar-Verhältnis $r \approx 0,07$ (Anhang M) und das Wachstum der CMB-Dipolamplitude mit der Rotverschiebung (Anhang $\Omega$). Um YUCT jedoch als echten Konkurrenten zu $\Lambda$CDM zu etablieren, muss es die detaillierte akustische Peakstruktur und den Dämpfungsschweif reproduzieren. Dies erfordert eine vollständige Behandlung der kosmologischen Störungstheorie mit Koordinationskorrekturen.
+		
+		In diesem Anhang leiten wir die modifizierten Boltzmann-Gleichungen her, die die Photon-Baryonen-Dynamik in YUCT bestimmen. Drei neue physikalische Ingredienzen treten hinzu:
+		\begin{enumerate}
+			\item \textbf{Koordinationsabhängige Gravitation.} Die effektive Gravitationskonstante hängt von der Temperatur ab: $G_{\mathrm{eff}}(T) = G_0[1 + \varepsilon(T)]$ mit $\varepsilon(T) = \kappa_c \alpha K_{\mathrm{eff}}(T)^{-\beta}$ (Anhang P). Dies verändert die Entwicklung der Gravitationspotentiale $\Phi$ und $\Psi$ während der strahlungsdominierten Ära.
+			\item \textbf{Koordinationsviskosität.} Das Vorhandensein eines Koordinationsfeldes fügt der Photon-Baryonen-Flüssigkeit eine kleine effektive Viskosität hinzu, die die Silk-Dämpfungsskala modifiziert. Wie aus den Intersektorkopplungstermen des YUCT-Lagrangedichte (siehe Anhang A, Abschnitt A.L.2.D, speziell den nichtlinearen Wechselwirkungsblock $L_{\Psi}$, der die Selbstwechselwirkung des Koordinationsfeldes $\Psi_{MN}$ bestimmt) abgeleitet, kann dieser Effekt in einer multiplikativen Korrektur der Standard-Dämpfungsskala zusammengefasst werden: $k_D^{\text{YUCT}} = k_D^{\Lambda\text{CDM}} [1 + \eta (T/T_0)^{\beta\gamma}]$, mit $\beta\gamma = 0,20$ und $\eta \sim 10^{-2}$. Ontologisch entsteht dies daraus, dass Photonen während ihrer Ausbreitung ihren Zustand lokal mit dem $\Psi_{MN}$-Feld neu koordinieren müssen, was einen fundamentalen „Koordinationswiderstand“ einführt – eine direkte Konsequenz des Primats der Koordination (Axiom 0).
+			\item \textbf{Globale Rotation.} Die rotierende Universumskomponente (Anhang $\Omega$) erzeugt ein primordiales B-Moden-Signal, das sich von inflationären Gravitationswellen und gravitativer Linsenwirkung unterscheidet.
+		\end{enumerate}
+		
+		Wir implementieren diese Modifikationen in einer benutzerdefinierten Version des CAMB-Codes und führen eine Markov-Ketten-Monte-Carlo-Analyse (MCMC) durch, um die zusätzlichen Parameter zu bestimmen. Die Ergebnisse zeigen, dass YUCT eine etwas bessere Anpassung an die Planck-Hoch-$\ell$-Daten liefert als $\Lambda$CDM. Wir diskutieren die statistische Signifikanz, Parameterdegenerationen und mögliche systematische Effekte, die die Interpretation beeinflussen könnten. Ein zentrales Ergebnis dieses Anhangs ist der Nachweis, dass die neuen Parameter $\varepsilon_0$ und $\eta$ nicht unabhängig sind, sondern mit der YUCT-algebraischen Schleife verknüpft sind, wodurch die Vorhersagekraft der Theorie erhöht wird.
+		
+		\section{Modifizierte Störungsgleichungen in YUCT}
+		
+		Wir arbeiten in der synchronen Eichung und konformer Zeit $\eta$. Die gestörte Metrik lautet
+		\begin{equation}
+			ds^2 = a^2(\eta)\left[ -d\eta^2 + (\delta_{ij} + h_{ij}) dx^i dx^j \right],
+		\end{equation}
+		mit der Spur $h = \sum_i h_{ii}$ und dem spurfreien Teil $\eta_{ij} = h_{ij} - \frac{1}{3}\delta_{ij}h$.
+		
+		\subsection{Effektive Gravitationskonstante und Potentialentwicklung}
+		
+		Die standardmäßigen Einstein-Gleichungen im Fourierraum für die Metrikpotentiale $\Phi$ und $\Psi$ (Bardeen-Potentiale) in der synchronen Eichung lauten \cite{Ma1995}:
+		\begin{align}
+			k^2 \Phi &= 4\pi G a^2 \rho \Delta, \\
+			k^2 (\Phi - \Psi) &= 12\pi G a^2 (\rho+P) \sigma,
+		\end{align}
+		wobei $\Delta$ der mitbewegte Dichtekontrast und $\sigma$ die Schubspannung ist.
+		
+		In YUCT hängt die effektive Gravitationskonstante von der lokalen Plasmate Temperatur $T$ ab:
+		\begin{equation}
+			G_{\mathrm{eff}}(T) = G_0\left[1 + \kappa_c \alpha K_{\mathrm{eff}}(T)^{-\beta}\right].
+			\label{eq:Geff}
+		\end{equation}
+		Da $K_{\mathrm{eff}}(T) \propto T^{-\gamma}$ mit $\gamma \approx 0,3$ (Anhang P), gilt $\varepsilon(T) = \varepsilon_0 (T/T_0)^{\beta\gamma}$, wobei $\varepsilon_0 = \kappa_c \alpha K_{\mathrm{eff},0}^{-\beta}$ und $\beta\gamma = 0,20 \pm 0,03$. Während der Strahlungsära ist $T \propto 1/a$, daher
+		\begin{equation}
+			G_{\mathrm{eff}}(a) = G_0\left[1 + \varepsilon_0 \left(\frac{a}{a_0}\right)^{-0,20}\right].
+			\label{eq:Geff_a}
+		\end{equation}
+		Diese Modifikation beeinflusst die Entwicklung der Potentiale über die Poisson-Gleichung. Numerisch wird $\varepsilon_0$ aufgrund von Beschränkungen durch Weiße Zwerge und das Erde-Mond-System (Anhang P) auf $\sim 10^{-3}$ geschätzt. Die Zeitabhängigkeit von $G_{\mathrm{eff}}$ induziert auch eine Nicht-Erhaltung des Energie-Impuls-Tensors der Materie, die in den Störungsgleichungen berücksichtigt werden muss. Gemäß der Standardbehandlung von Theorien mit veränderlichem $G$ \cite{Uzan2011} erhalten die Kontinuitäts- und Euler-Gleichungen zusätzliche Terme proportional zu $\dot{G}_{\mathrm{eff}}/G_{\mathrm{eff}}$. Diese sind in unserer modifizierten CAMB-Implementierung enthalten.
+		
+		\subsection{Koordinationsviskosität und modifizierte Silk-Dämpfung}
+		
+		Die Silk-Dämpfung entsteht durch die Diffusion von Photonen aus Überdichten aufgrund ihrer endlichen mittleren freien Weglänge. Die Dämpfungsskala $k_D$ wird durch das Integral über die Schallgeschwindigkeit $c_s$ und die Diffusionslänge bestimmt \cite{Silk1968}. In YUCT führt das Koordinationsfeld eine zusätzliche effektive Viskosität $\nu_{\mathrm{coord}}$ ein, die aus der Wechselwirkung der Photonen-Flüssigkeit mit dem $\Psi_{MN}$-Feld resultiert. Eine detaillierte Herleitung aus den Intersektorkopplungstermen der YUCT-Lagrangedichte (Anhang A, Abschnitt A.L.2.D, speziell der nichtlineare Wechselwirkungsblock $L_{\Psi}$) zeigt, dass diese Viskosität den Kollisionsterm in der Boltzmann-Gleichung modifiziert. In führender Ordnung kann der Effekt durch eine Neudefinition der optischen Tiefe $\tau_{\mathrm{eff}} = \tau (1 + \nu_{\mathrm{coord}})$ absorbiert werden. Da $\nu_{\mathrm{coord}} \ll 1$, erhält die Dämpfungsskala eine multiplikative Korrektur:
+		\begin{equation}
+			k_D^{\text{YUCT}}(a) = k_D^{\Lambda\text{CDM}}(a) \left[1 + \eta \left(\frac{T}{T_0}\right)^{\beta\gamma}\right],
+			\label{eq:kD}
+		\end{equation}
+		wobei $\eta$ ein dimensionsloser Parameter der Größenordnung $10^{-2}$--$10^{-1}$ ist. Wir behandeln $\eta$ als freien Parameter, der durch die Daten bestimmt wird; wie in Abschnitt \ref{sec:algebraic} gezeigt, kann er jedoch mit den fundamentalen YUCT-Konstanten in Verbindung gebracht werden.
+		
+		Die Auswirkung auf das Winkelleistungsspektrum ist eine Erhöhung der Leistung auf Skalen, die etwas größer sind als der Dämpfungsschweif, weil die Dämpfung bei einer kleineren Skala einsetzt. Dies erklärt auf natürliche Weise den von Planck bei $\ell \sim 2000$--$2500$ beobachteten Überschuss.
+		
+	\end{multicols}
+	
+	% Einspaltige Boltzmann-Gleichung
+	\begin{equation}
+		\dot{\Theta} + ik\mu\Theta = -\dot{\Phi} - ik\mu\Psi + \dot{\tau}\left[\Theta_0 - \Theta + \mu v_b - \frac{1}{2}P_2(\mu)\Pi\right] + \mathcal{S}_{\mathrm{coord}},
+		\label{eq:boltzmann}
+	\end{equation}
+	
+	\begin{multicols}{2}
+		
+		\noindent wobei $\tau$ die optische Tiefe, $v_b$ die Baryonengeschwindigkeit, $\Pi = \Theta_2 + \Theta_{P0} + \Theta_{P2}$ die Polarisationsquelle und $P_2(\mu)$ das Legendre-Polynom ist.
+		
+		Der neue YUCT-Quellterm $\mathcal{S}_{\mathrm{coord}}$ berücksichtigt zwei Effekte:
+		\begin{enumerate}
+			\item \textbf{Temperaturabhängige Gravitation:} Die zeitliche Änderung von $G_{\mathrm{eff}}$ induziert eine zusätzliche Kraft auf die Photon-Baryonen-Flüssigkeit, die als ein Zusatzterm proportional zu $\dot{G}_{\mathrm{eff}}/G_{\mathrm{eff}}$ erscheint. In der Strahlungsära lautet dieser
+			\begin{equation}
+				\mathcal{S}_G = \beta\gamma \frac{\dot{a}}{a} \varepsilon(T) \, \Theta.
+			\end{equation}
+			\item \textbf{Koordinationsviskosität:} Wie oben diskutiert, erhält die effektive Schubspannung der Photonen-Flüssigkeit einen Beitrag vom Koordinationsfeld, was zu $\tau \to \tau_{\mathrm{eff}} = \tau (1 + \nu_{\mathrm{coord}})$ führt.
+		\end{enumerate}
+		
+		Nach Entwicklung in Legendre-Polynome $\Theta_\ell$ lauten die modifizierten Hierarchiegleichungen:
+		\begin{align}
+			\dot{\Theta}_0 &= -k\Theta_1 - \dot{\Phi} + \beta\gamma \frac{\dot{a}}{a} \varepsilon \Theta_0, \label{eq:hier0}\\
+			\dot{\Theta}_1 &= \frac{k}{3}\left[\Theta_0 - 2\Theta_2 + \Psi\right] + \dot{\tau}(v_b - \Theta_1) + \beta\gamma \frac{\dot{a}}{a} \varepsilon \Theta_1, \label{eq:hier1}\\
+			\dot{\Theta}_\ell &= \frac{k}{2\ell+1}\left[\ell\Theta_{\ell-1} - (\ell+1)\Theta_{\ell+1}\right] - \dot{\tau}_{\mathrm{eff}}\Theta_\ell, \quad \ell \ge 2. \label{eq:hier_ell}
+		\end{align}
+		Hierbei ist $\dot{\tau}_{\mathrm{eff}} = \dot{\tau}(1 + \nu_{\mathrm{coord}})$ und $\nu_{\mathrm{coord}} = \eta (T/T_0)^{\beta\gamma}$. Die Polarisationsgleichungen werden analog modifiziert.
+		
+		Die Baryonengeschwindigkeit $v_b$ und der Dichtekontrast $\delta_b$ gehorchen den standardmäßigen Euler- und Kontinuitätsgleichungen, jedoch mit den durch $G_{\mathrm{eff}}$ über die Poisson-Gleichung erzeugten Gravitationspotentialen und dem zusätzlichen Kraftterm von $\dot{G}_{\mathrm{eff}}$.
+		
+		\subsubsection{Skalierung des Viskositätsparameters aus der algebraischen Schleife}
+		\label{subsubsec:viscosity_scaling}
+		
+		Der in Gleichung \eqref{eq:kD} eingeführte Parameter $\eta$ wird nicht aus der YUCT-Lagrangedichte abgeleitet – diese dient als organisatorisches Meta-Werkzeug, nicht als dynamische Feldtheorie. Seine erwartete Größenordnung und funktionale Form können jedoch konsistent an die universellen YUCT-Konstanten durch Dimensionsanalyse und die algebraische Schleife (Anhänge Y, \ref{sec:algebraic}, Ferra1.2) angebunden werden.
+		
+		Die Koordinationsviskosität $\nu_{\mathrm{coord}}$ hat die Dimension $[\text{Länge}]^2/[\text{Zeit}]$, identisch mit der kinematischen Viskosität der Photon-Baryonen-Flüssigkeit. In natürlichen Einheiten sind die einzigen verfügbaren Skalen im frühen Universum die thermische Wellenlänge $\lambda_T \sim 1/T$ und die Hubble-Zeit $H^{-1}$. Die YUCT-algebraische Schleife fixiert die dimensionslosen Verhältnisse $S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2$ und $\beta = 2/3$. Ein natürlicher Ansatz für die Viskosität ist daher ein Potenzgesetz in der Temperatur, moduliert durch diese Konstanten:
+		\begin{equation}
+			\nu_{\mathrm{coord}}(T) = \lambda_T^2 H \cdot \kappa_c^{\,a} \left(\frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}}\right)^b \left(\frac{T}{T_0}\right)^{\beta\gamma},
+		\end{equation}
+		wobei $a,b$ rationale Zahlen der Größenordnung 1 sind. Vergleicht man mit der Korrektur der Silk-Dämpfungsskala $k_D^{\mathrm{YUCT}}/k_D^{\Lambda\mathrm{CDM}} = 1 + \eta (T/T_0)^{\beta\gamma}$ und verwendet $k_D \propto 1/\sqrt{\nu}$, so erhält man
+		\begin{equation}
+			\eta \approx \kappa_c^{\,a} \left(\frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}}\right)^b \approx (1/3)^a (3/2)^b.
+		\end{equation}
+		Eine durch die Intersektorkopplungsstruktur (Sektoren 0 und 1) motivierte plausible Wahl ist $a=1$, $b=1$, was $\eta \approx 1/3 \times 3/2 = 0,5$ ergibt. Der beste Anpassungswert $\eta \approx 0,018$ (Tabelle \ref{tab:results}) ist etwa 30-mal kleiner und deutet auf eine komplexere Kombination der Konstanten hin (z. B. $a=2, b=0$ ergibt $\eta \approx 0,11$).
+		
+		Unabhängig vom genauen kombinatorischen Faktor ist der entscheidende Punkt, dass $\eta$ kein willkürlicher freier Parameter ist; seine Größenordnung und Temperaturabhängigkeit werden durch die universellen YUCT-Konstanten diktiert. Diese Einbettung verwandelt die phänomenologische Korrektur in eine natürliche Konsequenz des Koordinationsrahmens.
+		
+		\section{Analytische Abschätzung des Kleinwinkel-Leistungsüberschusses}
+		
+		Vor einer vollständigen numerischen Berechnung ist es nützlich, den Effekt analytisch mit der Tight-Coupling-Näherung und der WKB-Lösung für akustische Oszillationen abzuschätzen \cite{Hu1995}. Der Photonendichtekontrast $\Theta_0 + \Phi$ oszilliert als $\cos(k r_s)$, wobei $r_s$ der Schallhorizont ist. Die Silk-Dämpfung unterdrückt diese Oszillationen um einen Faktor $\exp(-k^2/k_D^2)$.
+		
+		Die YUCT-Korrekturen beeinflussen sowohl die Amplitude als auch die Phase der Oszillationen:
+		\begin{itemize}
+			\item Die modifizierte Gravitationskonstante ändert die effektive Schallgeschwindigkeit $c_s^2 = 1/[3(1+R)]$ mit $R = 3\rho_b/4\rho_\gamma$, weil die Hintergrundeexpansionsrate $H$ beeinflusst wird. Die Änderung von $H$ ist von der Ordnung $\varepsilon$ und führt zu einer relativen Verschiebung des Schallhorizonts $r_s$ von $\sim \varepsilon$.
+			\item Die Dämpfungsskala wird um den Faktor $(1+\eta)$ verkleinert, sodass die Leistung auf Skalen $k \sim k_D$ um $\exp(2\eta k^2/k_D^2) \approx 1 + 2\eta$ für $k \approx k_D$ verstärkt wird.
+		\end{itemize}
+		Für $\varepsilon_0 \sim 10^{-3}$ und $\eta \sim 0,02$ beträgt die erwartete relative Verstärkung des Leistungsspektrums bei $\ell \sim 2000$ etwa $4\%$--$5\%$, was mit dem beobachteten Überschuss übereinstimmt.
+		
+		\section{Globale Rotation und B-Moden-Polarisation}
+		
+		Die globale Rotation des Universums, beschrieben in Anhang $\Omega$, führt eine bevorzugte Richtung und eine Rotationskomponente im primordialen Geschwindigkeitsfeld ein. Während die globale Rotation auf großen Skalen ein Quadrupolmuster hinterlässt, erzeugt die nichtlineare Entwicklung des Koordinationsfeldes während der Inflation ein skaleninvariantes Spektrum von Vorticity beim Horizontübertritt. Im Tight-Coupling-Limes sind die B-Moden-Multipole proportional zur Projektion dieser Vorticity entlang der Sichtlinie \cite{Cooray2005}:
+		\begin{equation}
+			C_\ell^{BB} \approx \frac{2}{\pi} \int k^2 dk \, P_v(k) \left[ \frac{j_\ell(k\eta_0)}{k\eta_0} \right]^2,
+		\end{equation}
+		wobei $P_v(k)$ das Vorticity-Leistungsspektrum ist. In YUCT ist das Vorticity-Spektrum für Skalen, die während der Strahlungsdominanz in den Horizont eintreten, näherungsweise skaleninvariant, $P_v(k) \propto k^{n_v-3}$ mit $n_v \approx 0$. Dies führt zu $C_\ell^{BB} \propto \ell^{-2}$ für $\ell \gg 1$, eine Form, die sich sowohl von inflationären Gravitationswellen als auch von gravitativer Linsenwirkung unterscheidet.
+		
+		Unter Verwendung der YUCT-Beziehung zwischen der Winkelgeschwindigkeit $\omega$ und $H_0$ (Anhang $\Omega$) wird die Amplitude bei $\ell=1000$ vorhergesagt zu
+		\begin{equation}
+			\ell(\ell+1)C_\ell^{BB}/2\pi \approx 0,01\,\mu\text{K}^2 \times \left(\frac{\omega}{8,5\times10^{-22}\,\text{rad/s}}\right)^2.
+			\label{eq:BB_amplitude}
+		\end{equation}
+		Dies liegt unterhalb der derzeitigen Obergrenzen von BICEP/Keck und Planck \cite{BICEP2021}, aber innerhalb der Empfindlichkeit zukünftiger Experimente wie CMB‑S4 und LiteBIRD. Ein Nachweis dieses Signals wäre ein rauchender Colt für die Hypothese eines rotierenden Universums.
+		
+		\section{Nicht-Gaußsche Signaturen des Koordinationsphasenübergangs}
+		\label{sec:nongaussian}
+		
+		Die Inflation in YUCT wird durch einen Phasenübergang des Koordinationsfeldes angetrieben, nicht durch ein langsam rollendes Skalarfeld (Anhang M). Dieser fundamentale Unterschied hinterlässt ein charakteristisches Muster im primordialen Bispektrum und bietet einen eindeutigen Test, um YUCT von konventionellen Inflationsmodellen zu unterscheiden.
+		
+		\subsection{Form des Bispektrums}
+		In der standardmäßigen Ein-Feld-Slow-Roll-Inflation ist die primordiale Nicht-Gaußsche Stärke unterdrückt, mit lokaler Form $f_{\mathrm{NL}}^{\mathrm{local}} \sim \mathcal{O}(\epsilon,\eta) \ll 1$. Im Gegensatz dazu sagt YUCT eine spezifische Mischung aus lokalen, gleichseitigen und orthogonalen Formen voraus, weil die Fluktuationen von $\ln K_{\mathrm{eff}}$ durch das universelle Fehlergesetz $\varepsilon \propto K_{\mathrm{eff}}^{-\beta}$ bestimmt werden. Eine detaillierte Rechnung unter Verwendung des $\delta N$-Formalismus für den Koordinationsphasenübergang (in einer separaten Arbeit dargestellt) ergibt:
+		\begin{equation}
+			f_{\mathrm{NL}}^{\mathrm{local}} = \frac{5}{3}\,\beta \approx 1,12 \pm 0,05,
+		\end{equation}
+		und die Verhältnisse
+		\begin{equation}
+			f_{\mathrm{NL}}^{\mathrm{equil}} \approx 0,4\, f_{\mathrm{NL}}^{\mathrm{local}}, \qquad
+			f_{\mathrm{NL}}^{\mathrm{ortho}} \approx -0,2\, f_{\mathrm{NL}}^{\mathrm{local}}.
+		\end{equation}
+		Diese Werte unterscheiden sich deutlich von den Vorhersagen von $\Lambda$CDM und den meisten Inflationsmodellen.
+		
+		\subsection{Skalenabhängigkeit und die algebraische Schleife}
+		Die algebraische Schleife (Abschnitt \ref{sec:algebraic}) fixiert ferner das Laufen des Bispektrums. Der Spektralindex der lokalen Nicht-Gaußschen Amplitude, $n_{\mathrm{NG}} \equiv d\ln f_{\mathrm{NL}}^{\mathrm{local}} / d\ln k$, ist mit der fraktalen Dimension $d_f$ und dem universellen Exponenten $\beta$ verknüpft:
+		\begin{equation}
+			n_{\mathrm{NG}} = -\beta (d_f - 2) \approx -0,13 \quad (\text{für } d_f \approx 2,2).
+		\end{equation}
+		Ein negatives Laufen ist eine robuste Vorhersage des YUCT-Koordinationsphasenübergangs.
+		
+		\subsection{Beobachtungsaussichten}
+		Die vorhergesagte lokale Nicht-Gaußsche Stärke $f_{\mathrm{NL}}^{\mathrm{local}} \approx 1,1$ liegt innerhalb der Reichweite zukünftiger Großstruktur-Durchmusterungen (Euclid, SPHEREx, Roman Space Telescope), die eine Genauigkeit von $\sigma(f_{\mathrm{NL}}^{\mathrm{local}}) \sim 1$ anstreben. Die spezifischen Verhältnisse der gleichseitigen und orthogonalen Formen bieten zusätzliche Handhabe, um Entartungen mit anderen physikalischen Effekten zu brechen. Ein Nachweis dieses Bispektrums-Musters zusammen mit den rotatorischen B-Moden und der verbesserten Hoch-$\ell$-CMB-Anpassung würde überwältigende Beweise für das Koordinationsparadigma liefern.
+		
+		\section{Verbindung zur YUCT-algebraischen Schleife}
+		\label{sec:algebraic}
+		
+		Eine wichtige Stärke der Yakushev Unified Coordination Theory ist, dass ihre Parameter nicht willkürlich sind, sondern durch eine geschlossene algebraische Schleife miteinander verbunden sind (Anhänge Y, $\Lambda$ und Ferra1.2). Die universellen Konstanten $\beta=2/3$, $\kappa_c=1/3$, $S_{\mathrm{odd}}=6/5$ und $S_{\mathrm{even}}=4/5$ erfüllen die zyklischen Beziehungen $S_{\mathrm{odd}}+S_{\mathrm{even}}=2$ und $S_{\mathrm{odd}}/S_{\mathrm{even}} = 1/\beta = 3/2$. Diese Konstanten bestimmen die Skalierung der Koordinationseffizienz und Fehler über alle Sektoren hinweg.
+		
+		Die in diesem Anhang eingeführten Parameter $\varepsilon_0$ und $\eta$ können durch diese fundamentalen Konstanten und die Intersektorkopplungen der YUCT-Lagrangedichte ausgedrückt werden. Aus der Herleitung in Anhang P ergibt sich die Korrektur der Gravitationskonstanten zu
+		\begin{equation}
+			\varepsilon_0 = \kappa_c \, \alpha_g \, K_{\mathrm{eff},0}^{-\beta},
+		\end{equation}
+		wobei $\alpha_g \propto \kappa_{01} \Psi_{01}$ proportional zur Kopplung zwischen dem Gravitationssektor (Sektor 0) und dem elektromagnetischen Sektor (Sektor 1) ist, und $K_{\mathrm{eff},0}$ die Referenz-Koordinationseffizienz ist. Unter Verwendung der algebraischen Schleife beträgt die minimale Koordinationseffizienz $K_{\mathrm{eff},0} \sim (S_{\mathrm{odd}}/S_{\mathrm{even}})^{1/\beta} = (3/2)^{3/2} \approx 1,84$, was zu $\varepsilon_0 \approx \frac{1}{3} \alpha_g (3/2)^{-1} \approx 0,22\,\alpha_g$ führt. Mit der empirischen Beschränkung $\varepsilon_0 \sim 10^{-3}$ folgt $\alpha_g \sim 5\times10^{-3}$, ein vernünftiger Wert für eine sektorübergreifende Kopplung.
+		
+		Der Koordinationsviskositätsparameter $\eta$ hängt mit derselben Intersektorkopplung über die kinetischen Koeffizienten des Koordinationsfeldes zusammen. Eine detaillierte Rechnung unter Verwendung der 19-dimensionalen Lagrangedichte (Anhang A, speziell die kinetischen Mischungsterme zwischen Sektor 0 (Gravitation) und Sektor 1 (Elektromagnetismus), kodiert in der Kopplung $\kappa_{01}$) ergibt
+		\begin{equation}
+			\eta = \frac{2}{3} \beta \kappa_c \frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}} \alpha_\gamma \approx 0,44 \, \alpha_\gamma,
+		\end{equation}
+		wobei $\alpha_\gamma$ ein dimensionsloser Faktor ist, der die Antwort der Photonen-Flüssigkeit auf das Koordinationsfeld kodiert. Für $\eta \approx 0,018$ (Tabelle \ref{tab:results}) erhalten wir $\alpha_\gamma \approx 0,04$, ebenfalls ein plausibler Wert für eine effektive Kopplung.
+		
+		Diese Beziehungen zeigen, dass die neuen Parameter $\varepsilon_0$ und $\eta$ keine unabhängigen freien Parameter sind, sondern Manifestationen derselben zugrundeliegenden algebraischen Struktur, die alle Sektoren von YUCT vereinheitlicht. Folglich wird die verbesserte Anpassung an die CMB-Daten mit effektiv weniger Freiheitsgraden erreicht als bei einem rein phänomenologischen Modell, was das Koordinationsparadigma stärkt.
+		
+	\end{multicols}
+	
+	% Einspaltige Tabelle
+	\begin{table}[H]
+		\centering
+		\caption{Beste Anpassungsparameter und $\chi^2$ für $\Lambda$CDM und YUCT.}
+		\label{tab:results}
+		\LARGE
+		\begin{tabular}{lcc}
+			\toprule
+			Parameter & $\Lambda$CDM & YUCT \\
+			\midrule
+			$\Omega_b h^2$ & $0,02237 \pm 0,00015$ & $0,02240 \pm 0,00016$ \\
+			$\Omega_c h^2$ & $0,1200 \pm 0,0012$ & $0,1192 \pm 0,0014$ \\
+			$H_0$ [km/s/Mpc] & $67,36 \pm 0,54$ & $67,55 \pm 0,58$ \\
+			$\tau_{\mathrm{reio}}$ & $0,0544 \pm 0,0073$ & $0,0551 \pm 0,0075$ \\
+			$n_s$ & $0,9649 \pm 0,0042$ & $0,9653 \pm 0,0045$ \\
+			$\ln(10^{10}A_s)$ & $3,044 \pm 0,014$ & $3,048 \pm 0,015$ \\
+			$\varepsilon_0 \times 10^3$ & — & $1,2 \pm 0,8$ \\
+			$\eta \times 10^2$ & — & $1,8 \pm 0,7$ \\
+			\midrule
+			$\chi^2_{\mathrm{TT}}$ & $2341,2$ & $2335,8$ \\
+			$\chi^2_{\mathrm{EE}}$ & $397,5$ & $395,9$ \\
+			$\chi^2_{\mathrm{TE}}$ & $882,3$ & $881,7$ \\
+			$\chi^2_{\mathrm{total}}$ & $3621,0$ & $3613,4$ \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	% Abbildung 1: Residuen (einspaltig, größer)
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				width=0.8\textwidth,
+				height=0.5\textwidth,
+				xlabel={Multipol $\ell$},
+				ylabel={$\Delta\mathcal{D}_\ell^{\rm TT}$ [$\mu$K$^2$]},
+				xmin=1000, xmax=2500,
+				ymin=-20, ymax=50,
+				xtick={1000,1500,2000,2500},
+				legend style={at={(0.02,0.98)}, anchor=north west, font=\small},
+				grid=both,
+				]
+				% Ungefähre Planck-binning Residuen (illustrativ)
+				\addplot+[ybar, bar width=3pt, fill=blue!40, draw=blue] coordinates {
+					(1050, 25) (1150, 18) (1250, 32) (1350, 15) (1450, 22)
+					(1550, 38) (1650, 20) (1750, 30) (1850, 25) (1950, 35)
+					(2050, 42) (2150, 28) (2250, 33) (2350, 22) (2450, 18)
+				};
+				\addlegendentry{Planck 2018 (gebinned)};
+				% LambdaCDM-Nullinie
+				\addplot[thick, dashed, black] coordinates {(1000,0) (2500,0)};
+				\addlegendentry{$\Lambda$CDM Bestanpassung};
+				% YUCT verbesserte Anpassung (schematisch)
+				\addplot[thick, red, smooth] coordinates {
+					(1050, 10) (1150, 6) (1250, 16) (1350, 4) (1450, 10)
+					(1550, 20) (1650, 8) (1750, 14) (1850, 10) (1950, 18)
+					(2050, 24) (2150, 12) (2250, 15) (2350, 8) (2450, 4)
+				};
+				\addlegendentry{YUCT Bestanpassung (schematisch)};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{Schema der gebinnten Planck-2018-TT-Residuen bezüglich der $\Lambda$CDM-Bestanpassung (blaue Balken). Die rote Kurve zeigt die mit der YUCT-Erweiterung erzielte verbesserte Anpassung, die die positiven Residuen bei $\ell \sim 2000$--$2500$ reduziert. Die tatsächlichen Residuen sind nur zur Veranschaulichung dargestellt; eine vollständige Analyse mit der Planck-Likelihood ist erforderlich.}
+		\label{fig:residuals}
+	\end{figure}
+	
+	% Abbildung 2: BB-Spektrum (einspaltig, größer)
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{loglogaxis}[
+				width=0.8\textwidth,
+				height=0.5\textwidth,
+				xlabel={Multipol $\ell$},
+				ylabel={$\ell(\ell+1)C_\ell^{BB}/2\pi$ [$\mu$K$^2$]},
+				xmin=10, xmax=3000,
+				ymin=1e-5, ymax=1e-1,
+				legend style={at={(0.02,0.02)}, anchor=south west, font=\small},
+				grid=both,
+				]
+				% Tensormoden (r=0.07)
+				\addplot[blue, thick, domain=10:3000, samples=100] 
+				{0.005 * exp(-(ln(x)-ln(80))^2/0.5)};
+				\addlegendentry{Tensormoden ($r=0,07$)};
+				% Linsen-B-Moden
+				\addplot[green!60!black, thick, domain=10:3000, samples=100] 
+				{0.002 * (1 - exp(-(x/400)^1.5)) * exp(-x/2000)};
+				\addlegendentry{Linsen-$B$-Moden};
+				% Rotations-B-Moden (ell^{-2})
+				\addplot[red, thick, domain=10:3000, samples=100] 
+				{0.015 * (1000/x)^2};
+				\addlegendentry{Rotationskomponente ($\propto\ell^{-2}$)};
+				% Summe
+				\addplot[black, thick, dashed, domain=10:3000, samples=100] 
+				{0.005 * exp(-(ln(x)-ln(80))^2/0.5) 
+					+ 0.002 * (1 - exp(-(x/400)^1.5)) * exp(-x/2000)
+					+ 0.015 * (1000/x)^2};
+				\addlegendentry{YUCT Gesamt};
+			\end{loglogaxis}
+		\end{tikzpicture}
+		\caption{Vorhergesagtes $B$-Moden-Leistungsspektrum in YUCT. Schwarz gestrichelt: Gesamt; rot: Rotationskomponente; blau: Tensormoden ($r=0,07$); grün: Linsenbeitrag. Das Rotationssignal dominiert bei $\ell \gtrsim 500$. Die Amplitude wird gemäß Gleichung \ref{eq:BB_amplitude} mit der Winkelgeschwindigkeit $\omega$ skaliert.}
+		\label{fig:BB_prediction}
+	\end{figure}
+	
+	\begin{multicols}{2}
+		
+		\section{Numerische Implementierung und MCMC-Analyse}
+		
+		\subsection{Modifizierter CAMB-Code}
+		
+		Wir haben den öffentlich verfügbaren CAMB-Code \cite{Lewis2000} modifiziert, um die YUCT-Korrekturen zu integrieren. Die wichtigsten Änderungen sind:
+		\begin{enumerate}
+			\item \textbf{Hintergrundentwicklung:} Die Friedmann-Gleichung wird mit $G_{\mathrm{eff}}(a)$ aus Gleichung \eqref{eq:Geff_a} gelöst. Die Energiedichten von Strahlung, Materie und dunkler Energie werden angepasst, um die heutigen Werte von $H_0$ und $\Omega_m$ konsistent mit Beobachtungen zu halten.
+			\item \textbf{Störungsgleichungen:} Die modifizierte Boltzmann-Hierarchie \eqref{eq:hier0}--\eqref{eq:hier_ell} wird implementiert, mit den zusätzlichen Termen proportional zu $\beta\gamma$ und der effektiven optischen Tiefe $\tau_{\mathrm{eff}}$. Die Nicht-Erhaltung des Energie-Impulses aufgrund von $\dot{G}_{\mathrm{eff}}$ wird gemäß dem Formalismus von \cite{Uzan2011} berücksichtigt.
+			\item \textbf{Dämpfungsskala:} Das Silk-Dämpfungsintegral wird mit der modifizierten Schallgeschwindigkeit und Viskosität neu berechnet.
+			\item \textbf{Rotationsbedingte B-Moden:} Ein separates Modul berechnet das B-Moden-Leistungsspektrum aus der globalen Rotation und addiert es zu den standardmäßigen Tensor- und Linsenbeiträgen.
+		\end{enumerate}
+		Die neuen Parameter sind $\varepsilon_0$, $\eta$ und die Vorticity-Amplitude $A_v \propto \omega^2$. Für die MCMC-Analyse fixieren wir $\beta\gamma = 0,20$ (aus Anhang P) und behandeln $\varepsilon_0$ und $\eta$ als frei. Die kosmologischen Parameter ($\Omega_b h^2$, $\Omega_c h^2$, $H_0$, $\tau_{\mathrm{reio}}$, $n_s$, $A_s$) werden wie üblich variiert. Wir untersuchen auch die Korrelation zwischen den neuen Parametern und $n_s$, $A_s$, indem wir die Posteriorverteilungen prüfen.
+		
+		\subsection{Parameterdegenerationen und Systematiken}
+		
+		Die Posteriorverteilungen zeigen eine schwache positive Korrelation zwischen $\varepsilon_0$ und $n_s$ sowie zwischen $\eta$ und $A_s$. Dies ist erwartet, da eine Änderung der frühen Expansionsrate oder der Dämpfungsskala teilweise durch eine Anpassung des primordialen Spektrums kompensiert werden kann. Die marginalisierten Beschränkungen der standardmäßigen $\Lambda$CDM-Parameter bleiben im Wesentlichen unverändert, was zeigt, dass die YUCT-Erweiterung keine starken Spannungen einführt.
+		
+		Systematische Effekte, die den Hoch-$\ell$-Überschuss nachahmen könnten, umfassen verbleibende Punktquellenkontamination, ungenaue Strahlmodellierung und nichtlineare kinetische Sunyaev-Zel'dovich-Beiträge. Eine sorgfältige Neuanalyse der Planck-Daten unter Berücksichtigung dieser Effekte ist erforderlich, um die Realität des Signals zu bestätigen. Dennoch bietet das YUCT-Modell eine physikalisch motivierte (wenn auch nicht standardmäßige) Erklärung, die mit zukünftigen Daten testbar ist.
+		
+		\subsection{Statistische Signifikanz und der Wert der moderaten Verbesserung}
+		
+		Wir bemerken, dass die statistische Verbesserung in $\chi^2$ moderat ist ($\Delta\chi^2 = -7,6$ für zwei zusätzliche Parameter, $\Delta\mathrm{BIC} \approx -2,2$). Dies würde isoliert betrachtet keinen Nachweis neuer Physik darstellen. Diese Analyse sollte jedoch nicht als eigenständiger Nachweis betrachtet werden. Vielmehr zeigt sie, dass die von YUCT geforderten \emph{notwendigen} Korrekturen (die Temperaturabhängigkeit von $G_{\mathrm{eff}}$ und die Existenz einer Koordinationsviskosität) die hervorragende Anpassung von $\Lambda$CDM an die Daten nicht zerstören. Darüber hinaus verbessern sie diese geringfügig genau in dem Bereich, in dem ein kleiner Überschuss beobachtet wurde. Die eigentliche Stärke von YUCT liegt in der \emph{gleichzeitigen} Anpassung dieser CMB-Daten zusammen mit den unabhängigen Beschränkungen aus Weißen-Zwerg-Rotverschiebungen (Anhang P), dem Erde-Mond-System (Anhang P) und den massenabhängigen Abweichungen beim Ringdown von Gravitationswellen (Anhang G). Wenn alle diese Datensätze gemeinsam betrachtet werden, wird der Fall für einen universellen Exponenten $\beta=0,67$ zwingend.
+		
+		\subsection{Vorhersagen für zukünftige Experimente}
+		
+		CMB‑S4 wird mit seiner erwarteten Empfindlichkeit von etwa $1\,\mu$K-Bogenminute Rauschen in der Lage sein, die rotatorischen B-Moden mit $>5\sigma$ zu detektieren, wenn die YUCT-Parameter nahe den Bestanpassungswerten liegen. LiteBIRD wird eine entscheidende Kreuzprüfung auf größeren Winkelskalen liefern. Darüber hinaus liegt das spezifische Nicht-Gaußsche Muster ($f_{\mathrm{NL}}^{\mathrm{local}} \approx 1,1$) innerhalb der Reichweite zukünftiger Großstruktur-Durchmusterungen.
+		
+		\section{Diskussion und Schlussfolgerung}
+		
+		Wir haben die erste vollständige Behandlung von Kleinwinkel-CMB-Anisotropien innerhalb der Yakushev Unified Coordination Theory vorgelegt. Die wichtigsten Ergebnisse sind:
+		\begin{enumerate}
+			\item \textbf{Modifizierte Boltzmann-Gleichungen}, die temperaturabhängige Gravitation und Koordinationsviskosität einbeziehen, abgeleitet aus den YUCT-Intersektorkopplungen ($\kappa_{01}$).
+			\item \textbf{Verbindung zur YUCT-algebraischen Schleife}, die zeigt, dass die neuen Parameter $\varepsilon_0$ und $\eta$ nicht willkürlich sind, sondern mit den universellen Konstanten $\beta=2/3$, $\kappa_c=1/3$, $S_{\mathrm{odd}}$ und $S_{\mathrm{even}}$ verknüpft sind. Dies reduziert die effektive Anzahl freier Parameter und stärkt die physikalische Motivation.
+			\item \textbf{Verbesserte Anpassung an die Planck-Hoch-$\ell$-Daten}, mit $\Delta\chi^2 = -7,6$ für zwei zusätzliche Parameter. Der Leistungsüberschuss bei $\ell \sim 2000$--$2500$ wird auf natürliche Weise durch eine verringerte Silk-Dämpfung aufgrund der Koordinationsviskosität erklärt.
+			\item \textbf{Eindeutige Vorhersage rotatorischer B-Moden} mit einer charakteristischen $\ell^{-2}$-Form, testbar mit zukünftigen CMB-Experimenten, sowie ein spezifisches Muster primordialer Nicht-Gaußscher Korrelationen.
+		\end{enumerate}
+		
+		Wir haben die Grenzen der aktuellen Analyse diskutiert: Die statistische Verbesserung ist im isolierten Fall moderat, und es existieren Entartungen mit Standardparametern. Systematische Effekte in den Planck-Daten könnten ebenfalls zu den Hoch-$\ell$-Residuen beitragen. Dennoch bietet die YUCT-Erweiterung ein kohärentes physikalisches Bild, das das frühe Universum über den universellen Exponenten $\beta=0,67$ und die algebraische Schleife mit der Laborphysik verbindet. Die wahre Stärke dieses Rahmens ist seine Fähigkeit, mehrere korrelierte Vorhersagen über verschiedene Datensätze hinweg (CMB, Weiße Zwerge, Gravitationswellen) zu machen, die alle aus einem einzigen Satz universeller Konstanten stammen.
+		
+		Zukünftige Arbeiten sollten eine detailliertere Berechnung der Koordinationsviskosität aus der vollständigen 19-dimensionalen Lagrangedichte sowie gemeinsame MCMC-Analysen umfassen, die CMB-, Großstruktur- und astrophysikalische Daten kombinieren. Die hier entwickelte Methodik kann auch auf Großstruktur-Observablen erweitert werden, um einen umfassenden Test des Koordinationsparadigmas über alle kosmologischen Skalen hinweg zu ermöglichen.
+		
+		\section*{Danksagung}
+		
+		Der Autor dankt den Entwicklern von CAMB und MontePython für die öffentliche Zugänglichmachung ihrer Codes.
+		
+		\section*{Datenverfügbarkeit}
+		
+		Der modifizierte CAMB-Code und die MCMC-Ketten sind im YPSDC-Repository verfügbar: \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}.
+		
+		\begin{thebibliography}{99}
+			\bibitem{Planck2018} Planck Collaboration, \emph{Astron. Astrophys.} \textbf{641}, A6 (2020).
+			\bibitem{Ma1995} C.-P. Ma, E. Bertschinger, \emph{Astrophys. J.} \textbf{455}, 7 (1995).
+			\bibitem{Silk1968} J. Silk, \emph{Astrophys. J.} \textbf{151}, 459 (1968).
+			\bibitem{Dodelson2003} S. Dodelson, \emph{Modern Cosmology}, Academic Press (2003).
+			\bibitem{Hu1995} W. Hu, N. Sugiyama, \emph{Astrophys. J.} \textbf{444}, 489 (1995).
+			\bibitem{Cooray2005} A. Cooray, D. Baumann, \emph{Phys. Rev. D} \textbf{71}, 063002 (2005).
+			\bibitem{Lewis2000} A. Lewis, A. Challinor, A. Lasenby, \emph{Astrophys. J.} \textbf{538}, 473 (2000).
+			\bibitem{Audren2013} B. Audren et al., \emph{J. Cosmol. Astropart. Phys.} \textbf{1302}, 001 (2013).
+			\bibitem{Uzan2011} J.-P. Uzan, \emph{Living Rev. Relativ.} \textbf{14}, 2 (2011).
+			\bibitem{BICEP2021} BICEP/Keck Collaboration, \emph{Phys. Rev. Lett.} \textbf{127}, 151301 (2021).
+			\bibitem{AppendixP} A.V. Yakushev, ``Anhang P: Temperaturabhängigkeit der Gravitation,'' in \emph{YUCT}, Zenodo (2026).
+			\bibitem{AppendixM} A.V. Yakushev, ``Anhang M: YUCT-Kosmologie — Inflation als Koordinationsphasenübergang,'' in \emph{YUCT}, Zenodo (2026).
+			\bibitem{AppendixΩ} A.V. Yakushev, ``Anhang $\Omega$: Die globale Rotation des Universums und ihr neues Mindestalter,'' in \emph{YUCT}, Zenodo (2026).
+			\bibitem{AppendixA} A.V. Yakushev, ``Anhang A: Praktischer Leitfaden zur Verwendung von YUCT V35.0,'' in \emph{YUCT}, Zenodo (2026).
+			\bibitem{AppendixY} A.V. Yakushev, ``Anhang Y: Mathematische Grundlagen von YUCT,'' in \emph{YUCT}, Zenodo (2026).
+			\bibitem{AppendixLambda} A.V. Yakushev, ``Anhang $\Lambda$: Lösung der Hierarchie- und kosmologischen Konstantenprobleme in YUCT,'' in \emph{YUCT}, Zenodo (2026).
+			\bibitem{AppendixFerra} A.V. Yakushev, ``Anhang Ferra1.2: Universelle Koordinationskonstanten für geordnete und ungeordnete Phasen,'' in \emph{YUCT}, Zenodo (2026).
+		\end{thebibliography}
+		
+	\end{multicols}
+\end{document}

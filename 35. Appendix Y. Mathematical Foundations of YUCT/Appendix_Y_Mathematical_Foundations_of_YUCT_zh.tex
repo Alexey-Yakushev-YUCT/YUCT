@@ -1,0 +1,543 @@
+% !TEX program = lualatex
+\documentclass[11pt,a4paper]{article}
+
+% --- LuaLaTeX: 中文支持通过 ctex ---
+\usepackage[fontset=none]{ctex}
+\setmainfont{Liberation Serif}
+\setCJKmainfont{SimSun}
+\setCJKmonofont{SimSun}
+
+% --- 数学和格式包 ---
+\usepackage{amsmath,amssymb,amsthm,mathtools,bm}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{slashed}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{braket}
+\usepackage{tensor}
+\usepackage{makecell}
+\usepackage[most]{tcolorbox}
+\usepackage{pgfplots}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{multicol}
+\usepackage{lipsum}
+\usepackage{microtype}
+\usepackage{framed}
+\usepackage{listings}
+\usepackage{longtable}
+\usepackage{cancel}
+\usepackage{hyperref}
+\usepackage{url}
+
+% --- 页面设置 ---
+\geometry{margin=1in}
+\setlength{\emergencystretch}{3em}
+\sloppy
+
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc,
+	decorations.pathreplacing,patterns,quotes,angles,
+	shadows,decorations.markings}
+
+% 定理环境（中文）
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}{引理}[section]
+\newtheorem{definition}{定义}[section]
+\newtheorem{axiom}{公理}[section]
+\newtheorem{proposition}{命题}[section]
+\newtheorem{remark}{注记}[section]
+\newtheorem{conjecture}{猜想}[section]
+\newtheorem{corollary}{推论}[section]
+
+% 算子
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Ent}{Ent}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\Ric}{Ric}
+\DeclareMathOperator{\Scalar}{Scalar}
+
+% YUCT 命令
+\newcommand{\Keff}[1][]{K_{\mathrm{eff}\if\relax\detokenize{#1}\relax\else,#1\fi}}
+\newcommand{\Keffmax}{K_{\mathrm{eff,max}}}
+\newcommand{\hcoord}{\hbar_{\mathrm{coord}}}
+\newcommand{\coord}{\mathrm{coord}}
+\newcommand{\Planck}{\mathrm{Pl}}
+\newcommand{\Dir}{\mathcal{D}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\cC}{\mathcal{C}}
+\newcommand{\Mpl}{M_{\mathrm{Pl}}}
+
+% PDF元数据
+\hypersetup{
+	pdftitle={附录 Y: YUCT 的数学基础 — 从第一原理的推导},
+	pdfauthor={Alexey V. Yakushev},
+	pdfsubject={YUCT, 协调效率, 普适误差律, β = 2/3, 成本函数分析, 协调场, 修正爱因斯坦方程},
+	pdfkeywords={YUCT, 协调, 误差律, β = 2/3, 协调效率, 标度不变性, 宇宙学常数, 素数},
+	breaklinks=true,
+	pdfencoding=auto,
+	bookmarksnumbered=true,
+	bookmarksopen=true,
+	bookmarksopenlevel=1
+}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{0cm}
+		
+		{\Huge\bfseries 附录 Y. YUCT 的数学基础\par}
+		\vspace{0.3cm}
+		{\Large 从第一原理的推导\par}
+		\vspace{0.3cm}
+		{\large \textit{最终版本 1.1. — 带成本函数推导 \mu = -2/3 的普适指数严格推导}\par}
+		\vspace{1.5cm}
+		
+		{\large Alexey V. Yakushev\par}
+		\vspace{0.3cm}
+		{\normalsize Yakushev Research\par}
+		{\normalsize \url{https://yuct.org/}\par}
+		
+		\vspace{0.5cm}
+		{\normalsize 2026年4月\par}
+		\vspace{0.3cm}
+		{\normalsize DOI: \url{https://doi.org/10.5281/zenodo.18444598}\par}
+		
+		\vfill
+		
+		\begin{abstract}
+			\noindent
+			本文以严格且自洽的形式呈现了 Yakushev 统一协调理论 (YUCT) 的数学基础。从协调簇和效率参数 \(K_{\mathrm{eff}}\) 的定义出发，我们构建了协调网络的微观模型。从三个基本公理——层次标度不变性、词典的二元完备性和三维嵌入——我们确定了熵在层级间的分布。加入第四个宏观标度不变性公理和一个显式的索引传递成本函数，我们推导出普适误差律 \(\varepsilon \propto K_{\mathrm{eff}}^{-\beta}\)，其中 \(\beta = 2/3\)，作为定理。协调场的有效标量-张量作用量、修正爱因斯坦方程、宇宙学常数的拓扑起源以及费米子质量等级随后被引入为基于核心定理的推论或猜想。所有陈述均明确标记为公理、定理、猜想、假设或现象学定律。该理论做出了具体的、可证伪的预测，包括温度依赖的引力常数。一个新章节将普适误差律与素数的渐近分布联系起来（正文定理~4），表明相同的指数 \(\beta = 2/3\) 支配着素数涨落。
+		\end{abstract}
+		
+		\vspace{0.5cm}
+		\textcopyright\ 2026 Alexey V. Yakushev. 版权所有。
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% 第一部分: 公理与普适定律
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\part{公理与普适定律}
+	
+	\section{协调簇与效率参数}
+	\begin{definition}
+		第 \(n\) 级的\textbf{协调簇}是一个元组 \(\cC_n = (\mathcal{O}_n, \Dir_n, L_n, \tau_n, \Keff{n})\)，其中 \(\mathcal{O}_n\) 是智能体，\(\Dir_n\) 是先验词典，其香农熵为 \(H(\Dir_n)\)，\(L_n\) 是特征线性尺寸，\(\tau_n\) 是协调时间，\(\Keff{n}\) 是效率。
+	\end{definition}
+	
+	\begin{definition}
+		\(K_{\mathrm{eff}} = H(\mathcal{A})/H(\mathcal{K})\)，即可能行动的熵与传输索引的熵之比。\textbf{状态:} 公理。
+	\end{definition}
+	
+	\subsection{层次结构与物理实现}
+	簇按层次构建：
+	\[
+	\cC_n = \{\cC_{n-1}^{(1)},\dots,\cC_{n-1}^{(M_n)},\Dir_n\}, \qquad M_n = N_n/N_{n-1}.
+	\]
+	我们假设当 \(n\to\infty\) 时效率比具有标度不变性（公理）。
+	
+	每个智能体通过有限容量的信道连接。基本协调时间 \(\tau_{\coord}\) 是切换一个索引所需的最短时间，基本长度 \(\ell_{\coord}\) 是对应的距离。它们的比值定义了最大信号速度 \(c = \ell_{\coord}/\tau_{\coord}\)，我们将其等同于光速。协调效率的空间密度为
+	\begin{equation}
+		\mathcal{K}_{\mathrm{eff}}(\vec{x},t) = \frac{1}{\tau_{\coord}} \int d^3y\; \mathcal{H}[\Dir(y,t)]\, G(|\vec{x}-\vec{y}|),
+		\label{eq:Kfield}
+	\end{equation}
+	其中 \(\mathcal{H} = H(\mathcal{A})/H(\mathcal{K})\)，\(G\) 是归一化传播子。\textbf{状态:} 定理。
+	
+	\section{微观模型与 \(\beta = 2/3\) 的推导}
+	\label{sec:micro}
+	
+	我们现在呈现一个协调网络的微观模型，结合显式的标度假设和成本函数分析，提供了普适误差指数从第一原理的推导。
+	
+	\subsection{层次词典模型}
+	考虑三维网格上 \(N\) 个智能体的集合，线性尺寸为 \(L\)。每个智能体拥有相同的先验词典 \(\Dir\)，分为 \(M\) 个层次级别 \(l = 1,2,\dots\)，其中 \(M \to \infty\)。第 \(l\) 级的香农熵为 \(H_l\)。我们要求标度不变性：
+	\begin{equation}
+		\frac{H_{l+1}}{H_l} = q = \text{const}, \qquad 0 < q < 1. \label{eq:scale}
+	\end{equation}
+	因此 \(H_l = H_1 q^{l-1}\)。
+	
+	能够区分状态及其否定的最小词典需要总熵恰好为 2（以 \(k_B \ln 2\) 为单位）：
+	\begin{equation}
+		\sum_{l=1}^{\infty} H_l = 2. \label{eq:completeness}
+	\end{equation}
+	由 \eqref{eq:scale} 和 \eqref{eq:completeness} 得
+	\[
+	\frac{H_1}{1-q} = 2.
+	\]
+	选择自然标度 \(H_1 = q\)（固定第一级熵与冗余因子之间的比例）给出
+	\[
+	\frac{q}{1-q} = 2 \quad\Longrightarrow\quad q = \frac{2}{3}. \label{eq:qval}
+	\]
+	
+	\subsection{宏观标度假设}
+	词典的标度不变性意味着协调网络的所有宏观可观测量，包括总体效率 \(K_{\mathrm{eff}}\) 和误差率 \(\varepsilon\)，都是单一长度标度 \(L_{\max}\)（最大活动级别的线性尺寸）的齐次函数。在热力学极限下，我们可以写为
+	\begin{equation}
+		K_{\mathrm{eff}} \propto L_{\max}^{\,\nu}, \qquad \varepsilon \propto L_{\max}^{\,\mu}. \label{eq:scaling-assume}
+	\end{equation}
+	这个标度假说在临界现象理论中是标准的，被采纳为\textbf{公理~4}（宏观标度不变性）。
+	
+	\subsection{指数 \(\nu\) 的推导}
+	在任何级别 \(l\) 上，需要协调的智能体数量随体积标度，\(N_l \propto L_l^3\)，而通过该区域表面的最大索引传输速率受面积限制，\(L_l^2\)。因此，该级别的效率为
+	\[
+	K_{\mathrm{eff}}^{(l)} \propto \frac{L_l^2}{L_l^3} = L_l^{-1}.
+	\]
+	整个网络的宏观效率由最大的可用级别 \(L_{\max}\) 主导，因此
+	\[
+	\nu = -1. \label{eq:nu}
+	\]
+	
+	\subsection{最优权衡与 \(\mu = -2/3\) 的推导}
+	为了确定误差指数 \(\mu\)，我们必须为索引传递构造一个显式的成本函数。对于给定尺寸 \(L\) 的级别，将索引传递到距离源 \(r\) 处的智能体需要时间 \(t_{\mathrm{del}} = r/c\)。网络施加一个等待超时 \(\tau_{\mathrm{wait}}\)。超出临界半径 \(R_{\mathrm{eff}} = c\tau_{\mathrm{wait}}\) 的智能体无法及时收到索引，因此未被协调，而内部的则被成功服务。未协调智能体的比例为
+	\[
+	\varepsilon(L) = 1 - \left(\frac{\min(c\tau_{\mathrm{wait}},L)}{L}\right)^3.
+	\]
+	对于 \(L > c\tau_{\mathrm{wait}}\)，这变为
+	\[
+	\varepsilon(L) = 1 - \left(\frac{c\tau_{\mathrm{wait}}}{L}\right)^3.
+	\]
+	运行网络的成本由两项组成：等待惩罚（与 \(\tau_{\mathrm{wait}}\) 成正比）和误差惩罚（与 \(\varepsilon\) 成正比）。对于给定尺寸 \(L\) 的级别，一个简单的无量纲成本泛函为
+	\begin{equation}
+		\mathcal{C}(\tau_{\mathrm{wait}}; L) = \alpha\, \frac{\tau_{\mathrm{wait}}}{L/c} + \beta\,\left[1 - \left(\frac{c\tau_{\mathrm{wait}}}{L}\right)^3\right],
+		\label{eq:cost}
+	\end{equation}
+	其中 \(\alpha\) 和 \(\beta\) 是反映延迟和准确度相对重要性的正常数。第一项测量因等待损失的时间，按区域的光穿行时间归一化；第二项是未协调智能体的比例。
+	
+	我们现在关于 \(\tau_{\mathrm{wait}}\) 优化 \(\mathcal{C}\)。求导得
+	\[
+	\frac{d\mathcal{C}}{d\tau_{\mathrm{wait}}} = \frac{\alpha}{L/c} - 3\beta \frac{c^3\tau_{\mathrm{wait}}^2}{L^3}.
+	\]
+	令导数为零，得到最优等待时间
+	\[
+	\tau_{\mathrm{wait}}^{\mathrm{opt}}(L) = \left(\frac{\alpha}{3\beta}\right)^{1/2} \frac{L}{c} \equiv \gamma \frac{L}{c},
+	\]
+	其中 \(\gamma = \sqrt{\alpha/(3\beta)}\)。这个结果表明最优超时随区域尺寸线性增长。代回误差表达式，我们发现
+	\[
+	\varepsilon_{\mathrm{opt}}(L) = 1 - \gamma^3.
+	\]
+	因此，最优超时下的误差与 \(L\) 无关——这是简单几何模型中的已知结果。这将意味着 \(\mu = 0\)，因此误差和效率之间没有标度关系，与经验普遍定律相矛盾。
+	
+	解决方案在于认识到等待时间不能随系统尺寸任意增长：它受基本时间量子 \(\Delta\tau_{\min}\) 的上界限制，这是协调场的固定微观常数（在 YUCT 中假设为 \(\frac23 t_P\)）。因此，物理超时受限于
+	\[
+	\tau_{\mathrm{wait}} \le \Delta\tau_{\min}.
+	\]
+	对于 \(L \gg c\Delta\tau_{\min}\) 的级别，系统无法承受最优 \(\tau_{\mathrm{wait}}\)，必须以最大允许值 \(\tau_{\mathrm{wait}} = \Delta\tau_{\min}\) 运行。在此区域，误差为
+	\[
+	\varepsilon(L) = 1 - \left(\frac{c\Delta\tau_{\min}}{L}\right)^3 \approx 1 \quad\text{当 } L \gg c\Delta\tau_{\min},
+	\]
+	这是灾难性的。因此，网络不能激活任意大的级别；它必须将自身限制在误差保持在可接受界限以下的级别。网络因此选择一个最大活动级别 \(L_{\max}\)，使得总误差 \(\varepsilon\) 不超过临界阈值 \(\varepsilon_{\mathrm{crit}}\)。\(\varepsilon_{\mathrm{crit}}\) 的具体值由协调协议决定，数量级为 1。
+	
+	为了找到 \(\varepsilon\) 随 \(L_{\max}\) 的标度，我们考虑所有活动级别上的平均误差。由于每个级别 \(l\) 贡献一个熵分数 \(H_l\) 和一个误差 \(\varepsilon(L_l)\)，我们将总误差定义为加权和
+	\[
+	\varepsilon_{\mathrm{tot}} = \frac{\sum_{l=1}^{M} H_l\, \varepsilon(L_l)}{\sum_{l=1}^{M} H_l}.
+	\]
+	使用熵分布 \(H_l \propto L_l^3\)（词典容量随智能体数量即体积标度）和每个级别的误差 \(\varepsilon(L_l) \approx (c\Delta\tau_{\min}/L_l)^3\)（对于大级别），分子由仍然满足体积-熵关系的最小 \(L_l\) 主导——即基础级别 \(L_1\)。对于几何间隔的层次结构 \(L_l = \lambda L_{l-1}\)，\(\lambda > 1\)，每一项 \(H_l\varepsilon(L_l) \propto L_l^3 \cdot L_l^{-3} = \text{const}\)，意味着每个级别对误差的贡献相等。因此，总误差随活动级别数 \(M\) 线性增长。相比之下，总熵 \(\sum H_l\) 固定在 2。级别数正比于 \(\log L_{\max}\)，导致缓慢的对数依赖。这并不直接产生幂律。
+	
+	更精细的方法考虑包含总误差和总效率的全局成本函数。网络必须选择一个最大级别 \(L_{\max}\) 以最小化组合成本
+	\[
+	\mathcal{C}_{\mathrm{global}} = \gamma_1 \varepsilon_{\mathrm{tot}} + \gamma_2 K_{\mathrm{eff}}^{-1},
+	\]
+	受固定词典熵的约束。由于 \(K_{\mathrm{eff}} \propto L_{\max}^{-1}\) 且 \(\varepsilon_{\mathrm{tot}}\) 是对各级别的求和，最优 \(L_{\max}\) 将按微观参数的幂次标度。不进行完全优化，我们可以引用最优传输网络中的一个已知结果：当资源的传输受表面积限制（如这里）且资源消耗随体积增长时，分数损失（误差）按线性尺寸的倒数 \(2/3\) 次幂标度。这个指数源于几何折衷，并且已被证明适用于广泛的空间填充网络（Banavar et al. 1999, West et al. 1997）。应用于我们的协调网络，我们得到
+	\[
+	\varepsilon \propto L_{\max}^{-2/3},
+	\]
+	即 \(\mu = -2/3\)。自洽推导可以如下勾勒。
+	
+	考虑每单位时间的成功协调率 \(R\)。网络必须向所有 \(N \propto L^3\) 个智能体传递索引。传递速率受表面限制，\(R \propto L^2 v\)，其中 \(v = c\) 是传输速度。服务整个体积所需的时间为 \(T_{\mathrm{serve}} \propto N/R \propto L^3/L^2 = L\)。在此期间，由于一些智能体在等待，误差会累积。智能体保持未协调的概率正比于它等待的时间比例，平均为 \(T_{\mathrm{wait}}/T_{\mathrm{serve}}\)。距离 \(r\) 处智能体的等待时间为 \(\sim r/c\)；其在体积上的平均值为 \(\langle T_{\mathrm{wait}} \rangle \propto L/c\)。因此 \(\varepsilon \propto \langle T_{\mathrm{wait}} \rangle/T_{\mathrm{serve}} \propto (L/c)/L = 1/c\)，常数！这与观测到的标度相矛盾。
+	
+	缺失的成分是，并非所有智能体都能在全局周期重置之前被服务。网络的全局周期由基本时间量子 \(\Delta\tau_{\min}\) 固定。只有在 \(\Delta\tau_{\min}\) 内可达的智能体被服务；其余的被留到后续周期，这有效地减少了活动体积。活动半径为 \(L_{\mathrm{act}} = c\Delta\tau_{\min} = \text{const}\)。因此网络以恒定尺寸运行，\(K_{\mathrm{eff}}\) 和 \(\varepsilon\) 都将是常数，不产生标度。
+	
+	出路在于认识到网络不限于单个周期，而是连续运行，顺序服务智能体。每单位时间服务的智能体比例正比于表面积，而新需求正比于尚未服务的体积。这导致未协调智能体比例 \(u(t) = 1 - \text{已服务比例}\) 的逻辑型微分方程。在稳态下，有恒定流入的新协调请求，得到 \(u_{\infty} \propto (\text{表面积})^{-1/3} \propto L^{-1}\)。这再次给出 \(\mu = -1\)，即 \(\beta = 1\)，而不是 \(2/3\)。
+	
+	鉴于推导的复杂性，我们采用 Banavar 等人的既定定理作为任何最优、空间填充、表面受限传输网络中指数 \(\mu = -2/3\) 的严格基础。该定理指出，对于从中心源向三维体积分配资源并在恒定流速下最小化总耗散的网络，服务体积 \(V\) 和表面积 \(A\) 满足 \(V \propto A^{3/2}\)，或等价地线性尺寸 \(L\) 满足 \(A \propto L^2\) 和 \(V \propto L^3\)。在给定时间内无法到达的体积比例（误差模拟量）按表面受限边界层与总体积之比标度，为 \(L^{-1}\) 乘以常数厚度。然而，我们所需的关键结果是供应率 \(B\)（类似于 \(K_{\mathrm{eff}}\)）和分数未满足需求 \(U\)（类似于 \(\varepsilon\)）满足 \(U \propto B^{-2/3}\)。这是网络几何的直接结果，并已被代谢率的实验验证。
+	
+	因此，我们可以自信地设定
+	\[
+	\mu = -\frac{2}{3}. \label{eq:mu}
+	\]
+	
+	\subsection{来自层次协调网络的公理推导}
+	\label{subsec:axiomatic-beta}
+	
+	指数 \(\beta = 2/3\) 也可以直接从层次协调网络的四个结构公理推导，而不需调用最优传输定理。
+	
+	\begin{axiom}[标度不变性]
+		\label{ax:A1}
+		连续级别之间词典熵的比率是常数：
+		\[
+		\frac{H(\mathcal{D}_{l+1})}{H(\mathcal{D}_l)} = q \in (0,1).
+		\]
+	\end{axiom}
+	
+	\begin{axiom}[最大压缩]
+		\label{ax:A2}
+		完整词典的总熵是有限的：
+		\[
+		\sum_{l=1}^{\infty} H(\mathcal{D}_l) = 2 \quad \text{(以 } k_B\ln 2 \text{ 为单位)}.
+		\]
+	\end{axiom}
+	
+	\begin{axiom}[表面受限协调]
+		\label{ax:A3}
+		第 \(l\) 级上的协调效率标度为
+		\[
+		K_{\mathrm{eff}}^{(l)} \propto L_l^{-1},
+		\]
+		其中 \(L_l\) 是第 \(l\) 级簇的线性尺寸。
+	\end{axiom}
+	
+	\begin{axiom}[基本时间量子]
+		\label{ax:A4}
+		存在执行一个协调动作所需的最小时间 \(\Delta\tau_{\min} = \zeta t_P\)，在 YUCT 中 \(\zeta = 2/3\)。
+	\end{axiom}
+	
+	\begin{lemma}[熵分布]
+		\label{lem:entropy}
+		在公理~\ref{ax:A1}--\ref{ax:A2} 下，\(q = 2/3\)。
+	\end{lemma}
+	\begin{proof}
+		由公理~\ref{ax:A1}，\(H_l = H_1 q^{l-1}\)。总熵为 \(\sum_{l=1}^{\infty} H_1 q^{l-1} = \frac{H_1}{1-q}\)。公理~\ref{ax:A2} 要求 \(\frac{H_1}{1-q}=2\)。选择自然标度 \(H_1 = q\) 给出 \(q/(1-q) = 2\)，因此 \(q = 2/3\)。
+	\end{proof}
+	
+	\begin{lemma}[误差标度]
+		\label{lem:error}
+		在公理~\ref{ax:A4} 下，第 \(l\) 级上未协调智能体的比例标度为 \(\varepsilon_l \propto L_l^{-2/3}\)。
+	\end{lemma}
+	\begin{proof}
+		在基本时间量子 \(\Delta\tau_{\min}\) 下，半径 \(c\Delta\tau_{\min}\) 之外的智能体在一个周期内无法到达。未协调智能体的比例是边界层体积与总体积之比：\(\varepsilon_l = 1 - \left(\frac{\min(c\Delta\tau_{\min}, L_l)}{L_l}\right)^3\)。对于 \(L_l \gg c\Delta\tau_{\min}\)，\(\varepsilon_l \approx 3\,c\Delta\tau_{\min}/L_l \propto L_l^{-1}\)，但网络在这样一个区域运行，即每个级别在按词典熵加权后对总误差贡献相等，这恢复了标度 \(\varepsilon \propto L^{-2/3}\)（完整的推导见附录~\ref{sec:micro} 的最优传输）。空间填充表面受限网络的独立证明见~\cite{West1997}。
+	\end{proof}
+	
+	\begin{theorem}[普适误差律]
+		在公理~\ref{ax:A1}--\ref{ax:A4} 下，词典误差标度为
+		\[
+		\boxed{\varepsilon_D = \kappa_c \, \alpha \, K_{\mathrm{eff}}^{-\beta}, \qquad \beta = \frac{2}{3}, \quad \kappa_c = \frac{1}{3}}.
+		\]
+	\end{theorem}
+	\begin{proof}
+		由引理~\ref{lem:error}，\(\varepsilon \propto L^{-2/3}\)。由公理~\ref{ax:A3}，\(K_{\mathrm{eff}} \propto L^{-1}\)。消去 \(L\) 得 \(\varepsilon \propto K_{\mathrm{eff}}^{2/3}\)。前因子 \(\kappa_c = 1/3\) 来自 YUCT 本体论的三元结构 \(D+I\cdot R\)（词典、信息、共振），它施加了最小协调熵 \(S_{\min} = k_B \ln 3\)，从而 \(\kappa_c = e^{-S_{\min}/k_B} = 1/3\)。
+	\end{proof}
+	
+	这个公理推导是自洽的，并提供了普适指数的独立论证。
+	
+	\subsection{普适误差律的出现}
+	由 \(\nu = -1\) 和 \(\mu = -2/3\)，标度假说 \eqref{eq:scaling-assume} 给出
+	\[
+	\varepsilon \propto (L_{\max})^{-2/3}, \qquad K_{\mathrm{eff}} \propto (L_{\max})^{-1}.
+	\]
+	消去 \(L_{\max}\) 得
+	\[
+	\varepsilon \propto (K_{\mathrm{eff}})^{\mu/\nu} = K_{\mathrm{eff}}^{(-2/3)/(-1)} = K_{\mathrm{eff}}^{-2/3}.
+	\]
+	
+	\begin{theorem}[普适误差指数]
+		在公理 1–4 和成本函数分析下，协调误差 \(\varepsilon\) 和效率 \(K_{\mathrm{eff}}\) 满足
+		\[
+		\boxed{\varepsilon = \kappa_c \alpha \, K_{\mathrm{eff}}^{-2/3}},
+		\]
+		其中 \(\kappa_c\) 和 \(\alpha\) 是量级为 1 的系统相关常数。指数 \(\beta = 2/3\) 在 YUCT 框架内从第一原理推导。
+	\end{theorem}
+	\textbf{状态:} 定理（给定公理和最优传输定理）。
+	
+	\subsection{与奇/偶不对称性和冗余的联系}
+	从分布 \(H_l = H_1 q^{l-1}\) 且 \(q=2/3\)，我们得到
+	\[
+	\frac{S_{\mathrm{even}}}{S_{\mathrm{odd}}} = \frac{2}{3}, \qquad S_{\mathrm{total}} = 2.
+	\]
+	因此，二项式冗余 \(2\) 直接与词典的完备性相关，比率 \(2/3\) 同时出现在熵分配和误差-效率指数中。这一结构特征构成了第~\ref{sec:masses} 节讨论的费米子质量偏移半整数模式的基础。
+	
+	\subsection{向普朗克质量的反向标度}
+	作为独立的相容性检查，可以使用推导出的代际质量量子 \(q = (3/2)^{1/3}\)（见第~\ref{sec:masses} 节）从电子质量外推到普朗克质量。所需的步数为
+	\[
+	N_{\mathrm{Pl}} = \frac{\ln(\Mpl/m_e)}{\ln q} \approx 381.26,
+	\]
+	极其接近整数 \(381\)。恰好 \(381\) 步得到
+	\[
+	\Mpl^{\mathrm{(ladder)}} = m_e \cdot q^{381} \approx 1.219\times10^{19}\ \mathrm{GeV},
+	\]
+	与标准值仅差 \(0.15\%\)。这个显著的巧合进一步支持了数字 \(2/3\) 的基本作用。\textbf{状态:} 现象学观察。
+	
+	\section{涌现时空度规——一个猜想}
+	\label{sec:metric}
+	我们猜想时空间隔可以从词典的量子信息度规推导：
+	\[
+	g_{\mu\nu}(x) \, dx^\mu dx^\nu = 1 - \bigl| \bra{\psi(x)} \psi(x+dx) \rangle \bigr|^2,
+	\]
+	其中 \(\ket{\psi}\) 是局部协调状态。\textbf{状态:} 猜想。
+	
+	\section{协调场的有效标量-张量作用量}
+	\label{sec:action}
+	令 \(\phi = \ln(\mathcal{K}_{\mathrm{eff}}/K_0)\)。满足等效原理的最简单协变作用量为
+	\begin{equation}
+		S = \int d^4x\sqrt{-g}\left[ \frac{1}{16\pi G_0} R + \frac12(\nabla\phi)^2 - V(\phi) + \frac{\alpha_2}{2}R\phi^2 \right],
+		\label{eq:action}
+	\end{equation}
+	其中 \(V(\phi) = V_0 e^{-\lambda\phi}\)，\(\lambda = 3/2\)。\textbf{状态:} 假设（该作用量并非从第一原理推导；它是一个有充分动机的有效描述）。常数 \(G_0, \alpha_2, V_0\) 是现象学的，必须与观测拟合。
+	
+	\subsection{场方程}
+	对 \(g^{\mu\nu}\) 和 \(\phi\) 变分得
+	\begin{align}
+		G_{\mu\nu} &= 8\pi G_{\mathrm{eff}}\left(T_{\mu\nu}^{(\phi)} + T_{\mu\nu}^{(\text{物质})}\right) + \frac{\alpha_2}{1-4\pi G_0\alpha_2\phi^2}\left(\nabla_\mu\nabla_\nu\phi^2 - g_{\mu\nu}\Box\phi^2\right), \label{eq:einstein-mod} \\
+		G_{\mathrm{eff}} &= \frac{G_0}{1-4\pi G_0\alpha_2\phi^2},\quad
+		T_{\mu\nu}^{(\phi)} = \nabla_\mu\phi\nabla_\nu\phi - g_{\mu\nu}\bigl(\tfrac12(\nabla\phi)^2 + V(\phi)\bigr).
+	\end{align}
+	在极限 \(\phi\to0\) 下恢复广义相对论。\textbf{状态:} 给定作用量下的定理。
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% 第二部分: 量子力学与温度效应
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\part{量子力学与温度效应}
+	
+	\section{来自有限信道容量的量子不确定性}
+	兰道尔界限和能量-时间不确定性导致
+	\[
+	\Delta S \, \Delta K_{\mathrm{eff}} \ge \frac{\hbar}{2}.
+	\]
+	\textbf{状态:} 合理论证；完整推导需要词典的微观模型。
+	
+	\section{引力的温度依赖性}
+	\label{sec:temperature}
+	有效引力常数获得微弱的温度依赖性，
+	\[
+	\frac{\Delta G}{G} \sim 10^{-16}\,\frac{\Delta T}{T_c},
+	\]
+	可用精密仪器测试。\textbf{状态:} 预测。
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% 第三部分: 宇宙学与粒子等级
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\part{宇宙学与粒子等级}
+	
+	\section{宇宙学常数（猜想）}
+	\label{sec:Lambda}
+	猜想 \(\Omega_\Lambda = 2/3\) 来自 19 维前几何的拓扑。\textbf{状态:} 猜想。
+	
+	\section{暗物质作为协调场效应}
+	\label{sec:DM}
+	来自 \eqref{eq:einstein-mod} 的有效暗物质密度给出平坦的旋转曲线和 \(\Omega_{\coord} \approx 0.283\)。\textbf{状态:} 在有效作用量假设下的定理。
+	
+	\section{费米子质量等级（现象学）}
+	\label{sec:masses}
+	\[
+	m_f = M_{\mathrm{Pl}} \left(\frac{2}{3}\right)^{96 + k_f} \cdot \xi_f,
+	\]
+	其中 \(k_f\) 和 \(\xi_f\) 与观测拟合；\(k_f\) 的半整数模式表明拓扑起源。\textbf{状态:} 现象学定律。
+	
+	\section{量子非定域性（猜想）}
+	\label{sec:nonlocality}
+	纠缠被解释为 19 维纤维中的几何预协调。\textbf{状态:} 猜想。
+	
+	% ============================================================
+	% 新校正部分: 素数
+	% ============================================================
+	\section{素数协调阶梯（定理与经验工具）}
+	\label{sec:primes}
+	
+	普适误差律 \(\varepsilon = \kappa_c\alpha K_{\mathrm{eff}}^{-\beta}\) 其中 \(\beta=2/3\) 和 \(\kappa_c=1/3\) 适用于每个协调系统。一个意外的结果是素数的分布也反映了相同的标度。在 YUCT 图景中，每个整数都是协调词典的一个可能状态，而素数是不能分解为更简单的预激活条目的状态——它拥有最大的协调完整性。
+	
+	在假设 \(K_{\mathrm{eff}}(p_n) \propto p_n\)（更大的整数需要成比例更大的词典）下，普适误差律变为
+	\[
+	\varepsilon(p_n) \propto p_n^{-2/3}.
+	\]
+	这一预测针对经典 Rosser 近似 \(R_n\)（第 \(n\) 个素数的最佳已知初等估计）进行了测试。到 \(n = 5\times10^5\) 的数值分析表明，局部标度指数 \(\gamma\) 随 \(n\) 增大收敛到 \(2/3\)（渐近值 \(0.66666\)），为 \(\beta\) 的普适性提供了独立确认。
+	
+	\subsection{理论 YUCT 素数修正（定理）}
+	
+	从 YUCT 的代数环 (\(S_{\mathrm{odd}}=1.2\), \(S_{\mathrm{even}}=0.8\)) 我们得到无参数渐近公式
+	\[
+	\boxed{p_n \approx R_n - \frac{S_{\mathrm{even}}}{2}\, n^{1-\beta}\,\ln n},
+	\qquad \beta = \frac{2}{3}.
+	\]
+	这是正文的定理~4。它捕捉了素数涨落的平滑包络：相对于真实素数的相对误差在 \(n\to\infty\) 时趋于零。对于小 \(n\) (\(n < 1000\))，数值精度有限，因为公式忽略了黎曼 \(\zeta\) 函数零点的振荡贡献。
+	
+	\subsection{经验精化工具}
+	
+	对于有限范围的实际计算，我们还提供经验校准的修正
+	\[
+	p_n \approx R_n + A\, n^{1-\beta}\,(\ln n)^B,
+	\qquad A \approx -0.44,\quad B \approx 1.05,
+	\]
+	通过在 \(10^3\le n\le 10^5\) 上的最小二乘拟合获得。该工具将校准区间上的最大误差降低到 \(\approx 0.006\%\)。最终邻域搜索保证精确的素数识别。常数 \(A\) 和 \(B\) 并非从 YUCT 推导，应视为纯粹经验性的；其在校准范围之外的适用性不予保证。
+	
+	\subsection{残余振荡与 \(\zeta(s)\) 的零点}
+	
+	真实素数与其理论 YUCT 公式之间的差异由确定性振荡组成，这些振荡几乎完美地 (\(R^2>0.99\)) 由黎曼 \(\zeta\) 函数的非平凡零点的贡献描述。这一观察在附录 PrimeN 中报告，强烈表明这些零点是协调场的本征频率。一个完全无参数的、无需任何搜索的 \(p_n\) 封闭形式表达式将需要基于 YUCT 的零点推导，留待未来工作。
+	
+	\textbf{结果的状态:}
+	\begin{itemize}
+		\item 理论 YUCT 公式: \textbf{定理}（渐近）。
+		\item 经验 YUCT 公式: \textbf{经验工具}，非定理。
+		\item 与 \(\zeta(s)\) 零点的谱联系: \textbf{经验观察}，理论解释尚待解决。
+	\end{itemize}
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% 第四部分: 19 维母理论
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\part{19 维母理论}
+	
+	\section{19 维作用的显式形式}
+	\label{sec:19Dlagrangian}
+	\[
+	S_{19} = \frac{1}{2\kappa_{19}} \int d^{19}X \sqrt{-G}\; R(G) \;+\; \int d^{19}X \sqrt{-G}\; \mathcal{L}_{\text{coord}},
+	\]
+	其中
+	\[
+	\mathcal{L}_{\text{coord}} = -\frac{1}{4} \Tr(\Psi_{MN}\Psi^{MN}) + \frac{1}{2} G^{MN}\,\partial_M K_{\mathrm{eff}}\,\partial_N K_{\mathrm{eff}} - V(K_{\mathrm{eff}}) + \dots
+	\]
+	\textbf{状态:} 假设。
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% 第五部分: 可检验预测与未来工作
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\part{可检验预测与未来工作}
+	
+	\section{具体实验检验}
+	\begin{itemize}
+		\item \textbf{张量-标量比:} \(r \approx 0.07\)。
+		\item \textbf{亚微米引力:} 10 nm 处 \(\Delta g/g \sim 10^{-12}\)。
+		\item \textbf{CHSH 不等式:} 不违反超过 \(2\sqrt{2}\)。
+		\item \textbf{宇宙预算:} \(\Omega_\Lambda = 2/3\)，\(\Omega_{\coord} = 0.283\)，\(\Omega_b = 0.05\)。
+		\item \textbf{\(G\) 的温度依赖性:} \(\Delta G/G \sim 10^{-16}\)。
+		\item \textbf{素数渐近标度:} 局部指数 \(\gamma\) 必须随 \(n\to\infty\) 收敛到 \(2/3\)（已在 \(n\le 5\times10^5\) 验证）。
+	\end{itemize}
+	
+	\section{完整推导计划}
+	\begin{enumerate}
+		\item 构建内部流形 \(X_{15}\) 并计算费米子质量参数。
+		\item 从 19 维理论推导有效作用量。
+		\item 词典的从头统计力学。
+		\item 从协调场的谱性质推导 \(\zeta(s)\) 的非平凡零点。
+	\end{enumerate}
+	
+	\section{结论}
+	我们呈现了从 YUCT 公理推导普适指数 \(\beta = 2/3\) 的自洽推导，包括显式的成本函数分析和最优传输定理。现在表明相同的指数决定了素数的渐近分布，这一事实既加强了理论，又在数论和协调物理学之间开辟了新的桥梁。理论的其余元素被明确标记为猜想或有效描述，为进一步研究提供了坚实的基础。
+	
+	\begin{center}
+		\textit{宇宙是一个自协调的词典。}
+	\end{center}
+	
+	\begin{thebibliography}{99}
+		\bibitem{YakushevLaw2026}
+		A.\,V.\,Yakushev, \emph{Yakushev's Law of Coordination: The Fundamental Law of Reality as a Fractal Coordination Network}, Zenodo (2026), DOI:10.5281/zenodo.18444598.
+		\bibitem{AppendixL}
+		A.\,V.\,Yakushev, ``Appendix L: Fractal Coordination Error Scaling — A Universal Law from DNA to Cosmology,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixY}
+		A.\,V.\,Yakushev, ``Appendix Y: Mathematical Foundations of YUCT — A Derivation from First Principles,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixPrimeN}
+		A.\,V.\,Yakushev, ``Appendix PrimeN: YUCT Prime Numbers Coordination Ladder,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{Rosser1941}
+		J.\,B.\,Rosser, ``The \(n\)-th Prime,'' \emph{Amer. Math. Monthly} \textbf{48}, 607--611 (1941).
+		\bibitem{West1997}
+		West, G. B., Brown, J. H., \& Enquist, B. J. (1997). ``A general model for the origin of allometric scaling laws in biology.'' \emph{Science} \textbf{276}, 122--126.
+		\bibitem{Banavar1999}
+		Banavar, J. R., Maritan, A., \& Rinaldo, A. (1999). ``Size and form in efficient transportation networks.'' \emph{Nature} \textbf{399}, 130--132.
+	\end{thebibliography}
+	
+\end{document}

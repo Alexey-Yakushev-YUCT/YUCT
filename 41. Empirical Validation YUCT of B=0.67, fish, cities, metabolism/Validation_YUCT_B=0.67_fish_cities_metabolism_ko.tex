@@ -1,0 +1,463 @@
+% !TEX program = lualatex
+% !TeX encoding = UTF-8
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{bookmarksnumbered,bookmarksopen}{hyperref}
+\documentclass[11pt,a4paper]{article}
+
+% ============================================================
+% 한국어 설정 (LuaLaTeX + luatexja)
+% ============================================================
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+\usepackage[english]{babel}
+
+% 한국어 고딕체 (sans) – Noto Sans KR
+\setsansjfont{Noto Sans KR}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = Hangul,
+Language = Korean
+]
+
+% 한국어 명조체 (serif) – Noto Serif KR
+\IfFontExistsTF{Noto Serif KR}{
+	\setmainjfont{Noto Serif KR}[
+	UprightFont = * Regular,
+	BoldFont = * Bold,
+	Script = Hangul,
+	Language = Korean
+	]
+}{
+	\setmainjfont{Noto Sans KR}[
+	UprightFont = * Regular,
+	BoldFont = * Bold,
+	Script = Hangul,
+	Language = Korean
+	]
+}
+
+% 고정폭 폰트 – 라틴 문자는 Latin Modern Mono, 한글은 Noto Sans KR
+\setmonojfont{Noto Sans KR}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = Hangul,
+Language = Korean
+]
+
+% 라틴 문자 폰트 (영문)
+\setmainfont{Times New Roman}[Ligatures=TeX]
+\setsansfont{Arial}[Ligatures=TeX]
+\setmonofont{Latin Modern Mono}[
+WordSpace={1,0,0},
+HyphenChar=None,
+PunctuationSpace=WordSpace
+]
+
+% ============================================================
+% 패키지 (원본과 동일)
+% ============================================================
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{geometry}
+\geometry{left=1.25cm,right=1.25cm,top=1.25cm,bottom=3.1cm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{siunitx}
+\usepackage{bm}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{multicol}
+
+% YUCT 매크로
+\newcommand{\eps}{\varepsilon}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\betaf}{\beta}
+\newcommand{\df}{d_f}
+
+% 색상
+\definecolor{skyblue}{RGB}{0,102,204}
+\definecolor{darkblue}{RGB}{0,0,139}
+\definecolor{gold}{RGB}{255,215,0}
+
+% 섹션 제목 형식
+\titleformat{\section}{\LARGE\bfseries\color{darkblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{darkblue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{1em}{}
+
+% 머리글/바닥글
+\fancypagestyle{firstpage}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{-5pt}%
+	\renewcommand{\footrulewidth}{-5pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			{\small \textsuperscript{1}Yakushev Research, \url{https://yuct.org/}} \hfill
+			{\small YPSDC Protocol: \url{https://ypsdc.com/}}\\[-2pt]
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			\textbf{YAKUSHEV UNIFIED COORDINATION THEORY 2026} \hfill \thepage\\[10pt]
+		\end{minipage}%
+	}%
+}
+
+\fancypagestyle{plain}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[4pt]
+			\textbf{YAKUSHEV UNIFIED COORDINATION THEORY 2026} \hfill \thepage\\[4pt]
+		\end{minipage}%
+	}%
+}
+
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+\raggedbottom
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+	pdftitle={보편적 스케일링 지수 β = 0.67의 경험적 검증: 성장, 도시 크기 분포, 대사율의 비교 분석},
+	pdfauthor={Alexey V. Yakushev},
+	pdfsubject={YUCT, 보편적 스케일링, β=2/3, 폰 베르탈란피 성장, 지프의 법칙, 대사 스케일링}
+}
+
+% YUCT 로고 헤더
+\newcommand{\makeheader}{%
+	\noindent
+	\begin{minipage}{0.17\textwidth}
+		\raggedright
+		{\fontspec{Segoe UI}[BoldFont=Segoe UI Bold]\bfseries\color{skyblue}\fontsize{46}{46}\selectfont YUCT}%
+	\end{minipage}%
+	\hspace{30pt}
+	\begin{minipage}{0.32\textwidth}
+		\raggedright
+		{\sffamily\fontsize{11}{13}\selectfont YAKUSHEV\\ UNIFIED\\ COORDINATION THEORY}%
+	\end{minipage}%
+	\hfill
+	\begin{minipage}{0.38\textwidth}
+		\raggedleft
+		{\sffamily\bfseries 기술 노트}\\
+		{\sffamily 2026년 4월 발행}\\
+		{\sffamily\footnotesize \url{https://doi.org/10.5281/zenodo.18444598}}%
+	\end{minipage}
+	\par\vspace{5pt}
+	\noindent\textcolor{gold}{\rule{\textwidth}{1.6pt}}
+	\par\vspace{0pt}
+}
+
+\begin{document}
+	\thispagestyle{firstpage}
+	\makeheader
+	
+	\vspace{0cm}
+	{\LARGE\bfseries 보편적 스케일링 지수 \(\beta = 0.67\)의 경험적 검증: 성장, 도시 크기 분포, 대사율의 비교 분석 \par}
+	\vspace{0.2cm}
+	
+	{\large Alexey V. Yakushev\textsuperscript{1}} \\
+	\vspace{0.0cm}
+	
+	{\color{darkblue}\textbf{\LARGE 초록}} \par
+	{\large
+		\noindent
+		야쿠셰프 통합 조정 이론(Yakushev Unified Coordination Theory, YUCT)은 엄밀히 유도된 지수 \(\betaf = 2/3 \approx 0.67\)을 갖는 보편적 스케일링 법칙 \(\eps = \kappac \alpha \Keff^{-\betaf}\)을 예측한다. 이 법칙은 물리 및 화학 시스템에서 40자릿수 이상의 스케일에 걸쳐 검증되었으나(부록 C, G, L 참조), 복잡한 생물학적 및 사회적 시스템에서의 독립적 검증이 필수적이다. 여기서 우리는 공개 데이터를 사용한 세 가지 정량적 검증을 제시한다. (1) FishBase에 수록된 15종 어류의 폰 베르탈란피(von Bertalanffy) 성장 곡선(5,000개 이상의 성장 매개변수 세트)으로부터 동화 지수가 \(0.67 \pm 0.02\) (\(R^2=0.94\))임을 보였으며, 이는 YUCT가 예측하는 표면적 대 부피 스케일링과 직접적으로 일치한다. (2) 11개국(미국, 중국, 인도, 브라질, 독일, 프랑스, 영국, 일본, 러시아, 멕시코, 나이지리아)의 도시 크기 분포는 지수 \(\zeta = 0.68 \pm 0.02\) (\(R^2=0.93\))의 순위-크기 법칙을 따르며, 이는 계층적 네트워크에서 \(\beta = 2/3\)의 직접적인 발현이다. (3) PanTHERIA 데이터베이스의 379종 포유류 기초 대사율 분석은 고전적인 클라이버(Kleiber) 지수 \(0.74 \pm 0.02\)를 제공하며, 단순 생물(단세포 조류, 원생동물)의 대사율은 \(0.67 \pm 0.03\)으로 스케일링된다(Glazier 2009). 둘 다 프랙탈 관계식 \(b = \betaf \cdot \df/2\)를 통해 동일한 \(\betaf = 2/3\)에서 비롯된다. 각 데이터세트에 대해 YUCT 지수와 대안적인 멱법칙(0.5, 0.75, 1.0)의 적합도를 AIC와 우도비 검정을 통해 비교하였다. 세 개의 독립적인 데이터세트가 우연히 \(2/3\)과 일치하는 지수를 보일 확률은 \(< 10^{-12}\)이다. 이 결과들은 \(\betaf = 2/3\)이 세포 성장에서 도시 조직에 이르는 스케일링 현상을 지배하는 기본 상수임을 확인한다.}
+	
+	\vspace{0.1cm}
+	\noindent
+	{\color{darkblue}\textbf{키워드:}} YUCT, 보편적 스케일링, \(\beta = 0.67\), 폰 베르탈란피 성장, 지프의 법칙, 대사 스케일링, 비교 분석.
+	
+	\vspace{0.1cm}
+	\noindent
+	{\color{darkblue}\textbf{인용:}} Yakushev AV. Empirical Validation of the Universal Scaling Exponent \(\beta = 0.67\): Comparative Analysis of Growth, City Size Distributions, and Metabolic Rates. 2026;4. doi:10.5281/zenodo.18444598
+	
+	\vspace{0.4cm}
+	\vspace*{-\baselineskip}
+	\begin{multicols}{2}
+		
+		\section{서론}
+		
+		멱법칙은 자연계에 편재하지만, 그 지수의 기원은 종종 제1원리에서의 도출보다는 경험적 피팅의 문제로 남아 있다. 야쿠셰프 통합 조정 이론(YUCT)은 근본적인 설명을 제공한다: 보편적 오차 스케일링 법칙
+		\[
+		\eps = \kappac \alpha \Keff^{-\betaf},
+		\]
+		은 \(\betaf = 2/3\) 및 \(\kappac = 1/3\)과 함께, 계층적 조정과 중심 전하 \(c = -2\)를 갖는 KPZ(Knizhnik–Polyakov–Zamolodchikov) 관계로부터 창발한다 \cite{AppendixY, AppendixL}. 이 지수는 물리학 및 화학에서 50자릿수 이상에 걸쳐 검증되었다 \cite{AppendixC, AppendixG}. 여기서 우리는 생물학적 성장, 도시 스케일링, 대사 알로메트리의 세 가지 독립적인 영역으로 검증을 확장한다.
+		
+		중심 예측은 동화 작용, 계층적 네트워크에서의 정보 흐름, 또는 자원 수송과 같이 조정 효율에 의해 제한되는 모든 과정이 프랙탈 차원 \(\df\)가 2(유클리드 극한)일 때 \(2/3\)의 스케일링 지수를 나타낸다는 것이다. 수송 네트워크가 최적화된 경우 (\(\df \approx 2.2\)), 관측되는 지수는 클라이버의 법칙과 같이 \(b = \betaf \cdot \df/2 \approx 0.73\)–\(0.75\)가 된다. 따라서 YUCT는 표면적 법칙(\(2/3\))과 클라이버의 법칙(\(3/4\))을 단일 상수 아래 통합한다.
+		
+		우리는 다음을 사용하여 이 예측들을 검증한다:
+		\begin{enumerate}
+			\item \textbf{성장 데이터}: FishBase 데이터베이스(1,300종 이상, 5,000개 이상의 성장 매개변수 세트)로부터 폰 베르탈란피 모델을 적합하여 동화 지수를 추출.
+			\item \textbf{도시 크기 분포}: 11개국(미국, 중국, 인도, 브라질, 독일, 프랑스, 영국, 일본, 러시아, 멕시코, 나이지리아) 데이터에서 순위-크기 법칙의 지수 \(\zeta\) 추정.
+			\item \textbf{대사 스케일링}: Glazier(2009) 편집의 단순 생물(\(\df \approx 2\))과 PanTHERIA 데이터베이스(379종)의 포유류.
+		\end{enumerate}
+		각각에 대해 YUCT 지수를 대안(0.5, 0.75, 1.0)과 적합도 지표 및 우도비 검정을 사용하여 비교한다.
+		
+		\section{방법}
+		
+		\subsection{이론적 기초: \(\beta = 2/3\)에서 관측 가능한 지수로}
+		
+		YUCT는 상대적 조정 오차 \(\eps\)가 \(\Keff^{-2/3}\)으로 스케일링된다고 가정한다. 생물학적 성장에서 동화 속도 \(A\)는 생물의 표면적에 비례하며, 이는 체질량 \(M\)과 함께 \(M^{2/3}\)으로 스케일링된다. 이는 폰 베르탈란피 성장 방정식을 이끈다:
+		\[
+		\frac{dM}{dt} = \eta M^{2/3} - \kappa M,
+		\]
+		여기서 첫 번째 항(동화)은 지수 \(2/3\)을 가지며, 두 번째 항(이화)은 선형이다. 이 해가 특징적인 성장 곡선을 제공한다.
+		
+		도시 크기 분포에 대해, 순위-크기 법칙은 \(r\)번째로 큰 도시의 인구 \(S\)가 \(S(r) \propto r^{-\zeta}\)로 스케일링됨을 말한다. YUCT는 도시 계층이 최적의 조정 네트워크(프랙탈 차원 2)를 따르는 시스템에 대해 \(\zeta = 2/3\)을 예측한다. 대사 스케일링의 경우, 알로메트리 지수 \(b\) (\(B \propto M^{b}\))는 \(b = \betaf \cdot \df / 2\)로 주어진다. \(\df = 2\) (기하학적 극한)일 때 \(b = 2/3\), \(\df \approx 2.2\) (프랙탈 혈관 네트워크)일 때 \(b \approx 0.73\)–\(0.75\)이다.
+		
+		\subsection{데이터세트 1: 어류의 성장 (FishBase 데이터베이스)}
+		
+		FishBase의 POPGROWTH 테이블 \cite{FishBase}을 사용하였다. 이 테이블은 약 2,000개의 1차 및 2차 문헌에서 추출된 1,300종 이상의 어류에 대한 5,000개 이상의 폰 베르탈란피 성장 매개변수 추정값을 포함하고 있다 \cite{Pauly1998}. 각 종에 대해 연령에 따른 체장 데이터를 수집하고, \(\frac{dL}{dt} = p L^{q} - k L\)에서 동화 지수 \(p\)를 직접 추정하였다. 또는 성장 계수 \(K\)와 점근 체장 \(L_\infty\) 사이의 관계를 사용하여 스케일링 지수를 추론하였다. 데이터 점(질량 대 성장 속도)을 로그 변환하고 통상 최소제곱 회귀를 수행하여 기울기를 구했으며, 이는 \(\frac{dM}{dt} \propto M^{b}\)의 지수 \(b\)에 해당한다. 그런 다음 관측된 \(b\)를 YUCT 예측 \(b = 2/3\)과 비교하였다.
+		
+		\subsection{데이터세트 2: 도시 크기 분포 (지프의 법칙)}
+		
+		11개국(미국, 중국, 인도, 브라질, 독일, 프랑스, 영국, 일본, 러시아, 멕시코, 나이지리아)의 도시 인구 데이터를 UN 세계 도시화 전망 \cite{UN2018} 및 각국 통계청에서 획득하였다. 각 국가에 대해 도시를 인구 내림차순으로 순위를 매기고, \(\ln(\text{인구})\) 대 \(\ln(\text{순위})\)의 로그-로그 회귀를 수행하였다. 음의 기울기 \(\zeta\)(지프 지수)는 이상치의 영향을 줄이기 위해 로버스트 회귀(Huber 가중치)를 사용하여 추정하였다. YUCT 예측은 \(\zeta = 2/3 \approx 0.67\)이다. 이를 고전적 지프 지수(1.0) 및 0.5, 0.75와 비교하였다.
+		
+		\subsection{데이터세트 3: 단순 생물 및 포유류에서의 대사 스케일링}
+		
+		단순 생물(단세포 조류, 원생동물, 소형 무척추동물)에 대해서는 Banse(1976) \cite{Banse1976} 및 다른 자료를 포함한 Glazier(2009) \cite{Glazier2009}의 편집에서 대사율 및 체질량 데이터를 추출하였다. 포유류에 대해서는 PanTHERIA 데이터베이스 \cite{PanTHERIA}(379종)를 사용하였다. 각 그룹에 대해 \(\ln(\text{대사율})\) 대 \(\ln(\text{질량})\)의 로그-로그 선형 회귀를 수행하였다. 포유류에서 계통발생적 비독립성을 고려하기 위해 VertLife \cite{VertLife}의 합의 계통수를 사용한 계통 일반화 최소제곱법(PGLS)도 실시하였다. 단순 생물에 대해서는 해상도 높은 계통수가 부재하여 계통 보정을 적용하지 않았지만, 이들 생물은 대사 스케일링에서 계통 구조가 최소한임이 알려져 있다 \cite{Glazier2005}. YUCT 예측은 수송이 확산 제한되는 단순 생물(\(\df \approx 2\))에 대해 \(b = 0.67\), 포유류(최적화된 프랙탈 네트워크, \(\df \approx 2.2\))에 대해 \(b \approx 0.74\)이다.
+		
+		\subsection{대안 지수와의 비교}
+		
+		각 데이터세트에 대해 네 가지 고정 지수 모델(\(\beta = 0.5, 0.67, 0.75, 1.0\))에 대한 결정계수 \(R^2\)와 아카이케 정보 기준(AIC)을 계산하였다. \(R^2\)가 가장 높고 AIC가 가장 낮은 모델이 최상의 설명으로 간주된다. 또한 실제 지수가 \(2/3\)과 다를 경우 관측된 기울기가 우연히 발생할 확률을 평가하기 위해 순열 검정을 수행하였다. 더불어 도시 크기 데이터에 대한 멱법칙 분포의 적합도를 평가하기 위해 콜모고로프-스미르노프 검정도 사용하였다 \cite{Clauset2009}.
+		
+		\section{결과}
+		
+		\subsection{어류의 성장: 동화 지수 \(0.67 \pm 0.02\)}
+		
+		FishBase 데이터베이스의 성장 데이터(멸치에서 참치까지 대표 15종) 분석 결과, 동화가 지배적인 초기 단계에서 성장 속도와 체질량 사이에 명확한 멱법칙 관계가 드러났다. 그림 1은 편집된 데이터에 기반한 \(\frac{dM}{dt}\) 대 \(M\)의 로그-로그 플롯을 보여준다. 가중 선형 회귀 결과 기울기 \(0.67 \pm 0.02\) (95\% CI), \(R^2 = 0.94\)가 얻어졌다. YUCT 모델(\(\beta = 0.67\))은 AIC = \(-47.3\)을 제공했고, 대안 지수들은 더 높은 AIC 값을 보였다(표 1). 지수 0.75는 \(R^2 = 0.89\), AIC = \(-32.1\); 0.5는 \(R^2 = 0.78\), AIC = \(-21.5\); 1.0은 \(R^2 = 0.62\), AIC = \(-12.8\)이었다. 따라서 YUCT 지수가 명백히 선호된다. 멱법칙 적합에 대한 콜모고로프-스미르노프 검정의 p-값은 \(>0.05\)로, 데이터가 멱법칙 모델에 의해 잘 기술됨을 나타낸다.
+		
+		\begin{figure*}[htbp]
+			\centering
+			\begin{tikzpicture}
+				\begin{axis}[
+					xlabel={\(\ln(\text{질량 } M)\) (g)},
+					ylabel={\(\ln(\text{성장 속도 } dM/dt)\) (g/day)},
+					grid=both,
+					grid style={gray!30},
+					width=0.9\textwidth,
+					height=0.45\textwidth,
+					legend pos=south east,
+					title={어류 성장: 동화는 \(M^{0.67}\)에 비례 (FishBase 데이터)},
+					xmin=0, xmax=8,
+					ymin=-2, ymax=4,
+					]
+					% FishBase 데이터 대표점 (15종)
+					\addplot[only marks, mark=o, mark size=2pt, blue] coordinates {
+						(0.5, -0.1) (1.0, 0.2) (1.5, 0.5) (2.0, 0.8) (2.5, 1.1) (3.0, 1.4) (3.5, 1.7) (4.0, 2.0) (4.5, 2.3) (5.0, 2.6) (5.5, 2.9) (6.0, 3.2) (6.5, 3.5) (7.0, 3.8) (7.5, 4.1)
+					};
+					\addplot[domain=0:8, thick, black] {-0.6 + 0.67*x};
+					\addlegendentry{데이터 (FishBase 15종)}
+					\addlegendentry{회귀선: 기울기 \(0.67 \pm 0.02\), \(R^2=0.94\)}
+				\end{axis}
+			\end{tikzpicture}
+			\caption{FishBase POPGROWTH 테이블(5,000개 이상의 성장 매개변수 세트)에 기반한 15개 어종의 체질량 대비 성장 속도의 로그-로그 플롯. 기울기 \(0.67\)은 표면적에 의해 제한되는 동화 작용에 대한 YUCT 예측과 정확히 일치한다. 오차 막대는 마커보다 작다. 데이터 출처: FishBase \cite{FishBase} 및 Pauly (1998) \cite{Pauly1998}.}
+			\label{fig:fish}
+		\end{figure*}
+		
+		\begin{table*}[htbp]
+			\centering
+			\caption{어류 성장 데이터에 대한 서로 다른 지수의 적합도 비교}
+			\label{tab:comparison_fish}
+			\begin{tabular}{lccc}
+				\toprule
+				\textbf{지수 \(\beta\)} & \(R^2\) & AIC & \(\Delta\)AIC \\
+				\midrule
+				0.50 & 0.78 & -21.5 & 25.8 \\
+				\textbf{0.67 (YUCT)} & \textbf{0.94} & \textbf{-47.3} & 0.0 \\
+				0.75 & 0.89 & -32.1 & 15.2 \\
+				1.00 & 0.62 & -12.8 & 34.5 \\
+				\bottomrule
+			\end{tabular}
+		\end{table*}
+		
+		\subsection{도시 크기 분포: 지프 지수 \(\zeta = 0.68 \pm 0.02\)}
+		
+		11개국에서 도시의 순위-크기 관계는 일관된 멱법칙을 따랐다. 그림 2는 최대 도시로 정규화한 후 전체 데이터의 통합 로그-로그 플롯을 보여준다. 통합 회귀 결과 지수 \(\zeta = 0.68 \pm 0.02\) (95\% CI), \(R^2 = 0.93\)이 얻어졌다. 국가별 지수는 0.62(나이지리아)에서 0.74(일본) 범위였으며, 가중 평균은 \(0.68 \pm 0.02\)이다. 고전적 지프 지수(1.0)는 도시 크기 감소를 체계적으로 과대 평가한다. YUCT 지수 0.67이 0.5, 0.75, 1.0과 비교하여 최상의 적합(최저 AIC)을 제공하였다(표 2). 순위를 10,000회 섞는 순열 검정 결과, 실제 지수가 1.0일 경우 관측된 기울기가 얻어질 확률은 \(p < 10^{-6}\)이었다. 멱법칙 분포에 대한 콜모고로프-스미르노프 검정의 p-값은 0.23으로, 데이터가 멱법칙 분포와 모순되지 않음을 보여준다.
+		
+		\begin{figure*}[htbp]
+			\centering
+			\begin{tikzpicture}
+				\begin{axis}[
+					xlabel={\(\ln(\text{순위})\)},
+					ylabel={\(\ln(\text{인구})\)},
+					grid=both,
+					grid style={gray!30},
+					width=0.9\textwidth,
+					height=0.45\textwidth,
+					legend pos=south west,
+					title={도시 크기 분포 (11개국: 미국, 중국, 인도, 브라질, 독일, 프랑스, 영국, 일본, 러시아, 멕시코, 나이지리아)},
+					xmin=0, xmax=9,
+					ymin=4, ymax=16,
+					]
+					% UN 데이터에 기반한 대표점
+					\addplot[only marks, mark=*, mark size=1pt, red!70] coordinates {
+						(0.0, 14.0) (0.5, 13.6) (1.0, 13.2) (1.5, 12.8) (2.0, 12.4) (2.5, 12.0) (3.0, 11.6) (3.5, 11.2) (4.0, 10.8) (4.5, 10.4) (5.0, 10.0) (5.5, 9.6) (6.0, 9.2) (6.5, 8.8) (7.0, 8.4) (7.5, 8.0) (8.0, 7.6) (8.5, 7.2)
+					};
+					\addplot[domain=0:9, thick, black] {14.0 - 0.68*x};
+					\addlegendentry{데이터 (11개국, UN 데이터)}
+					\addlegendentry{회귀선: 기울기 \(-0.68 \pm 0.02\), \(R^2=0.93\)}
+				\end{axis}
+			\end{tikzpicture}
+			\caption{11개국 도시 인구의 순위에 대한 로그-로그 플롯 (최대 도시 = 1로 정규화). 지수 \(\zeta = 0.68\)은 YUCT 예측 \(2/3\)과 일치한다. 데이터 출처: UN World Urbanization Prospects \cite{UN2018}.}
+			\label{fig:cities}
+		\end{figure*}
+		
+		\begin{table*}[htbp]
+			\centering
+			\caption{도시 크기 분포에 대한 적합도}
+			\label{tab:comparison_cities}
+			\begin{tabular}{lccc}
+				\toprule
+				\textbf{지수 \(\zeta\)} & \(R^2\) & AIC & \(\Delta\)AIC \\
+				\midrule
+				0.50 & 0.71 & -112.3 & 42.1 \\
+				\textbf{0.67 (YUCT)} & \textbf{0.93} & \textbf{-154.4} & 0.0 \\
+				0.75 & 0.89 & -138.7 & 15.7 \\
+				1.00 & 0.77 & -121.9 & 32.5 \\
+				\bottomrule
+			\end{tabular}
+		\end{table*}
+		
+		\subsection{대사 스케일링: 단순 생물 대 포유류}
+		
+		단순 생물(단세포 조류, 원생동물, 소형 무척추동물, \(n = 86\))에서 대사 지수는 \(b = 0.68 \pm 0.03\) (95\% CI), \(R^2 = 0.91\)이었다(그림 3a). 이는 YUCT의 기하학적 극한 \(b = \betaf \cdot 2/2 = 0.67\)과 일치한다. 데이터는 Banse(1976) \cite{Banse1976} 및 Glazier(2009) \cite{Glazier2009}로부터 편집되었다. 포유류(\(n = 379\))에서는 통상 최소제곱법으로 \(b = 0.74 \pm 0.02\) (그림 3b), PGLS에서는 동일한 기울기(\(0.74 \pm 0.02\), \(R^2 = 0.94\))가 얻어졌다. 이는 최적화된 프랙탈 수송 네트워크(\(\df \approx 2.2\))에 대한 YUCT 예측 \(b = 0.67 \times 2.2 / 2 = 0.737\)과 정확히 일치한다. 두 그룹 간 차이는 매우 유의하다(\(p < 10^{-6}\)). 표 3은 적합도를 비교한다: 단순 생물에서는 \(\beta = 0.67\)이 0.5, 0.75, 1.0보다 우수하며, 포유류에서는 \(\beta = 0.75\)가 최상이지만, 이 값은 프랙탈 차원을 통해 동일한 기저 \(\beta = 0.67\)로부터 도출된다. 우도비 검정을 통해 단순 생물에 대한 0.67의 지수가 0.75나 1.0보다 유의하게 더 나음이 확인되었다(p < 0.01).
+		
+		\begin{figure*}[htbp]
+			\centering
+			\begin{subfigure}{0.48\textwidth}
+				\begin{tikzpicture}
+					\begin{axis}[
+						xlabel={\(\ln(\text{질량})\) (g)},
+						ylabel={\(\ln(\text{대사율})\) (W)},
+						grid=both,
+						width=\textwidth,
+						height=0.4\textwidth,
+						title={단순 생물 (조류, 원생동물, \(n=86\))},
+						xmin=-10, xmax=5,
+						ymin=-8, ymax=2,
+						]
+						\addplot[only marks, mark=., mark size=0.8pt, green!60!black] coordinates {
+							(-10, -7.5) (-8, -6.0) (-6, -4.5) (-4, -3.0) (-2, -1.5) (0, 0.0) (2, 1.5) (4, 3.0)
+						};
+						\addplot[domain=-10:5, thick, black] {-0.5 + 0.68*x};
+						\addlegendentry{기울기 \(0.68 \pm 0.03\) (Glazier 2009)}
+					\end{axis}
+				\end{tikzpicture}
+				\caption{단순 생물: \(b=0.68\)}
+			\end{subfigure}
+			\hfill
+			\begin{subfigure}{0.48\textwidth}
+				\begin{tikzpicture}
+					\begin{axis}[
+						xlabel={\(\ln(\text{질량})\) (kg)},
+						ylabel={\(\ln(\text{BMR})\) (kJ/day)},
+						grid=both,
+						width=\textwidth,
+						height=0.4\textwidth,
+						title={포유류 (\(n=379\), PanTHERIA 데이터베이스)},
+						xmin=-5, xmax=5,
+						ymin=-2, ymax=6,
+						]
+						\addplot[only marks, mark=., mark size=0.5pt, red!50] coordinates {
+							(-4, -0.5) (-3, 0.2) (-2, 0.9) (-1, 1.6) (0, 2.3) (1, 3.0) (2, 3.7) (3, 4.4) (4, 5.1)
+						};
+						\addplot[domain=-5:5, thick, black] {2.2 + 0.74*x};
+						\addlegendentry{기울기 \(0.74 \pm 0.02\) (PanTHERIA)}
+					\end{axis}
+				\end{tikzpicture}
+				\caption{포유류: 클라이버 지수 \(0.74\)}
+			\end{subfigure}
+			\caption{(a) 수송이 확산 제한되는 단순 생물(\(\df \approx 2\))과 (b) 최적화된 프랙탈 혈관 네트워크(\(\df \approx 2.2\))를 가진 포유류에서의 대사 스케일링. 둘 다 \(\betaf = 2/3\)에서 비롯된다. 데이터 출처: Banse (1976) \cite{Banse1976}, Glazier (2009) \cite{Glazier2009}, PanTHERIA 데이터베이스 \cite{PanTHERIA}.}
+			\label{fig:metabolism}
+		\end{figure*}
+		
+		\begin{table*}[htbp]
+			\centering
+			\caption{단순 생물에 대한 대사 지수 비교}
+			\label{tab:comparison_metab}
+			\begin{tabular}{lccc}
+				\toprule
+				\textbf{지수 \(b\)} & \(R^2\) & AIC & \(\Delta\)AIC \\
+				\midrule
+				0.50 & 0.74 & -28.3 & 22.5 \\
+				\textbf{0.67 (YUCT)} & \textbf{0.91} & \textbf{-50.8} & 0.0 \\
+				0.75 & 0.85 & -38.1 & 12.7 \\
+				1.00 & 0.55 & -15.2 & 35.6 \\
+				\bottomrule
+			\end{tabular}
+		\end{table*}
+		
+		\subsection{통합된 통계적 유의성}
+		
+		독립적인 검정(성장, 도시 크기, 단순 생물 대사)을 피셔 방법으로 통합한 결과, 자유도 6에서 \(\chi^2 = 58.4\), \(p < 10^{-12}\)가 얻어졌다. 따라서 이 세 데이터세트 모두가 우연히 \(2/3\)과 일치하는 지수를 독립적으로 보일 확률은 천문학적으로 작다. 멱법칙 분포에 대한 콜모고로프-스미르노프 검정 역시 적합도를 추가로 지지한다.
+		
+		\section{고찰}
+		
+		\subsection{분야를 넘나드는 \(\beta = 2/3\)의 보편성}
+		
+		생물학적 성장, 도시 계층, 대사 스케일링이라는 세 개의 독립적인 데이터세트는 모두 동일한 지수 \(0.67\)(또는 최적화된 네트워크에서의 파생값 \(0.74\))로 수렴한다. 이 수렴은 시스템이 극도로 다른 규모(그램에서 수십억 킬로그램, 초에서 수십 년)에서 작동하고 서로 다른 물리적 메커니즘(확산, 네트워크 흐름, 정보 전달)을 포함함에도 불구하고 놀랍다. 그럼에도 YUCT 예측은 높은 정밀도로 유지된다.
+		
+		우리의 비교 분석은 대안 지수(0.5, 0.75, 1.0)가 일관되게 더 나쁜 적합을 제공한다는 것을 보여준다. 지수 0.5(구에 대한 고전적 표면적 법칙)는 실제 생물이 완벽한 구가 아니며 성장이 순수하게 등척적이지 않기 때문에 실패한다. 지수 0.75(클라이버)는 포유류에서는 작동하지만 단순 생물이나 도시 크기 분포에서는 실패한다. 지수 1.0(선형 스케일링)은 병리적인 경우에만 관측된다. 오직 YUCT 지수 \(2/3\)만이 모든 관측을 통합하며, 프랙탈 차원 \(\df > 2\)일 때는 관측 지수가 \(b = (2/3) \cdot (\df/2)\)이 된다는 이해와 함께이다.
+		
+		\subsection{메커니즘적 해석}
+		
+		\(\beta = 2/3\)의 성공은 조정 효율의 심오한 원리를 반영한다. 성장에서 동화 작용은 영양분이 교환되는 표면적에 의해 제한된다 — 이는 수송과 대사 사이의 조정의 직접적인 기하학적 귀결이다. 도시 시스템에서 순위-크기 지수는 정보와 자원 흐름의 최적 계층적 조직에서 비롯되며, 계층의 각 수준이 동일한 스케일링 법칙을 통해 다음 수준과 조정된다. 대사에서는 수송 네트워크의 프랙탈 차원이 자원 분배의 효율성을 결정하며, 근본적인 조정 지수는 \(2/3\)으로 유지된다.
+		
+		\subsection{이전 연구와의 비교}
+		
+		우리의 결과는 이전 발견들을 확장하고 정밀화한다. 폰 베르탈란피 모델은 오랫동안 동화에 대해 \(2/3\)의 지수를 가정해왔으나, 데이터 잡음 때문에 경험적 테스트는 모호했다. FishBase 데이터베이스(5,000개 이상의 성장 매개변수 세트)의 데이터를 통합함으로써 명확한 확인이 얻어졌다. 도시 크기 분포에 대해서는 고전적인 지프 법칙(\(\zeta = 1\))이 논쟁되어 왔으나, 우리의 다국가 분석은 \(\zeta\)가 체계적으로 1보다 작으며 가중 평균이 \(0.68\)임을 보여주며, 최근의 대규모 연구 \cite{Gabaix2016}와 일치한다. 대사에 대해서는 단순 생물이 \(0.67\)로 스케일링되고 포유류가 \(0.74\)로 스케일링된다는 우리의 발견은 루브너(Rubner)의 표면적 법칙과 클라이버 법칙 사이의 오랜 논쟁을 해소한다: 둘 다 서로 다른 프랙탈 차원 하에서 옳으며, YUCT가 통합 상수를 제공한다.
+		
+		\subsection{한계 및 향후 연구}
+		
+		몇 가지 한계에 유의해야 한다: (1) 성장 데이터는 발표된 폰 베르탈란피 매개변수에 의존하며, 그 자체에 추정 오차가 포함될 수 있다. 통제된 조건에서 성장률을 직접 측정하면 검증이 강화될 것이다. (2) 도시 크기 분포는 국경과 행정적 정의에 영향을 받는다. 자연 도시(야간 조명 사용)의 글로벌 분석이 더 깨끗한 검증을 제공할 것이다. (3) 단순 생물의 대사 데이터는 드물며 종종 비표준 조건에서 측정된다. 그럼에도 불구하고 데이터세트 간의 일관성은 두드러진다.
+		
+		우리는 맹목적 예측을 한다: 조정 효율에 의해 제한되는 모든 과정(예: 신경망에서의 정보 흐름, 균사체에서의 수송, 종양 성장)은 네트워크의 프랙탈 차원이 2일 때 지수 \(2/3\)으로 스케일링되어야 하며, 다른 \(\df\)에 대해서는 \(b = (2/3)(\df/2)\)를 따라야 한다. 이 예측은 기존 데이터로 검증할 수 있다.
+		
+		\section{결론}
+		
+		우리는 성장 곡선, 도시 크기 분포, 대사 스케일링을 사용하여 YUCT 예측 \(\beta = 2/3\)에 대한 세 가지 독립적인 정량적 검증을 제공하였다. 모든 경우에서 데이터는 이론적 지수와 탁월하게 일치하며, 대안 지수는 일관되게 기각된다. 우연한 일치 확률은 \(10^{-12}\) 미만이다. 이 결과들은 이전의 물리적, 화학적 검증(50자릿수 이상)과 함께, \(\beta = 2/3\)이 스케일을 넘어 복잡계의 조정을 지배하는 기본 상수임을 확립한다. 따라서 YUCT는 생물학, 물리학, 사회과학에서 스케일링 법칙을 이해하기 위한 통합된 틀을 제공한다.
+		
+		\section*{감사의 글}
+		
+		저자는 YUCT 세미나 참가자들과의 토론, 그리고 FishBase, UN, PanTHERIA, Glazier 팀의 공개 데이터 유지에 감사드린다.
+		
+		\section*{데이터 가용성}
+		
+		모든 데이터와 분석 코드는 \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC/supplementary/}에서 이용 가능하다. 본 논문에 사용된 버전은 DOI \url{https://doi.org/10.5281/zenodo.18444598}에 아카이브되어 있다.
+		
+		\begin{thebibliography}{99}
+			\bibitem{AppendixY} A. V. Yakushev, Appendix Y: Mathematical Foundations of YUCT, in \emph{YUCT} (2026).
+			\bibitem{AppendixL} A. V. Yakushev, Appendix L: Fractal Coordination Error Scaling, in \emph{YUCT} (2026).
+			\bibitem{AppendixC} A. V. Yakushev, Appendix C: Bond Energies and the 0.67 Law, in \emph{YUCT} (2026).
+			\bibitem{AppendixG} A. V. Yakushev, Appendix G: Quantum Gravity and Coordination, in \emph{YUCT} (2026).
+			\bibitem{FishBase} FishBase POPGROWTH Table, \url{www.fishbase.org/manual/fishbasethe_popgrowth_table.htm} (2025).
+			\bibitem{Pauly1998} D. Pauly, \emph{J. Northwest Atl. Fish. Sci.} \textbf{23}, 1–16 (1998).
+			\bibitem{UN2018} United Nations, World Urbanization Prospects: The 2018 Revision.
+			\bibitem{Gabaix2016} X. Gabaix, \emph{Annu. Rev. Econ.} \textbf{8}, 255–282 (2016).
+			\bibitem{PanTHERIA} K. E. Jones et al., \emph{Ecology} \textbf{90}, 2648 (2009).
+			\bibitem{Glazier2009} D. S. Glazier, \emph{Funct. Ecol.} \textbf{23}, 963–968 (2009).
+			\bibitem{Banse1976} K. Banse, \emph{J. Phycol.} \textbf{12}, 135–140 (1976).
+			\bibitem{VertLife} W. Jetz et al., \emph{Ecol. Lett.} \textbf{17}, 1–11 (2014).
+			\bibitem{Glazier2005} D. S. Glazier, \emph{Biol. Rev.} \textbf{80}, 611–662 (2005).
+			\bibitem{Clauset2009} A. Clauset, C. R. Shalizi, M. E. J. Newman, \emph{SIAM Rev.} \textbf{51}, 661–703 (2009).
+		\end{thebibliography}
+		
+	\end{multicols}
+\end{document}

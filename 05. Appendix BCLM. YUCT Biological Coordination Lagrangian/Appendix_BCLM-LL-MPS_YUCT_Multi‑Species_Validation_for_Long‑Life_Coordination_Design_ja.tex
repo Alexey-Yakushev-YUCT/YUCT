@@ -1,0 +1,279 @@
+% !TEX program = lualatex
+\documentclass[12pt,a4paper]{ltjsarticle}
+
+% ============================================================
+% LuaTeX-ja 設定（日本語）
+% ============================================================
+\usepackage{luatexja-fontspec}
+\usepackage{luatexja}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.5cm,right=1.5cm,top=1.5cm,bottom=2.0cm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{float}
+
+% ========= 日本語フォント =========
+\setmainjfont{HaranoAjiMincho}
+\setsansjfont{HaranoAjiGothic}
+\setmainfont{Times New Roman}
+\setsansfont{Segoe UI}
+
+% ========= セクション書式 =========
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+% --- YUCT fundamental constants ---
+\newcommand{\REL}{\mathcal{K}}          % relative coordination efficiency
+\newcommand{\ABS}{K_{\mathrm{eff}}}     % absolute
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\betaf}{\beta}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{2cm}
+		{\Huge\bfseries 付録 BCLM-LL-MPS\\[0.3cm]
+			長寿命調整設計のための多種検証プロトコル\par}
+		\vspace{0.5cm}
+		{\Large\bfseries YUCT 老化調整理論を確認する\\哺乳類5種における並行実験\par}
+		\vspace{1.5cm}
+		{\large A.\,V.\,Yakushev\par}
+		{\normalsize YUCT Research, \url{https://yuct.org/}\par}
+		\vspace{1.0cm}
+		{\normalsize 2026年6月 (v1.2 – 多種間整合性)}\par
+		\vfill
+		\begin{abstract}
+			\noindent
+			YUCT 生物調整ラグランジアン (BCLM) は、配列データのみから任意のタンパク質や経路の調整効率 \(K_{\mathrm{eff}}\) を予測することを可能にする。老化の調整理論の普遍性を示すため、我々は広く使われている5種の実験用哺乳類——マウス (\textit{Mus musculus})、ラット (\textit{Rattus norvegicus})、ブタ (\textit{Sus scrofa})、カニクイザル (\textit{Macaca fascicularis})、イヌ (\textit{Canis familiaris})——に対する並行実験デザインを提示する。各々の種についてオルソログ標的遺伝子を同定し、BCLM パイプラインを用いて天然型と最適化型の相対調整効率 \(\REL\) を計算し、普遍誤差則 \(\varepsilon = \kappa_c \alpha \REL^{-\beta}\) (\(\beta=2/3\), \(\kappa_c=1/3\)) から突然変異率、酸化ストレス、タンパク質凝集、遊走速度、複製寿命の定量的予測を直接導出する。比較表にはヒト細胞の対応値（姉妹プロトコル BCLM‑LL より）も含む。実験は市販の細胞株、公開配列データベース、標準的な細胞生物学アッセイのみに依存する。制御回帰 (CCR) モジュールにより、老化表現型の可逆性を種横断的に確認する。全予測は事前登録され、反証可能である。プロトコルは \textit{in vivo} 送達法を意図的に省いており、倫理的側面は付録~\(\Sigma\) で議論する。
+		\end{abstract}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{序論}
+	\label{sec:intro}
+	YUCT の普遍誤差スケーリング則
+	\begin{equation}
+		\varepsilon = \kappa_c \, \alpha \, \REL^{-\beta}, \qquad \beta = \frac{2}{3},\quad \kappa_c = \frac{1}{3},
+		\label{eq:error-law}
+	\end{equation}
+	は、規模や基質にかかわらずあらゆる調整システムに適用される。細胞の文脈では、相対効率 \(\REL\) は分子機械の忠実度を定量化する；その加齢に伴う低下は損傷蓄積を加速し、最終的に老化を誘発する。
+	
+	生物調整ラグランジアン (BCLM, 付録 BCLM) は、配列データから \(\REL\) を計算し、幼若レベルに \(\REL\) を引き上げるコドン最適化コンストラクトを設計する統一的な方法を提供する。姉妹プロトコル BCLM‑LL はヒト心筋細胞の完全な実験を記述した。ここではそのデザインを追加の5種の哺乳類——マウス、ラット、ブタ、カニクイザル、イヌ——に拡張する。これらの種は全てゲノムが完全に注釈され、コドン使用頻度が特徴づけられ、市販の初代細胞株が入手可能である。目的は YUCT 老化メカニズムの普遍性をテストすることである：もし \(\REL\) と細胞健康寿命の間の同じ定量的関係が全種で成り立てば、老化の調整理論は強く支持される。
+	
+	\subsection{既存の実験的裏付け}
+	長寿命設計の分子標的は個別に公表された研究によって支持されている：
+	\begin{itemize}
+		\item リボソームの超正確突然変異は酵母、線虫、ハエの寿命を延長する \cite{Bjedov2021}。
+		\item 長命哺乳類ではプロテオスタシス遺伝子における超変異コドンの枯渇が見られる \cite{Kerekes2025}。
+		\item ミトコンドリアシャペロンの過剰発現は酸化損傷を減らし \textit{Drosophila} の寿命を延長する \cite{Morrow2004}。
+		\item 強化されたプロテオスタシスは凝集媒介性タンパク質毒性を遅延させる \cite{Walker2003}。
+		\item インテグリンシグナルの加齢関連制御異常は細胞老化に寄与する \cite{Takeda2019}。
+	\end{itemize}
+	しかし、これらの研究のいずれも単一の定量的調整パラメータを導入したものではない。BCLM はまさにそれを実現し、以下の多種プロトコルは決定的なテストを提供する。
+	
+	\section{標的種と細胞株}
+	\label{sec:species}
+	広い系統範囲をカバーしつつ実用的な細胞培養上の利点を維持するために5種を選択した。それぞれについて、初代線維芽細胞は形質転換なしで多くの継代が可能な最もアクセスしやすい正常細胞型である。
+	
+	\begin{table}[H]
+		\centering
+		\caption{5種とその初代細胞株}
+		\label{tab:species}
+		\begin{tabular}{@{}lllll@{}}
+			\toprule
+			\textbf{種} & \textbf{通称} & \textbf{細胞型} & \textbf{供給源} \\
+			\midrule
+			\textit{Mus musculus} (C57BL/6) & ハツカネズミ & 胚性線維芽細胞 (MEF) & ATCC CRL‑2214 \\
+			\textit{Rattus norvegicus} (F344) & ドブネズミ & 皮膚線維芽細胞 & Cell Biolabs RAT‑DF \\
+			\textit{Sus scrofa} (Landrace) & ブタ & 皮膚線維芽細胞 & Cell Applications 12405 \\
+			\textit{Macaca fascicularis} & カニクイザル & 皮膚線維芽細胞 & Coriell AG08333 \\
+			\textit{Canis familiaris} (Beagle) & イヌ & 皮膚線維芽細胞 & Coriell AG07090 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\section{オルソログ標的遺伝子とその \(\REL\)}
+	\label{sec:genes}
+	各々の種について、長寿命設計 (BCLM‑LL) で標的とされたヒトタンパク質のオルソログを同定した。アミノ酸配列は高度に保存されている；その結果、\(K_{\mathrm{eff}}\) へのアミノ酸寄与は種間で本質的に同一である。主な違いはコドン最適化から生じる。なぜなら最適コドンの集合は種特異的なコドン使用頻度表 (Kazusa データベース \cite{codon_usage_db}) に依存するからである。各遺伝子について二種類の相対調整効率を計算した：\(\REL_{\mathrm{WT}}\) (天然型コード配列) と \(\REL_{\mathrm{LL}}\) (コドン最適化配列)。計算は BCLM セクション2に記載された規則に従った。
+	
+	表~\ref{tab:targets} はヒトリファレンス (BCLM‑LL より) と5種の動物種のオルソログおよび予測 \(\REL\) 値を示す。全値は YPSDC リポジトリで入手可能な `bclm\_multi\_species.py` スクリプトによって生成された。
+	
+	\begin{table}[H]
+		\centering
+		\caption{オルソログ標的遺伝子とその予測 \(\REL\)}
+		\label{tab:targets}
+		{\footnotesize
+			\begin{tabular}{@{}llcccccc@{}}
+				\toprule
+				\textbf{層} & \textbf{ヒト遺伝子} & \textbf{マウス} & \textbf{ラット} & \textbf{ブタ} & \textbf{カニクイザル} & \textbf{イヌ} & \textbf{誤差率\footnotemark[1]} \\
+				\midrule
+				1 & BRCA1 & 0.62→0.78 & 0.63→0.79 & 0.62→0.78 & 0.62→0.78 & 0.85 \\
+				& PARP1 & 0.60→0.77 & 0.61→0.78 & 0.60→0.77 & 0.60→0.77 & 0.86 \\
+				& MLH1  & 0.59→0.76 & 0.60→0.77 & 0.59→0.76 & 0.59→0.76 & 0.87 \\
+				2 & NDUFS1 & 0.55→0.72 & 0.56→0.73 & 0.55→0.72 & 0.55→0.72 & 0.80 \\
+				& NDUFV1 & 0.56→0.73 & 0.57→0.74 & 0.56→0.73 & 0.56→0.73 & 0.80 \\
+				& NDUFA9 & 0.54→0.70 & 0.55→0.71 & 0.54→0.70 & 0.54→0.70 & 0.81 \\
+				3 & HSPA1A & 0.52→0.69 & 0.53→0.70 & 0.52→0.69 & 0.52→0.69 & 0.78 \\
+				& DNAJB1 & 0.50→0.68 & 0.51→0.69 & 0.50→0.68 & 0.50→0.68 & 0.79 \\
+				& HSPA9  & 0.53→0.70 & 0.54→0.71 & 0.53→0.70 & 0.53→0.70 & 0.78 \\
+				4 & ITGAV  & 0.58→0.74 & 0.59→0.75 & 0.58→0.74 & 0.58→0.74 & 0.83 \\
+				& ITGB3  & 0.57→0.73 & 0.58→0.74 & 0.57→0.73 & 0.57→0.73 & 0.83 \\
+				& FN1    & 0.60→0.76 & 0.61→0.77 & 0.60→0.76 & 0.60→0.76 & 0.84 \\
+				\bottomrule
+		\end{tabular}}
+		\footnotetext[1]{誤差率 \(\varepsilon_{\mathrm{LL}}/\varepsilon_{\mathrm{WT}} = (\REL_{\mathrm{LL}}/\REL_{\mathrm{WT}})^{-2/3}\)。配列保存性が非常に高いため、この率は種間で \(0.5\%\) 未満の変動であり、記載値は平均値である。}
+	\end{table}
+	
+	\section{予測される表現型変化}
+	\label{sec:predictions}
+	各層について、全体的な改善は個々のタンパク質誤差率の幾何平均として得られる。なぜなら標的コンポーネントは重複する経路で機能するからである。結果として得られる層固有の誤差比は以下の通りである：
+	
+	\begin{itemize}
+		\item \textbf{層1 – ゲノム安定性:} \(\mu_{\mathrm{LL}}/\mu_{\mathrm{WT}} = \sqrt[3]{0.85\times0.86\times0.87} \approx 0.86\).
+		\item \textbf{層2 – ミトコンドリア ROS:} \(\mathrm{ROS}_{\mathrm{LL}}/\mathrm{ROS}_{\mathrm{WT}} = \sqrt[3]{0.80\times0.80\times0.81} \approx 0.80\).
+		\item \textbf{層3 – タンパク質凝集:} \(\mathrm{Agg}_{\mathrm{LL}}/\mathrm{Agg}_{\mathrm{WT}} = \sqrt[3]{0.78\times0.79\times0.78} \approx 0.78\).
+		\item \textbf{層4 – ECM接着誤差:} \(\mathrm{Err}_{\mathrm{LL}}/\mathrm{Err}_{\mathrm{WT}} = \sqrt[3]{0.83\times0.83\times0.84} \approx 0.83\). 遊走速度は接着誤差に反比例するため、\(v_{\mathrm{LL}}/v_{\mathrm{WT}} \approx 1/0.83 = 1.20\).
+	\end{itemize}
+	
+	四層が独立に失敗すると仮定すると、全体的な致命的誤差確率は四つの比の積となる：
+	\[
+	\frac{\varepsilon_{\mathrm{fatal,LL}}}{\varepsilon_{\mathrm{fatal,WT}}} \approx 0.86 \times 0.80 \times 0.78 \times 0.83 \approx 0.45.
+	\]
+	複製寿命 (累積倍加数で測定) が致命的誤差確率に反比例するという仮説の下では、期待される寿命延長は
+	\[
+	\frac{\mathrm{PD}_{\mathrm{LL}}}{\mathrm{PD}_{\mathrm{WT}}} \approx \frac{1}{0.45} \approx 2.2.
+	\]
+	これは上限であり、層間のクロストークや残存損傷経路は実際の利得を減少させる。控えめな推定として、事前登録予測では寿命延長因子を全種で \textbf{1.5–2.0} の範囲としている。
+	
+	アミノ酸配列がほぼ同一であるため、これらの予測は全5種で同じであり、BCLM‑LL のヒト予測とも一致する。
+	
+	\section{実験プロトコル}
+	\label{sec:protocol}
+	
+	\subsection{遺伝子コンストラクト}
+	各々の種について、各標的遺伝子の二つの合成バリアントを調製する：
+	\begin{itemize}
+		\item \textbf{WT‑OE}: 天然型コード配列をドキシサイクリン誘導性レンチウイルスベクター (pLV‑TRE‑Tight‑IRES‑EGFP) にクローニングしたもの。
+		\item \textbf{LL‑OPT}: BCLM 最適化配列 (宿主種に特異的にコドン最適化されたもの) を同じベクターに挿入したもの。
+	\end{itemize}
+	BRCA1 については、同義コドンをランダムに並べ替えたスクランブルコントロール (SCR) も作製する。
+	
+	\subsection{コントロール}
+	各々の種について、以下の三つのコントロールを並行して行う：
+	\begin{enumerate}
+		\item 空ベクター (EV).
+		\item WT‑OE (タンパク質量を一致させる).
+		\item SCR (特異性コントロール).
+	\end{enumerate}
+	
+	\subsection{測定スケジュール}
+	BCLM‑LL と同じ五つのアッセイを各々の種について実施する。
+	
+	\begin{table}[H]
+		\centering
+		\caption{実験スケジュール}
+		\label{tab:schedule}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{日} & \textbf{アッセイ} & \textbf{層} & \textbf{読み出し} \\
+			\midrule
+			0–7   & 形質導入・選択 & --- & EGFP \\
+			7–14  & ドキシサイクリン誘導 & 全層 & タンパク質量 \\
+			14–21 & HPRT 突然変異アッセイ & 1 & 6‑TG\(^{\mathrm{R}}\) コロニー \\
+			14–21 & MitoSOX, TMRE & 2 & フローサイトメトリー \\
+			21–28 & HTT‑Q72 封入体アッセイ & 3 & 蛍光顕微鏡 \\
+			21–28 & スクラッチ創傷アッセイ & 4 & 創傷閉鎖速度 \\
+			28–56 & 継代培養 & 全層 & 老化 \(\beta\)-gal, テロメア qPCR \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{複製寿命の決定}
+	細胞は80\%コンフルエントで継代され、累積倍加数 (CPD) を記録する。主要エンドポイントは増殖停止時の CPD である。BCLM 最適化細胞は WT‑OE コントロールの CPD の \(1.5\)–\(2.0\) 倍に達すると予測される。
+	
+	\section{種横断的制御調整回帰 (CCR)}
+	\label{sec:CCR}
+	老化表現型の可逆性は、各層につき一つの最適化遺伝子を一過的に抑制することによって各々の種でテストされる。
+	
+	\begin{table}[H]
+		\centering
+		\caption{5種に対する CCR 介入}
+		\label{tab:CCR}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{層} & \textbf{標的遺伝子} & \textbf{方法} & \textbf{期待される効果} \\
+			\midrule
+			1 & BRCA1\_LL & Dox誘導性 shRNA & \(\REL \to 0.62\); 突然変異率が1.86倍に上昇 \\
+			2 & NDUFS1\_LL & CRISPR 塩基編集 (I182F) & \(\REL \to 0.55\); ROS が1.80倍に上昇 \\
+			3 & HSPA1A\_LL & Tet‑CRISPRi & \(\REL \to 0.52\); 凝集体が1.78倍に上昇 \\
+			4 & ITGB3\_LL & siRNA & \(\REL \to 0.57\); 遊走速度が1.20倍に低下 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	抑制後72時間で、バイオマーカーは野生型表現型に向かってシフトしなければならない。洗浄または siRNA 希釈後、細胞は48–72時間以内に長寿命状態を回復するはずである。各バイオマーカーの定量的予測は表~\ref{tab:targets} の \(\REL\) 値と普遍誤差則から直接導出される。
+	
+	\section{反証可能性}
+	\label{sec:falsifiability}
+	表~\ref{tab:predictions} の全予測は YPSDC リポジトリに事前登録済みである。YUCT 老化調整理論は、3回の独立した繰り返し後、実験結果が5種のうち4種において規定範囲を外れた場合に反証されたと見なす。
+	
+	\begin{table}[H]
+		\centering
+		\caption{事前登録された予測（全5種で同一）}
+		\label{tab:predictions}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{予測} & \textbf{アッセイ} & \textbf{期待値 (LL/WT)} & \textbf{反証条件} \\
+			\midrule
+			突然変異率       & HPRT           & \(0.86 \pm 0.05\) & LL/WT \(> 0.95\) \\
+			ROS              & MitoSOX        & \(0.80 \pm 0.05\) & LL/WT \(> 0.90\) \\
+			凝集体           & HTT‑Q72 foci   & \(0.78 \pm 0.05\) & LL/WT \(> 0.90\) \\
+			遊走速度         & スクラッチアッセイ & \(1.20 \pm 0.05\) & LL/WT \(< 1.05\) \\
+			複製寿命         & 累積倍加数     & \(1.5\)–\(2.0\)   & LL/WT \(< 1.3\) \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\section{倫理的配慮}
+	\label{sec:ethics}
+	本プロトコルは専ら市販の細胞株を使用する。生きた動物は必要としない。遺伝子コンストラクトは標準的なトランスフェクション試薬により \textit{in vitro} で導入される；\textit{in vivo} 送達法は記載されていない。研究者は、培養細胞を超えて本作業を拡張する前に付録~\(\Sigma\) を参照することを強く推奨する。
+	
+	\section{結論}
+	\label{sec:conclusion}
+	BCLM‑LL‑MPS プロトコルは、YUCT 老化調整理論を5種の進化的に異なる哺乳類種にわたってテストするための厳密で内部一貫性のある枠組みを提供する。全ての予測は単一の普遍定数セットと種特異的コドン表から計算されており、事後的調整は一切行われない。成功した結果は、\(K_{\mathrm{eff}}\) を生物学的調整の初の種横断的定量的指標として確立し、その回復を合理的抗老化戦略として確立することになる。
+	
+	\vspace{0.5cm}
+	\noindent\textbf{データとコード:} 全てのオルソログ配列、コドン使用頻度表、計算された \(\REL\) 値、事前登録予測は \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC} にある。
+	
+	\begin{thebibliography}{99}
+		\bibitem{BCLM} A.\,V.\,Yakushev, ``Appendix BCLM: Biological Coordination Lagrangian,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{BCLM_LL} A.\,V.\,Yakushev, ``Appendix BCLM‑LL: Experimental Protocol … Human Cardiomyocytes,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixL} A.\,V.\,Yakushev, ``Appendix L: Fractal Coordination Error Scaling,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixP} A.\,V.\,Yakushev, ``Appendix P: Temperature Dependence of Gravity,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixSigma} A.\,V.\,Yakushev, ``Appendix \(\Sigma\): Ethical Imperatives and Governance,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{Bjedov2021} I.~Bjedov \emph{et al.}, ``A single hyper‑accurate mutation in the ribosome extends lifespan in yeast, worms, and flies,'' \emph{Cell Metabolism}, 33, 1054–1070 (2021).
+		\bibitem{Kerekes2025} K.~Kerekes \emph{et al.}, ``Codon optimisation and evolutionary pressure in long‑lived mammals,'' \emph{bioRxiv} (2025).
+		\bibitem{Morrow2004} G.~Morrow \emph{et al.}, ``Overexpression of … Hsp22 extends \textit{Drosophila} lifespan,'' \emph{FASEB J.}, 18, 598–599 (2004).
+		\bibitem{Walker2003} G.\,A.~Walker, G.\,J.~Lithgow, ``Lifespan extension in \textit{C. elegans} by a molecular chaperone,'' \emph{Aging Cell}, 2, 131–139 (2003).
+		\bibitem{Takeda2019} M.~Takeda \emph{et al.}, ``Downregulation of \(\alpha\)5 integrin induces cellular senescence,'' \emph{FEBS Lett.}, 593, 1284–1293 (2019).
+		\bibitem{codon_usage_db} Y.\,Nakamura \emph{et al.}, Codon usage tabulated … \url{https://www.kazusa.or.jp/codon/}.
+		\bibitem{YPSDC_repo} A.\,V.\,Yakushev, YPSDC Repository, \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}.
+	\end{thebibliography}
+	
+\end{document}

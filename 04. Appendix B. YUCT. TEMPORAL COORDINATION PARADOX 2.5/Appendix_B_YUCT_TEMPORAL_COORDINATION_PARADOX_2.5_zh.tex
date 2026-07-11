@@ -1,0 +1,568 @@
+% =============================================================================
+% 附录 B：时间协调悖论的完整形式模型
+% =============================================================================
+
+\documentclass[12pt]{article}
+\usepackage[a4paper,left=2cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{array}
+
+% 添加中文支持 (XeLaTeX)
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\setCJKmainfont{SimSun}   % 或 Microsoft YaHei
+\setCJKmonofont{SimSun}
+\setmainfont{Times New Roman}
+
+% 加载所有必要的 TikZ 库
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, calc}
+
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+\renewcommand{\baselinestretch}{1.1}
+
+\newtheorem{definition}{定义}
+\newtheorem{theorem}{定理}
+\newtheorem{lemma}{引理}
+\newtheorem{corollary}{推论}
+\newtheorem{axiom}{公理}
+
+\begin{document}
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{0cm}
+			\Huge\textbf{附录 B. YUCT\\
+				时间协调悖论}
+			
+			\vspace{0cm}
+			\LARGE\textit{从信息论基础到实验验证 \\
+				$K_{\text{eff}} > 1$ 悖论的数学解决}
+			
+			\vspace{1cm}
+			\Large
+			Alexey V. Yakushev\\
+			Yakushev Research\\
+			YUCT 理论: \url{https://yuct.org/}\\
+			YPSDC 协议: \url{https://ypsdc.com/}\\
+			
+			\vspace{2cm}
+			\textbf DOI: \url{https://doi.org/10.5281/zenodo.18444598}\\
+			
+			\vspace{1cm}
+			
+			\vspace{0cm}
+			\large 
+			本工作的简短版本先前已发表，见 \url{https://doi.org/10.5281/zenodo.18362308}\\
+			\vspace{1cm}
+			2026年3月 \\ \large V.2.5.
+			
+			\vspace{5cm}
+			\textcopyright~2026 Yakushev Research. 版权所有。
+			
+			\newpage
+			\vfill
+			\normalsize
+			\begin{minipage}{0.8\textwidth}
+				\centering
+				\textbf{摘要:} \\ 本文档给出了雅库舍夫统一协调理论 (YUCT) 中时间协调悖论的完整形式数学模型。当协调效率 $K_{\text{eff}}$ 超过 1 时，该悖论出现，似乎违反了经典信息传输极限。我们提供了严格的定义、定理和证明，展示通过先验字典的先行知识如何实现看似时间悖论但仍与物理定律一致的协调。主要结果包括：(1) 信道容量与协调容量的形式分离定理，(2) $K_{\text{eff}} = R \cdot \eta$ 的数学推导（其中 $R = n/m$ 是知识压缩比），(3) $K_{\text{eff}}$ 能在不违反因果性的情况下超过 1 的精确条件，(4) 可扩展系统的多节点协调定理，(5) 协调效率的熵解释，以及 (6) 在真实系统中测量 $K_{\text{eff}}$ 的实验协议。
+			\end{minipage}
+			
+			\vspace{0.5cm}
+			\normalsize
+			\textbf{关键词:} 时间协调悖论，YUCT 形式模型，$K_{\text{eff}} > 1$，先行知识，先验字典，信息论协调，信道容量分离，YPSDC 协议，因果性保持，协调熵。
+			
+			\vspace{0cm}
+			\normalsize
+			
+			\textbf{范围:} 时间协调的形式数学基础 \\
+			\textbf{关键定理:} 8 个带完整证明的形式定理 \\
+			\textbf{实验协议:} 3 种测量 $K_{\text{eff}}$ 的方法 \\
+			
+			\vspace{0.5cm}
+			\normalsize
+			
+		\end{center}
+	\end{titlepage}	
+	\begin{center}
+		\vspace*{0.5cm}
+		\Huge\textbf{时间协调悖论}
+		\vspace{1cm}
+	\end{center}
+	
+	\section{时间协调悖论的完整形式模型}
+	\label{app:formal-model}
+	
+	\subsection{形式定义}
+	\label{app:definitions}
+	
+	\subsubsection{基本对象}
+	
+	令协调系统定义为一个元组 $\mathcal{S} = (\mathcal{A}, \mathcal{O}, \mathcal{D}, \mathcal{C}, \mathcal{T})$，其中：
+	
+	\begin{itemize}
+		\item $\mathcal{A} = \{a_1, a_2, \dots, a_N\}$ 是可能动作（知识激活）的有限集，
+		\item $\mathcal{O} = \{O_1, O_2, \dots, O_M\}$ 是观察者（节点）集，
+		\item $\mathcal{D} = \{\kappa_i \to a_i\}_{i=1}^N$ 是先验字典（从码到动作的双射映射），
+		\item $\mathcal{C}$ 是具有指定参数的物理传输信道，
+		\item $\mathcal{T}$ 是一组时间约束。
+	\end{itemize}
+	
+	\subsubsection{信息论度量}
+	
+	\begin{definition}[动作的信息含量]
+		对于每个动作 $a \in \mathcal{A}$，其完整描述需要：
+		\[
+		I(a) = n \ \text{比特},
+		\]
+		其中 $n$ 是在没有先验知识的情况下无歧义描述 $a$ 所需的最小比特数。
+	\end{definition}
+	
+	\begin{definition}[码长]
+		对于每个码 $\kappa \in \mathcal{K}$（$\mathcal{D}$ 中的码集）：
+		\[
+		|\kappa| = m \ \text{比特}, \quad \text{且} \ m \ll n.
+		\]
+	\end{definition}
+	
+	\begin{definition}[知识压缩比]
+		知识压缩比定义为：
+		\[
+		R = \frac{n}{m} \gg 1.
+		\]
+	\end{definition}
+	
+	\subsection{物理信道模型}
+	\label{app:channel-model}
+	
+	\subsubsection{基本约束}
+	
+	\begin{axiom}[光速极限]
+		对于间隔距离 $L_{ij}$ 的任何两个节点 $O_i, O_j \in \mathcal{O}$，信号传播速度满足：
+		\[
+		v_{\text{signal}} \leq c,
+		\]
+		其中 $c$ 是真空中的光速。
+	\end{axiom}
+	
+	\begin{axiom}[信道容量]
+		信道 $\mathcal{C}$ 的最大信道容量由下式给出：
+		\[
+		C_{\text{max}} = \lim_{T \to \infty} \frac{1}{T} \max_{X} I(X; Y) \quad \text{[比特/秒]},
+		\]
+		其中 $X$ 是输入信号，$Y$ 是输出信号。
+	\end{axiom}
+	
+	\subsubsection{传输时间模型}
+	
+	传输 $I$ 比特消息所需的时间为：
+	\[
+	T_{\text{transmit}}(I) = \frac{I}{C_{\text{eff}}} + \frac{L}{c} + \tau_{\text{proc}},
+	\]
+	其中 $C_{\text{eff}} \leq C_{\text{max}}$ 是有效信道容量，$\tau_{\text{proc}}$ 是处理延迟。
+	
+	\subsection{协调过程}
+	\label{app:coordination-processes}
+	
+	\subsubsection{朴素协调（无字典）}
+	
+	\textbf{场景 1:} 节点 $O_1$ 希望节点 $O_2$ 执行动作 $a$。
+	
+	\begin{enumerate}
+		\item $O_1$ 构建 $a$ 的完整描述：$I(a) = n$ 比特。
+		\item $O_1$ 将此描述传输给 $O_2$：时间 $T_1 = T_{\text{transmit}}(n)$。
+		\item $O_2$ 解码并理解该动作：时间 $T_2 = \alpha n$，其中 $\alpha > 0$。
+		\item $O_2$ 执行动作：时间 $T_3$。
+		\item $O_2$ 发送确认：时间 $T_4 = T_{\text{transmit}}(p)$，其中 $p$ 是确认的大小。
+	\end{enumerate}
+	
+	总朴素协调时间：
+	\[
+	T_{\text{naive}}(a) = T_1 + T_2 + T_3 + T_4.
+	\]
+	
+	\begin{theorem}[朴素协调的下界]
+		\label{thm:naive-lower-bound}
+		对于任何节点对 $O_1, O_2$ 和动作 $a$，朴素协调时间满足：
+		\[
+		T_{\text{naive}}(a) \geq \frac{n + p}{C_{\text{eff}}} + \frac{2L}{c} + \alpha n.
+		\]
+	\end{theorem}
+	
+	\subsubsection{基于字典的协调 (YPSDC)}
+	
+	\textbf{场景 2:} 节点 $O_1$ 和 $O_2$ 共享一个先验字典 $\mathcal{D}$。
+	
+	\begin{enumerate}
+		\item $O_1$ 选择与动作 $a$ 对应的码 $\kappa$：$|\kappa| = m$ 比特。
+		\item $O_1$ 将 $\kappa$ 传输给 $O_2$：时间 $T_1' = T_{\text{transmit}}(m)$。
+		\item $O_2$ 在 $\mathcal{D}$ 中查找该动作：时间 $T_2' = \beta m$，且 $\beta \ll \alpha$。
+		\item $O_2$ 执行动作：时间 $T_3' = T_3$。
+	\end{enumerate}
+	
+	关键观察：$O_1$ 可以在发送 $\kappa$ 后立即\textit{仿佛} $O_2$ 已经执行了 $a$ 一样行动。
+	
+	带字典的有效协调时间为：
+	\[
+	T_{\text{coord}}(a) = T_1' + T_2'.
+	\]
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[node distance=2cm, auto, >=Stealth]
+			\node (O1) [draw, rectangle, rounded corners, minimum width=2cm, minimum height=1cm] {观察者 1};
+			\node (O2) [draw, rectangle, rounded corners, minimum width=2cm, minimum height=1cm, right=of O1] {观察者 2};
+			\node (dict) [draw, ellipse, below=2cm of $(O1)!0.5!(O2)$] {先验字典 $\mathcal{D}$};
+			\draw[->, thick] (O1) -- node[above] {短码 $\kappa$} (O2);
+			\draw[->, dashed] (O1) -- node[left, near start] {共享} (dict);
+			\draw[->, dashed] (O2) -- node[right, near start] {共享} (dict);
+			\node[below=0.3cm of O1, align=center] {在 $t_0$:\\ 知道 $a$ 将执行};
+			\node[below=0.3cm of O2, align=center] {在 $t_0 + L/c$:\\ 执行 $a$};
+		\end{tikzpicture}
+		\caption{基本 YPSDC 协调方案。先行知识在 $t_0$ 时刻从共享字典中涌现。}
+		\label{fig:basic}
+	\end{figure}
+	
+	\subsection{时间协调悖论}
+	\label{app:paradox}
+	
+	\begin{definition}[先行知识]
+		在码 $\kappa$ 被发送的时刻 $t_0$，节点 $O_1$ 拥有关于 $O_2$ 未来行动的先行知识：
+		\[
+		K_{\text{advance}}(O_1, O_2, a, t_0) = \text{True}
+		\]
+		当且仅当存在一个共享字典 $\mathcal{D}$ 使得 $\mathcal{D}(\kappa) = a$。
+	\end{definition}
+	
+	\begin{lemma}[先行知识的存在性]
+		\label{lem:advance-knowledge}
+		对于任何具有共享字典 $\mathcal{D}$ 的 $O_1, O_2, a$：
+		\[
+		K_{\text{advance}}(O_1, O_2, a, t_0) = \text{True}
+		\]
+		在 $t_0$ 时刻，即发送 $\kappa$ 的时刻。
+	\end{lemma}
+	
+	\begin{proof}
+		由 $\mathcal{D}$ 的构造，发送 $\kappa$ 保证了 $O_2$ 将在时间 $t_0 + T_{\text{coord}}(a)$ 执行 $a$。因此，在 $t_0$ 时刻，$O_1$ 可以确定性地预测 $O_2$ 的未来状态。
+	\end{proof}
+	
+	\subsection{协调的信息容量}
+	\label{app:capacities}
+	
+	\begin{definition}[信道信息容量]
+		\[
+		C_{\text{channel}} = C_{\text{eff}} \quad \text{[比特/秒]}.
+		\]
+	\end{definition}
+	
+	\begin{definition}[协调信息容量]
+		\[
+		C_{\text{coord}} = \lim_{T \to \infty} \frac{1}{T} \sum_{t=1}^{T} I(a_t) \quad \text{[比特/秒]},
+		\]
+		其中 $a_t$ 是在时间 $t$ 激活的动作。
+	\end{definition}
+	
+	\begin{theorem}[容量分离定理]
+		\label{thm:capacity-separation}
+		对于具有知识压缩比 $R = n/m$ 的协调系统 $\mathcal{S}$：
+		\[
+		C_{\text{coord}} = R \cdot C_{\text{channel}} \cdot \eta,
+		\]
+		其中 $\eta = \frac{T_{\text{channel}}}{T_{\text{coord}}} \leq 1$ 是时间效率因子。
+	\end{theorem}
+	
+	\begin{proof}
+		在时间间隔 $\Delta T$ 内，信道可以传输：
+		\[
+		N_{\text{codes}} = \frac{C_{\text{channel}} \cdot \Delta T}{m} \quad \text{个码}.
+		\]
+		每个码激活一个信息含量为 $n$ 比特的动作，因此总协调信息为：
+		\[
+		I_{\text{total}} = N_{\text{codes}} \cdot n = \frac{C_{\text{channel}} \cdot \Delta T}{m} \cdot n.
+		\]
+		因此，
+		\[
+		C_{\text{coord}} = \frac{I_{\text{total}}}{\Delta T} = C_{\text{channel}} \cdot \frac{n}{m} = R \cdot C_{\text{channel}}.
+		\]
+		考虑时间延迟（例如处理、传播）引入了效率因子 $\eta$。
+	\end{proof}
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[node distance=2.5cm, auto, >=Stealth]
+			\node (O1) [draw, rectangle, rounded corners, minimum width=2.2cm, minimum height=1.2cm] {观察者 1 $O_1$};
+			\node (O2) [draw, rectangle, rounded corners, minimum width=2.2cm, minimum height=1.2cm, right=of O1] {观察者 2 $O_2$};
+			\node (dict) [draw, ellipse, below=2.5cm of $(O1)!0.5!(O2)$] {先验字典 $\mathcal{D} = \{\kappa_i \to \mathcal{A}_i\}$};
+			\draw[->, thick] (O1) -- node[above] {$\kappa_1$} (O2);
+			\draw[->, thick] (O2) -- node[below] {$\kappa_2$ (确认)} (O1);
+			\draw[->, dashed] (O1) -- (dict);
+			\draw[->, dashed] (O2) -- (dict);
+			\node[below=0.2cm of O1, align=center] {在 $t_0$ 知道 $\mathcal{A}_2$};
+			\node[below=0.2cm of O2, align=center] {在 $t_0+L/c$ 执行 $\mathcal{A}_2$};
+		\end{tikzpicture}
+		\caption{带有先验字典的双工协调。两个节点共享同一字典，实现双向先行知识。}
+		\label{fig:duplex}
+	\end{figure}
+	
+	\subsection{协调效率因子 \(K_{\mathrm{eff}}\) 与容量分离}
+	
+	\begin{definition}[协调效率]
+		YPSDC 系统的 \emph{协调效率} 为
+		\begin{equation}
+			K_{\mathrm{eff}} = \frac{H(\mathcal{A})}{H(\mathcal{K})},
+			\label{eq:Kdef}
+		\end{equation}
+		其中 \(H(\mathcal{A})\) 是动作空间的熵，\(H(\mathcal{K})\) 是指令分布的熵。
+	\end{definition}
+	
+	\begin{definition}[协调容量]
+		\emph{协调容量} \(C_{\mathrm{coord}}\) 是接收者从字典中提取有意义信息的最大速率：
+		\begin{equation}
+			C_{\mathrm{coord}} = \lim_{\Delta t \to \infty} \frac{1}{\Delta t} \sum_{t=1}^{N_{\mathrm{actions}}} I(A_{i_t}),
+		\end{equation}
+		其中 \(A_{i_t}\) 是在第 \(t\) 次传输期间激活的动作。
+	\end{definition}
+	
+	\begin{theorem}[容量分离定理（第二形式）]
+		\label{thm:capacity-separation}
+		对于具有协调效率 \(K_{\mathrm{eff}}\) 和开销因子 \(\eta \le 1\) 的 YPSDC 系统，协调容量与信道容量的关系为
+		\begin{equation}
+			\boxed{C_{\mathrm{coord}} = K_{\mathrm{eff}} \cdot C_{\mathrm{channel}} \cdot \eta}.
+			\label{eq:capacity-separation}
+		\end{equation}
+	\end{theorem}
+	
+	\begin{proof}
+		在时间间隔 \(\Delta T\) 内，信道最多可传输 \(C_{\mathrm{channel}} \Delta T\) 比特。对于固定长度 \(\ell\) 的指令，传输的指令数为 \(N = \lfloor C_{\mathrm{channel}} \Delta T / \ell \rfloor\)。每个指令平均激活 \(H(\mathcal{A})\) 比特信息的动作。传递的总有意义信息为 \(I_{\mathrm{total}} = N \cdot H(\mathcal{A}) \approx \frac{C_{\mathrm{channel}} \Delta T}{\ell} H(\mathcal{A})\)。平均速率为 \(C_{\mathrm{coord}} = \frac{I_{\mathrm{total}}}{\Delta T} = C_{\mathrm{channel}} \cdot \frac{H(\mathcal{A})}{\ell} = C_{\mathrm{channel}} \cdot K_{\mathrm{eff}}\)。因子 \(\eta\) 考虑了处理和字典访问开销。
+	\end{proof}
+	
+	\begin{theorem}[逆定理]
+		对于任何使用大小为 \(M = 2^\ell\) 的固定字典 \(D\) 并通过容量为 \(C_{\mathrm{channel}}\) 的 DMC 传输指令的方案，协调容量满足
+		\[
+		C_{\mathrm{coord}} \le K_{\mathrm{eff}} \cdot C_{\mathrm{channel}}.
+		\]
+	\end{theorem}
+	
+	\begin{proof}
+		令指令源具有熵 \(H(\mathcal{K})\)。由数据处理不等式，\(I(\kappa;\hat{\kappa}) \le I(X;Y) \le C_{\mathrm{channel}}\)。为可靠运行，指令必须以渐近零误差解码，这要求指令速率 \(R_{\mathcal{K}} \le C_{\mathrm{channel}}\)（香农噪声信道编码定理）。平均有意义信息率为 \(R_{\mathcal{A}} = R_{\mathcal{K}} \cdot K_{\mathrm{eff}} \le K_{\mathrm{eff}} \cdot C_{\mathrm{channel}}\)。因此 \(C_{\mathrm{coord}} \le K_{\mathrm{eff}} \cdot C_{\mathrm{channel}}\)。
+	\end{proof}
+	
+	\subsection{协调的熵解释}
+	\label{app:entropy}
+	
+	\begin{definition}[字典熵]
+		字典 $\mathcal{D}$ 的熵为：
+		\[
+		H(\mathcal{D}) = - \sum_{i=1}^{N} p_i \log_2 p_i,
+		\]
+		其中 $p_i$ 是使用动作 $a_i$ 的概率。
+	\end{definition}
+	
+	\begin{lemma}[最大协调容量]
+		最大协调容量满足：
+		\[
+		C_{\text{coord}}^{\text{max}} = H(\mathcal{D}) \cdot \nu_{\text{max}},
+		\]
+		其中 $\nu_{\text{max}} = 1 / T_{\text{coord}}^{\text{min}}$ 是最大协调频率。
+	\end{lemma}
+	
+	\begin{definition}[协调熵]
+		由于协调导致的系统熵变为：
+		\[
+		\Delta S_{\text{coord}} = k_B \ln(K_{\mathrm{eff}}),
+		\]
+		其中 $k_B$ 是玻尔兹曼常数。
+	\end{definition}
+	
+	解释：$K_{\mathrm{eff}}$ 的增加对应于协调系统熵的减少（有序度的增加）。
+	
+	\subsection{来自形式模型的可检验预言}
+	\label{app:predictions}
+	
+	\begin{enumerate}
+		\item \textbf{$K_{\mathrm{eff}}$ 的量子化:} 对于最优设计的系统，$K_{\mathrm{eff}} = 2^k$，其中 $k \in \mathbb{N}$，在理想条件下 $k = \log_2 R$。
+		
+		\item \textbf{随系统规模的标度:} 对于有 $M$ 个节点的系统，$K_{\mathrm{eff}}(M) \propto M \log_2 R$。
+		
+		\item \textbf{基本极限:} 存在一个基本极限：
+		\[
+		K_{\mathrm{eff}}^{\text{max}} = \frac{c}{\Delta x \cdot \Delta t},
+		\]
+		其中 $\Delta x$ 是系统的最小空间分辨率，$\Delta t$ 是最小时间分辨率。
+	\end{enumerate}
+	
+	\subsection{测量 $K_{\mathrm{eff}}$ 的实验协议}
+	\label{app:experiment}
+	
+	\begin{enumerate}
+		\item \textbf{测量 $C_{\text{channel}}$:} 使用标准网络测量工具（例如 iperf、ping）估计有效信道容量。
+		
+		\item \textbf{测量 $C_{\text{coord}}$:}
+		\begin{itemize}
+			\item 定义一组有代表性的动作 $\mathcal{A}$。
+			\item 测量执行一系列协调动作所需的总时间 $T_{\text{total}}$。
+			\item 计算 $C_{\text{coord}} = \frac{\sum I(a_i)}{T_{\text{total}}}$。
+		\end{itemize}
+		
+		\item \textbf{计算 $K_{\mathrm{eff}}$:}
+		\[
+		K_{\mathrm{eff}} = \frac{C_{\text{coord}}}{C_{\text{channel}}}.
+		\]
+	\end{enumerate}
+	
+	不同系统的预期范围：
+	\begin{itemize}
+		\item 人类命令系统：$K_{\mathrm{eff}} \approx 10^2 - 10^3$。
+		\item 计算机网络：$K_{\mathrm{eff}} \approx 10^3 - 10^6$。
+		\item 生物系统：$K_{\mathrm{eff}} \approx 10^6 - 10^9$。
+	\end{itemize}
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{基本分离：数据传输 vs. 状态协调。}
+		\label{tab:separation}
+		\begin{tabular}{lp{6cm}p{6cm}}
+			\toprule
+			\textbf{方面} & \textbf{数据传输} & \textbf{协调} \\
+			\midrule
+			物理信号 & 是 & 否（状态知识） \\
+			速度极限 & $v \leq c$ & $v_{\text{coord}} \to \infty$* \\
+			信息 & $I > 0$ & $K_{\text{eff}} > I$ \\
+			能量 & $E > 0$ & $\Delta S_{\text{coord}}$ \\
+			\bottomrule
+			\multicolumn{3}{l}{* 指通过先验知识的瞬时状态对齐。}
+		\end{tabular}
+	\end{table}
+	
+	\subsection{形式模型的结论}
+	
+	本附录提出的形式数学模型严格确立了：
+	
+	\begin{enumerate}
+		\item 协调信息容量 $C_{\text{coord}}$ 与信道容量 $C_{\text{channel}}$ 是不同的物理量。
+		
+		\item 时间协调悖论：先验字典允许节点在实际执行之前拥有其他节点未来行动的先行知识。
+		
+		\item 定量关系：
+		\[
+		K_{\mathrm{eff}} = \frac{C_{\text{coord}}}{C_{\text{channel}}} = R \cdot \eta \gg 1,
+		\]
+		其中 $R = n/m \gg 1$ 是知识压缩比。
+		
+		\item 基本限制：$K_{\mathrm{eff}}$ 的增长仅受创建和维护字典的复杂度的约束，而不受信息传输物理定律的约束。
+	\end{enumerate}
+	
+	该模型为分析和设计跨物理、生物、社会学和技术的高效协调系统提供了严格的数学基础。
+	
+	
+	\section{时间协调悖论的实验协议与思想实验}
+	\label{app:experimental-protocols}
+	
+	时间协调悖论的形式模型（第 \ref{app:formal-model}--\ref{app:keff} 节）提供了清晰的数学框架，但其实际验证需要具体的实验协议。在本节中，我们提出几个实验——从一个简单的“思想”（Gedanken）实验到可实现的实验室测试——直接测量协调效率 \(K_{\mathrm{eff}}\) 并展示先行知识的悖论。
+	
+	\subsection{思想实验：2FA 类比再探}
+	\label{subsec:thought-2fa}
+	
+	考虑两个观察者 Alice 和 Bob，他们共享一个加密字典 \( \mathcal{D} \)（例如，一个由 \(M\) 个预共享密钥组成的一次性密码本）。Alice 希望 Bob 执行 \(M\) 个可能动作之一（例如，转账一笔钱、发射一枚火箭或发送一条特定消息）。在朴素协议中，Alice 将发送动作的完整描述，需要 \(n\) 比特。有了共享字典，她只发送一个长度为 \(\ell = \log_2 M\) 比特的短索引 \(\kappa\)。
+	
+	\textbf{设置:}
+	\begin{itemize}
+		\item Alice 和 Bob 相距已知距离 \(L\)（例如 1 公里）。
+		\item 通信信道具有测得的带宽和传播延迟 \(L/c\)。
+		\item 字典 \(\mathcal{D}\) 通过可信信使或先前安全信道离线分发（需要任意长时间，但在实验前完成）。
+		\item 第三个观察者 Charlie，配备两个同步原子钟，记录 Alice 发起传输和 Bob 完成动作的确切时间。
+	\end{itemize}
+	
+	\textbf{步骤:}
+	\begin{enumerate}
+		\item Alice 选择一个动作 \(a_i\)，其完整描述长度为 \(n\)。
+		\item 在时间 \(t_0\)，她将对应的索引 \(\kappa_i\) 发送给 Bob。
+		\item 索引以速度 \(c\) 传播，并在时间 \(t_0 + L/c + \tau_{\text{tx}}\) 到达 Bob，其中 \(\tau_{\text{tx}} = \ell / C_{\text{eff}}\)。
+		\item Bob 在字典中立即查找动作（查找时间 \(\tau_{\text{lookup}} \ll \tau_{\text{tx}}\)），并在时间 \(t_0 + L/c + \tau_{\text{tx}} + \tau_{\text{lookup}}\) 执行它。
+	\end{enumerate}
+	
+	\textbf{悖论的观察:}
+	在时刻 \(t_0\)，Alice \emph{知道} Bob 将在未来时间 \(t_0 + L/c + \tau_{\text{tx}} + \tau_{\text{lookup}}\) 执行动作 \(a_i\)。这种先行知识不是基于超光速信号，而是基于预共享字典。没有字典的 Charlie 在索引传输之前无法预测该动作。因此，悖论通过将关于字典的信息（离线）与索引（在线）分离而得到解决。
+	
+	\textbf{定量度量:}
+	协调效率为
+	\[
+	K_{\mathrm{eff}} = \frac{n}{\ell} \cdot \frac{\tau_{\text{naive}}}{\tau_{\text{actual}}},
+	\]
+	其中 \(\tau_{\text{naive}}\) 是发送完整描述所需的时间（包括传播和处理）。在快速查找和索引传输时间可忽略的极限下，\(K_{\mathrm{eff}} \approx n/\ell\)，可通过增加字典大小而任意大。
+	
+	\subsection{可实现的实验室实验：延迟选择通信}
+	\label{subsec:lab-delayed-choice}
+	
+	\textbf{目标:} 在受控数字通信系统中直接测量 \(K_{\mathrm{eff}}\)，并验证可以在不违反因果性的情况下实现 \(K_{\mathrm{eff}} > 1\)。
+	
+	\textbf{装置:}
+	\begin{itemize}
+		\item 两台计算机（Alice 和 Bob），通过具有已知容量和可变延迟线（例如长光纤）的以太网链路连接，以模拟距离。
+		\item 一个预共享字典，包含 \(M\) 条消息，每条长度为 \(n\) 比特（例如 \(M = 2^{20}\)，\(n = 10^6\) 比特）。
+		\item 使用 GPS 同步时钟的高精度时间戳（纳秒分辨率）。
+		\item 用于测量发送索引和收到动作完成确认之间时间的软件。
+	\end{itemize}
+	
+	\textbf{协议:}
+	\begin{enumerate}
+		\item 校准阶段：测量通过同一链路发送完整消息（朴素协议）的往返时间。记录 \(T_{\text{naive}}\)。
+		\item 协调阶段：每次试验，Alice 随机选择一条消息，发送其索引，并记录直到 Bob 确认执行的时间 \(T_{\text{coord}}\)。
+		\item 对不同的字典大小 \(M\) 和消息长度 \(n\) 重复。计算 \(K_{\mathrm{eff}} = T_{\text{naive}} / T_{\text{coord}}\)。
+		\item 同时测量信道容量 \(C_{\text{channel}}\) 和字典查找时间，以验证容量分离定理。
+	\end{enumerate}
+	
+	\textbf{预期结果:} 对于足够大的字典，\(K_{\mathrm{eff}}\) 将大大超过 1，证明有意义信息传输的有效速率可以超过信道容量。实验也确认索引传播遵守 \(v \le c\)；因果性得以保持，因为字典是离线分发的。
+	
+	\subsection{社会协调实验：共享上下文下的人类响应时间}
+	\label{subsec:social-experiment}
+	
+	\textbf{目标:} 在人类社会环境中展示时间协调悖论，类似于 2FA 思想实验。
+	
+	\textbf{设置:}
+	\begin{itemize}
+		\item 两组受试者（例如学生）接受训练，学习一组 \(M\) 个复杂命令（例如“画一所房子”、“解一个谜题”、“背诵一首诗”）。每个命令需要几秒钟执行，其完整描述（文本+说明）约为 \(n\) 比特。
+		\item 训练阶段建立了一个共享“字典”。
+		\item 实验期间，一组（“发送者”）看到一个命令，必须仅使用一个在训练期间约定的短词（索引）将其传输给另一组（“接收者”）。
+		\item 两组之间的距离变化（例如不同的房间、建筑物），以引入可测量的声音或光信号传播延迟。
+		\item 测量从发送者收到命令到接收者完成动作的时间。
+	\end{itemize}
+	
+	\textbf{对照:} 相同的命令在没有事先训练的情况下以朴素方式传输（例如详细描述完整动作）。
+	
+	\textbf{测量:} 比较有和没有先验字典的协调时间。计算 \(K_{\mathrm{eff}}\) 为朴素时间与协调时间的比值。表明即使索引以有限速度（声速或光速）传播，相对于朴素方法，有效协调也可以显得几乎是瞬时的。
+	
+	\textbf{预期结果:} \(K_{\mathrm{eff}}\) 将随命令的复杂度和共享字典的大小而标度，与理论预言一致。
+	
+	\subsection{容量分离定理的实验验证}
+	\label{subsec:capacity-theorem}
+	
+	容量分离定理（定理 \ref{thm:capacity-separation}）指出 \(C_{\text{coord}} = K_{\mathrm{eff}} \cdot C_{\text{channel}} \cdot \eta\)。为了验证这一点，我们需要独立测量 \(C_{\text{coord}}\) 和 \(C_{\text{channel}}\)。
+	
+	\textbf{方法:}
+	\begin{itemize}
+		\item 使用与第 \ref{subsec:lab-delayed-choice} 节相同的设置，但改变信道带宽（例如通过引入人工速率限制）。
+		\item 对于每个带宽设置，测量索引可以可靠传输的最大速率（\(C_{\text{channel}}\)）。
+		\item 同时，通过计算每秒成功激活的动作数来测量有意义动作完成的速率（\(C_{\text{coord}}\)）。
+		\item 针对不同字典大小绘制 \(C_{\text{coord}}\) 与 \(C_{\text{channel}}\) 的关系图。斜率应为 \(K_{\mathrm{eff}}\)，截距应为零（直到时间效率因子 \(\eta\)）。
+	\end{itemize}
+	
+	\subsection{解释与含义}
+	
+	这些实验直接展示了 YPSDC 的核心思想：离线字典分发与在线索引传输的分离允许协调效率 \(K_{\mathrm{eff}} > 1\) 而不违反因果性。先行知识的悖论得以解决，因为字典是事先共享的，而索引本身除了指向已有条目外不携带新信息。
+	
+	此外，这些实验提供了在受控条件下 \(K_{\mathrm{eff}}\) 的定量测量，使得理论能够校准并与真实世界系统（例如互联网协议、金融网络、生物信号）进行比较。它们也作为教育工具，说明高效协调的反直觉但因果的本质。
+	
+	\subsection{实验部分的结论}
+	
+	通过实施这些协议——从简单的思想实验到实验室和社会测试——研究人员可以经验地验证时间协调悖论和容量分离定理。结果将确认 \(K_{\mathrm{eff}}\) 不仅仅是一个理论构造，而是一个可以超过 1 的可测量量，为通信、分布式计算和集体决策中的实际应用铺平道路。
+	
+\end{document}

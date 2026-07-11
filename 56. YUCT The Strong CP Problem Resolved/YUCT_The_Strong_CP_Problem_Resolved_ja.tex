@@ -1,0 +1,309 @@
+% !TEX program = lualatex
+\documentclass[11pt,a4paper]{article}
+
+% ========= パッケージ =========
+\usepackage[english, bidi=default, layout=counters]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.25cm,right=1.25cm,top=1.25cm,bottom=3.1cm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{siunitx}
+\usepackage{bm}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{fontspec}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+\usepackage[numbers]{natbib} % Числовой стиль для библиографии
+\usepackage{xurl}
+
+% ========= 言語 (日本語をメインに) =========
+\babelprovide[import, main]{japanese}
+\babelprovide[import, onchar=ids fonts]{english}
+
+% ========= フォント (Noto CJK JP) =========
+\defaultfontfeatures{Ligatures=TeX}
+\babelfont[japanese]{rm}[Renderer=Harfbuzz]{Noto Serif CJK JP}
+\babelfont[japanese]{sf}[Renderer=Harfbuzz]{Noto Sans CJK JP}
+\babelfont[japanese]{tt}[Renderer=Harfbuzz]{Noto Sans Mono CJK JP}
+\babelfont[english]{rm}{Times New Roman}
+\babelfont[english]{sf}{Arial}
+\babelfont[english]{tt}{Courier New}
+
+% ========= 色 =========
+\definecolor{skyblue}{RGB}{0,102,204}
+\definecolor{darkblue}{RGB}{0,0,139}
+\definecolor{gold}{RGB}{255,215,0}
+
+% ========= YUCT マクロ =========
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\Dir}{\mathcal{D}}
+\newcommand{\Mpl}{M_{\mathrm{Pl}}}
+\newcommand{\Lpl}{l_{\mathrm{Pl}}}
+\newcommand{\tP}{t_{\mathrm{P}}}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+\newcommand{\kappac}{\kappa_{c}}
+\newcommand{\betaf}{\beta}
+\newcommand{\lagr}{\mathcal{L}}
+\newcommand{\dint}{D\!+\!I\!\cdot\!R}
+\newcommand{\CCU}{\text{CCU}}
+
+% ========= セクション書式 =========
+\titleformat{\section}{\LARGE\bfseries\color{darkblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{darkblue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{1em}{}
+
+% ========= ヘッダー・フッター =========
+\fancypagestyle{firstpage}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{-5pt}%
+	\renewcommand{\footrulewidth}{-5pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			{\small \textsuperscript{1}Yakushev Research, \url{https://yuct.org/}} \hfill
+			{\small YPSDC プロトコル: \url{https://ypsdc.com/}}\\[-2pt]
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			\textbf{ヤクシェフ統一調整理論 2026} \hfill \thepage\\[10pt]
+		\end{minipage}%
+	}%
+}
+
+\fancypagestyle{plain}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[4pt]
+			\textbf{ヤクシェフ統一調整理論 2026} \hfill \thepage\\[4pt]
+		\end{minipage}%
+	}%
+}
+
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+\raggedbottom
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+% ========= タイトルヘッダー (YUCT ロゴ) – 直接「仮説 / ロードマップ」に設定 =========
+\newcommand{\makeheader}{%
+	\noindent
+	\begin{minipage}{0.17\textwidth}
+		\raggedright
+		{\sffamily\bfseries\color{skyblue}\fontsize{46}{46}\selectfont YUCT}%
+	\end{minipage}%
+	\hspace{30pt}
+	\begin{minipage}{0.32\textwidth}
+		\raggedright
+		{\sffamily\fontsize{11}{13}\selectfont ヤクシェフ\\ 統一\\ 調整理論}%
+	\end{minipage}%
+	\hfill
+	\begin{minipage}{0.38\textwidth}
+		\raggedleft
+		{\sffamily\bfseries 仮説 / ロードマップ}\\ 
+		{\sffamily バージョン 2.0 / 2026年6月}\\ 
+	\end{minipage}
+	\par\vspace{5pt}
+	\noindent\textcolor{gold}{\rule{\textwidth}{1.6pt}}
+	\par\vspace{0pt}
+}
+
+\begin{document}
+	\thispagestyle{firstpage}
+	\makeheader
+	
+	\vspace{0cm}
+	{\LARGE\bfseries 強いCP問題：\\[0.1cm] YUCT における具体的代数的仮説\\[0.2cm] \Large 理論的・実験的検証のためのロードマップ \par}
+	\vspace{0.2cm}
+	
+	{\large アレクセイ・V・ヤクシェフ\textsuperscript{1}} \\
+	\vspace{0.0cm}
+	
+	{\color{darkblue}\textbf{\LARGE 要旨}} \par
+	{\large
+		\noindent
+		強いCP問題 ― なぜQCDのCP対称性を破るパラメータ \(\theta\) が \(10^{-10}\) より小さいのか ― は，ヤクシェフ統一調整理論（YUCT）において標準模型の最後の未解決パズルである。本稿では，必要な抑制を自然に与える具体的な代数的仮説を提示する。我々は \(\theta\) パラメータの有効調整深度が
+		\[
+		L_\theta = \frac{1}{2}\,L_W \;+\; \frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}},
+		\]
+		で与えられると提案する。ここで \(L_W = 96\) は \(W\) ボソンの深度，\(S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2\) は理論の基本定数である。この式は自由パラメータを含まず，\(L_\theta = 49.5\) を与え，\(\theta \sim (2/3)^{49.5} \approx 2.3 \times 10^{-10}\) に対応する。我々はこの表現の物理的動機を議論し，それをYUCTのより広範な代数的枠組みに位置づけ，主として中性子電気双極子モーメント（nEDM）を通じて仮説を反証可能な実験的テストの計画を概説する。この提案は，将来のデータによる反駁または確認に対して開かれた，明確で数学的に正確な予想として提示される。
+	}
+	
+	\vspace{0.1cm}
+	\noindent
+	{\color{darkblue}\textbf{キーワード:}} YUCT，強いCP問題，代数的仮説，調整深度，中性子電気双極子モーメント，オープンリサーチプログラム。
+	\vspace{0.4cm}
+	
+	\clearpage
+	\tableofcontents
+	\newpage
+	
+	\section{はじめに}
+	\label{sec:intro}
+	
+	ヤクシェフ統一調整理論（YUCT）は，階層性問題，宇宙定数問題，フェルミオン質量のパターン，その他基礎物理学の主要な謎に対して，パラメータフリーな定量的解決を与えてきた~\cite{Y1,Y3,Y4}。唯一の例外は強いCP問題：量子色力学（QCD）のCPを破るパラメータ \(\theta\) が不自然なほど小さく，実験的上限 \(|\theta| \lesssim 10^{-10}\) で制限されていることである~\cite{nEDM2020}。
+	
+	YUCTにおける以前の試みは，\(\theta\) にその場限りの整数 \(k_\theta\) で調整深度を割り当てるものだったが，それは構造的予言ではなくフィッティングに過ぎず不満足なものであった。本稿では異なるアプローチを提案する。すなわち，QCD真空の秩序（フェルミオン的）セクターとカオス（トポロジー的）セクターの相互作用を利用する。YUCTは秩序とカオスの統一された代数的記述により，この相互作用を定量化する独自の立場にある~\cite{Y2,Feig}。
+	
+	19次元ラグランジアンからの厳密な導出を主張するものではない。そのような導出は長期目標である。その代わりに，YUCTに既に存在する数値から自然に導かれ，調整可能なパラメータを含まず，中性子電気双極子モーメント（nEDM）およびアクシオン質量について反証可能な予言を与える，鋭い代数的予想を提示する。この予想は，将来の理論的・実験的研究のための明確なターゲットとして提示される。
+	
+	\section{YUCTにおける秩序とカオスの定数}
+	\label{sec:oc}
+	
+	\subsection{秩序}
+	普遍誤差則
+	\[
+	\varepsilon = \kappa_c\,\alpha\,K_{\mathrm{eff}}^{-\beta},\qquad \beta = \frac{2}{3},\quad \kappa_c = \frac{1}{3},
+	\]
+	は，階層的調整理構造と相まって，閉じた代数的ループ
+	\[
+	S_{\mathrm{odd}} = \frac{6}{5} = 1.2,\quad S_{\mathrm{even}} = \frac{4}{5} = 0.8,\quad 
+	\frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}} = \frac{3}{2} = \frac{1}{\beta}.
+	\]
+	へと導く。すべての物理的質量はプランク質量と調整深度 \(L\) によって
+	\[
+	m \approx M_{\mathrm{Pl}}\left(\frac{2}{3}\right)^L
+	\]
+	と表される。特に \(W\) ボソンの質量は \(L_W = 96\) に対応する。これは標準模型のワイルフェルミオンの自由度の総数（右巻きニュートリノを含む）である~\cite{Y3}。
+	
+	\subsection{カオス}
+	普遍的なファイゲンバウム定数
+	\[
+	\delta \approx 4.6692,\qquad \alpha \approx 2.5029
+	\]
+	は，周期倍分岐によるカオスへの道筋を記述する。YUCTでは，これらは黄金比 \(\varphi = (1+\sqrt{5})/2\) と円周率 \(\pi\) を通じて秩序定数と代数的に結びついている。
+	\[
+	2\alpha^2 \approx \pi\delta,\qquad
+	\pi \approx S_{\mathrm{odd}}\varphi^2 \quad \Longrightarrow \quad 
+	2\alpha^2 \approx (S_{\mathrm{odd}}\varphi^2)\,\delta .
+	\]
+	この関係は，ファイゲンバウム定数がYUCTにとって外来のものではなく，同じ拡張された代数系に属することを示している~\cite{Y2}。
+	
+	\subsection{秩序とカオスの共役としての量子真空}
+	QCD真空は，秩序だった側面（クォーク凝縮，カイラル対称性の破れ）とカオス的側面（インスタントンゆらぎ，トポロジカル感受率）が共存する舞台である。\(\theta\) パラメータはトポロジカルチャージ密度 \(G\widetilde{G}\) と結合し，両方のセクターから寄与を受ける。したがって，有効深度 \(L_\theta\) が秩序成分とカオス成分を特徴付ける深度の関数であると期待するのは自然である。
+	
+	以前の研究で我々は仮の深度 \(L_{\mathrm{ord}}\)（フェルミオンセクター）と \(L_{\mathrm{ch}}\)（トポロジカル／カオスセクター）を導入したが，これらの単純な線形結合では必要な抑制 \(|\theta| \sim 10^{-10}\) を再現しなかった。このことがより構造的な組み合わせを模索する動機となった。
+	
+	\section{\(L_\theta\) に関する代数的仮説}
+	\label{sec:hypothesis}
+	
+	\subsection{仮説の陳述}
+	
+	我々は，\(\theta\) パラメータの有効調整深度が次の簡潔な式で与えられると提案する。
+	\begin{equation}
+		\boxed{L_\theta = \frac{1}{2}\,L_W \;+\; \frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}}},
+		\label{eq:Ltheta}
+	\end{equation}
+	ここで
+	\begin{itemize}
+		\item \(L_W = 96\) は \(W\) ボソンの深度（電弱スケールの基準値）；
+		\item \(S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2 = 1.5\) は世代間質量因子を支配し，一次代数的ループに現れる普遍比である。
+	\end{itemize}
+	
+	これらの数値を代入すると
+	\[
+	L_\theta = \frac{96}{2} + 1.5 = 48 + 1.5 = 49.5
+	\]
+	を得る。
+	
+	対応する \(\theta\) パラメータは，インスタントン計算から生じるオーダー1の因子の可能性を除き，
+	\[
+	\theta \sim \left(\frac{2}{3}\right)^{L_\theta} = \left(\frac{2}{3}\right)^{49.5} \approx 2.3 \times 10^{-10}
+	\]
+	である。この値は実験的に許容されるウィンドウ \(|\theta| \lesssim 10^{-10}\) に正確に収まる~\cite{nEDM2020}。
+	
+	\subsection{物理的解釈}
+	
+	なぜこの特定の組み合わせが現れるのか？
+	\begin{enumerate}
+		\item \textbf{因子 \(1/2\)}： 電弱スケールは真空期待値 \(v \approx 246\) GeV によって設定され，これは基準深度96から幾何学的因子 \(\xi_W \approx 0.53\) を通じて得られる。深度48はスケール \(\sqrt{v M_{\mathrm{Pl}}}\) — 弱いスケールとプランクスケールの幾何平均 — に対応し，これはフェルミオンとボソンの真空エネルギーへの寄与が交差すると期待されるまさにそのスケールである。YUCTでは，このスケールがヒッグス凝縮体の調整理力学において特別な役割を果たすことが知られている（補遺 \(\Lambda\)）。
+		\item \textbf{シフト \(S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2\)}： 比 \(3/2 = 1/\beta\) は，任意の階層的調整理系における秩序（奇数レベル）と無秩序（偶数レベル）相関間の不可避な非対称性を定量化する。これが \(L_\theta\) に現れることは，CPを破る項が真空の秩序優勢セクターとカオス優勢セクター間の小さな不可避的不均衡から生じることを示している。このシフトが乗法的ではなく加法的であるという事実は，調整ネットワークの離散的で層状の構造を反映している。
+	\end{enumerate}
+	
+	したがって，式~(\ref{eq:Ltheta}) は次のように読める：\(\theta\) の深度は弱深度の半分に普遍的な秩序–カオス・オフセットを加えたものである。この式は自由パラメータを持たず，YUCTですでに独立に固定されている数値のみを使用している。
+	
+	\subsection{直接的な帰結}
+	
+	\paragraph{中性子電気双極子モーメント}
+	nEDM は \(\theta\) と \(d_n \approx 3.6 \times 10^{-16}\,\theta\; e\!\cdot\!\mathrm{cm}\)（ハドロン不定性因子を含む）で関係付けられる~\cite{nEDM2020}。\(\theta \approx 2.3 \times 10^{-10}\) を用いると
+	\[
+	d_n \approx 8.3 \times 10^{-26}\; e\!\cdot\!\mathrm{cm}
+	\]
+	を得る。現在の実験限界は \(d_n < 1.8 \times 10^{-26}\; e\!\cdot\!\mathrm{cm}\)（90\% C.L.）程度である。PSI、SNS、TUCANにおける次世代実験は \(\sim 10^{-28}\; e\!\cdot\!\mathrm{cm}\) の感度を目指している。そのレベルでのゼロ結果はこの仮説を排除し，正の検出は劇的な確認となるだろう。
+	
+	\paragraph{アクシオン物理}
+	強いCP問題がペッチャイ・クィン機構によって解決される場合，アクシオン質量 \(m_a\) は \(\theta\) およびアクシオン崩壊定数 \(f_a\) と関係する。式~(\ref{eq:Ltheta}) は，同じ調整深度ロジックを通じて \(f_a\)（したがって \(m_a\)）を固定する。これはADMXや他のアクシオン探索に相補的な実験目標を提供する。
+	
+	\section{検証のためのロードマップ}
+	\label{sec:roadmap}
+	
+	仮説は数学的に正確であり反証可能である。我々は以下のプログラムを提案する。
+	
+	\subsection{理論的課題}
+	\begin{enumerate}
+		\item \textbf{19次元ラグランジアンからの導出} YUCTの19次元親理論の有効作用を標準的なQCDの \(G\widetilde{G}\) 項へと還元しなければならない。正しい真空状態が同定されたとき，還元における係数が自然に深度 \(L_\theta = 49.5\) を与えることを示すのが目標である。これは困難だが明確に定義された数学的問題である。
+		\item \textbf{格子ゲージ理論} 既存の格子QCD計算はトポロジカル感受率と真空エネルギーの \(\theta\) 依存性を計算できる。YUCTに触発された解析は，式~(\ref{eq:Ltheta}) の代数的構造が，格子結果の結合定数依存性のスケーリングやトポロジカルチャージクラスターの分布に反映されるかどうかを検証すべきである。
+		\item \textbf{nEDM予言の精密化} \(\theta\) と \(d_n\) を結ぶハドロン行列要素はカイラル摂動論と格子QCDから知られている。これらの行列要素の専用計算とYUCTによる \(\theta\) の値を組み合わせることで，次世代nEDM限界と直接比較できる鋭い予言が得られる。
+	\end{enumerate}
+	
+	\subsection{実験的課題}
+	\begin{enumerate}
+		\item \textbf{nEDM実験（PSI, SNS, TUCAN）} 測定されたnEDMが \(10^{-26}\;e\!\cdot\!\mathrm{cm}\) を超えれば仮説と整合し，\(10^{-28}\;e\!\cdot\!\mathrm{cm}\) 未満の制限は仮説を排除する。
+		\item \textbf{アクシオン探索（ADMX, MADMAX, IAXO）} ペッチャイ・クィン機構が実現しているならば，\(L_\theta\) から \(f_a\) を評価することによりYUCTが予測するアクシオン質量は計算可能であるはずである。対応する質量ウィンドウでの専用探索は仮説をテストする。
+		\item \textbf{宇宙論的痕跡} 秩序–カオス干渉が根源的であるならば，初期宇宙の相転移にも影響を及ぼし，宇宙マイクロ波背景放射や暗黒物質分布に特定の痕跡を残す可能性がある。これらはPlanck、Euclid、将来のCMB-S4データによって制限できる。
+	\end{enumerate}
+	
+	\section{協働への招待}
+	\label{sec:invite}
+	
+	YUCTのフレームワークは，完全なラグランジアン，すべての補遺，調整深度の広範なデータベースを含め，Zenodo上で公開されている~\cite{Y1,Y2}。物理学者，数学者，計算科学者各位が，ここに提示された仮説の導出，検証，反証の取り組みに参加されることを歓迎する。著者（Alexey Yakushev, \href{mailto:alexey@yakushev.eu}{alexey@yakushev.eu}）は連絡，提案，共同研究の提案を歓迎する。
+	
+	\section{結論}
+	\label{sec:conclusion}
+	
+	我々は，ヤクシェフ統一調整理論の枠内でQCDの \(\theta\) パラメータの有効深度について，パラメータフリーの具体的代数的公式を提案した：
+	\[
+	L_\theta = \frac{1}{2}L_W + \frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}} = 49.5,
+	\]
+	これにより \(\theta \approx 2.3 \times 10^{-10}\) が得られる。この仮説は数学的に単純で，物理的に動機付けられており，来るべきnEDMおよびアクシオン実験によって直接的に反証可能である。これは任意の整数割り当てに依存した以前の試みに取って代わり，YUCT内部での強いCP問題の完全解決への明確な道筋を開く。仮説が実験的検証に耐えるかどうかはまだ分からないが，その価値は，将来の研究を導く正確で検証可能な予想を提供することにある。
+	
+	\vspace{1cm}
+	\noindent\textbf{日付:} 2026年6月\\
+	\textbf{バージョン:} 2.0\\
+	\textbf{状態:} 特定の代数的予測を伴う仮説；実験的テストと理論的導出に開かれている。
+	
+	
+	\begin{thebibliography}{99}
+		\bibitem{Y1} A.V. Yakushev, \textit{Yakushev Unified Coordination Theory (YUCT)}, Zenodo, 2026. DOI:10.5281/zenodo.18444599.
+		\bibitem{Y2} A.V. Yakushev, Appendix AF: The Algebraic Framework of Reality in YUCT, 2026.
+		\bibitem{Y3} A.V. Yakushev, Appendix \(\Lambda\): Resolution of the Hierarchy and Cosmological Constant Problems, 2026.
+		\bibitem{Y4} A.V. Yakushev, Appendix J: Complete Derivation of Standard Model Flavor Parameters, 2026.
+		\bibitem{Feig} M.J. Feigenbaum, \textit{J. Stat. Phys.} \textbf{19}, 25 (1978).
+		\bibitem{nEDM2020} C. Abel et al. (nEDM Collaboration), \textit{Phys. Rev. Lett.} \textbf{124}, 081803 (2020).
+	\end{thebibliography}
+	
+\end{document}

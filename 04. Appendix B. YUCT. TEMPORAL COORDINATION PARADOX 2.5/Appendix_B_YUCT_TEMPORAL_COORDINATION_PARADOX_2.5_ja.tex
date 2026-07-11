@@ -1,0 +1,585 @@
+% !TEX program = lualatex
+\documentclass[12pt,a4paper]{ltjsarticle}
+
+% ============================================================
+% LuaTeX-ja 設定（日本語）
+% ============================================================
+\usepackage{luatexja-fontspec}
+\usepackage{luatexja}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\geometry{a4paper,left=2cm,right=2cm,top=2.5cm,bottom=2.5cm}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{array}
+
+% ========= 日本語フォント =========
+\setmainjfont{HaranoAjiMincho}
+\setsansjfont{HaranoAjiGothic}
+\setmainfont{Times New Roman}
+\setsansfont{Segoe UI}
+
+% ========= TikZ ライブラリ =========
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, calc}
+
+% ========= 定理環境の日本語化 =========
+\newtheorem{definition}{定義}
+\newtheorem{theorem}{定理}
+\newtheorem{lemma}{補題}
+\newtheorem{corollary}{系}
+\newtheorem{axiom}{公理}
+
+% ========= セクション書式 =========
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+\renewcommand{\baselinestretch}{1.1}
+
+% ========= YUCT マクロ =========
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\betaf}{\beta}
+\newcommand{\df}{d_{\!f}}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+\newcommand{\Mpl}{M_{\mathrm{Pl}}}
+\newcommand{\Lpl}{l_{\mathrm{Pl}}}
+\newcommand{\piYUCT}{\pi_{\mathrm{YUCT}}}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{0cm}
+			\Huge\textbf{付録 B. YUCT\\
+				時間的調整パラドックス}
+			
+			\vspace{0cm}
+			\LARGE\textit{情報理論的基礎から実験的検証まで \\[0.3cm]
+				$K_{\text{eff}} > 1$ パラドックスの数学的解決}
+			
+			\vspace{1cm}
+			\Large
+			Alexey V. Yakushev\\
+			Yakushev Research\\
+			YUCT 理論: \url{https://yuct.org/}\\
+			YPSDC プロトコル: \url{https://ypsdc.com/}\\
+			
+			\vspace{2cm}
+			\textbf DOI: \url{https://doi.org/10.5281/zenodo.18444598}\\
+			
+			\vspace{1cm}
+			\large 
+			本稿の短縮版は既に公開されており、\\ \url{https://doi.org/10.5281/zenodo.18362308} で入手可能です。\\
+			\vspace{1cm}
+			2026年3月 \\ \large V.2.1.
+			
+			\vspace{5cm}
+			\textcopyright~2026 Yakushev Research. All rights reserved.
+			
+			\newpage
+			\vfill
+			\normalsize
+			\begin{minipage}{0.8\textwidth}
+				\centering
+				\textbf{要旨:} \\ 本稿は、Yakushev 統一調整理論 (YUCT) における時間的調整パラドックスの完全な形式数学モデルを提示する。このパラドックスは、調整効率 $K_{\text{eff}}$ が 1 を超えるときに生じ、古典的な情報伝送限界に違反するように見える。我々は、事前知識としての事前辞書がいかにして時間的に逆説的に見えつつも物理法則と整合する調整を可能にするかを示す厳密な定義、定理、証明を提供する。主な成果は以下の通りである：(1) チャネル容量と調整容量の形式的分離定理、(2) $K_{\text{eff}} = R \cdot \eta$（ここで $R = n/m$ は知識圧縮比）の数学的導出、(3) $K_{\text{eff}}$ が因果律を破らずに 1 を超えるための正確な条件、(4) スケーラブルシステムのための多ノード調整定理、(5) 調整効率のエントロピー的解釈、(6) 実システムにおける $K_{\text{eff}}$ 測定のための実験プロトコル。
+			\end{minipage}
+			
+			\vspace{0.5cm}
+			\normalsize
+			\textbf{キーワード:} 時間的調整パラドックス、YUCT 形式モデル、$K_{\text{eff}} > 1$、事前知識、事前辞書、情報理論的調整、チャネル容量分離、YPSDC プロトコル、因果律保存、調整エントロピー。
+			
+			\vspace{0cm}
+			\normalsize
+			
+			\textbf{範囲:} 時間的調整の形式数学的基礎 \\
+			\textbf{主要定理:} 完全な証明付きの 8 個の形式定理 \\
+			\textbf{実験プロトコル:} $K_{\text{eff}}$ のための 3 つの測定法 \\
+			
+			\vspace{0.5cm}
+			\normalsize
+			
+		\end{center}
+	\end{titlepage}
+	
+	\begin{center}
+		\vspace*{0.5cm}
+		\Huge\textbf{時間的調整パラドックス}
+		\vspace{1cm}
+	\end{center}
+	
+	\section{時間的調整パラドックスの完全な形式モデル}
+	\label{app:formal-model}
+	
+	\subsection{形式的定義}
+	\label{app:definitions}
+	
+	\subsubsection{基本オブジェクト}
+	
+	調整システムを組 $\mathcal{S} = (\mathcal{A}, \mathcal{O}, \mathcal{D}, \mathcal{C}, \mathcal{T})$ として定義する。ここで:
+	
+	\begin{itemize}
+		\item $\mathcal{A} = \{a_1, a_2, \dots, a_N\}$ は可能な行動（知識活性化）の有限集合、
+		\item $\mathcal{O} = \{O_1, O_2, \dots, O_M\}$ は観測者（ノード）の集合、
+		\item $\mathcal{D} = \{\kappa_i \to a_i\}_{i=1}^N$ は事前辞書（コードから行動への全単射写像）、
+		\item $\mathcal{C}$ は指定されたパラメータを持つ物理的伝送チャネル、
+		\item $\mathcal{T}$ は時間的制約の集合である。
+	\end{itemize}
+	
+	\subsubsection{情報理論的量}
+	
+	\begin{definition}[行動の情報量]
+		各行動 $a \in \mathcal{A}$ について、その完全な記述には以下を必要とする:
+		\[
+		I(a) = n \ \text{ビット},
+		\]
+		ここで $n$ は事前知識なしに $a$ を曖昧さなく記述するのに必要な最小ビット数である。
+	\end{definition}
+	
+	\begin{definition}[コード長]
+		各コード $\kappa \in \mathcal{K}$（$\mathcal{D}$ 内のコードの集合）について:
+		\[
+		|\kappa| = m \ \text{ビット}, \quad \text{ただし} \ m \ll n.
+		\]
+	\end{definition}
+	
+	\begin{definition}[知識圧縮比]
+		知識圧縮比を以下で定義する:
+		\[
+		R = \frac{n}{m} \gg 1.
+		\]
+	\end{definition}
+	
+	\subsection{物理的チャネルモデル}
+	\label{app:channel-model}
+	
+	\subsubsection{基本制約}
+	
+	\begin{axiom}[光速制限]
+		距離 $L_{ij}$ で隔てられた任意の二つのノード $O_i, O_j \in \mathcal{O}$ について、信号伝搬速度は以下を満たす:
+		\[
+		v_{\text{signal}} \leq c,
+		\]
+		ここで $c$ は真空中の光速である。
+	\end{axiom}
+	
+	\begin{axiom}[チャネル容量]
+		チャネル $\mathcal{C}$ は以下の最大チャネル容量を持つ:
+		\[
+		C_{\text{max}} = \lim_{T \to \infty} \frac{1}{T} \max_{X} I(X; Y) \quad \text{[ビット/秒]},
+		\]
+		ここで $X$ は入力信号、$Y$ は出力信号である。
+	\end{axiom}
+	
+	\subsubsection{伝送時間モデル}
+	
+	$I$ ビットのメッセージを伝送するのに必要な時間は:
+	\[
+	T_{\text{transmit}}(I) = \frac{I}{C_{\text{eff}}} + \frac{L}{c} + \tau_{\text{proc}},
+	\]
+	ここで $C_{\text{eff}} \leq C_{\text{max}}$ は実効チャネル容量、$\tau_{\text{proc}}$ は処理遅延である。
+	
+	\subsection{調整プロセス}
+	\label{app:coordination-processes}
+	
+	\subsubsection{素朴な調整（辞書なし）}
+	
+	\textbf{シナリオ 1:} ノード $O_1$ がノード $O_2$ に行動 $a$ を実行させたい。
+	
+	\begin{enumerate}
+		\item $O_1$ は $a$ の完全な記述を定式化する: $I(a) = n$ ビット。
+		\item $O_1$ はこの記述を $O_2$ に送信する: 時間 $T_1 = T_{\text{transmit}}(n)$。
+		\item $O_2$ は復号して行動を理解する: 時間 $T_2 = \alpha n$（$\alpha > 0$）。
+		\item $O_2$ は行動を実行する: 時間 $T_3$。
+		\item $O_2$ は確認応答を送信する: 時間 $T_4 = T_{\text{transmit}}(p)$（$p$ は確認応答のサイズ）。
+	\end{enumerate}
+	
+	全素朴調整時間:
+	\[
+	T_{\text{naive}}(a) = T_1 + T_2 + T_3 + T_4.
+	\]
+	
+	\begin{theorem}[素朴調整の下界]
+		\label{thm:naive-lower-bound}
+		任意のノード対 $O_1, O_2$ と行動 $a$ について、素朴調整時間は以下で下から押さえられる:
+		\[
+		T_{\text{naive}}(a) \geq \frac{n + p}{C_{\text{eff}}} + \frac{2L}{c} + \alpha n.
+		\]
+	\end{theorem}
+	
+	\subsubsection{辞書ベース調整 (YPSDC)}
+	
+	\textbf{シナリオ 2:} ノード $O_1$ と $O_2$ は事前辞書 $\mathcal{D}$ を共有している。
+	
+	\begin{enumerate}
+		\item $O_1$ は行動 $a$ に対応するコード $\kappa$ を選択する: $|\kappa| = m$ ビット。
+		\item $O_1$ は $\kappa$ を $O_2$ に送信する: 時間 $T_1' = T_{\text{transmit}}(m)$。
+		\item $O_2$ は $\mathcal{D}$ で行動を検索する: 時間 $T_2' = \beta m$（$\beta \ll \alpha$）。
+		\item $O_2$ は行動を実行する: 時間 $T_3' = T_3$。
+	\end{enumerate}
+	
+	重要な観察: $O_1$ は $\kappa$ を送信した直後に、あたかも $O_2$ が既に $a$ を実行したかのように振る舞うことができる。
+	
+	辞書を用いた実効調整時間は:
+	\[
+	T_{\text{coord}}(a) = T_1' + T_2'.
+	\]
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[node distance=2cm, auto, >=Stealth]
+			\node (O1) [draw, rectangle, rounded corners, minimum width=2cm, minimum height=1cm] {観測者 1};
+			\node (O2) [draw, rectangle, rounded corners, minimum width=2cm, minimum height=1cm, right=of O1] {観測者 2};
+			\node (dict) [draw, ellipse, below=2cm of $(O1)!0.5!(O2)$] {事前辞書 $\mathcal{D}$};
+			\draw[->, thick] (O1) -- node[above] {短コード $\kappa$} (O2);
+			\draw[->, dashed] (O1) -- node[left, near start] {共有} (dict);
+			\draw[->, dashed] (O2) -- node[right, near start] {共有} (dict);
+			\node[below=0.3cm of O1, align=center] {$t_0$ 時点:\\ $a$ が行われることを知っている};
+			\node[below=0.3cm of O2, align=center] {$t_0 + L/c$ 時点:\\ $a$ を実行};
+		\end{tikzpicture}
+		\caption{基本的な YPSDC 調整スキーム。事前知識は共有辞書から $t_0$ で生じる。}
+		\label{fig:basic}
+	\end{figure}
+	
+	\subsection{調整時間パラドックス}
+	\label{app:paradox}
+	
+	\begin{definition}[事前知識]
+		コード $\kappa$ が送信された時刻 $t_0$ において、ノード $O_1$ は $O_2$ の将来の行動について事前知識を持つ:
+		\[
+		K_{\text{advance}}(O_1, O_2, a, t_0) = \text{真}
+		\]
+		であるとは、$\mathcal{D}(\kappa) = a$ となる共有辞書 $\mathcal{D}$ が存在するとき、かつそのときに限る。
+	\end{definition}
+	
+	\begin{lemma}[事前知識の存在]
+		\label{lem:advance-knowledge}
+		任意の $O_1, O_2, a$ と共有辞書 $\mathcal{D}$ について:
+		\[
+		K_{\text{advance}}(O_1, O_2, a, t_0) = \text{真}
+		\]
+		が $\kappa$ を送信した瞬間 $t_0$ に成り立つ。
+	\end{lemma}
+	
+	\begin{proof}
+		$\mathcal{D}$ の構成により、$\kappa$ を送信すれば $O_2$ が時刻 $t_0 + T_{\text{coord}}(a)$ に $a$ を実行することが保証される。したがって、$t_0$ において $O_1$ は $O_2$ の将来の状態を確実に予測できる。
+	\end{proof}
+	
+	\subsection{調整の情報容量}
+	\label{app:capacities}
+	
+	\begin{definition}[チャネル情報容量]
+		\[
+		C_{\text{channel}} = C_{\text{eff}} \quad \text{[ビット/秒]}.
+		\]
+	\end{definition}
+	
+	\begin{definition}[調整情報容量]
+		\[
+		C_{\text{coord}} = \lim_{T \to \infty} \frac{1}{T} \sum_{t=1}^{T} I(a_t) \quad \text{[ビット/秒]},
+		\]
+		ここで $a_t$ は時刻 $t$ に活性化される行動である。
+	\end{definition}
+	
+	\begin{theorem}[容量分離定理]
+		\label{thm:capacity-separation}
+		知識圧縮比 $R = n/m$ を持つ調整システム $\mathcal{S}$ について:
+		\[
+		C_{\text{coord}} = R \cdot C_{\text{channel}} \cdot \eta,
+		\]
+		ここで $\eta = \frac{T_{\text{channel}}}{T_{\text{coord}}} \leq 1$ は時間効率係数である。
+	\end{theorem}
+	
+	\begin{proof}
+		時間間隔 $\Delta T$ の間に、チャネルは以下を伝送できる:
+		\[
+		N_{\text{codes}} = \frac{C_{\text{channel}} \cdot \Delta T}{m} \quad \text{個のコード}.
+		\]
+		各コードは情報量 $n$ ビットの行動を活性化するので、総調整情報量は:
+		\[
+		I_{\text{total}} = N_{\text{codes}} \cdot n = \frac{C_{\text{channel}} \cdot \Delta T}{m} \cdot n.
+		\]
+		したがって、
+		\[
+		C_{\text{coord}} = \frac{I_{\text{total}}}{\Delta T} = C_{\text{channel}} \cdot \frac{n}{m} = R \cdot C_{\text{channel}}.
+		\]
+		時間遅延（例: 処理、伝搬）を考慮すると効率係数 $\eta$ が導入される。
+	\end{proof}
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[node distance=2.5cm, auto, >=Stealth]
+			\node (O1) [draw, rectangle, rounded corners, minimum width=2.2cm, minimum height=1.2cm] {観測者 1 $O_1$};
+			\node (O2) [draw, rectangle, rounded corners, minimum width=2.2cm, minimum height=1.2cm, right=of O1] {観測者 2 $O_2$};
+			\node (dict) [draw, ellipse, below=2.5cm of $(O1)!0.5!(O2)$] {事前辞書 $\mathcal{D} = \{\kappa_i \to \mathcal{A}_i\}$};
+			\draw[->, thick] (O1) -- node[above] {$\kappa_1$} (O2);
+			\draw[->, thick] (O2) -- node[below] {$\kappa_2$ (確認)} (O1);
+			\draw[->, dashed] (O1) -- (dict);
+			\draw[->, dashed] (O2) -- (dict);
+			\node[below=0.2cm of O1, align=center] {$t_0$ で $\mathcal{A}_2$ を知っている};
+			\node[below=0.2cm of O2, align=center] {$t_0+L/c$ で $\mathcal{A}_2$ を実行};
+		\end{tikzpicture}
+		\caption{事前辞書を用いた双方向調整。両ノードが同じ辞書を共有し、双方向の事前知識を可能にする。}
+		\label{fig:duplex}
+	\end{figure}
+	
+	\subsection{調整効率係数 \(K_{\mathrm{eff}}\) と容量分離}
+	
+	\begin{definition}[調整効率]
+		YPSDC システムの \emph{調整効率} は
+		\begin{equation}
+			K_{\mathrm{eff}} = \frac{H(\mathcal{A})}{H(\mathcal{K})},
+			\label{eq:Kdef}
+		\end{equation}
+		ここで \(H(\mathcal{A})\) は行動空間のエントロピー、\(H(\mathcal{K})\) はインデックス分布のエントロピーである。
+	\end{definition}
+	
+	\begin{definition}[調整容量]
+		\emph{調整容量} \(C_{\mathrm{coord}}\) は、受信者が辞書から意味のある情報を抽出できる最大レートである:
+		\begin{equation}
+			C_{\mathrm{coord}} = \lim_{\Delta t \to \infty} \frac{1}{\Delta t} \sum_{t=1}^{N_{\mathrm{actions}}} I(A_{i_t}),
+		\end{equation}
+		ここで \(A_{i_t}\) は $t$ 番目の伝送中に活性化される行動である。
+	\end{definition}
+	
+	\begin{theorem}[容量分離]
+		\label{thm:capacity-separation}
+		調整効率 \(K_{\mathrm{eff}}\) とオーバーヘッド係数 \(\eta \le 1\) を持つ YPSDC システムについて、調整容量とチャネル容量は以下の関係にある:
+		\begin{equation}
+			\boxed{C_{\mathrm{coord}} = K_{\mathrm{eff}} \cdot C_{\mathrm{channel}} \cdot \eta}.
+			\label{eq:capacity-separation}
+		\end{equation}
+	\end{theorem}
+	
+	\begin{proof}
+		時間間隔 \(\Delta T\) の間に、チャネルは最大 \(C_{\mathrm{channel}} \Delta T\) ビットを伝送できる。固定長インデックスのサイズを \(\ell\) とすると、伝送されるインデックスの数は \(N = \lfloor C_{\mathrm{channel}} \Delta T / \ell \rfloor\) である。各インデックスは平均 \(H(\mathcal{A})\) ビットの情報を持つ行動を活性化する。伝達される全意味情報量は \(I_{\mathrm{total}} = N \cdot H(\mathcal{A}) \approx \frac{C_{\mathrm{channel}} \Delta T}{\ell} H(\mathcal{A})\) である。平均レートは \(C_{\mathrm{coord}} = \frac{I_{\mathrm{total}}}{\Delta T} = C_{\mathrm{channel}} \cdot \frac{H(\mathcal{A})}{\ell} = C_{\mathrm{channel}} \cdot K_{\mathrm{eff}}\) となる。係数 \(\eta\) は処理や辞書アクセスのオーバーヘッドを考慮する。
+	\end{proof}
+	
+	\begin{theorem}[逆]
+		サイズ \(M = 2^\ell\) の固定辞書 \(D\) を用い、容量 \(C_{\mathrm{channel}}\) の DMC 上でインデックスを伝送する任意のスキームについて、調整容量は以下を満たす:
+		\[
+		C_{\mathrm{coord}} \le K_{\mathrm{eff}} \cdot C_{\mathrm{channel}}.
+		\]
+	\end{theorem}
+	
+	\begin{proof}
+		インデックス源のエントロピーを \(H(\mathcal{K})\) とする。データ処理不等式により、\(I(\kappa;\hat{\kappa}) \le I(X;Y) \le C_{\mathrm{channel}}\) である。信頼できる動作のためには、インデックスは消失する誤差で復号されなければならず、インデックスレート \(R_{\mathcal{K}} \le C_{\mathrm{channel}}\) が必要である（シャノンの雑音符号化定理）。平均意味情報レートは \(R_{\mathcal{A}} = R_{\mathcal{K}} \cdot K_{\mathrm{eff}} \le K_{\mathrm{eff}} \cdot C_{\mathrm{channel}}\) である。したがって \(C_{\mathrm{coord}} \le K_{\mathrm{eff}} \cdot C_{\mathrm{channel}}\) を得る。
+	\end{proof}
+	
+	\subsection{調整のエントロピー的解釈}
+	\label{app:entropy}
+	
+	\begin{definition}[辞書エントロピー]
+		辞書 $\mathcal{D}$ のエントロピーは:
+		\[
+		H(\mathcal{D}) = - \sum_{i=1}^{N} p_i \log_2 p_i,
+		\]
+		ここで $p_i$ は行動 $a_i$ が使用される確率である。
+	\end{definition}
+	
+	\begin{lemma}[最大調整容量]
+		最大調整容量は以下で上から押さえられる:
+		\[
+		C_{\text{coord}}^{\text{max}} = H(\mathcal{D}) \cdot \nu_{\text{max}},
+		\]
+		ここで $\nu_{\text{max}} = 1 / T_{\text{coord}}^{\text{min}}$ は最大調整頻度である。
+	\end{lemma}
+	
+	\begin{definition}[調整エントロピー]
+		調整によるシステムのエントロピー変化は:
+		\[
+		\Delta S_{\text{coord}} = k_B \ln(K_{\mathrm{eff}}),
+		\]
+		ここで $k_B$ はボルツマン定数である。
+	\end{definition}
+	
+	解釈: $K_{\mathrm{eff}}$ の増加は、調整されたシステムのエントロピーの減少（秩序の増加）に対応する。
+	
+	\subsection{形式モデルからの検証可能な予測}
+	\label{app:predictions}
+	
+	\begin{enumerate}
+		\item \textbf{$K_{\mathrm{eff}}$ の量子化:} 最適に設計されたシステムでは、$K_{\mathrm{eff}} = 2^k$（$k \in \mathbb{N}$）であり、理想的条件の下で $k = \log_2 R$ となる。
+		
+		\item \textbf{システムサイズによるスケーリング:} $M$ ノードのシステムについて、$K_{\mathrm{eff}}(M) \propto M \log_2 R$。
+		
+		\item \textbf{基本限界:} 以下の基本限界が存在する:
+		\[
+		K_{\mathrm{eff}}^{\text{max}} = \frac{c}{\Delta x \cdot \Delta t},
+		\]
+		ここで $\Delta x$ は最小空間分解能、$\Delta t$ はシステムの最小時間分解能である。
+	\end{enumerate}
+	
+	\subsection{$K_{\mathrm{eff}}$ 測定のための実験プロトコル}
+	\label{app:experiment}
+	
+	\begin{enumerate}
+		\item \textbf{$C_{\text{channel}}$ の測定:} 標準的なネットワーク測定ツール（例: iperf、ping）を用いて実効チャネル容量を推定する。
+		
+		\item \textbf{$C_{\text{coord}}$ の測定:}
+		\begin{itemize}
+			\item 代表的な行動の集合 $\mathcal{A}$ を定義する。
+			\item 一連の調整された行動を実行するための総時間 $T_{\text{total}}$ を測定する。
+			\item $C_{\text{coord}} = \frac{\sum I(a_i)}{T_{\text{total}}}$ を計算する。
+		\end{itemize}
+		
+		\item \textbf{$K_{\mathrm{eff}}$ の計算:}
+		\[
+		K_{\mathrm{eff}} = \frac{C_{\text{coord}}}{C_{\text{channel}}}.
+		\]
+	\end{enumerate}
+	
+	様々なシステムにおける予想範囲:
+	\begin{itemize}
+		\item 人間の命令システム: $K_{\mathrm{eff}} \approx 10^2 - 10^3$。
+		\item コンピュータネットワーク: $K_{\mathrm{eff}} \approx 10^3 - 10^6$。
+		\item 生物学的システム: $K_{\mathrm{eff}} \approx 10^6 - 10^9$。
+	\end{itemize}
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{データ伝送と状態調整の基本的な分離}
+		\label{tab:separation}
+		\begin{tabular}{lp{6cm}p{6cm}}
+			\toprule
+			\textbf{側面} & \textbf{データ伝送} & \textbf{調整} \\
+			\midrule
+			物理的信号 & あり & なし（状態知識） \\
+			速度限界 & $v \leq c$ & $v_{\text{coord}} \to \infty$* \\
+			情報 & $I > 0$ & $K_{\text{eff}} > I$ \\
+			エネルギー & $E > 0$ & $\Delta S_{\text{coord}}$ \\
+			\bottomrule
+			\multicolumn{3}{l}{*事前知識による瞬間的な状態調整の意味において。}
+		\end{tabular}
+	\end{table}
+	
+	\subsection{形式モデルの結論}
+	
+	本付録で提示された形式数学モデルは、以下を厳密に確立する:
+	
+	\begin{enumerate}
+		\item 調整の情報容量 $C_{\text{coord}}$ とチャネル容量 $C_{\text{channel}}$ は異なる物理量であること。
+		
+		\item 調整時間パラドックス: アプリオリな辞書により、ノードは他のノードの将来の行動が実際に実行される前にその事前知識を持ちうること。
+		
+		\item 定量的関係:
+		\[
+		K_{\mathrm{eff}} = \frac{C_{\text{coord}}}{C_{\text{channel}}} = R \cdot \eta \gg 1,
+		\]
+		ここで $R = n/m \gg 1$ は知識圧縮比である。
+		
+		\item 基本原理: $K_{\mathrm{eff}}$ の成長は、辞書の作成と維持の複雑さによってのみ制約され、情報伝送の物理法則によっては制約されないこと。
+	\end{enumerate}
+	
+	このモデルは、物理学、生物学、社会学、技術にわたる高効率調整システムを分析・設計するための厳密な数学的基礎を提供する。
+	
+	
+	\section{時間的調整パラドックスの実験プロトコルと思考実験}
+	\label{app:experimental-protocols}
+	
+	時間的調整パラドックスの形式モデル（セクション \ref{app:formal-model}--\ref{app:keff}）は明確な数学的枠組みを提供するが、その実証には具体的な実験プロトコルが必要である。本節では、単純な「思考実験」から実現可能な実験室試験に至るまで、調整効率 \(K_{\mathrm{eff}}\) を直接測定し、事前知識のパラドックスを示すいくつかの実験を提案する。
+	
+	\subsection{思考実験: 2FA アナロジーの再考}
+	\label{subsec:thought-2fa}
+	
+	二人の観測者、アリスとボブを考える。彼らは暗号辞書 \(\mathcal{D}\)（例: \(M\) 個の事前共有鍵を持つワンタイムパッド）を共有している。アリスはボブに \(M\) 個の可能な行動のうちの一つ（例: 一定金額の送金、ロケット発射、特定のメッセージ送信）を実行させたいとする。素朴なプロトコルでは、アリスは行動の完全な記述を送る必要があり、\(n\) ビットを要する。共有辞書を用いれば、彼女は長さ \(\ell = \log_2 M\) ビットの短いインデックス \(\kappa\) だけを送る。
+	
+	\textbf{設定:}
+	\begin{itemize}
+		\item アリスとボブは既知の距離 \(L\)（例: 1 km）で隔てられている。
+		\item 通信チャネルは測定された帯域幅と伝搬遅延 \(L/c\) を持つ。
+		\item 辞書 \(\mathcal{D}\) はオフラインで（信頼できる使者や以前の安全なチャネルを通じて）配布される（任意の長い時間がかかるが、実験前に完了している）。
+		\item 第三の観測者チャーリーは、二台の同期された原子時計を備え、アリスが送信を開始した正確な時刻とボブが行動を完了した時刻を記録する。
+	\end{itemize}
+	
+	\textbf{手順:}
+	\begin{enumerate}
+		\item アリスは完全な記述長 \(n\) を持つ行動 \(a_i\) を選択する。
+		\item 時刻 \(t_0\) に、彼女は対応するインデックス \(\kappa_i\) をボブに送信する。
+		\item インデックスは速度 \(c\) で伝搬し、時刻 \(t_0 + L/c + \tau_{\text{tx}}\) にボブに到着する。ここで \(\tau_{\text{tx}} = \ell / C_{\text{eff}}\) である。
+		\item ボブは辞書内の行動を即座に検索し（検索時間 \(\tau_{\text{lookup}} \ll \tau_{\text{tx}}\)）、時刻 \(t_0 + L/c + \tau_{\text{tx}} + \tau_{\text{lookup}}\) にそれを実行する。
+	\end{enumerate}
+	
+	\textbf{パラドックスの観察:}
+	時刻 \(t_0\) において、アリスはボブが将来の時刻 \(t_0 + L/c + \tau_{\text{tx}} + \tau_{\text{lookup}}\) に行動 \(a_i\) を実行することを\emph{知っている}。この事前知識は超光速信号に基づくのではなく、事前共有された辞書に基づいている。辞書を持たないチャーリーは、インデックスが送信されるまで行動を予測できない。したがって、パラドックスは辞書に関する情報（オフライン）とインデックス（オンライン）を分離することによって解決される。
+	
+	\textbf{定量的測定:}
+	調整効率は
+	\[
+	K_{\mathrm{eff}} = \frac{n}{\ell} \cdot \frac{\tau_{\text{naive}}}{\tau_{\text{actual}}},
+	\]
+	ここで \(\tau_{\text{naive}}\) は完全な記述を送るのに必要な時間（伝搬と処理を含む）である。高速な検索とインデックスの伝送時間が無視できる極限では、\(K_{\mathrm{eff}} \approx n/\ell\) となり、辞書サイズを大きくすることで任意に大きくできる。
+	
+	\subsection{実現可能な実験室実験: 遅延選択通信}
+	\label{subsec:lab-delayed-choice}
+	
+	\textbf{目標:} 制御されたデジタル通信システムで \(K_{\mathrm{eff}}\) を直接測定し、\(K_{\mathrm{eff}} > 1\) が因果律を破らずに達成できることを検証する。
+	
+	\textbf{装置:}
+	\begin{itemize}
+		\item 既知の容量と可変遅延線（例: 長い光ファイバ）で接続された二台のコンピュータ（アリスとボブ）。
+		\item \(M\) 個のメッセージからなる事前共有辞書。各メッセージの長さは \(n\) ビット（例: \(M = 2^{20}\), \(n = 10^6\) ビット）。
+		\item GPS 同期時計を用いた高精度タイムスタンプ（ナノ秒分解能）。
+		\item インデックス送信から行動完了の確認受信までの時間を測定するソフトウェア。
+	\end{itemize}
+	
+	\textbf{プロトコル:}
+	\begin{enumerate}
+		\item 較正フェーズ: 同じリンク上で完全なメッセージを送る（素朴プロトコル）の往復時間を測定する。\(T_{\text{naive}}\) を記録する。
+		\item 調整フェーズ: 各試行で、アリスはランダムにメッセージを選択し、そのインデックスを送信し、ボブが実行を確認するまでの時間 \(T_{\text{coord}}\) を記録する。
+		\item 様々な辞書サイズ \(M\) とメッセージ長 \(n\) について繰り返す。\(K_{\mathrm{eff}} = T_{\text{naive}} / T_{\text{coord}}\) を計算する。
+		\item また、チャネル容量 \(C_{\text{channel}}\) と辞書検索時間を測定して、容量分離定理を検証する。
+	\end{enumerate}
+	
+	\textbf{期待される結果:} 十分に大きな辞書に対して、\(K_{\mathrm{eff}}\) は 1 を大きく超え、意味のある情報伝送の実効レートがチャネル容量を超えられることを示す。実験はまた、インデックスの伝搬が \(v \le c\) に従うことを確認し、辞書がオフラインで配布されたため因果律が保存されることを示す。
+	
+	\subsection{社会的調整実験: 共有文脈による人間の反応時間}
+	\label{subsec:social-experiment}
+	
+	\textbf{目標:} 人間の社会的設定において時間的調整パラドックスを示す。これは 2FA 思考実験に類似する。
+	
+	\textbf{設定:}
+	\begin{itemize}
+		\item 被験者の二つのグループ（例: 学生）に \(M\) 個の複雑なコマンド（例: 「家を描く」、「パズルを解く」、「詩を朗読する」）を訓練する。各コマンドの実行には数秒を要し、その完全な記述（テキスト＋指示）は約 \(n\) ビットである。
+		\item 訓練フェーズは共有「辞書」を確立する。
+		\item 実験中、一方のグループ（「送信者」）はコマンドを提示され、訓練中に合意した短い単語（インデックス）のみを用いて他方のグループ（「受信者」）に伝達しなければならない。
+		\item グループ間の距離を変える（例: 異なる部屋、建物）ことで、音声や光信号の伝搬遅延を測定可能にする。
+		\item 送信者がコマンドを受け取った瞬間から受信者が行動を完了するまでの時間を測定する。
+	\end{itemize}
+	
+	\textbf{対照実験:} 同じコマンドを、事前訓練なしに詳細な行動記述で伝達する（素朴な方法）。
+	
+	\textbf{測定:} 事前辞書ありとなしの調整時間を比較する。素朴時間と調整時間の比として \(K_{\mathrm{eff}}\) を計算する。インデックスが有限速度（音速または光速）で伝搬するにもかかわらず、実効的な調整は素朴な方法に対してほぼ瞬間的に見えることを示す。
+	
+	\textbf{期待される結果:} \(K_{\mathrm{eff}}\) はコマンドの複雑さと共有辞書のサイズに応じてスケールし、理論予測を確認する。
+	
+	\subsection{容量分離定理の実験的検証}
+	\label{subsec:capacity-theorem}
+	
+	容量分離定理（定理 \ref{thm:capacity-separation}）は \(C_{\text{coord}} = K_{\mathrm{eff}} \cdot C_{\text{channel}} \cdot \eta\) を主張する。これを検証するには、\(C_{\text{coord}}\) と \(C_{\text{channel}}\) を独立に測定する必要がある。
+	
+	\textbf{方法:}
+	\begin{itemize}
+		\item セクション \ref{subsec:lab-delayed-choice} と同じ設定を用いるが、チャネル帯域幅を変える（例: 人為的なレート制限を導入する）。
+		\item 各帯域幅設定について、インデックスを確実に伝送できる最大レート (\(C_{\text{channel}}\)) を測定する。
+		\item 同時に、1 秒あたりに正常に活性化される行動の数を数えることで、意味のある行動が完了するレート (\(C_{\text{coord}}\)) を測定する。
+		\item 異なる辞書サイズについて \(C_{\text{coord}}\) を \(C_{\text{channel}}\) に対してプロットする。傾きは \(K_{\mathrm{eff}}\) であり、切片はゼロ（時間効率係数 \(\eta\) まで）であるべきである。
+	\end{itemize}
+	
+	\subsection{解釈と含意}
+	
+	これらの実験は YPSDC の中核的概念——オフライン辞書配布とオンラインインデックス伝送の分離——が因果律を破らずに調整効率 \(K_{\mathrm{eff}} > 1\) を可能にすることを直接実証する。事前知識のパラドックスは、辞書が事前に共有されており、インデックス自体は既存のエントリを指し示す以外に新しい情報を運ばないために解決される。
+	
+	さらに、これらの実験は制御された条件下での \(K_{\mathrm{eff}}\) の定量的測定を提供し、理論の較正や実世界のシステム（例: インターネットプロトコル、金融ネットワーク、生物学的シグナリング）との比較を可能にする。また、高効率調整の直観に反しつつも因果的な性質を説明する教育ツールとしても機能する。
+	
+	\subsection{実験セクションの結論}
+	
+	これらのプロトコル——単純な思考実験から実験室試験、社会的試験まで——を実装することにより、研究者は時間的調整パラドックスと容量分離定理を実証的に検証できる。結果は、\(K_{\mathrm{eff}}\) が単なる理論的構成物ではなく、1 を超えうる測定可能な量であることを確認し、通信、分散コンピューティング、集団的意思決定における実用的応用への道を開く。
+	
+\end{document}

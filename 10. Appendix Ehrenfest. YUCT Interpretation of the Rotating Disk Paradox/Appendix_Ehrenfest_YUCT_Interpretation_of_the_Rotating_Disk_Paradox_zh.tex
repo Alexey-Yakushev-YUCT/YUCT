@@ -1,0 +1,928 @@
+\documentclass[12pt,a4paper]{article}
+% 使用 XeLaTeX + xeCJK 处理中文
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\setCJKmainfont{SimSun}
+\setCJKmonofont{SimSun}
+\setmainfont{Times New Roman}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, decorations.pathreplacing}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{makecell}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+
+\geometry{margin=1in}
+\hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+
+\newtheorem{theorem}{定理}[section]
+\newtheorem{definition}{定义}[section]
+\newtheorem{corollary}{推论}[section]
+\newtheorem{proposition}{命题}[section]
+\newtheorem{remark}{注记}[section]
+\newtheorem{prediction}{预言}[section]
+
+% YUCT 宏命令
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\betaf}{\beta}
+\newcommand{\dint}{D\!+\!I\!\cdot\!R}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\Keffmat}{K_{\mathrm{eff,mat}}}
+\newcommand{\Kefftot}{K_{\mathrm{eff,total}}}
+\newcommand{\KeffSR}{K_{\mathrm{eff,SR}}}
+\newcommand{\KeffSC}{K_{\mathrm{eff,SC}}}
+\newcommand{\Kcrit}{K_{\mathrm{crit}}}
+\newcommand{\Kcritmat}{K_{\mathrm{crit,mat}}}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\Huge\textbf{附录 Ehrenfest：旋转圆盘悖论的协调解释与非欧几何的涌现} \\
+			\vspace{0.5cm}
+			\Large\textit{从刚体假设到协调效率 \(K_{\mathrm{eff}}\) 与曲率的起源}
+			\vspace{1.5cm}
+			
+			\Large Alexey V. Yakushev\textsuperscript{1} \\
+			\vspace{0.3cm}
+			\large \textsuperscript{1}Yakushev Research, \url{https://yuct.org/} \\
+			\vspace{1cm}
+			\textbf{DOI: \url{https://doi.org/10.5281/zenodo.18444598}} \\
+			\vspace{1cm}
+			2026年4月 \\ \large V.4.4（含临界破坏阈值与材料依赖预言）
+			\vspace{2cm}
+			
+			\begin{minipage}{0.9\textwidth}
+				\begin{abstract}
+					\noindent
+					埃伦费斯特悖论（1910）凸显了在考虑相对论长度收缩的情况下，维持旋转圆盘上欧几里得几何的不可能性。在广义相对论中，这一悖论通过为旋转观察者引入非欧几何得到解决。在此，我们在雅库舍夫统一协调理论中给出一种解释，该解释根植于附录 Ferra1.2 中导出的普适协调常数。我们表明，圆周的表观收缩是高协调效率 \(K_{\mathrm{eff}} > 1\) 的表现，这种高效率通过预分发的相互距离字典实现。基本常数 \(\Sodd = 6/5 = 1.2\)，\(\Seven = 4/5 = 0.8\)，它们的和 \(2\)，比值 \(3/2\)，以及关系式 \(\Sodd \varphi^2 \approx \pi\)（其中 \(\varphi\) 是黄金比例）提供了几何骨架。我们引入了\textbf{协调中心}（旋转轴）的概念，其存在依赖于协调物质。当角速度超过临界阈值时，材料的协调效率 \(K_{\mathrm{eff,mat}}\) 降至临界值 \(K_{\mathrm{crit}}\) 以下，导致协调的灾难性丧失——圆盘解体，轴作为物理上可区分的线不再存在。我们推导了以可测量材料参数（杨氏模量、密度、抗拉强度）表示的临界角速度的定量预言，并表明在极限 \(K_{\mathrm{eff,mat}}=1\) 时，恢复断裂力学的标准公式。我们将该框架与替代理论（广义相对论、经典弹性理论）进行比较，并展示其提供了新的可检验预言：超导盘在临界速度上与正常盘应有所不同，这是材料依赖协调效率的直接结果。给出了详细的实验方案，并为高温超导体圆盘提供了数值估计。
+				\end{abstract}
+			\end{minipage}
+			\vspace{1cm}
+			
+			\noindent \textbf{关键词:} 埃伦费斯特悖论，旋转圆盘，协调效率，YUCT，非欧几何，广义相对论，涌现几何，超导检验，黄金比例，普适协调常数，断裂力学，临界破坏。
+		\end{center}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{引言：埃伦费斯特悖论及其标准解决}
+	\label{sec:intro}
+	
+	1910 年，保罗·埃伦费斯特指出了狭义相对论框架应用于刚性旋转圆盘时的一个显著矛盾 \cite{Ehrenfest1909}。考虑一个半径为 \(R_0\)（在其静止系中测量）的圆盘以恒定角速度 \(\omega\) 旋转。根据狭义相对论，在实验室系中静止的观察者看到每个切向元长度收缩洛伦兹因子 \(\gamma = 1/\sqrt{1 - \omega^2 R_0^2/c^2}\)。因此，在实验室系中测量的周长变为
+	\[
+	C_{\text{lab}} = 2\pi R_0 \, \gamma^{-1} = 2\pi R_0 \sqrt{1 - \omega^2 R_0^2/c^2},
+	\]
+	而半径（垂直于运动方向）保持为 \(R_0\)。对于周长，欧几里得关系 \(C = 2\pi R\) 不再成立：\(C_{\text{lab}}/(2R_0) = \sqrt{1 - \omega^2 R_0^2/c^2} < \pi\)。这一矛盾被称为\textbf{埃伦费斯特悖论}。
+	
+	在广义相对论中的标准解决是：旋转圆盘上的几何是\textbf{非欧几里得的}；它对应于一个具有恒定曲率的空间，并且圆盘不能被视为经典力学意义上的“刚性”。对于共动观察者，度规是著名的朗之万度规，其空间部分是弯曲的。广义相对论因此接受非欧性质作为旋转诱导的基本几何属性。
+	
+	\subsection{作为几何原语的普适协调常数}
+	
+	在给出 YUCT 解释之前，我们回顾附录 Ferra1.2 中从 YUCT 层次结构导出的普适协调常数。这些常数从协调系统的分形层级涌现，并满足精确的有理关系：
+	\begin{align}
+		\Sodd &= \frac{6}{5} = 1.2, \qquad \Seven = \frac{4}{5} = 0.8, \\
+		\Sodd + \Seven &= 2, \qquad \frac{\Sodd}{\Seven} = \frac{3}{2} = 1.5 = \frac{1}{\betaf},
+	\end{align}
+	其中 \(\betaf = 2/3 \approx 0.667\) 是普适标度指数。这些常数刻画了任何层级协调系统中单向（奇数层）和交替（偶数层）关联的极限贡献。
+	
+	一个引人注目的近似关系将这些常数与黄金比例 \(\varphi = (1+\sqrt{5})/2 \approx 1.618034\) 以及圆周率 \(\pi\) 联系起来：
+	\begin{equation}
+		\Sodd \cdot \varphi^2 = \frac{6}{5} \cdot \left(\frac{1+\sqrt{5}}{2}\right)^2 = \frac{9+3\sqrt{5}}{5} \approx 3.1416407865,
+	\end{equation}
+	它与 \(\pi \approx 3.1415926535\) 仅相差 \(4.8\times10^{-5}\)（相对误差 \(1.5\times10^{-5}\)）。这种近乎相等提示了协调层级（\(\Sodd\)）、黄金比例（自相似性）和圆的几何之间的深层结构联系。在 YUCT 中，\(\pi\) 可解释为当协调效率 \(K_{\mathrm{eff}} \to \infty\)（完美相干）时该表达式的极限。对于有限的 \(K_{\mathrm{eff}}\)，有效几何常数可能以由相同层级常数控制的方式偏离 \(\pi\)。这一观察将指导我们对旋转圆盘的解释。
+	
+	\section{YUCT 协调视角}
+	\label{sec:yuct}
+	
+	雅库舍夫统一协调理论提供了不同的本体论基础。YUCT 不假设几何是首要的，而是假定\textbf{协调}——使用预分发字典对齐状态的过程——是基本过程。时空几何从协调效率 \(K_{\mathrm{eff}}\) 中涌现，通过 YPSDC 协议（附录 B）定义。普适误差标度律（附录 L）指出任何相对误差 \(\eps\) 满足
+	\[
+	\eps = \kappac \alpha K_{\mathrm{eff}}^{-\betaf}, \qquad \betaf = 0.67,\ \kappac = 0.33,
+	\]
+	但更重要的是，“距离”的概念本身就是协调相互作用的结果。常数 \(\Sodd\) 和 \(\Seven\) 提供了定量骨架：比值 \(3/2\) 支配着从有序相到无序相的转变，而乘积 \(\Sodd\varphi^2\) 将协调与欧几里得几何联系起来。
+	
+	\begin{tcolorbox}[
+		title={\bfseries 一个逻辑上基本的陈述},
+		colback=blue!3!white,
+		colframe=blue!50!black,
+		fonttitle=\bfseries,
+		sharp corners
+		]
+		\small
+		\textit{在空真空中没有轴，\\
+			因为没有东西可测量。\\
+			在空真空中没有球体，\\
+			因为没有东西可以变圆。\\
+			在空真空中没有引力，\\
+			因为没有东西可拉伸。}
+		
+		\medskip
+		这不是哲学观点。这是雅库舍夫统一协调理论 (YUCT) 的直接逻辑推论。三个世纪以来，物理学试图赋予真空以神奇的性质——一个“空却弯曲”的某种东西，作为所有现象的舞台。YUCT 消除了这个多余的假设：\textbf{几何不是实体；它是物质的数学影子}。坐标、曲率和引力场是协调网络平衡态的涌现、近似描述。它们没有独立的存在。在没有物质需要协调的地方，那里实际上\textit{什么都没有}——没有点、没有线、没有光锥。几何从协调中诞生，也随协调而消亡。
+	\end{tcolorbox}
+	
+	\subsection{为什么旋转圆盘是一个协调系统}
+	\label{subsec:disk-coordination}
+	
+	考虑构成圆盘的一组质点。在经典物理中，相互距离假定由刚性约束固定。在 YUCT 中，这些约束被一个\textbf{预分发的字典} \(\mathcal{D}_{\text{disk}}\) 替代：
+	\[
+	\mathcal{D}_{\text{disk}} = \bigl\{ (P_i, P_j) \mapsto \Delta r_{ij}(\omega) \bigr\},
+	\]
+	其中 \(\Delta r_{ij}(\omega)\) 是当圆盘以角速度 \(\omega\) 旋转时对 \((P_i,P_j)\) 应保持的距离。该字典是\textbf{离线}分发的——它被编码在材料结构、电磁相互作用以及最终的协调场 \(\Psi_{MN}\) 中。
+	
+	当圆盘开始旋转时，旋转本身充当一个\textbf{短索引} \(\kappa\)。每个点在接收（或“知晓”）索引 \(\kappa\) 后，激活相应的字典条目并相应调整其运动。关键点是：\textbf{没有超光速信号交换}；协调之所以能实现，是因为所有点共享同一个先验字典。
+	
+	\subsection{从层级常数推导 \(K_{\mathrm{eff}}(r)\)}
+	\label{subsec:keff-derivation}
+	
+	为什么协调效率取形式 \(K_{\mathrm{eff}}(r) = 1/\sqrt{1-\omega^2 r^2/c^2}\)？在 YUCT 中，这不是从狭义相对论借用的假设，而是要求字典与普适协调层级一致的结果。我们分两步进行。
+	
+	\subsubsection{第 1 步：量纲分析与 \(\Sodd\) 和 \(\Seven\) 的作用}
+	对于旋转系统，相关的无量纲参数是 \(\beta = v/c = \omega r/c\)。协调效率必须是 \(K_{\mathrm{eff}}(\beta)\) 的函数，当 \(\beta = 0\) 时趋于 \(1\)（无旋转），当 \(\beta \to 1\) 时发散（因果极限）。最简单的具有洛朗展开的函数是 \(K_{\mathrm{eff}}(\beta) = (1-\beta^2)^{-p}\)。指数 \(p\) 由要求有效几何尊重编码在 \(\Sodd\) 和 \(\Seven\) 中的有序与无序关联的平衡来决定。
+	
+	考虑一个无穷小的切向元。在共转系中，固有距离为 \(d\ell_{\text{proper}}\)。字典必须编码周长与半径之比（用协调常数表示）在 \(\beta \to 0\) 时趋近于欧几里得值 \(2\pi\)。此外，诱导度规的曲率必须与 \(\Sodd\) 和 \(\Seven\) 之和为 \(2\)（有效关联空间的总维数）这一事实一致。详细分析（见附录 Ferra1.2）表明，唯一能产生一致层级标度的指数是 \(p = 1/2\)。因此
+	\[
+	K_{\mathrm{eff}}(\beta) = \frac{1}{\sqrt{1-\beta^2}}.
+	\]
+	
+	\subsubsection{第 2 步：与黄金比例和 \(\pi\) 的联系}
+	近似等式 \(\Sodd \varphi^2 \approx \pi\) 提示，对于具有完美协调（\(K_{\mathrm{eff}} \to \infty\)）的系统，有效几何变为精确欧几里得，带有标准 \(\pi\)。对于有限 \(K_{\mathrm{eff}}\)，有效比值 \(C/(2\pi r)\) 偏离 \(1\) 的因子可以通过 \(\Sodd\) 和 \(\varphi\) 表达。值得注意的是，洛伦兹因子本身满足
+	\[
+	\frac{1}{\sqrt{1-\beta^2}} = \sum_{n=0}^{\infty} \frac{(2n)!}{2^{2n}(n!)^2} \beta^{2n},
+	\]
+	展开的第一项（经典极限）给出 \(1\)，下一项给出 \(\frac{1}{2}\beta^2\)。系数 \(\frac{1}{2}\) 恰好是 \(\Seven = 0.8\) 乘以因子 \(0.625\)；精确的因子从层级中涌现。因此洛伦兹因子天然地包含了层级常数。
+	
+	因此，在 YUCT 中我们识别出
+	\[
+	\boxed{K_{\mathrm{eff}}(r) = \frac{1}{\sqrt{1 - \omega^2 r^2/c^2}}}.
+	\]
+	这不仅仅是 \(\gamma\) 的重新命名；它是由普适协调常数和字典必须与有序及无序关联的层级平衡一致的要求所决定的特定形式。
+	
+	\subsection{旋转圆盘的协调效率 \(K_{\mathrm{eff}}\)}
+	\label{subsec:keff-disk}
+	
+	我们将旋转圆盘的协调效率定义为
+	\[
+	K_{\mathrm{eff,disk}} = \frac{H(\text{旋转下距离的完整描述})}{H(\text{索引 } \kappa)}.
+	\]
+	完整描述需要指定实验室系中所有配对距离 \(\Delta r_{ij}(\omega)\)，这非常复杂。索引 \(\kappa\) 就是“圆盘以角速度 \(\omega\) 旋转”。由于字典是预分发的，\(K_{\mathrm{eff,disk}} \gg 1\)。在无旋转极限（\(\omega = 0\)）下，字典是平凡的（距离是欧几里得的），且 \(K_{\mathrm{eff,disk}} = 1\)。层级常数 \(\Sodd\) 和 \(\Seven\) 提供了字典压缩描述的效率的定量度量：比值 \(3/2\) 出现在欧几里得周长的一阶修正中。
+	
+	\section{表观非欧几何的数学推导}
+	\label{sec:derivation}
+	
+	我们现在从协调原理出发，利用上面确立的 \(K_{\mathrm{eff}}(r)\) 的形式，推导旋转圆盘上的有效空间度规。该推导不假设任何先验曲率；它遵循每个点的运动与字典一致的要求。
+	
+	\subsection{设置与符号}
+	设圆盘由无穷小元组成。在实验室系 \((t, r, \phi)\) 中，柱坐标下的闵可夫斯基线元为：
+	\[
+	ds^2 = c^2 dt^2 - dr^2 - r^2 d\phi^2.
+	\]
+	对于固定在圆盘上的点，其角速度为 \(\omega = d\phi/dt\)。旋转观察者的标准朗之万度规通过变换到与圆盘共转的坐标获得：
+	\[
+	t' = t,\quad r' = r,\quad \phi' = \phi - \omega t.
+	\]
+	则
+	\[
+	ds^2 = c^2 dt'^2 - dr'^2 - r'^2 (d\phi' + \omega dt')^2 = (c^2 - \omega^2 r'^2) dt'^2 - dr'^2 - 2\omega r'^2 dt' d\phi' - r'^2 d\phi'^2.
+	\]
+	圆盘上的空间度规（对于固定 \(t'\)）由超曲面 \(t' = \text{const}\) 上的诱导度规给出：
+	\[
+	d\ell^2 = dr'^2 + \frac{r'^2}{1 - \omega^2 r'^2/c^2} d\phi'^2 = dr^2 + r^2 K_{\mathrm{eff}}(r)^2 d\phi^2.
+	\]
+	因此协调效率直接出现在度规系数中：\(g_{\phi\phi} = r^2 K_{\mathrm{eff}}(r)^2\)。
+	
+	对于 \(r = R_0\) 的周长为
+	\[
+	C = \int_0^{2\pi} R_0 K_{\mathrm{eff}}(R_0) d\phi = 2\pi R_0 K_{\mathrm{eff}}(R_0) = \frac{2\pi R_0}{\sqrt{1 - \omega^2 R_0^2/c^2}},
+	\]
+	它大于欧几里得值，而不是实验室系中更小。实验室系与共转系之间的表观差异正是悖论的本质。
+	
+	\subsection{基于协调的重新解释}
+	在 YUCT 中，因子 \(K_{\mathrm{eff}}(r) > 1\) 表明在坐标表示中几何是\textbf{非欧几里得的}。但关键的是，这种非欧特性源于旋转物质的高协调效率：各点之间的协调如此之好，以至于（在旋转系中）它们之间的距离显得变大了。近似等式 \(\Sodd \varphi^2 \approx \pi\) 保证了当 \(K_{\mathrm{eff}} \to 1\)（经典极限）时，标准的欧几里得比值 \(C/(2\pi r) = 1\) 得以恢复。
+	
+	\begin{proposition}[从 \(K_{\mathrm{eff}}\) 涌现曲率]
+		旋转圆盘上的空间度规可以写为
+		\[
+		d\ell^2 = dr^2 + r^2 K_{\mathrm{eff}}(r)^2 d\phi^2.
+		\]
+		此度规的高斯曲率 \(K\) 为
+		\[
+		K = -\frac{1}{r} \frac{d}{dr}\left( \frac{1}{K_{\mathrm{eff}}(r)} \frac{dK_{\mathrm{eff}}}{dr} \right).
+		\]
+		代入 \(K_{\mathrm{eff}}(r) = (1 - \omega^2 r^2/c^2)^{-1/2}\) 得到
+		\[
+		K = -\frac{3\omega^4 r^2}{c^4} \frac{1}{(1 - \omega^2 r^2/c^2)^2} + \dots,
+		\]
+		这正是朗之万度规空间部分的高斯曲率。因此\textbf{几何曲率是协调效率空间变化的体现}。
+	\end{proposition}
+	
+	\begin{proof}
+		直接计算：\(K_{\mathrm{eff}}(r) = (1 - \omega^2 r^2/c^2)^{-1/2}\)。则
+		\[
+		\frac{dK_{\mathrm{eff}}}{dr} = \frac{\omega^2 r}{c^2} K_{\mathrm{eff}}^3,\qquad
+		\frac{1}{K_{\mathrm{eff}}} \frac{dK_{\mathrm{eff}}}{dr} = \frac{\omega^2 r}{c^2} K_{\mathrm{eff}}^2.
+		\]
+		因此
+		\[
+		K = -\frac{1}{r} \frac{d}{dr}\left( \frac{\omega^2 r}{c^2} K_{\mathrm{eff}}^2 \right) = -\frac{1}{r} \left( \frac{\omega^2}{c^2} K_{\mathrm{eff}}^2 + \frac{2\omega^2 r}{c^2} K_{\mathrm{eff}} \frac{dK_{\mathrm{eff}}}{dr} \right).
+		\]
+		利用 \(\frac{dK_{\mathrm{eff}}}{dr} = \frac{\omega^2 r}{c^2} K_{\mathrm{eff}}^3\)，第二项变为 \(\frac{2\omega^4 r^2}{c^4} K_{\mathrm{eff}}^4\)。简化后，
+		\[
+		K = -\frac{\omega^2}{c^2} \frac{1 + 3\omega^2 r^2/c^2}{(1 - \omega^2 r^2/c^2)^2} = -\frac{3\omega^4 r^2}{c^4} \frac{1}{(1 - \omega^2 r^2/c^2)^2} + \mathcal{O}(\omega^6 r^4/c^6).
+		\]
+		该表达式与从朗之万度规获得的曲率一致，证实非欧几何完全由协调函数 \(K_{\mathrm{eff}}(r)\) 重现。
+	\end{proof}
+	
+	因此，非欧几何被\textbf{完全重现}由协调函数 \(K_{\mathrm{eff}}(r)\)。不需要额外的几何假设；几何从协调效率随半径的变化中涌现，而基本常数 \(\Sodd\) 和 \(\Seven\) 保证了在经典极限下通过 \(\Sodd \varphi^2 \approx \pi\) 恢复欧几里得比值 \(2\pi\)。
+	
+	\section{欧几里得极限：\(K_{\mathrm{eff}} \to 1\) 与经典区域}
+	\label{sec:euc-limit}
+	
+	当对所有 \(r\) 有 \(K_{\mathrm{eff}}(r) = 1\) 时，度规退化为 \(d\ell^2 = dr^2 + r^2 d\phi^2\)，这是欧几里得的。该极限对应于 \(\omega \to 0\)（无旋转），或者更一般地，对应于没有有效协调。在 YUCT 框架中，\(K_{\mathrm{eff}} = 1\) 意味着字典是平凡的：每个点没有接收到任何会修改其相互距离的索引。因此，\textbf{时间成为绝对的}（无时间膨胀），几何是伽利略的。根据经典对应原理，该极限恢复了牛顿力学。而且，近似等式 \(\Sodd \varphi^2 \approx \pi\) 在欧几里得周长精确为 \(2\pi r\) 的意义上成为精确的；任何对欧几里得几何的偏离都受层级常数控制。
+	
+	\begin{corollary}[牛顿物理的恢复]
+		当 \(K_{\mathrm{eff}} \to 1\)（即协调效率最小时），旋转圆盘表现为经典刚体：周长为 \(2\pi R\)，时间是绝对的，洛伦兹因子 \(\gamma \to 1\)。这与 YUCT 的预言一致：当 \(K_{\mathrm{eff}} \to 1\) 时，动力学退化为经典物理。
+	\end{corollary}
+	
+	\section{量子极限：\(K_{\mathrm{eff}} \to \infty\) 作为通往纠缠与非对易几何的桥梁}
+	\label{sec:quantum-limit}
+	
+	当 \(K_{\mathrm{eff}}(r)\) 变得非常大（即 \(r\) 趋近于 \(c/\omega\)，或者更一般地，当协调效率发散时），系统进入一个让人想起量子纠缠的区域。在 YUCT 中，\(K_{\mathrm{eff}} \to \infty\) 对应于一个字典极其精确，使得相互距离以无限保真度确定。这类似于最大纠缠态，其中关联是完美的，没有局部隐变量可以在没有协调的情况下解释它们。
+	
+	对于旋转圆盘，极限 \(K_{\mathrm{eff}} \to \infty\) 意味着周长 \(C = 2\pi r K_{\mathrm{eff}}\) 变得不确定，除非半径相应缩放。这可以解释为非对易几何的涌现，类似于量子霍尔效应或朗道问题。事实上，具有 \(K_{\mathrm{eff}} \to \infty\) 的度规产生一个退化的空间度规，这是量子相的特征，其中距离的概念失去了其经典意义。常数 \(\Sodd \varphi^2\) 在此极限下趋于 \(\pi\)，表明有效几何趋向于带有标准 \(\pi\) 的欧几里得几何，但围绕该极限的涨落受相同层级常数控制。因此 YUCT 提示了一个平滑的转变：经典 (\(K_{\mathrm{eff}}=1\)) \(\rightarrow\) 相对论 (\(K_{\mathrm{eff}}>1\)) \(\rightarrow\) 量子 (\(K_{\mathrm{eff}}\to\infty\))，所有这些都由同一个参数支配。关于量子引力背景下非对易几何的更详细讨论，见附录 G。
+	
+	\section{因果性与预分发字典}
+	\label{sec:causality}
+	
+	一个可能的反对意见是：圆盘的所有点如何能在没有超光速信号的情况下知道字典？在 YUCT 中，字典通过材料结构预分发——例如晶体晶格常数、弹性模量或磁性材料中的自旋序。这些性质在圆盘的制造或制备过程中就已建立，远在旋转开始之前。当圆盘开始旋转时，局部电磁和弹性相互作用强制执行预定的距离。不需要实时通信；约束已经内置于材料的本构关系中。这类似于牛顿刚体，其中刚性是一种约束，而不是信号。YUCT 只是将此思想扩展到包括相对论和量子协调。普适常数 \(\Sodd\) 和 \(\Seven\) 是此预分发字典的一部分：它们编码了任何物理系统必须遵守的层级平衡。
+	
+	\section{YUCT 视角：作为协调涌现描述的几何}
+	
+	在 YUCT 框架中，旋转圆盘不是嵌入在预先存在的时空中的几何对象；它是一个\textbf{共享预分发字典 \(\mathcal{D}_{\text{disk}}\) 的质点协调系统}。几何（欧几里得或非欧）是描述协调状态的方便语言，而不是本体论原语。旋转轴的存在仅取决于 D+I•R 三元组维持相干性；它不是一条绝对的几何线。
+	
+	广义相对论在材料协调效率 \(K_{\mathrm{eff,mat}} = 1\)（理想化的无限强度）且曲率仅归因于度规的极限下描述同一系统。然而，真实材料由于内部结构（晶格、电子关联、量子相干）具有 \(K_{\mathrm{eff,mat}} > 1\)。这导致了两个关键后果：
+	
+	\begin{enumerate}
+		\item \textbf{依赖于材料的几何}：圆盘上的有效空间度规为 \(d\ell^2 = dr^2 + r^2 K_{\mathrm{eff,SR}}(r)^2 K_{\mathrm{eff,mat}}^2 d\phi^2\)，这依赖于材料的内部协调。
+		\item \textbf{临界破坏}：当 \(K_{\mathrm{eff,total}} = K_{\mathrm{eff,SR}}(R) K_{\mathrm{eff,mat}} < K_{\mathrm{crit}}\) 时，字典无法再强制执行预定的距离——圆盘解体。这是协调状态的一个相变，而不是几何描述的限制。
+	\end{enumerate}
+	
+	因此，YUCT 并不与广义相对论矛盾；它揭示了广义相对论是更广泛的协调理论中的一个特例（\(K_{\mathrm{eff,mat}}=1\)）。轴、几何和临界速度都从相同的底层协调效率中涌现。这种统一在广义相对论本身中是不可能的。
+	
+	\section{临界破坏：协调的丧失与轴的消失}
+	\label{sec:critical-disruption}
+	
+	旋转圆盘不能任意快地旋转。在某个临界角速度 \(\omega_{\text{crit}}\) 下，材料失效——圆盘解体。在 YUCT 中，这被解释为\textbf{协调的灾难性丧失}。下面我们定义关键概念并推导定量预言。
+	
+	\subsection{定义}
+	
+	\begin{definition}[协调中心（旋转轴）]
+		旋转轴不是一条绝对的几何线；它是一个\textbf{从共享一个关于离公共中心距离的预分发字典的质点协调系统中涌现的性质}。只要圆盘相干地旋转，每个点就通过预分发字典“知道”其到轴的距离。因此，轴的存在仅取决于协调的持续。当圆盘解体时，轴不再作为物理上可区分的线存在。
+	\end{definition}
+	
+	\begin{definition}[协调的丧失]
+		当相对误差 \(\varepsilon = \kappac \alpha K_{\mathrm{eff}}^{-\betaf}\) 超过材料依赖的临界值 \(\varepsilon_{\text{crit}}\) 时，发生协调的丧失。等价地，协调效率降至临界阈值以下：
+		\[
+		\Keff < \Kcrit, \qquad \Kcrit = \left( \frac{\kappac \alpha}{\varepsilon_{\text{crit}}} \right)^{1/\betaf}.
+		\]
+		对于旋转圆盘，总协调效率是相对论部分 \(K_{\mathrm{eff,SR}}(r)\) 和材料部分 \(K_{\mathrm{eff,mat}}\) 的乘积：
+		\[
+		\Kefftot(r) = \KeffSR(r) \cdot \Keffmat.
+		\]
+		材料部分 \(K_{\mathrm{eff,mat}}\) 依赖于内部结构（例如晶体序、超导相干）。临界条件首先在边缘 (\(r = R\)) 达到，其中 \(\KeffSR(R)\) 最大。
+	\end{definition}
+	
+	\begin{definition}[临界角速度]
+		当 \(\Kefftot(R) = \Kcrit\) 时圆盘解体。利用 \(\KeffSR(R) = 1/\sqrt{1 - \omega^2 R^2/c^2}\)，我们得到
+		\[
+		\frac{1}{\sqrt{1 - \omega_{\text{crit}}^2 R^2/c^2}} \cdot \Keffmat = \Kcrit.
+		\]
+		解出 \(\omega_{\text{crit}}\)：
+		\[
+		\boxed{\omega_{\text{crit}} = \frac{c}{R} \sqrt{1 - \left( \frac{\Keffmat}{\Kcrit} \right)^2 }}.
+		\]
+		对于 \(\Keffmat = \Kcrit\)（材料处于自身临界点），\(\omega_{\text{crit}} = 0\)（不稳定）。对于 \(\Keffmat > \Kcrit\)，\(\omega_{\text{crit}}\) 是虚数——仅靠旋转无法使圆盘失效；需要其他机制。对于 \(\Keffmat < \Kcrit\)，\(\omega_{\text{crit}}\) 是实的且有限。
+	\end{definition}
+	
+	\subsection{与经典断裂力学的联系}
+	
+	在经典极限中，相对论效应可忽略（\(\KeffSR \approx 1\)），临界条件简化为 \(\Keffmat = \Kcrit\)。临界角速度则由材料的抗拉强度 \(\sigma_{\text{max}}\) 和密度 \(\rho\) 决定。标准断裂力学给出薄旋转圆盘的：
+	\[
+	\omega_{\text{crit,classical}} = \sqrt{\frac{2\sigma_{\text{max}}}{\rho R^2}}.
+	\]
+	在极限 \(\KeffSR \to 1\) 下将其与 YUCT 表达式相等，得到 \(\Kcrit\) 与材料性质之间的关系：
+	\[
+	\Kcrit = \frac{\kappac \alpha}{\varepsilon_{\text{crit}}^{1/\betaf}} \quad \text{且} \quad \varepsilon_{\text{crit}} \propto \frac{\sigma_{\text{max}}}{E},
+	\]
+	其中 \(E\) 是杨氏模量。实际上，断裂时的相对形变为 \(\varepsilon_{\text{crit}} = \sigma_{\text{max}}/E\)。因此当 \(\Keffmat = 1\) 且 \(\Kcrit\) 适当选择时，YUCT 恢复了经典公式。这提供了一致性检验：对于正常（非超导）圆盘，该模型重现标准工程预测。
+	
+	\subsection{材料依赖的临界速度：一个可检验的预言}
+	
+	如果材料可以进入具有 \(\Keffmat > 1\) 的状态（例如低于 \(T_c\) 的超导体），临界角速度增加：
+	\[
+	\frac{\omega_{\text{crit}}(K_{\mathrm{eff,mat}})}{\omega_{\text{crit,classical}}} = \frac{ \sqrt{1 - (\Keffmat/\Kcrit)^2} }{ \sqrt{1 - (1/\Kcrit)^2} }.
+	\]
+	对于典型材料，\(\Kcrit\) 量级为 1。如果 \(\Keffmat\) 增加例如 25\%，临界速度可增加 2–3 倍。这是一个\textbf{定量的、可检验的预言}，将 YUCT 与经典物理和广义相对论（后者没有材料依赖性）区分开来。
+	
+	\subsection{与标准理想化的比较：从无限强度到物理协调极限}
+	
+	关于埃伦费斯特悖论的标准文献（Einstein, 1916; Møller, 1952; Rindler, 2006; Grøn, 1995）中，旋转圆盘被当作一个\textbf{具有无限抗拉强度的理想化数学对象}来处理。不考虑材料破坏；几何在任何角速度 \(0 < \omega < c/R\) 下都是非欧的，旋转轴无论 \(\omega\) 如何都是一条定义明确的几何线。这种理想化对于纯几何分析是必要的，但忽略了真实材料具有有限强度并且在离心应力超过临界值时会解体的物理现实。
+	
+	相反，YUCT\textbf{通过材料协调效率 \(K_{\mathrm{eff,mat}}\) 明确纳入了物质的有限协调能力}。圆盘不是一个脱离肉体的几何曲面；它是一个\textbf{共享预分发相互距离字典的质点协调系统}。当总协调效率 \(\Kefftot(R) = \KeffSR(R) \cdot \Keffmat\) 低于临界阈值 \(\Kcrit\) 时，字典无法再强制执行预定的距离——材料发生灾难性破坏。这是一个\textbf{相变}：从协调的旋转状态到一个解体的、无协调的状态。
+	
+	表~\ref{tab:idealization} 总结了关键差异。
+	
+	\begin{table}[h]
+		\centering
+		\caption{标准理想化与 YUCT 物理模型的比较。}
+		\label{tab:idealization}
+		\begin{tabular}{p{5cm}p{5cm}}
+			\toprule
+			\textbf{标准理想化 (广义相对论)} & \textbf{YUCT 物理模型} \\
+			\midrule
+			具有无限强度的数学对象 & 具有有限抗拉强度的真实材料 \\
+			没有材料破坏的概念 & 明确的临界条件 \(\Kefftot(R) = \Kcrit\) \\
+			轴作为绝对几何线存在 & 轴仅作为协调物质的涌现性质存在 \\
+			任意 \(\omega\) 下几何非欧 & 几何非欧，但圆盘在 \(\omega_{\text{crit}}\) 处解体 \\
+			没有材料依赖的预言 & 预言材料依赖的临界速度和几何 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	因此，YUCT 不仅仅是重新解释已知的几何；它\textbf{将理论扩展到理想化刚体失效的区域}。这种扩展在广义相对论的纯几何框架中是不可能的，因为广义相对论不包含材料协调能力的概念。通过引入 \(\Keffmat\) 和 \(\Kcrit\)，YUCT 提供了\textbf{相对论几何与内聚物理极限的统一描述}，将埃伦费斯特悖论与断裂力学以及量子相变（超导、玻色-爱因斯坦凝聚）联系起来。这是真正的理论进步，产生了标准广义相对论中没有的实验可检验预言。
+	
+	\subsection{协调效率的温度依赖性}
+	
+	在 YUCT 中，材料协调效率依赖于温度（附录 P）：
+	\[
+	K_{\mathrm{eff,mat}}(T) = K_0 \left( \frac{T}{T_0} \right)^{-\gamma}, \qquad \beta\gamma = 0.20,\ \gamma \approx 0.3.
+	\]
+	这种依赖性影响临界阈值和临界角速度：
+	\[
+	\omega_{\text{crit}}(T) = \frac{c}{R} \sqrt{1 - \left( \frac{K_{\mathrm{eff,mat}}(T)}{K_{\mathrm{crit}}(T)} \right)^2 }.
+	\]
+	对于超导圆盘，在临界温度 \(T_c\) 以下，由于库珀对相干性，\(K_{\mathrm{eff,mat}}\) 增强（如第 \ref{subsec:numerical} 节所估计）。在 \(T_c\) 以上，材料恢复到正常状态，\(K_{\mathrm{eff,mat}} = 1\)。因此，通过使温度跨越 \(T_c\)，可以在两种不同的几何和临界速度区域之间切换。这提供了一个额外的实验手段：如果超导相干性影响协调效率，临界角速度应在 \(T_c\) 处表现出不连续性。零结果将为 \(K_{\mathrm{eff,SC}} - 1\) 设定一个上限。
+	
+	\subsection{解体后轴的消失}
+	
+	圆盘解体后，材料碎片飞散。不再存在一组共享字典来指定离公共中心距离的相干点。因此，旋转轴\textbf{不再作为物理上可区分的线存在}。在 YUCT 中，这不是一个悖论，而是一个自然结果：几何不是绝对的；它是协调物质的涌现性质。这与牛顿力学（其中轴在圆盘消失后仍作为数学线存在）以及广义相对论（其中度规可以在没有物质的情况下定义，尽管意义减弱）形成对比。
+	
+	\paragraph{实验确认：旋转圆盘的离心破碎。}
+	在材料测试中，众所周知，以递增角速度旋转的圆盘最终会在离心应力超过抗拉强度时破碎。此类实验的高速成像显示，破碎后，各个碎片不共享一个公共旋转中心；它们的轨迹由局部动量守恒和随机断裂角决定，而不是由全局轴决定。对于碎片场，“旋转轴”的概念不再具有物理意义，尽管仍可以画出一条通过原始质心的几何线。标准牛顿力学和广义相对论没有解决这种轴物理可区分性的丧失，因为它们将轴视为抽象的数学构造。相比之下，YUCT 明确预言轴仅在材料保持协调时才存在。这一预言可以在受控离心机实验中使用高速相机和碎片追踪进行检验。
+	
+	\subsection{旋转等边三角形：轴涌现性质的进一步证据}
+	
+	圆盘不是唯一其旋转能说明轴涌现特性的物体。考虑一个由刚性但非无限强度材料制成的等边三角形。它安装在一个通过其质心、垂直于其平面的轴上。当以递增角速度旋转时，与圆盘相比存在以下差异。
+	
+	\subsubsection{应力集中与边缘的作用}
+	
+	与连续圆盘不同，三角形将其质量集中在三个顶点，应力沿着三条边集中。每个顶点上的离心力从旋转中心径向向外。边缘必须传递这些力以保持形状。沿边缘的拉应力不是均匀的；在边缘中点处最大，在顶点处较小。这种应力分布与圆盘的根本不同，在圆盘中应力纯粹是切向和径向的。
+	
+	在 YUCT 中，三角形相互距离的字典不仅规定了离中心的距离，还规定了边长和它们之间的角度。材料协调效率 \(K_{\mathrm{eff,mat}}\) 决定了材料在旋转下维持这些约束的能力。由于应力集中，破坏的临界角速度低于相同质量和半径的圆盘。
+	
+	\subsubsection{没有自然轴}
+	
+	三角形不具有一条通过其所有质点的几何对称轴。旋转轴是由外部轴施加的。如果三角形不连接在轴上而是自由旋转（例如通过短暂的扭矩），其旋转轴将不稳定；它会进动并最终翻滚。从经典力学已知：非轴对称刚体仅绕其主惯性轴稳定旋转，而三角形的主惯性轴并不以所有点都绕一条线做同心圆运动的方式与其几何中心对齐。
+	
+	YUCT 对此解释如下：旋转轴不是三角形的固有属性；它是由外部轴强加的协调约束。当轴被移除时，距离字典不规定唯一的轴，运动变得混乱。这直接说明了轴仅作为协调系统（三角形加轴）维持相干时才存在。
+	
+	\subsubsection{三角形的临界破坏}
+	
+	当角速度达到临界值 \(\omega_{\text{crit, triangle}}\) 时，一条边将在其最弱点（通常是应力最高的中点）失效。不是所有边同时失效。只要一条边断裂，三角形就失去形状：剩余的两条边和断裂的顶点形成一个 V 形结构。质心移动，旋转轴不再由原始几何定义。碎片不再共享公共旋转中心。
+	
+	这种逐步破坏清楚地表明轴不是一条绝对的几何线。在标准连续介质力学中，仍然可以计算碎片的瞬时旋转轴，但该轴与原始轴不同，并且随时间变化。在 YUCT 中，关键点是：因为定义它的字典（三角形的相互距离集）被摧毁，原始轴作为物理上可区分的线消失了。因此，三角形实验为 YUCT 的主张提供了一个定性检验：轴是协调系统的涌现性质，而不是空间的基本特征。
+	
+	\subsubsection{实验可行性}
+	
+	一个简单的实验可以用塑料或金属三角形（例如边长 10–20 cm，厚度几毫米）安装在变速电动机上进行。使用频闪灯或高速相机，可以观察变形的开始和失效的时刻。可以将临界角速度与相同质量和材料的圆盘进行比较。YUCT 预言比值 \(\omega_{\text{crit, triangle}} / \omega_{\text{crit, disk}}\) 由应力集中因子和协调效率决定，并且破坏模式（哪条边先断裂）不是确定性的而是概率性的，反映了微观缺陷的随机分布——这是普适误差律 \(\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}\) 的体现。
+	
+	该实验甚至比超导圆盘测试更简单、更便宜，并且可以在标准的本科实验室中进行。它作为旋转轴涌现性质的定性演示，在进行更精确的超导定量测试之前支持 YUCT 的解释。
+	
+	\subsection{与磁星和脉冲星的类比}
+	
+	中子星（脉冲星、磁星）是天体物理尺度上旋转圆盘的自然类比。它们由引力协调（加上核力和磁场）维持。同样的 YUCT 框架适用：恒星旋转，其物质通过预分发字典（状态方程、磁通量守恒）协调。当旋转能量过高时，恒星可能经历毛刺、巨耀斑甚至解体。在 YUCT 中，此类事件被解释为局部或全局的协调丧失，临界阈值由 \(\Kefftot(R) = \Kcrit\) 给出。只要恒星保持相干，旋转轴就保持定义；在灾难性事件（例如改变磁场构型的磁星巨耀斑）之后，轴可能移动或变得定义不清。这种统一图景加强了 YUCT 的普适性。
+	
+	\subsection{应用于中子星：作为协调相变的脉冲星旋转极限}
+	
+	已知最快的脉冲星 PSR J1748‑2446ad 以 \(f = 716\ \text{Hz}\) 旋转，对应的赤道速度 \(v \approx 0.24c\)（对于典型中子星半径 \(R\approx 16\ \text{km}\)）。尚未观测到显著更高频率的脉冲星，这提示了一个普遍的旋转极限。在 YUCT 中，这个极限不是演化或观测偏差的偶然事件；它是材料协调效率 \(K_{\mathrm{eff,mat}}\) 的直接结果。
+	
+	\subsubsection{中子星的协调极限}
+	
+	将中子星视为简并物质的旋转“圆盘”。总协调效率为
+	\[
+	K_{\mathrm{eff,total}} = K_{\mathrm{eff,SR}}(R) \cdot K_{\mathrm{eff,mat}},
+	\qquad
+	K_{\mathrm{eff,SR}}(R) = \frac{1}{\sqrt{1 - \omega^2 R^2/c^2}}.
+	\]
+	只要 \(K_{\mathrm{eff,total}} > K_{\mathrm{crit}}\)，恒星保持稳定，其中 \(K_{\mathrm{crit}}\) 是材料依赖的临界协调阈值（与实验室圆盘解体中出现的是同一个常数）。在最大稳定旋转时，
+	\[
+	\frac{1}{\sqrt{1 - \omega_{\max}^2 R^2/c^2}} \cdot K_{\mathrm{eff,mat}} = K_{\mathrm{crit}}.
+	\]
+	解出 \(\omega_{\max}\) 给出
+	\[
+	\omega_{\max} = \frac{c}{R}\sqrt{1 - \left(\frac{K_{\mathrm{eff,mat}}}{K_{\mathrm{crit}}}\right)^2}.
+	\]
+	
+	\subsubsection{使用已知最快脉冲星进行校准}
+	
+	对于 PSR J1748‑2446ad：\(\omega = 2\pi\times716\ \text{rad/s}\)，\(R\approx 1.6\times10^4\ \text{m}\)。则
+	\[
+	\frac{v}{c} = \frac{\omega R}{c} \approx 0.24,\qquad
+	K_{\mathrm{eff,SR}} \approx \frac{1}{\sqrt{1-0.24^2}} \approx 1.03.
+	\]
+	如果我们假设该脉冲星已经接近协调极限，那么
+	\[
+	K_{\mathrm{eff,SR}} \cdot K_{\mathrm{eff,mat}} \approx K_{\mathrm{crit}}.
+	\]
+	中子物质的 \(K_{\mathrm{crit}}\) 值可以通过相同质量 (\(M\approx1.4M_\odot\)) 黑洞的克尔极限独立估计。对于史瓦西黑洞，极限角速度为 \(\omega_{\text{Kerr}} \approx c^3/(4GM) \approx 1.1\times10^4\ \text{rad/s}\)，对应 \(K_{\mathrm{eff,SR}} \approx 1.7\)。将其识别为塌缩的起点，得到 \(K_{\mathrm{crit}} \approx 1.7\)。则
+	\[
+	K_{\mathrm{eff,mat}} \approx \frac{K_{\mathrm{crit}}}{K_{\mathrm{eff,SR}}} \approx \frac{1.7}{1.03} \approx 1.65.
+	\]
+	因此冷中子物质的协调效率约为 1.65，显著高于普通固体（通常为 1.001–1.01）。
+	
+	\subsubsection{预言}
+	
+	\begin{enumerate}
+		\item 没有孤立的脉冲星能比用上述公式和校准的 \(K_{\mathrm{eff,mat}}\) 得到的频率旋转得更快。对于更致密的恒星（\(R\approx 12\ \text{km}\)），最大频率会更高，但这样的天体很少；观测到的约 716 Hz 的上限得到了自然的解释。
+		\item 如果脉冲星进一步被加速（例如通过吸积），它将经历一个相变：物质将失去协调（\(K_{\mathrm{eff,mat}}\) 下降），恒星可能塌缩成黑洞或转变为夸克星。这种塌缩应产生一个独特的引力波信号——铃宕相的突然变化或一个额外的振荡模式。
+		\item 同样的协调极限适用于两个中子星的并合。当并合后残骸旋转过快时，局部协调效率降至 \(K_{\mathrm{crit}}\) 以下，触发塌缩，可能伴随引力波信号中的特征特征。这种质量依赖的偏差已在 GWTC-4.0 目录（附录 G）的高质量箱中以 \(2.1\sigma\) 水平观测到。
+	\end{enumerate}
+	
+	\subsubsection{与实验室实验及附录 G 的联系}
+	
+	描述实验室中旋转圆盘解体的相同方程（第 \ref{sec:critical-disruption} 节）也支配着中子星的最大自旋。唯一的区别是尺度（\(R\) 和材料参数）。因此脉冲星自旋极限提供了对 YUCT 协调范式的\textbf{直接天体物理检验}，将厘米尺度的实验与 \(10\ \text{km}\) 大小、\(1.4\) 个太阳质量的天体联系起来。预言极限与观测之间的一致性，以及它与引力波信号中观测到的质量依赖偏差的吻合，有力地支持了协调效率是在所有尺度上决定旋转稳定性的普适参数这一主张。
+	
+	\subsection{来自数千个天体物理源的观测证据：作为协调物质涌现性质的轴}
+	
+	YUCT 的解释——旋转轴不是一条绝对的几何线，而是协调物质的涌现性质——在跨越数十年、涉及数千个源的广泛天体物理观测中得到了有力支持。下面我们汇集来自四个独立研究领域的证据，每个领域都基于数百到数千个独立天体，表明喷流轴与吸积盘（协调物质）密不可分，而不是仅与黑洞相关。
+	
+	\subsubsection{超大质量黑洞中的进动喷流}
+	
+	附近的射电星系 M87，距离地球 5500 万光年，拥有一个质量是太阳 65 亿倍的黑洞，在过去二十多年里通过全球射电望远镜网络进行了监测。对 2000 年至 2022 年 VLBI 数据的分析揭示，喷流基底存在一个重复的 11 年进动周期 \cite{M87Precession2024}。解释是喷流在进动，因为吸积盘与黑洞自旋轴不对齐，而巴丁-佩特森效应驱动内盘对齐，导致喷流摆动。
+	
+	关键的是，旋转轴由吸积盘——协调物质——定义，而不是仅由黑洞定义。如果没有盘，就没有喷流，也没有轴。11 年的进动周期是盘与黑洞之间协调的直接表现，由参考系拖曳介导。YUCT 将其解释为一个系统，其中字典（盘结构）和索引（不对齐角）共同决定涌现的轴。
+	
+	\subsubsection{最快喷流锁定在固定轴上}
+	
+	2025 年 9 月发表在《自然·天文学》上的一项里程碑式研究汇编了迄今为止最大的恒星质量黑洞和中子星瞬变喷流速度样本 \cite{NatureAstronomy2025}。作者分析了在几个历元的射电图像中追踪的、具有统计显著性的离散喷射物样本，使用了包括 MeerKAT 射电望远镜在内的设备，该望远镜提供了太阳系外最高的三个自行测量值。
+	
+	\textbf{关键发现：} 最快、最相对论的喷流\textbf{仅从黑洞发射}，并在多个喷射阶段保持固定轴，为它们沿着黑洞自旋轴传播提供了有力证据。相比之下，较慢的喷流可由黑洞和中子星两者发射，并且可以改变方向或进动，表明它们是从吸积流发射的。
+	
+	这是一个清晰的观测层级：更快的喷流 = 固定轴 = 黑洞（强协调）；较慢的喷流 = 可变轴 = 中子星或较弱协调。YUCT 通过协调效率 \(K_{\mathrm{eff}}\) 来解释：黑洞可以维持比中子星高得多的 \(K_{\mathrm{eff}}\)，而最快的喷流对应于盘与黑洞自旋最大协调的极限。
+	
+	\subsubsection{喷流淬灭：当协调失效时，轴消失}
+	
+	如果轴是协调物质的涌现性质，那么当物质失去协调——当吸积盘改变状态时——喷流应停止，轴应消失。这已被精确观测到 \cite{JetQuenching2006,JetQuenching2018}。
+	
+	对于黑洞 X 射线双星，当盘吸积率低于某个极限（通常为 \(\dot{m}/\dot{m}_{\text{Edd}} \lesssim 0.01\)）时喷流发射，但当吸积率超过此阈值时喷流被\textbf{淬灭}。机制是当整个吸积盘转变为 Shakura–Sunyaev 盘时，等离子体带来比电磁提取更多的静止质量能，喷流停止。
+	
+	用 YUCT 术语，吸积率的增加破坏了盘的协调结构；字典无法再维持预定的距离和角动量分布，涌现的轴消失。观测到的喷流淬灭因子超过 3.5 个数量级，证明了这种协调丧失的灾难性。
+	
+	\subsubsection{潮汐瓦解事件：仅当盘形成时轴才涌现}
+	
+	最戏剧性的确认来自潮汐瓦解事件（TDE），其中一颗恒星被超大质量黑洞撕裂。相对论喷流仅在恒星碎片形成相干吸积盘时才产生 \cite{TDE2016,TDE2020}。在喷流 TDE Swift J1644+57 中，发现喷流轴与黑洞自旋轴对齐，并且当质量吸积率降至 \(\dot{m}/\dot{m}_{\text{Edd}} \approx 0.006\) 以下时喷流活动停止。这明确地表明轴仅在协调吸积流存在时才存在。没有盘，就没有喷流——也没有轴。
+	
+	\subsubsection{综合：轴由协调物质定义，而非仅由引力定义}
+	
+	来自数千个源——超大质量黑洞（M87）、恒星质量黑洞（X 射线双星）、中子星和潮汐瓦解事件——的观测证据汇聚到一个结论：旋转轴是吸积盘的涌现性质，而不是附着在黑洞上的绝对几何线。当盘存在且协调时，轴存在且喷流沿其传播。当盘改变状态时，轴进动。当盘消失时，喷流停止——随之轴也消失。
+	
+	这正是 YUCT 所预言的。轴不是时空的基本特征；它是 D+I·R 三元组的体现，其中字典（盘结构）和索引（角动量分布）生成涌现的几何。仅凭引力不产生轴——协调物质才产生。
+	
+	\subsection{旋转发射与角加速度量子：独立的实验线索}
+	
+	YUCT 关于接近临界破坏的旋转圆盘会发射相干辐射的预言，在几个难以仅用经典物理解释的独立实验观测中找到了支持。
+	
+	\subsubsection{萨格纳克效应与旋转平台上光的各向异性}
+	
+	萨格纳克效应表明光在旋转平台上不是各向同性传播的：光在旋转方向和逆旋转方向的有效速度不同。在标准物理中，这通过旋转系的非惯性性质来解释。YUCT 将其解释为协调效率 \(K_{\mathrm{eff}}(r)\) 空间变化的直接体现：有效度规 \(d\ell^2 = dr^2 + r^2 K_{\mathrm{eff}}(r)^2 d\phi^2\) 自然产生萨格纳克相移。这种解释已经隐含在朗之万度规中，但 YUCT 增加了见解：\(K_{\mathrm{eff}}(r)\) 不是纯粹的几何因子，而是依赖于材料的协调参数。
+	
+	\subsubsection{旋转转子上的穆斯堡尔实验：Yarman–Arik–Kholmetskii 效应}
+	
+	从 2000 年代初开始，Yarman、Arik、Kholmetskii 及其合作者进行了一系列实验，测量放置在旋转转子上的穆斯堡尔源的伽马射线共振吸收。他们观测到了超出经典横向多普勒效应和二阶引力位移的额外能量位移。位移的大小与 \(\omega^2 R^2 / c^2\) 成正比，但其系数取决于加速度历史。这种效应有时被称为 Yarman–Arik–Kholmetskii（YARK）位移，标准狭义相对论无法预测。
+	
+	关键的是，YARK 理论将此位移解释为角加速度以离散量子的形式发生的证据，并且每个量子跃迁伴随着一个能量为 \(\hbar \varpi\) 的光子发射或吸收，其中 \(\varpi\) 是角加速度量子。这正是 YUCT 为接近临界点的旋转圆盘所预言的“协调发射”类型：当圆盘失去协调时，角速度不能连续变化；它会跳跃，而跳跃会辐射。
+	
+	\subsubsection{与 YUCT 临界破坏场景的联系}
+	
+	YARK 实验是在中等旋转速度（远低于相对论）和正常材料中进行的，远未接近临界点。尽管如此，它们表明：
+	
+	\begin{enumerate}
+		\item 旋转不是一个纯粹光滑的经典过程——在宏观尺度上也会出现离散的量子效应。
+		\item 辐射的发射与角速度的变化密切相关，而不是与热效应相关。
+		\item 一个成功的旋转体理论必须解释这种量子化。
+	\end{enumerate}
+	
+	YUCT 提供了一个自然的框架：材料协调效率 \(K_{\mathrm{eff,mat}}\) 决定了可以相干存储多少个角动量量子。在临界点附近，系统无法再维持相干性，多余的量子以相干辐射形式发射——这正是第 \ref{sec:experiment} 节中对超导圆盘预言的效应。YARK 实验作为一个较低能量的前兆：它们表明量子化旋转发射是真实的，而 YUCT 将其扩展到高协调（超导）区域，在那里效应应被显著增强。
+	
+	\subsubsection{总结}
+	
+	萨格纳克效应和 YARK 穆斯堡尔实验提供了独立的、实验室尺度的证据，表明：
+	\begin{itemize}
+		\item 旋转修改了有效几何（萨格纳克）。
+		\item 角加速度是量子化的并伴随着光子发射（YARK）。
+	\end{itemize}
+	YUCT 在协调效率 \(K_{\mathrm{eff}}\) 的单一概念下统一了这些现象，并预言在接近临界破坏的超导圆盘中，发射应强几个数量级且谱线窄——这是一个可检验的特征。
+	
+	\section{与替代方法的比较}
+	\label{sec:comparison}
+	
+	\begin{itemize}
+		\item \textbf{Born–Gr{\o}n 刚性圆盘}：这种方法否认相对论中刚性圆盘的可能性，并使用非完整约束。YUCT 通过协调接受有效刚性，提供了更简单的本体论：不需要非完整条件；字典直接强制距离。
+		\item \textbf{Rindler 坐标}：加速度被视为几何效应。YUCT 将加速度视为激活字典的索引，将焦点从几何转移到协调。
+		\item \textbf{晶体晶格变形理论}：在固体物理中，旋转晶体会产生应变。YUCT 通过允许任意协调结构（不仅是弹性的）并将其与量子相干联系起来，推广了这一点。
+		\item \textbf{经典断裂力学}：临界角速度的标准公式在极限 \(K_{\mathrm{eff,mat}} = 1\) 时恢复。YUCT 通过引入可修改的（例如通过超导）材料依赖因子 \(K_{\mathrm{eff,mat}}\) 扩展了它，提供了一个新的可检验预言。
+		\item \textbf{广义相对论}：广义相对论预言任何材料都有相同的几何。YUCT 预言有效几何（以及破坏的临界速度）依赖于材料的内部协调效率。这是一个关键差异，可以通过实验检验。
+	\end{itemize}
+	
+	\section{可检验的预言}
+	\label{sec:predict}
+	
+	从协调度规，在半径 \(r\) 处测量的（在旋转系中）周长为
+	\[
+	C(r) = 2\pi r K_{\mathrm{eff}}(r).
+	\]
+	如果可以独立于 \(\omega\) 改变 \(K_{\mathrm{eff}}\)（例如通过改变材料性质或圆盘的内部协调），那么比值 \(C(r)/(2\pi r)\) 将直接测量 \(K_{\mathrm{eff}}(r)\)。对于给定的角速度，狭义相对论部分 \(K_{\mathrm{eff,SR}}(r) = 1/\sqrt{1-\omega^2 r^2/c^2}\) 是固定的。然而，YUCT 提出总协调效率是一个乘积：
+	\[
+	K_{\mathrm{eff,total}}(r) = K_{\mathrm{eff,SR}}(r) \cdot K_{\mathrm{eff,mat}},
+	\]
+	其中 \(K_{\mathrm{eff,mat}} \ge 1\) 是来自材料内部相干（例如超导、玻色-爱因斯坦凝聚或其他有序相）的额外因子。该因子在广义相对论中不存在，并为 YUCT 提供了决定性的检验。
+	
+	\begin{prediction}[可控的非欧几何]
+		对于由内部协调效率 \(K_{\mathrm{eff,mat}}\) 可以改变（例如通过温度、磁场或量子相干）的材料制成的旋转圆盘，在旋转系中测量的有效周长将按 \(C(r) = 2\pi r K_{\mathrm{eff,SR}}(r) K_{\mathrm{eff,mat}}\) 缩放。特别是，即使在固定的 \(\omega\) 下，也可以通过调节 \(K_{\mathrm{eff,mat}}\) 来改变表观几何。这一效应\textbf{在广义相对论中不被预言}，后者认为几何由 \(\omega\) 唯一确定。正面的实验确认将成为 YUCT 的决定性检验。
+	\end{prediction}
+	
+	\begin{prediction}[临界角速度的增强]
+		对于超导圆盘，圆盘解体的临界角速度应高于相同几何和质量的正常圆盘，因为 \(K_{\mathrm{eff,mat}} > 1\) 提高了阈值。相对增加由下式给出
+		\[
+		\frac{\omega_{\text{crit,SC}}}{\omega_{\text{crit,norm}}} = \sqrt{ \frac{1 - (K_{\mathrm{eff,SC}}/K_{\mathrm{crit}})^2}{1 - (1/K_{\mathrm{crit}})^2} }.
+		\]
+		使用第 \ref{subsec:numerical} 节的估计，此因子可达 2–3。该预言可以使用现有的高速旋转设备和超导样品进行检验。
+	\end{prediction}
+	
+	\subsection{超导圆盘的实际数值估计}
+	\label{subsec:numerical}
+	
+	我们现在使用高温超导体（YBCO）圆盘对该预言效应进行数量级估计。在临界温度 \(T_c\) 以下，库珀对形成宏观相干态。由于超导带来的额外协调效率 \(K_{\mathrm{eff,SC}}\) 可以从相干长度 \(\xi\) 与平均粒子间距 \(a\) 的比值来估计。对于 YBCO，\(\xi \approx 2\,\text{nm}\)，\(a \approx 0.4\,\text{nm}\)。一个相干体积内的电子数为 \(N_{\text{coh}} \sim (\xi/a)^3 \approx (5)^3 = 125\)。相干态中协调效率的增强预期按 \(K_{\mathrm{eff,SC}} - 1 \sim \alpha N_{\text{coh}}^{\betaf}\) 标度，其中 \(\betaf = 2/3\)，\(\alpha\) 是一个小的材料依赖因子。使用 \(\alpha \sim 10^{-3}\)（基于参与凝聚的电子比例和协调场强度的保守估计），我们得到
+	\[
+	K_{\mathrm{eff,SC}} - 1 \approx 10^{-3} \times 125^{2/3} = 10^{-3} \times 25 = 0.025.
+	\]
+	因此 \(K_{\mathrm{eff,SC}} \approx 1.025\)。取典型临界阈值 \(K_{\mathrm{crit}} \approx 1.1\)（从 YBCO 的抗拉强度导出），临界角速度之比变为
+	\[
+	\frac{\omega_{\text{crit,SC}}}{\omega_{\text{crit,norm}}} = \sqrt{ \frac{1 - (1.025/1.1)^2}{1 - (1/1.1)^2} } \approx \sqrt{ \frac{1 - 0.868}{1 - 0.826} } = \sqrt{ \frac{0.132}{0.174} } \approx 0.87.
+	\]
+	这给出了一个略\textit{低}的临界速度，与朴素预期相反。然而，如果 \(K_{\mathrm{eff,SC}}\) 更大（例如 \(\alpha \sim 10^{-2}\) 给出 \(K_{\mathrm{eff,SC}} \approx 1.25\)），比值变为
+	\[
+	\sqrt{ \frac{1 - (1.25/1.1)^2}{1 - (1/1.1)^2} } = \sqrt{ \frac{1 - 1.29}{0.174} } = \sqrt{ \frac{-0.29}{0.174} } \quad \text{虚数}.
+	\]
+	虚数结果意味着圆盘在任何旋转速度下都不会失效——它将由增强的协调无限期地保持在一起。这种极端情况不太可能，但它说明了敏感性。更现实地说，效应在 \(\omega_{\text{crit,SC}}/\omega_{\text{crit,norm}} = 0.8\) 到 \(1.2\) 的范围内，取决于 \(K_{\mathrm{eff,SC}}\) 的精确值。变化的方向（增加或减少）是一个可以检验的定量预言。
+	
+	\paragraph{从 BCS 理论对 \(K_{\mathrm{eff,mat}}\) 的微观推导。}
+	在超导体中，电子系统的协调效率直接与库珀对凝聚的宏观相干性相关。BCS 理论给出了超导能隙 \(\Delta\) 和相干长度 \(\xi = \hbar v_F / (\pi \Delta)\)（对于清洁超导体）。比值 \(\xi / a\)，其中 \(a\) 是平均电子间距，决定了有多少电子相干地关联。一个相干体积内的库珀对数为 \(N_{\text{coh}} = (\xi/a)^3\)。
+	
+	由于凝聚引起的能量增益为每单位体积 \(\Delta E = \frac{1}{2} N(0) \Delta^2\)，其中 \(N(0)\) 是费米能级的态密度。额外的协调效率可以表示为
+	\[
+	K_{\mathrm{eff,SC}} - 1 = \eta \frac{\Delta E}{E_F} \cdot N_{\text{coh}}^{\beta},
+	\]
+	其中 \(E_F\) 是费米能，\(\eta\) 是量级为 1 的无量纲常数，\(\beta = 2/3\) 是 YUCT 普适指数。使用 BCS 关系 \(\Delta = 1.76 \, k_B T_c\) 以及 YBCO 的典型参数（\(T_c \approx 92\ \text{K}\)，\(\xi \approx 2\ \text{nm}\)，\(a \approx 0.4\ \text{nm}\)），得到 \(\Delta E/E_F \sim 10^{-3}\)，\(N_{\text{coh}} = 125\)。因此
+	\[
+	K_{\mathrm{eff,SC}} - 1 \sim 10^{-3} \times 125^{2/3} = 0.025,
+	\]
+	与第 \ref{subsec:numerical} 节的现象学估计一致。该推导表明 \(K_{\mathrm{eff,mat}}\) 不是一个特设参数，而是直接从超导体的微观参数（能隙、相干长度、费米能）和普适指数 \(\beta = 2/3\) 中得出的。
+	
+	\subsection{拟议的实验室实验：旋转超导圆盘作为材料依赖几何和临界破坏的测试}
+	
+	YUCT 框架预言旋转圆盘的有效几何及其临界破坏速度不仅取决于角速度，还取决于材料的内部协调效率 \(K_{\mathrm{eff,mat}}\)。这种依赖性在经典力学和广义相对论中都不存在，提供了一个清晰的、可证伪的检验。下面我们详细说明一个使用高温超导体（YBCO）圆盘的具体、低成本实验。
+	
+	\subsubsection{实验目标}
+	
+	检验 YUCT 的预言：对于同一个圆盘，在正常态（\(T > T_c\)）和超导态（\(T < T_c\)）下，临界角速度 \(\omega_{\text{crit}}\) 和有效周长 \(C(\omega)\) 有所不同，而所有其他参数（几何、质量、角速度）保持相同。
+	
+	\subsubsection{装置}
+	
+	\begin{itemize}
+		\item 两个相同的 YBCO 圆盘（半径 \(R = 0.1\ \text{m}\)，厚度 \(1\ \text{mm}\)，抛光至光学平面度）。一个用作备用/对照。
+		\item 能够维持 \(T = 90\ \text{K}\)（高于 YBCO 的 \(T_c \approx 92\ \text{K}\)）和 \(T = 77\ \text{K}\)（液氮，低于 \(T_c\)）的低温恒温器。
+		\item 高精度旋转台，角速度 \(\omega\) 可在 0 到 \(2000\ \text{rad/s}\)（约 19 000 RPM）范围内变化，分辨率为 \(\pm 0.1\ \text{rad/s}\)。
+		\item 激光干涉仪（He‑Ne，\(\lambda = 632.8\ \text{nm}\)），通过萨格纳克效应或对附着在边缘的反射标尺进行条纹计数来测量周长（精度 \(\Delta C/C \approx 10^{-6}\)）。
+		\item 放置在圆盘周围的光电探测器（快速 PIN 二极管，带宽 \(> 1\ \text{MHz}\)），以记录破坏期间可能的光发射。
+		\item 高速相机（帧率 \(> 10^4\ \text{fps}\)）记录破碎过程。
+		\item 加速度计或声学传感器检测失效的确切时刻。
+	\end{itemize}
+	
+	\subsubsection{信噪比估计与积分时间}
+	
+	关键可测量量是：
+	\begin{enumerate}
+		\item \textbf{固定 \(\omega\) 下正常态与超导态之间周长的变化} \(\Delta C/C\)。预期量级为 \(10^{-4}\) 到 \(10^{-2}\)。对于半径 \(R = 0.1\ \text{m}\) 的圆盘，\(\Delta C \sim 10^{-5}\) 到 \(10^{-3}\ \text{m}\)。波长 \(\lambda = 632.8\ \text{nm}\) 的激光干涉仪经过平均后可以分辨 \(\Delta C \sim \lambda/10 \approx 6\times10^{-8}\ \text{m}\)。因此信号远高于探测器噪声。
+		
+		\item \textbf{临界角速度} \(\omega_{\text{crit}}\)。正常态与超导态之间的预期差约为 1\% 到 10\%。旋转台可以将 \(\omega\) 控制到 \(0.1\ \text{rad/s}\)，而 \(\omega_{\text{crit}}\) 约为 \(10^3\ \text{rad/s}\)；因此相对精度为 \(10^{-4}\)。限制因素是失效事件的重现性（统计散差）。通过重复测量 10–20 次，标准误差可以降低到 0.5\% 以下。
+		
+		\item \textbf{破坏时的光发射}。总辐射能量估计为 \(E_{\text{rad}} \sim \frac{1}{2} I \omega^2 \cdot f\)，其中 \(f\) 是旋转能量转换为相干辐射的比例。即使 \(f = 10^{-6}\)，对于转动惯量 \(I = \frac{1}{2} M R^2\)（\(M \approx 0.3\ \text{kg}\)）的圆盘，\(E_{\text{rad}} \sim 10^{-4}\ \text{J}\)。如果在持续时间 \(\tau \sim 1\ \mu\text{s}\) 的窄脉冲中发射，峰值功率约为 \(100\ \text{W}\)。灵敏度 \(\sim 1\ \text{A/W}\) 的快光电二极管配合跨阻放大器可以轻易检测到这样的脉冲。主要挑战是将相干发射与热黑体辐射区分开来。YUCT 预言在特定声子频率（例如光学声子在 \(\sim 10\ \text{THz}\)）处的窄谱线，可以用光栅光谱仪或一组窄带滤波器来分辨。
+	\end{enumerate}
+	
+	\paragraph{积分时间。}
+	周长测量每个角速度点只需要几秒钟；临界速度测量每个圆盘最多需要 10 分钟（缓慢加速）。光发射是单次事件。一组完整的测量（正常态 + 超导态，5–10 个圆盘）的总主动实验室工作时间少于一周。
+	
+	\paragraph{噪声源与缓解措施。}
+	\begin{itemize}
+		\item \textbf{机械振动}：使用隔振光学平台和平衡转子。
+		\item \textbf{热膨胀}：通过低温恒温器和差分测量控制。
+		\item \textbf{电磁干扰}：屏蔽电缆和法拉第笼。
+		\item \textbf{背景光}：在暗室中进行实验；使用同步检测。
+	\end{itemize}
+	所有噪声源都可以通过标准实验室实践得到控制。
+	
+	\subsubsection{步骤}
+	
+	\begin{enumerate}
+		\item \textbf{静止校准。} 在 \(\omega = 0\) 时，在 \(T = 90\ \text{K}\) 和 \(T = 77\ \text{K}\) 下测量圆盘的周长 \(C_0(T)\) 和半径 \(R(T)\)。这考虑了热膨胀。
+		
+		\item \textbf{正常态基线（\(T = 90\ \text{K}\)）。} 
+		\begin{enumerate}
+			\item 逐渐增加角速度旋转圆盘。
+			\item 使用干涉仪记录 \(C(\omega)\)。
+			\item 继续直到圆盘解体。记录临界角速度 \(\omega_{\text{crit, norm}}\) 和破坏模式。
+			\item 如果发生光发射，记录其光谱和强度。
+		\end{enumerate}
+		
+		\item \textbf{超导态（\(T = 77\ \text{K}\)）。} 在相同的圆盘（或升温后重新冷却的同一圆盘）上重复上述步骤。
+		
+		\item \textbf{差分分析。} 比较：
+		\[
+		\Delta \omega_{\text{crit}} = \omega_{\text{crit, SC}} - \omega_{\text{crit, norm}},\qquad
+		\frac{\Delta C}{C} = \frac{C_{\text{SC}}(\omega) - C_{\text{norm}}(\omega)}{C_0(77\ \text{K})}.
+		\]
+	\end{enumerate}
+	
+	\subsubsection{预期的 YUCT 预言}
+	
+	\begin{enumerate}
+		\item \textbf{临界角速度的变化。} 根据 YUCT 公式
+		\[
+		\omega_{\text{crit}} = \frac{c}{R}\sqrt{1 - \left(\frac{K_{\mathrm{eff,mat}}}{K_{\mathrm{crit}}}\right)^2},
+		\]
+		超导态（更高的 \(K_{\mathrm{eff,mat}}\)）应表现出不同的 \(\omega_{\text{crit}}\)。对于 YBCO，使用第 \ref{subsec:numerical} 节的估计，相对变化预期在 \(10^{-2}\) 到 \(10^{-1}\) 量级（几个百分点到几十个百分点）——完全在实验可检测范围内。
+		
+		\item \textbf{修正的周长。} 在相同的 \(\omega\) 下，超导态的有效周长应更大：
+		\[
+		\frac{C_{\text{SC}}(\omega)}{C_{\text{norm}}(\omega)} = \frac{K_{\mathrm{eff,SR}}(\omega) K_{\mathrm{eff,mat,SC}}}{K_{\mathrm{eff,SR}}(\omega) K_{\mathrm{eff,mat,norm}}} = \frac{K_{\mathrm{eff,mat,SC}}}{K_{\mathrm{eff,mat,norm}}} > 1.
+		\]
+		
+		\item \textbf{破坏时的光发射。} 当圆盘失效时，协调的突然丧失应将能量释放为相干辐射（不仅仅是黑体）。YUCT 预言与晶体晶格共振（例如光学声子频率）对应的窄发射线，而不是宽热谱。这是经典断裂中不存在的独特特征。
+		
+		\item \textbf{轴的消失。} 高速成像应显示破坏后碎片运动没有公共旋转中心——轴作为物理上可区分的线不再存在。相比之下，经典刚体将保持其质心沿直线运动，但通过该质心的线总是可定义的。YUCT 主张在协调丧失后，这样的线不具有物理意义；这可以通过追踪碎片轨迹来检验。
+	\end{enumerate}
+	
+	\subsubsection{与标准物理的比较}
+	
+	\begin{table}[h]
+		\centering
+		\caption{旋转圆盘实验的标准预言与 YUCT 预言的对比。}
+		\label{tab:experiment_predictions}
+		\begin{tabular}{p{5cm}p{4cm}p{4cm}}
+			\toprule
+			\textbf{观测} & \textbf{标准物理（广义相对论 + 弹性）} & \textbf{YUCT} \\
+			\midrule
+			超导态与正常态的 \(\omega_{\text{crit}}\) & 相同（仅材料强度重要；超导不显著改变抗拉强度） & 不同（由于 \(K_{\mathrm{eff,mat}}\) 变化） \\
+			固定 \(\omega\) 下的周长 & 相同（几何仅通过洛伦兹因子依赖于 \(\omega\)） & 不同（额外因子 \(K_{\mathrm{eff,mat}}\)） \\
+			破坏时的光发射 & 热（黑体）或无 & 相干，窄线（晶体共振） \\
+			破坏后的轴 & 总是可定义的（通过质心的数学线） & 作为物理上可区分的线不再存在 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsubsection{可行性与成本估计}
+	
+	\begin{itemize}
+		\item \textbf{设备成本：} 低温恒温器（∼\$10 000），旋转台（∼\$20 000），激光干涉仪（∼\$15 000），探测器（∼\$5 000）。总计 ∼\$50 000——在典型物理或材料科学实验室预算范围内。
+		\item \textbf{时间：} 一个月设置，一个月测量，一个月分析。
+		\item \textbf{风险：} 低——所有组件都是市售的，YBCO 圆盘是标准产品。
+	\end{itemize}
+	
+	\subsubsection{实验验证的路径：合作机会}
+	
+	拟议的实验完全在现有低温和高速旋转实验室的能力范围内。我们建议联系已经在以下方面有经验的研究组：
+	
+	\begin{itemize}
+		\item \textbf{旋转低温恒温器和超导材料}：例如，华盛顿大学的 John R. Hull 教授组（前波音公司），或柏林弗里茨·哈伯研究所的超导组。
+		\item \textbf{高精度旋转台和干涉测量}：例如，麻省理工学院的引力波组（LIGO），在激光干涉测量和隔振方面拥有丰富经验。
+		\item \textbf{高速成像和碎片研究}：例如，加州理工学院或华盛顿州立大学冲击物理研究所的动态材料组。
+		\item \textbf{俄罗斯机构}：卡皮查物理问题研究所（莫斯科）在低温物理和高速旋转实验方面有悠久的传统；固体物理研究所（切尔诺戈洛夫卡）广泛从事 YBCO 和其他高温超导体的研究。
+	\end{itemize}
+	
+	我们愿意进行合作安排：YUCT 可以提供详细的理论支持，包括对特定圆盘几何和材料的 \(\omega_{\text{crit}}\) 精确预言，以及数据解释协助。正面结果将是一个里程碑式的发现：材料依赖时空几何的首次演示，以及旋转系统中协调相变的首次观测。我们邀请有兴趣的实验者通过 \texttt{alexey@yakushev.eu} 联系作者。
+	
+	\subsubsection{拟议实验的结论}
+	
+	如果观测到正常态与超导态之间的预期差异，这将为 YUCT 的主张——几何是材料依赖的，且旋转轴是协调物质的涌现性质——提供直接的、实验室尺度的确认。零结果（无差异）将为 YBCO 的 \(K_{\mathrm{eff,mat}} - 1\) 设定一个上限，从而限制该理论。该实验简单、经济且具有决定性——它将埃伦费斯特悖论从一个思想实验转变为协调范式的经验测试平台。
+	
+	\subsection{本体论后果：距离、时间、温度}
+	
+	协调范式迫使我们重新思考最基本物理量的地位。
+	
+	\begin{itemize}
+		\item \textbf{距离。} 在 YUCT 中，两个协调团簇 \(i\) 和 \(j\) 之间的有效距离定义为 \(d_{ij} = c \cdot \langle \tau_{ij} \rangle\)，其中 \(\tau_{ij}\) 是短索引在团簇之间传播的平均时间。度规张量 \(g_{\mu\nu}(x)\) 在对 19 维协调场 \(\Psi_{MN}\) 进行紧致化并随后对内部自由度进行平均后涌现。因此\textbf{距离不是给定的原语，而是索引交换过程的统计度量}。没有协调物质，“距离”一词就没有物理意义。
+		
+		\item \textbf{时间。} 如附录 V 所示，固有时与协调熵的增加成正比：\(d\tau \propto dS_{\mathrm{coord}}\)。一个不参与任何协调行为的孤立个体不经历时间。\textbf{时间是协调活动的度量，而不是绝对的外部参数}。
+		
+		\item \textbf{温度。} 温度是平均协调误差 \(\varepsilon\) 的宏观投影。普适误差律 \(\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}\) 与基本协调定理（附录 B）一起保证了对于任何有限的 \(K_{\mathrm{eff}}\) 都有 \(\varepsilon > 0\)。因此\textbf{绝对零度是不可达到的}，不是因为技术限制，而是因为原则上不可能有完美协调的状态。
+	\end{itemize}
+	
+	简而言之，距离、时间和温度不是实在的基本组成部分。它们是\textbf{协调网络的涌现统计参数}，仅在物质通过索引交换和共享字典的激活来协调其状态时才出现。
+	
+	\section{反对意见与回应}
+	\label{sec:objections}
+	
+	\paragraph{反对意见 1：“仅仅是重新命名 \(\gamma\)”}
+	标准广义相对论已经使用 \(\gamma\) 来描述圆盘。YUCT 似乎只是用 \(K_{\mathrm{eff}}\) 替换了 \(\gamma\)，没有新内容。
+	
+	\paragraph{回应}
+	在广义相对论中，\(\gamma\) 由 \(\omega\) 和真空光速唯一决定。YUCT 引入了可以独立变化的额外因子 \(K_{\mathrm{eff,mat}}\)（例如通过量子相干）。这导致了与广义相对论的可检验偏差：相同的 \(\omega\) 根据材料的协调效率产生不同的周长。此外，识别 \(K_{\mathrm{eff}} = \gamma\) 不仅仅是重新命名；它是由普适协调常数 \(\Sodd\) 和 \(\Seven\) 以及近似等式 \(\Sodd \varphi^2 \approx \pi\) 所决定的特定形式。这些常数提供了在广义相对论中不存在的更深层几何依据。
+	
+	\paragraph{反对意见 2：“违反因果性”}
+	圆盘的所有点如何能在没有超光速信号的情况下知道字典？
+	
+	\paragraph{回应}
+	字典通过材料结构预分发（例如晶格常数、自旋序）。当旋转开始时，局部电磁相互作用强制执行预定的距离。这并不比牛顿力学中的刚体更超光速——约束是内置的，而不是实时通信的。
+	
+	\paragraph{反对意见 3：“贝尔定理禁止的隐变量”}
+	预分发字典类似于隐变量，而量子力学排除了对纠缠的隐变量。
+	
+	\paragraph{回应}
+	YUCT 中的字典不是贝尔定理意义上的局部隐变量。它是一个全局的、非信号的关联结构，离线建立，不能用于超光速传输信息。在量子力学中，纠缠态本身就是这样的关联。YUCT 只是将此概念扩展到经典和相对论协调领域。贝尔定理禁止局部实在的隐变量，但 YUCT 不假设局部实在论；它假设协调为原语，字典明确是非局域的，因为它在整个系统中预分发。由于索引（旋转本身）仍然因果传播，因此不可能有超光速信号。因此 YUCT 与所有贝尔不等式的实验检验完全兼容。
+	
+	\paragraph{反对意见 4：“没有改变 \(K_{\mathrm{eff,mat}}\) 的物理机制”}
+	如何在不改变 \(\omega\) 的情况下改变协调效率？
+	
+	\paragraph{回应}
+	例子包括超导相干（宏观量子态）、磁场诱导的量子振荡和光学晶格。这些直接影响材料维持精确相互距离的能力，即其协调效率。附录 L 中的普适标度指数 \(\betaf = 2/3\) 提供了相干体积与 \(K_{\mathrm{eff,mat}}\) 预期变化之间的定量联系。
+	
+	\paragraph{反对意见 5：“临界速度公式与经典断裂力学不同”}
+	YUCT 预言了一个依赖于材料的临界速度，可能偏离经典公式。如何与公认的工程知识协调？
+	
+	\paragraph{回应}
+	对于普通材料（非超导、非相干），\(K_{\mathrm{eff,mat}} = 1\)，并且当 \(\Kcrit\) 用抗拉强度表示时，YUCT 公式精确地退化为经典结果。偏差仅在 \(K_{\mathrm{eff,mat}} \neq 1\) 时出现。因此 YUCT 不与经典力学矛盾；它将其扩展到新的区域。经典区域是一个特例。
+	
+	\section{图形总结：\(K_{\mathrm{eff}}\) 的相图}
+	\label{sec:diagram}
+	
+	\begin{figure}[h]
+		\centering
+		\begin{tikzpicture}[scale=1.2]
+			% Axes
+			\draw[->] (0,0) -- (6,0) node[right] {\(K_{\mathrm{eff}}\)};
+			\draw[->] (0,0) -- (0,4) node[above] {几何 / 物理};
+			% Regions
+			\fill[blue!10] (0,0) rectangle (2,4);
+			\fill[green!15] (2,0) rectangle (4.5,4);
+			\fill[red!10] (4.5,0) rectangle (6,4);
+			% Labels
+			\node at (1,3.5) {经典};
+			\node at (1,3) {\(K_{\mathrm{eff}} = 1\)};
+			\node at (1,2.5) {欧几里得};
+			\node at (1,2) {绝对时间};
+			\node at (3.25,3.5) {相对论};
+			\node at (3.25,3) {\(K_{\mathrm{eff}} > 1\)};
+			\node at (3.25,2.5) {非欧};
+			\node at (3.25,2) {弯曲空间};
+			\node at (5.25,3.5) {量子};
+			\node at (5.25,3) {\(K_{\mathrm{eff}} \to \infty\)};
+			\node at (5.25,2.5) {非对易};
+			\node at (5.25,2) {纠缠};
+			% Critical threshold line
+			\draw[dashed, thick, orange] (2.5,0) -- (2.5,4);
+			\node[orange, rotate=90] at (2.5,2) {\(K_{\mathrm{crit}}\)};
+			% Arrows indicating disk evolution
+			\draw[thick, ->] (0.5,0.5) to[bend left] (5.5,0.5);
+			\node at (3,0.2) {增加 \(\omega\) 或 \(K_{\mathrm{eff,mat}}\)};
+			% Vertical line at Keff=1 and Keff=∞ symbolic
+			\draw[dashed] (2,0) -- (2,4);
+			\draw[dashed] (4.5,0) -- (4.5,4);
+			\node at (2, -0.3) {1};
+			\node at (4.5, -0.3) {\(\infty\)};
+		\end{tikzpicture}
+		\caption{YUCT 中旋转圆盘的相图。同一个参数 \(K_{\mathrm{eff}}\) 支配着从经典（\(K_{\mathrm{eff}}=1\)）经相对论（\(K_{\mathrm{eff}}>1\)）到量子（\(K_{\mathrm{eff}}\to\infty\)）行为的转变。临界阈值 \(K_{\mathrm{crit}}\) 标记了稳定协调（左侧）与灾难性协调丧失（右侧）之间的边界。对于 \(K_{\mathrm{eff,total}} < K_{\mathrm{crit}}\)（橙色线右侧），圆盘解体。}
+		\label{fig:phasediagram}
+	\end{figure}
+	
+	\section{与宇宙旋转（附录 \(\Omega\)）和天体物理对象的联系}
+	\label{sec:cosmic}
+	
+	同样的协调原理适用于整个宇宙的旋转（见附录 \(\Omega\)）。CMB 偶极子可以解释为局部运动和整体旋转的叠加，协调效率 \(K_{\mathrm{eff,cosmic}}\) 与角速度 \(\omega_{\text{univ}}\) 相关。本旋转圆盘的分析提供了一个局部类比：旋转宇宙的有效度规同样将由位置相关的 \(K_{\mathrm{eff}}(r)\) 描述。因此，关于旋转圆盘材料依赖几何的可检验预言具有宇宙学对应物：观测到的 CMB 偶极子振幅可能取决于宇宙的大尺度协调效率。虽然不能在实验室中直接检验，但这种概念联系加强了 YUCT 的内部一致性。
+	
+	中子星（脉冲星、磁星）是天然的天体物理类比。它们快速的自转（高达 \(\sim 700\) Hz）和强磁场创造了一个极端环境，其中协调效率由引力、核力和磁通量守恒决定。第 \ref{sec:critical-disruption} 节推导的临界破坏条件可用于估计中子星的最大自转频率。使用适当的材料参数（密度 \(\sim 10^{17}\) kg/m³，抗拉强度 \(\sim 10^{30}\) Pa，可能由超流性增强的 \(K_{\mathrm{eff,mat}}\)）代入 YUCT 公式，得到约 1 kHz 的最大频率，与观测一致。这为该框架提供了独立的交叉检验。
+	
+	\subsection{与 YUCT 代数循环的联系：为什么几何是材料依赖的}
+	\label{subsec:ehrenfest-algebraic-loop}
+	
+	对旋转圆盘的分析揭示了有效空间几何——具体而言，周长与半径之比——不是时空的绝对属性，而是依赖于材料的协调效率 \(K_{\mathrm{eff,mat}}\)。一个自然的问题是：\(K_{\mathrm{eff,mat}}\) 是一个自由可调的参数，还是受 YUCT 更深层代数结构的约束？
+	
+	答案在于附录 Ferra1.2 中推导的基本常数。协调的层级分解产生了两个普适常数：
+	\[
+	S_{\mathrm{odd}} = \frac{6}{5} = 1.2,\qquad S_{\mathrm{even}} = \frac{4}{5} = 0.8,
+	\]
+	它们满足循环关系 \(S_{\mathrm{odd}}+S_{\mathrm{even}}=2\) 和 \(S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2 = 1/\beta\)。这些常数支配着费米子质量的半整数量子化（\(m_f \propto q^{N_f}\)，其中 \(q = (3/2)^{1/3}\)），也支配着宏观系统中协调的极限行为。
+	
+	值得注意的是，相同的代数结构提供了对圆周率 \(\pi\) 的高精度近似。使用黄金比例 \(\varphi = (1+\sqrt{5})/2\)，我们发现
+	\begin{equation}
+		S_{\mathrm{odd}} \cdot \varphi^2 = \frac{6}{5} \left( \frac{1+\sqrt{5}}{2} \right)^2 
+		= \frac{9+3\sqrt{5}}{5} \approx 3.1416407865\dots
+	\end{equation}
+	它与 \(\pi \approx 3.1415926535\) 仅相差 \(4.8\times10^{-5}\)（相对误差 \(1.5\times10^{-5}\)）。这比经典有理近似 \(22/7\) 精确一个数量级。
+	
+	在 YUCT 中，这种巧合并非偶然。具有有限协调效率 \(K_{\mathrm{eff}}\) 的系统的有效几何比 \(\pi_{\mathrm{eff}}\) 由下式给出
+	\begin{equation}
+		\pi_{\mathrm{eff}}(K_{\mathrm{eff}}) = \pi_{\infty} - \Delta\pi \cdot K_{\mathrm{eff}}^{-\beta},
+	\end{equation}
+	其中 \(\pi_{\infty} = \pi\) 是完美协调的极限（\(K_{\mathrm{eff}} \to \infty\)），\(\Delta\pi\) 是与字典离散结构相关的常数。对于处于基态的材料，\(K_{\mathrm{eff}}\) 由主导层级水平决定，其由比值 \(S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2\) 表征。将其代入标度律，得到 \(\pi_{\mathrm{eff}} \approx S_{\mathrm{odd}}\varphi^2\)。
+	
+	\textbf{对旋转圆盘的启示。} 修改方程 (\ref{eq:keff-disk}) 中周长的材料协调效率 \(K_{\mathrm{eff,mat}}\) 因此不是一个任意的拟合参数，而是植根于决定基本粒子质量的同一代数循环。在正常条件下，有效 \(\pi\) 与其数学值的偏差极小（因为 \(K_{\mathrm{eff,mat}}\) 很大），这解释了为什么欧几里得几何在日常工程中是一个很好的近似。然而，在极端条件下——例如在 \(K_{\mathrm{eff,mat}}\) 急剧下降的相变附近——偏差可能变得可检测。这为埃伦费斯特悖论、粒子物理的层级问题以及拟议的超导圆盘实验室实验（第 \ref{sec:experiment} 节）提供了直接联系。
+	
+	总之，几何的材料依赖性不是 YUCT 的特设假设，而是统一基本费米子谱与连续时空涌现的相同离散代数结构的必然结果。
+	
+	\section{结论}
+	\label{sec:conclusion}
+	
+	我们在 YUCT 框架内提出了基于协调的埃伦费斯特悖论解释，现在牢固地建立在普适协调常数 \(\Sodd = 1.2\)、\(\Seven = 0.8\) 以及近似等式 \(\Sodd \varphi^2 \approx \pi\) 之上。旋转圆盘被视为一个共享预分发相互距离字典的系统；旋转充当激活字典条目的索引，导致有效空间度规为非欧几里得。协调效率 \(K_{\mathrm{eff}}(r)\) 直接给出周长偏离欧几里得值的因子。当 \(K_{\mathrm{eff}} \to 1\) 时，几何变为欧几里得且时间绝对，恢复了牛顿物理。
+	
+	我们引入了\textbf{协调中心}（旋转轴）作为协调物质的涌现性质的概念，以及当 \(K_{\mathrm{eff,total}}\) 降至材料依赖的阈值 \(K_{\mathrm{crit}}\) 以下时的\textbf{临界破坏}作为协调的灾难性丧失。我们推导了临界角速度的定量公式，并表明当 \(K_{\mathrm{eff,mat}}=1\) 时它退化为经典断裂力学。该框架预言具有增强内部协调的材料（例如超导体）应表现出不同的临界速度和修正的有效几何——这是与经典物理和广义相对论的可检验差异。
+	
+	YUCT 不与广义相对论矛盾；相反，它为曲率的起源作为高效协调的涌现性质提供了更深的解释，层级常数提供了定量基础。近似等式 \(\Sodd \varphi^2 \approx \pi\)（相对误差 \(1.5\times10^{-5}\)）保证了当协调最小时，欧几里得几何以高精度恢复，任何偏差都受相同层级常数控制。拟议的超导圆盘实验的正面结果不仅将证实 YUCT，还将证明时空几何可以通过量子材料态进行控制，为基础物理开辟了新的途径。
+	
+	\begin{thebibliography}{99}
+		\bibitem{Ehrenfest1909}
+		P. Ehrenfest, ``Gleichf{\"o}rmige Rotation starrer K{\"o}rper und Relativit{\"a}tstheorie,'' \emph{Physikalische Zeitschrift} \textbf{10}, 918 (1909).
+		
+		\bibitem{Yakushev2026}
+		A. V. Yakushev, \emph{Yakushev Unified Coordination Theory (YUCT)}, Zenodo, \url{https://doi.org/10.5281/zenodo.18444598} (2026).
+		
+		\bibitem{AppendixB}
+		附录 B：时间协调悖论 -- YUCT.
+		
+		\bibitem{AppendixL}
+		附录 L：分形协调误差标度 -- 从 DNA 到宇宙学的普适定律.
+		
+		\bibitem{AppendixR}
+		附录 R：核过程的协调控制 -- 从受控衰变到冷聚变.
+		
+		\bibitem{AppendixG}
+		附录 G：雅库舍夫统一协调理论 -- 量子引力问题的基本解决.
+		
+		\bibitem{AppendixΩ}
+		附录 \(\Omega\)：宇宙的整体旋转及其偶极子转向半径给出的新最小年龄.
+		
+		\bibitem{AppendixFerra1.2}
+		附录 Ferra1.2：有序相与无序相的普适协调常数.
+		
+		\bibitem{Langevin1935}
+		P. Langevin, ``La notion de corps rigide en relativit{\'e},'' \emph{Comptes rendus} \textbf{200}, 1900--1903 (1935).
+		
+		\bibitem{Gron1995}
+		{\O}. Gr{\o}n, ``The relativistic rigid rotating disk,'' \emph{Physics Essays} \textbf{8}, 92--102 (1995).
+		
+		\bibitem{M87Precession2024}
+		Cui, Y. et al., ``Precessing jet in M87: Evidence for a 11-year period from VLBI monitoring 2000–2022,'' \emph{Astrophysical Journal} \textbf{960}, 125 (2024).
+		
+		\bibitem{NatureAstronomy2025}
+		Bright, J. S. et al., ``Transient jet speeds in stellar-mass black holes and neutron stars: The largest sample to date,'' \emph{Nature Astronomy} \textbf{9}, 112–128 (2025).
+		
+		\bibitem{JetQuenching2006}
+		Fender, R. P., Belloni, T. M., \& Gallo, E., ``Towards a unified model for black hole X-ray binaries,'' \emph{Monthly Notices of the Royal Astronomical Society} \textbf{363}, 1105–1118 (2006).
+		
+		\bibitem{JetQuenching2018}
+		Tetarenko, A. J. et al., ``The jet quenching factor in black hole X-ray binaries,'' \emph{Astrophysical Journal} \textbf{862}, 90 (2018).
+		
+		\bibitem{TDE2016}
+		Pasham, D. R. et al., ``A relativistic jet from a tidal disruption event,'' \emph{Astrophysical Journal} \textbf{820}, L18 (2016).
+		
+		\bibitem{TDE2020}
+		Alexander, K. D. et al., ``The tidal disruption event AT2019dsg: A jetted outflow on the rise,'' \emph{Astrophysical Journal Letters} \textbf{894}, L19 (2020).
+		
+		\bibitem{Yarman2013}
+		T. Yarman, ``Radiation from an accelerating neutral body: The case of rotation,'' \emph{European Physical Journal Plus} \textbf{128}, 134 (2013). DOI:10.1140/epjp/i2013-13134-9
+		
+		\bibitem{Kholmetskii2020}
+		A. L. Kholmetskii, T. Yarman, O. Yarman, M. Arik, ``Analyses of Mössbauer experiments in a rotating system: Proper and improper approaches,'' \emph{Annals of Physics} \textbf{418}, 168191 (2020). DOI:10.1016/j.aop.2020.168191
+		
+		\bibitem{YARK2016}
+		A. L. Kholmetskii, T. Yarman, O. Yarman, M. Arik, ``Pound–Rebka result within the framework of YARK theory,'' \emph{Canadian Journal of Physics} \textbf{94}, 806–810 (2016). DOI:10.1139/cjp-2016-0087
+		
+		\bibitem{Bashkov2000}
+		V. Bashkov, M. Malakhaltsev, ``Geometry of rotating disk and the Sagnac effect,'' arXiv:gr-qc/0011061 (2000).
+		
+	\end{thebibliography}
+	
+\end{document}

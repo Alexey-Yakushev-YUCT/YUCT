@@ -1,0 +1,589 @@
+% !TEX program = lualatex
+\documentclass[11pt,a4paper]{article}
+
+% ============================================================
+% إعدادات اللغة العربية
+% ============================================================
+\usepackage{polyglossia}
+\setmainlanguage{arabic}
+\setotherlanguage{english}
+
+% ========= خطوط عربية =========
+\newfontfamily\arabicfont{Amiri}[Script=Arabic, Language=Arabic]
+\newfontfamily\arabicfontsf{Amiri}[Script=Arabic, Language=Arabic]
+\newfontfamily\arabicfonttt{Amiri}[Script=Arabic, Language=Arabic]
+\newfontfamily\englishfont{Times New Roman}
+\setmonofont{Latin Modern Mono}
+
+% ========= حزم =========
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\geometry{a4paper,left=2cm,right=2cm,top=2.5cm,bottom=2.5cm}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{caption}
+\usepackage{booktabs}
+\usepackage{array}
+
+% ========= مكتبات TikZ =========
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, calc}
+
+% ========= بيئات النظريات (بالعربية) =========
+\newtheorem{definition}{تعريف}
+\newtheorem{theorem}{نظرية}
+\newtheorem{lemma}{ليما}
+\newtheorem{corollary}{نتيجة}
+\newtheorem{axiom}{بديهة}
+
+% ========= تنسيق العناوين =========
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+\renewcommand{\baselinestretch}{1.1}
+
+% ========= ماكرو YUCT =========
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\betaf}{\beta}
+\newcommand{\df}{d_{\!f}}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+\newcommand{\Mpl}{M_{\mathrm{Pl}}}
+\newcommand{\Lpl}{l_{\mathrm{Pl}}}
+\newcommand{\piYUCT}{\pi_{\mathrm{YUCT}}}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{0cm}
+			\Huge\textbf{الملحق ب. YUCT\\
+				مفارقة التنسيق الزمني}
+			
+			\vspace{0cm}
+			\LARGE\textit{من الأسس المعلوماتية إلى التحقق التجريبي \\[0.3cm]
+				الحل الرياضي لمفارقة \(K_{\text{eff}} > 1\)}
+			
+			\vspace{1cm}
+			\Large
+			Alexey V. Yakushev\\
+			Yakushev Research\\
+			نظرية YUCT: \url{https://yuct.org/}\\
+			بروتوكول YPSDC: \url{https://ypsdc.com/}\\
+			
+			\vspace{2cm}
+			\textbf DOI: \url{https://doi.org/10.5281/zenodo.18444598}\\
+			
+			\vspace{1cm}
+			\large 
+			نُشرت نسخة مختصرة من هذا العمل سابقاً وهي متاحة على\\ \url{https://doi.org/10.5281/zenodo.18362308}\\
+			\vspace{1cm}
+			مارس 2026 \\ \large الإصدار 2.1.
+			
+			\vspace{5cm}
+			\textcopyright~2026 Yakushev Research. جميع الحقوق محفوظة.
+			
+			\newpage
+			\vfill
+			\normalsize
+			\begin{minipage}{0.8\textwidth}
+				\centering
+				\textbf{المستخلص:} \\ يقدم هذا المستند النموذج الرياضي الرسمي الكامل لمفارقة التنسيق الزمني في نظرية التنسيق الموحد لياكوشيف (YUCT). تنشأ المفارقة عندما تتجاوز كفاءة التنسيق $K_{\text{eff}}$ القيمة 1، ويبدو ذلك وكأنه انتهاك لحدود نقل المعلومات التقليدية. نقدم تعريفات صارمة ونظريات وبراهين توضح كيف تمكن المعرفة المسبقة من خلال القواميس السابقة من التنسيق الذي يبدو متناقضًا زمانيًا ولكنه يظل متسقًا مع القوانين الفيزيائية. النتائج الرئيسية تشمل: (1) نظرية الفصل الرسمي بين سعة القناة وسعة التنسيق، (2) الاشتقاق الرياضي لـ $K_{\text{eff}} = R \cdot \eta$ حيث $R = n/m$ هي نسبة ضغط المعرفة، (3) الشروط الدقيقة التي يمكن بموجبها أن تتجاوز $K_{\text{eff}}$ القيمة 1 دون انتهاك السببية، (4) نظريات التنسيق متعدد العقد للأنظمة القابلة للتوسع، (5) التفسير الإنتروبي لكفاءة التنسيق، و(6) بروتوكولات تجريبية لقياس $K_{\text{eff}}$ في أنظمة حقيقية.
+			\end{minipage}
+			
+			\vspace{0.5cm}
+			\normalsize
+			\textbf{الكلمات المفتاحية:} مفارقة التنسيق الزمني، نموذج YUCT الرسمي، $K_{\text{eff}} > 1$، المعرفة المسبقة، القواميس السابقة، التنسيق المعلوماتي، فصل سعة القناة، بروتوكول YPSDC، حفظ السببية، إنتروبيا التنسيق.
+			
+			\vspace{0cm}
+			\normalsize
+			
+			\textbf{النطاق:} الأسس الرياضية الرسمية للتنسيق الزمني \\
+			\textbf{النظريات الرئيسية:} 8 نظريات رسمية مع براهين كاملة \\
+			\textbf{البروتوكولات التجريبية:} 3 طرق لقياس $K_{\text{eff}}$ \\
+			
+			\vspace{0.5cm}
+			\normalsize
+			
+		\end{center}
+	\end{titlepage}
+	
+	\begin{center}
+		\vspace*{0.5cm}
+		\Huge\textbf{مفارقة التنسيق الزمني}
+		\vspace{1cm}
+	\end{center}
+	
+	\section{النموذج الرسمي الكامل لمفارقة التنسيق الزمني}
+	\label{app:formal-model}
+	
+	\subsection{التعريفات الرسمية}
+	\label{app:definitions}
+	
+	\subsubsection{الكائنات الأساسية}
+	
+	ليكن نظام التنسيق معرفاً بالرباعي $\mathcal{S} = (\mathcal{A}, \mathcal{O}, \mathcal{D}, \mathcal{C}, \mathcal{T})$، حيث:
+	
+	\begin{itemize}
+		\item $\mathcal{A} = \{a_1, a_2, \dots, a_N\}$ هي مجموعة منتهية من الأفعال الممكنة (تفعيلات المعرفة)،
+		\item $\mathcal{O} = \{O_1, O_2, \dots, O_M\}$ هي مجموعة من المراقبين (العقد)،
+		\item $\mathcal{D} = \{\kappa_i \to a_i\}_{i=1}^N$ هو قاموس سابق (تقابل تطبيقي من الشفرات إلى الأفعال)،
+		\item $\mathcal{C}$ هي قناة اتصال فيزيائية بمعاملات محددة،
+		\item $\mathcal{T}$ هي مجموعة من القيود الزمنية.
+	\end{itemize}
+	
+	\subsubsection{المقاييس المعلوماتية}
+	
+	\begin{definition}[المحتوى المعلوماتي لفعل]
+		لكل فعل $a \in \mathcal{A}$، يتطلب وصفه الكامل:
+		\[
+		I(a) = n \ \text{بت},
+		\]
+		حيث $n$ هو الحد الأدنى من البتات اللازمة لوصف $a$ بشكل غير ملتبس دون معرفة مسبقة.
+	\end{definition}
+	
+	\begin{definition}[طول الشفرة]
+		لكل شفرة $\kappa \in \mathcal{K}$ (مجموعة الشفرات في $\mathcal{D}$):
+		\[
+		|\kappa| = m \ \text{بت}, \quad \text{مع} \ m \ll n.
+		\]
+	\end{definition}
+	
+	\begin{definition}[نسبة ضغط المعرفة]
+		تُعرف نسبة ضغط المعرفة كما يلي:
+		\[
+		R = \frac{n}{m} \gg 1.
+		\]
+	\end{definition}
+	
+	\subsection{نموذج القناة الفيزيائية}
+	\label{app:channel-model}
+	
+	\subsubsection{القيود الأساسية}
+	
+	\begin{axiom}[حد سرعة الضوء]
+		لأي عقدتين $O_i, O_j \in \mathcal{O}$ تفصلهما مسافة $L_{ij}$، فإن سرعة انتشار الإشارة تحقق:
+		\[
+		v_{\text{signal}} \leq c,
+		\]
+		حيث $c$ هي سرعة الضوء في الفراغ.
+	\end{axiom}
+	
+	\begin{axiom}[سعة القناة]
+		للقناة $\mathcal{C}$ سعة قصوى تعطى بالعلاقة:
+		\[
+		C_{\text{max}} = \lim_{T \to \infty} \frac{1}{T} \max_{X} I(X; Y) \quad \text{[بت/ثانية]},
+		\]
+		حيث $X$ هي الإشارة الداخلة و $Y$ هي الإشارة الخارجة.
+	\end{axiom}
+	
+	\subsubsection{نموذج زمن الإرسال}
+	
+	الزمن اللازم لإرسال رسالة ذات $I$ بت هو:
+	\[
+	T_{\text{transmit}}(I) = \frac{I}{C_{\text{eff}}} + \frac{L}{c} + \tau_{\text{proc}},
+	\]
+	حيث $C_{\text{eff}} \leq C_{\text{max}}$ هي السعة الفعالة للقناة، و $\tau_{\text{proc}}$ هو تأخير المعالجة.
+	
+	\subsection{عمليات التنسيق}
+	\label{app:coordination-processes}
+	
+	\subsubsection{التنسيق الساذج (بدون قاموس)}
+	
+	\textbf{السيناريو 1:} تريد العقدة $O_1$ من العقدة $O_2$ تنفيذ الفعل $a$.
+	
+	\begin{enumerate}
+		\item تقوم $O_1$ بصياغة الوصف الكامل لـ $a$: $I(a) = n$ بت.
+		\item ترسل $O_1$ هذا الوصف إلى $O_2$: الزمن $T_1 = T_{\text{transmit}}(n)$.
+		\item تفك $O_2$ وتفهم الفعل: الزمن $T_2 = \alpha n$، حيث $\alpha > 0$.
+		\item تنفذ $O_2$ الفعل: الزمن $T_3$.
+		\item ترسل $O_2$ تأكيداً: الزمن $T_4 = T_{\text{transmit}}(p)$، حيث $p$ هو حجم التأكيد.
+	\end{enumerate}
+	
+	زمن التنسيق الساذج الكلي:
+	\[
+	T_{\text{naive}}(a) = T_1 + T_2 + T_3 + T_4.
+	\]
+	
+	\begin{theorem}[حد أدنى للتنسيق الساذج]
+		\label{thm:naive-lower-bound}
+		لأي زوج من العقد $O_1, O_2$ وأي فعل $a$، فإن زمن التنسيق الساذج يحقق:
+		\[
+		T_{\text{naive}}(a) \geq \frac{n + p}{C_{\text{eff}}} + \frac{2L}{c} + \alpha n.
+		\]
+	\end{theorem}
+	
+	\subsubsection{التنسيق المعتمد على القاموس (YPSDC)}
+	
+	\textbf{السيناريو 2:} تشترك العقدتان $O_1$ و $O_2$ في قاموس سابق $\mathcal{D}$.
+	
+	\begin{enumerate}
+		\item تختار $O_1$ الشفرة $\kappa$ المقابلة للفعل $a$: $|\kappa| = m$ بت.
+		\item ترسل $O_1$ $\kappa$ إلى $O_2$: الزمن $T_1' = T_{\text{transmit}}(m)$.
+		\item تبحث $O_2$ عن الفعل في $\mathcal{D}$: الزمن $T_2' = \beta m$، مع $\beta \ll \alpha$.
+		\item تنفذ $O_2$ الفعل: الزمن $T_3' = T_3$.
+	\end{enumerate}
+	
+	الملاحظة الحاسمة: يمكن لـ $O_1$ أن تتصرف \emph{كما لو} أن $O_2$ قد قامت بالفعل بـ $a$ مباشرة بعد إرسال $\kappa$.
+	
+	زمن التنسيق الفعال مع القاموس هو:
+	\[
+	T_{\text{coord}}(a) = T_1' + T_2'.
+	\]
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[node distance=2cm, auto, >=Stealth]
+			\node (O1) [draw, rectangle, rounded corners, minimum width=2cm, minimum height=1cm] {المراقب 1};
+			\node (O2) [draw, rectangle, rounded corners, minimum width=2cm, minimum height=1cm, right=of O1] {المراقب 2};
+			\node (dict) [draw, ellipse, below=2cm of $(O1)!0.5!(O2)$] {القاموس السابق $\mathcal{D}$};
+			\draw[->, thick] (O1) -- node[above] {شفرة قصيرة $\kappa$} (O2);
+			\draw[->, dashed] (O1) -- node[left, near start] {مشاركة} (dict);
+			\draw[->, dashed] (O2) -- node[right, near start] {مشاركة} (dict);
+			\node[below=0.3cm of O1, align=center] {في $t_0$:\\ يعرف أن $a$ سينفذ};
+			\node[below=0.3cm of O2, align=center] {في $t_0 + L/c$:\\ ينفذ $a$};
+		\end{tikzpicture}
+		\caption{مخطط التنسيق الأساسي YPSDC. تظهر المعرفة المسبقة عند $t_0$ من القاموس المشترك.}
+		\label{fig:basic}
+	\end{figure}
+	
+	\subsection{مفارقة الزمن التنسيقي}
+	\label{app:paradox}
+	
+	\begin{definition}[المعرفة المسبقة]
+		في اللحظة $t_0$ عندما ترسل الشفرة $\kappa$، تمتلك العقدة $O_1$ معرفة مسبقة حول الفعل المستقبلي للعقدة $O_2$:
+		\[
+		K_{\text{advance}}(O_1, O_2, a, t_0) = \text{صحيح}
+		\]
+		إذا وفقط إذا وجد قاموس مشترك $\mathcal{D}$ بحيث $\mathcal{D}(\kappa) = a$.
+	\end{definition}
+	
+	\begin{lemma}[وجود المعرفة المسبقة]
+		\label{lem:advance-knowledge}
+		لأي $O_1, O_2, a$ مع قاموس مشترك $\mathcal{D}$:
+		\[
+		K_{\text{advance}}(O_1, O_2, a, t_0) = \text{صحيح}
+		\]
+		عند $t_0$، لحظة إرسال $\kappa$.
+	\end{lemma}
+	
+	\begin{proof}
+		بتركيب $\mathcal{D}$، فإن إرسال $\kappa$ يضمن أن $O_2$ ستنفذ $a$ في الزمن $t_0 + T_{\text{coord}}(a)$. لذلك، عند $t_0$، يمكن لـ $O_1$ أن تتنبأ بيقين بالحالة المستقبلية لـ $O_2$.
+	\end{proof}
+	
+	\subsection{سعات التنسيق المعلوماتية}
+	\label{app:capacities}
+	
+	\begin{definition}[سعة القناة المعلوماتية]
+		\[
+		C_{\text{channel}} = C_{\text{eff}} \quad \text{[بت/ثانية]}.
+		\]
+	\end{definition}
+	
+	\begin{definition}[سعة التنسيق المعلوماتية]
+		\[
+		C_{\text{coord}} = \lim_{T \to \infty} \frac{1}{T} \sum_{t=1}^{T} I(a_t) \quad \text{[بت/ثانية]},
+		\]
+		حيث $a_t$ هو الفعل الذي يتم تفعيله في الزمن $t$.
+	\end{definition}
+	
+	\begin{theorem}[نظرية فصل السعات]
+		\label{thm:capacity-separation}
+		لنظام تنسيق $\mathcal{S}$ ذي نسبة ضغط معرفة $R = n/m$:
+		\[
+		C_{\text{coord}} = R \cdot C_{\text{channel}} \cdot \eta,
+		\]
+		حيث $\eta = \frac{T_{\text{channel}}}{T_{\text{coord}}} \leq 1$ هو عامل الكفاءة الزمنية.
+	\end{theorem}
+	
+	\begin{proof}
+		خلال فترة زمنية $\Delta T$، يمكن للقناة إرسال:
+		\[
+		N_{\text{codes}} = \frac{C_{\text{channel}} \cdot \Delta T}{m} \quad \text{شفرة}.
+		\]
+		كل شفرة تفعل فعلاً له محتوى معلوماتي $n$ بت، لذا فإن إجمالي المعلومات المنسقة هو:
+		\[
+		I_{\text{total}} = N_{\text{codes}} \cdot n = \frac{C_{\text{channel}} \cdot \Delta T}{m} \cdot n.
+		\]
+		وبالتالي،
+		\[
+		C_{\text{coord}} = \frac{I_{\text{total}}}{\Delta T} = C_{\text{channel}} \cdot \frac{n}{m} = R \cdot C_{\text{channel}}.
+		\]
+		أخذ التأخيرات الزمنية (مثل المعالجة والانتشار) في الاعتبار يضيف عامل الكفاءة $\eta$.
+	\end{proof}
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[node distance=2.5cm, auto, >=Stealth]
+			\node (O1) [draw, rectangle, rounded corners, minimum width=2.2cm, minimum height=1.2cm] {المراقب 1 $O_1$};
+			\node (O2) [draw, rectangle, rounded corners, minimum width=2.2cm, minimum height=1.2cm, right=of O1] {المراقب 2 $O_2$};
+			\node (dict) [draw, ellipse, below=2.5cm of $(O1)!0.5!(O2)$] {القاموس السابق $\mathcal{D} = \{\kappa_i \to \mathcal{A}_i\}$};
+			\draw[->, thick] (O1) -- node[above] {$\kappa_1$} (O2);
+			\draw[->, thick] (O2) -- node[below] {$\kappa_2$ (تأكيد)} (O1);
+			\draw[->, dashed] (O1) -- (dict);
+			\draw[->, dashed] (O2) -- (dict);
+			\node[below=0.2cm of O1, align=center] {يعرف $\mathcal{A}_2$ عند $t_0$};
+			\node[below=0.2cm of O2, align=center] {ينفذ $\mathcal{A}_2$ عند $t_0+L/c$};
+		\end{tikzpicture}
+		\caption{التنسيق الثنائي الاتجاه باستخدام قاموس سابق. تشترك كلتا العقدتين في نفس القاموس، مما يمكن من المعرفة المسبقة ثنائية الاتجاه.}
+		\label{fig:duplex}
+	\end{figure}
+	
+	\subsection{عامل كفاءة التنسيق \(K_{\mathrm{eff}}\) وفصل السعات}
+	
+	\begin{definition}[كفاءة التنسيق]
+		\emph{كفاءة التنسيق} لنظام YPSDC هي
+		\begin{equation}
+			K_{\mathrm{eff}} = \frac{H(\mathcal{A})}{H(\mathcal{K})},
+			\label{eq:Kdef}
+		\end{equation}
+		حيث \(H(\mathcal{A})\) هي إنتروبيا فضاء الأفعال و \(H(\mathcal{K})\) هي إنتروبيا توزيع المؤشرات.
+	\end{definition}
+	
+	\begin{definition}[سعة التنسيق]
+		\emph{سعة التنسيق} \(C_{\mathrm{coord}}\) هي أقصى معدل يمكن للمستقبل من خلاله استخلاص معلومات ذات معنى من القاموس:
+		\begin{equation}
+			C_{\mathrm{coord}} = \lim_{\Delta t \to \infty} \frac{1}{\Delta t} \sum_{t=1}^{N_{\mathrm{actions}}} I(A_{i_t}),
+		\end{equation}
+		حيث \(A_{i_t}\) هو الفعل الذي يتم تفعيله خلال الإرسال $t$.
+	\end{definition}
+	
+	\begin{theorem}[فصل السعات]
+		\label{thm:capacity-separation}
+		لنظام YPSDC ذي كفاءة تنسيق \(K_{\mathrm{eff}}\) وعامل عبء \(\eta \le 1\)، ترتبط سعة التنسيق بسعة القناة بالعلاقة:
+		\begin{equation}
+			\boxed{C_{\mathrm{coord}} = K_{\mathrm{eff}} \cdot C_{\mathrm{channel}} \cdot \eta}.
+			\label{eq:capacity-separation}
+		\end{equation}
+	\end{theorem}
+	
+	\begin{proof}
+		خلال فترة زمنية \(\Delta T\)، يمكن للقناة إرسال على الأكثر \(C_{\mathrm{channel}} \Delta T\) بت. مع مؤشرات ذات طول ثابت \(\ell\)، فإن عدد المؤشرات المرسلة هو \(N = \lfloor C_{\mathrm{channel}} \Delta T / \ell \rfloor\). كل مؤشر يفعّل فعلاً له، في المتوسط، \(H(\mathcal{A})\) بت من المعلومات. إجمالي المعلومات ذات المعنى المسلمة هو \(I_{\mathrm{total}} = N \cdot H(\mathcal{A}) \approx \frac{C_{\mathrm{channel}} \Delta T}{\ell} H(\mathcal{A})\). متوسط المعدل هو \(C_{\mathrm{coord}} = \frac{I_{\mathrm{total}}}{\Delta T} = C_{\mathrm{channel}} \cdot \frac{H(\mathcal{A})}{\ell} = C_{\mathrm{channel}} \cdot K_{\mathrm{eff}}\). العامل \(\eta\) يأخذ في الاعتبار الأعباء الإضافية للمعالجة والوصول إلى القاموس.
+	\end{proof}
+	
+	\begin{theorem}[العكس]
+		لأي مخطط يستخدم قاموساً ثابتاً \(D\) بحجم \(M = 2^\ell\) ويرسل مؤشرات عبر قناة DMC ذات سعة \(C_{\mathrm{channel}}\)، فإن سعة التنسيق تحقق:
+		\[
+		C_{\mathrm{coord}} \le K_{\mathrm{eff}} \cdot C_{\mathrm{channel}}.
+		\]
+	\end{theorem}
+	
+	\begin{proof}
+		لتكن إنتروبيا مصدر المؤشرات \(H(\mathcal{K})\). حسب متراجحة معالجة البيانات، \(I(\kappa;\hat{\kappa}) \le I(X;Y) \le C_{\mathrm{channel}}\). للتشغيل الموثوق، يجب فك المؤشرات بخطأ يتلاشى، مما يتطلب معدل مؤشرات \(R_{\mathcal{K}} \le C_{\mathrm{channel}}\) (مبرهنة شانون للتشفير مع الضوضاء). متوسط معدل المعلومات ذات المعنى هو \(R_{\mathcal{A}} = R_{\mathcal{K}} \cdot K_{\mathrm{eff}} \le K_{\mathrm{eff}} \cdot C_{\mathrm{channel}}\). وبالتالي \(C_{\mathrm{coord}} \le K_{\mathrm{eff}} \cdot C_{\mathrm{channel}}\).
+	\end{proof}
+	
+	\subsection{التفسير الإنتروبي للتنسيق}
+	\label{app:entropy}
+	
+	\begin{definition}[إنتروبيا القاموس]
+		إنتروبيا القاموس $\mathcal{D}$ هي:
+		\[
+		H(\mathcal{D}) = - \sum_{i=1}^{N} p_i \log_2 p_i,
+		\]
+		حيث $p_i$ هو احتمال استخدام الفعل $a_i$.
+	\end{definition}
+	
+	\begin{lemma}[أقصى سعة تنسيق]
+		أقصى سعة تنسيق محدودة بما يلي:
+		\[
+		C_{\text{coord}}^{\text{max}} = H(\mathcal{D}) \cdot \nu_{\text{max}},
+		\]
+		حيث $\nu_{\text{max}} = 1 / T_{\text{coord}}^{\text{min}}$ هو أقصى تردد تنسيق.
+	\end{lemma}
+	
+	\begin{definition}[إنتروبيا التنسيق]
+		تغير إنتروبيا النظام بسبب التنسيق هو:
+		\[
+		\Delta S_{\text{coord}} = k_B \ln(K_{\mathrm{eff}}),
+		\]
+		حيث $k_B$ هو ثابت بولتزمان.
+	\end{definition}
+	
+	تفسير: زيادة $K_{\mathrm{eff}}$ تقابل نقصاناً في الإنتروبيا (زيادة في النظام) للنظام المنسق.
+	
+	\subsection{تنبؤات قابلة للاختبار من النموذج الرسمي}
+	\label{app:predictions}
+	
+	\begin{enumerate}
+		\item \textbf{تكميم $K_{\mathrm{eff}}$:} بالنسبة للأنظمة المصممة بشكل أمثل، يكون $K_{\mathrm{eff}} = 2^k$ لعدد صحيح $k \in \mathbb{N}$، حيث $k = \log_2 R$ تحت ظروف مثالية.
+		
+		\item \textbf{التحجيم مع حجم النظام:} لنظام ذي $M$ عقدة، $K_{\mathrm{eff}}(M) \propto M \log_2 R$.
+		
+		\item \textbf{حد أساسي:} يوجد حد أساسي يعطى بالعلاقة:
+		\[
+		K_{\mathrm{eff}}^{\text{max}} = \frac{c}{\Delta x \cdot \Delta t},
+		\]
+		حيث $\Delta x$ هو أقل استبانة مكانية و $\Delta t$ هو أقل استبانة زمنية للنظام.
+	\end{enumerate}
+	
+	\subsection{بروتوكول تجريبي لقياس $K_{\mathrm{eff}}$}
+	\label{app:experiment}
+	
+	\begin{enumerate}
+		\item \textbf{قياس $C_{\text{channel}}$:} استخدم أدوات قياس الشبكات القياسية (مثل iperf، ping) لتقدير السعة الفعالة للقناة.
+		
+		\item \textbf{قياس $C_{\text{coord}}$:}
+		\begin{itemize}
+			\item عرّف مجموعة تمثيلية من الأفعال $\mathcal{A}$.
+			\item قس الزمن الكلي $T_{\text{total}}$ لتنفيذ سلسلة من الأفعال المنسقة.
+			\item احسب $C_{\text{coord}} = \frac{\sum I(a_i)}{T_{\text{total}}}$.
+		\end{itemize}
+		
+		\item \textbf{حساب $K_{\mathrm{eff}}$:}
+		\[
+		K_{\mathrm{eff}} = \frac{C_{\text{coord}}}{C_{\text{channel}}}.
+		\]
+	\end{enumerate}
+	
+	النطاقات المتوقعة لأنظمة مختلفة:
+	\begin{itemize}
+		\item أنظمة الأوامر البشرية: $K_{\mathrm{eff}} \approx 10^2 - 10^3$.
+		\item شبكات الحاسوب: $K_{\mathrm{eff}} \approx 10^3 - 10^6$.
+		\item الأنظمة البيولوجية: $K_{\mathrm{eff}} \approx 10^6 - 10^9$.
+	\end{itemize}
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{الفصل الأساسي بين نقل البيانات وتنسيق الحالات}
+		\label{tab:separation}
+		\begin{tabular}{lp{6cm}p{6cm}}
+			\toprule
+			\textbf{الجانب} & \textbf{نقل البيانات} & \textbf{التنسيق} \\
+			\midrule
+			إشارة فيزيائية & نعم & لا (معرفة الحالة) \\
+			حد السرعة & $v \leq c$ & $v_{\text{coord}} \to \infty$* \\
+			معلومات & $I > 0$ & $K_{\text{eff}} > I$ \\
+			طاقة & $E > 0$ & $\Delta S_{\text{coord}}$ \\
+			\bottomrule
+			\multicolumn{3}{l}{*بمعنى المحاذاة اللحظية للحالات عبر المعرفة المسبقة.}
+		\end{tabular}
+	\end{table}
+	
+	\subsection{استنتاج النموذج الرسمي}
+	
+	النموذج الرياضي الرسمي المقدم في هذا الملحق يؤسس بدقة ما يلي:
+	
+	\begin{enumerate}
+		\item أن سعة التنسيق المعلوماتية $C_{\text{coord}}$ وسعة القناة $C_{\text{channel}}$ هما كميتان فيزيائيتان متميزتان.
+		
+		\item مفارقة زمن التنسيق: تسمح القواميس السابقة للعقدة بامتلاك معرفة مسبقة بأفعال العقد الأخرى قبل أن تُنفذ فعلياً.
+		
+		\item العلاقة الكمية:
+		\[
+		K_{\mathrm{eff}} = \frac{C_{\text{coord}}}{C_{\text{channel}}} = R \cdot \eta \gg 1,
+		\]
+		حيث $R = n/m \gg 1$ هي نسبة ضغط المعرفة.
+		
+		\item القيد الأساسي: نمو $K_{\mathrm{eff}}$ مقيد فقط بتعقيد إنشاء القاموس والحفاظ عليه، وليس بقوانين فيزيائية لنقل المعلومات.
+	\end{enumerate}
+	
+	هذا النموذج يوفر أساساً رياضياً صارماً لتحليل وتصميم أنظمة تنسيق عالية الكفاءة عبر الفيزياء والبيولوجيا وعلم الاجتماع والتقنية.
+	
+	
+	\section{بروتوكولات تجريبية وتجربة فكرية لمفارقة التنسيق الزمني}
+	\label{app:experimental-protocols}
+	
+	يقدم النموذج الرسمي لمفارقة التنسيق الزمني (الأقسام \ref{app:formal-model}--\ref{app:keff}) إطاراً رياضياً واضحاً، لكن تحققه العملي يتطلب بروتوكولات تجريبية ملموسة. في هذا القسم نقترح عدة تجارب — تتراوح من تجربة فكرية بسيطة إلى اختبارات معملية قابلة للتحقيق — تقيس بشكل مباشر كفاءة التنسيق \(K_{\mathrm{eff}}\) وتظهر مفارقة المعرفة المسبقة.
+	
+	\subsection{تجربة فكرية: إعادة النظر في تمثيل التحقق بعاملين (2FA)}
+	\label{subsec:thought-2fa}
+	
+	لنفكر في مراقبين، أليس وبوب، يشتركان في قاموس تشفير \(\mathcal{D}\) (مثل لوحة المفاتيح لمرة واحدة ذات \(M\) مفتاحاً مشتركاً مسبقاً). تريد أليس من بوب تنفيذ واحد من \(M\) فعلاً ممكناً (مثل تحويل مبلغ من المال، إطلاق صاروخ، أو إرسال رسالة محددة). في بروتوكول ساذج، سترسل أليس الوصف الكامل للفعل، مما يتطلب \(n\) بت. مع القاموس المشترك، ترسل فقط مؤشراً قصيراً \(\kappa\) طوله \(\ell = \log_2 M\) بت.
+	
+	\textbf{الإعداد:}
+	\begin{itemize}
+		\item أليس وبوب مفصولان بمسافة معروفة \(L\) (مثل 1 كم).
+		\item قناة الاتصال لها نطاق ترددي مقاس وزمن انتشار \(L/c\).
+		\item يتم توزيع القاموس \(\mathcal{D}\) خارج الخط (عبر ساعي موثوق أو عبر قناة آمنة سابقة) (يستغرق وقتاً طويلاً بشكل تعسفي، لكنه يكتمل قبل التجربة).
+		\item مراقب ثالث، تشارلي، مزود بساعتين ذريتين متزامنتين، يسجل الأوقات الدقيقة التي تبدأ فيها أليس الإرسال وعندما يكمل بوب الفعل.
+	\end{itemize}
+	
+	\textbf{الإجراء:}
+	\begin{enumerate}
+		\item تختار أليس فعلاً \(a_i\) بطول وصف كامل \(n\).
+		\item في الزمن \(t_0\) ترسل المؤشر المقابل \(\kappa_i\) إلى بوب.
+		\item ينتشر المؤشر بسرعة \(c\) ويصل إلى بوب في الزمن \(t_0 + L/c + \tau_{\text{tx}}\)، حيث \(\tau_{\text{tx}} = \ell / C_{\text{eff}}\).
+		\item يبحث بوب عن الفعل في القاموس فوراً (زمن البحث \(\tau_{\text{lookup}} \ll \tau_{\text{tx}}\)) وينفذه في الزمن \(t_0 + L/c + \tau_{\text{tx}} + \tau_{\text{lookup}}\).
+	\end{enumerate}
+	
+	\textbf{ملاحظة المفارقة:}
+	في اللحظة \(t_0\)، \emph{تعلم} أليس أن بوب سينفذ الفعل \(a_i\) في زمن مستقبلي \(t_0 + L/c + \tau_{\text{tx}} + \tau_{\text{lookup}}\). هذه المعرفة المسبقة لا تستند إلى إشارات فائقة الضوء بل إلى القاموس المشترك مسبقاً. تشارلي، الذي ليس لديه القاموس، لا يمكنه توقع الفعل حتى يتم إرسال المؤشر. وهكذا، تحل المفارقة بفصل المعلومات حول القاموس (خارج الخط) عن المؤشر (على الخط).
+	
+	\textbf{القياس الكمي:}
+	كفاءة التنسيق هي
+	\[
+	K_{\mathrm{eff}} = \frac{n}{\ell} \cdot \frac{\tau_{\text{naive}}}{\tau_{\text{actual}}},
+	\]
+	حيث \(\tau_{\text{naive}}\) هو الزمن اللازم لإرسال الوصف الكامل (بما في ذلك الانتشار والمعالجة). في نهاية البحث السريع وزمن إرسال المؤشر المهمل، \(K_{\mathrm{eff}} \approx n/\ell\)، والتي يمكن جعلها كبيرة بشكل تعسفي بزيادة حجم القاموس.
+	
+	\subsection{تجربة معملية قابلة للتحقيق: اتصال الخيار المؤجل}
+	\label{subsec:lab-delayed-choice}
+	
+	\textbf{الهدف:} قياس \(K_{\mathrm{eff}}\) مباشرة في نظام اتصالات رقمية خاضع للتحكم والتحقق من أن \(K_{\mathrm{eff}} > 1\) يمكن تحقيقه دون انتهاك السببية.
+	
+	\textbf{الأجهزة:}
+	\begin{itemize}
+		\item حاسوبان (أليس وبوب) متصلان عبر وصلة إيثرنت ذات سعة معروفة وخط تأخير متغير (مثل ألياف بصرية طويلة) لمحاكاة المسافة.
+		\item قاموس مشترك مسبقاً من \(M\) رسالة، كل منها بطول \(n\) بت (مثل \(M = 2^{20}\)، \(n = 10^6\) بت).
+		\item طوابع زمنية عالية الدقة (بدقة نانوثانية) باستخدام ساعات متزامنة مع GPS.
+		\item برنامج لقياس الزمن بين إرسال مؤشر واستلام تأكيد إتمام الفعل.
+	\end{itemize}
+	
+	\textbf{البروتوكول:}
+	\begin{enumerate}
+		\item مرحلة المعايرة: قس زمن الذهاب والإياب لإرسال رسالة كاملة (بروتوكول ساذج) على نفس الوصلة. سجل \(T_{\text{naive}}\).
+		\item مرحلة التنسيق: في كل محاولة، تختار أليس رسالة عشوائياً، ترسل مؤشرها، وتسجل الزمن \(T_{\text{coord}}\) حتى يؤكد بوب التنفيذ.
+		\item كرر لأحجام قاموس \(M\) وأطوال رسائل \(n\) مختلفة. احسب \(K_{\mathrm{eff}} = T_{\text{naive}} / T_{\text{coord}}\).
+		\item قم أيضاً بقياس سعة القناة \(C_{\text{channel}}\) وزمن البحث في القاموس للتحقق من نظرية فصل السعات.
+	\end{enumerate}
+	
+	\textbf{النتيجة المتوقعة:} للأحجام الكبيرة بما فيه الكفاية من القواميس، سيتجاوز \(K_{\mathrm{eff}}\) بكثير القيمة 1، مما يظهر أن المعدل الفعال لنقل المعلومات ذات المعنى يمكن أن يتجاوز سعة القناة. تؤكد التجربة أيضاً أن انتشار المؤشر يخضع لـ \(v \le c\)؛ فالعملية السببية محفوظة لأن القاموس وزع خارج الخط.
+	
+	\subsection{تجربة تنسيق اجتماعي: زمن الاستجابة البشرية بسياق مشترك}
+	\label{subsec:social-experiment}
+	
+	\textbf{الهدف:} إظهار مفارقة التنسيق الزمني في بيئة اجتماعية بشرية، مماثلة لتجربة 2FA الفكرية.
+	
+	\textbf{الإعداد:}
+	\begin{itemize}
+		\item مجموعتان من الأفراد (مثل طلاب) يتم تدريبهم على مجموعة من \(M\) أمر معقد (مثل "ارسم منزلاً"، "حل لغزاً"، "ألق قصيدة"). يتطلب كل أمر عدة ثوانٍ لتنفيذه، ووصفه الكامل (نص + تعليمات) يبلغ حوالي \(n\) بت.
+		\item مرحلة التدريب تؤسس "قاموساً" مشتركاً.
+		\item أثناء التجربة، تُعرض على مجموعة (الـ "مرسل") أمر ويجب عليه نقله إلى المجموعة الأخرى (الـ "مستقبل") باستخدام كلمة قصيرة واحدة فقط (المؤشر) اتفقوا عليها أثناء التدريب.
+		\item تُغير المسافة بين المجموعتين (مثل غرف مختلفة، مبانٍ) لإدخال تأخر انتشار قابل للقياس للإشارات الصوتية أو الضوئية.
+		\item يقاس الزمن من لحظة استلام المرسل للأمر إلى لحظة إتمام المستقبل للفعل.
+	\end{itemize}
+	
+	\textbf{الضبط:} تُرسل نفس الأوامر بطريقة ساذجة (مثل وصف الفعل الكامل بالتفصيل) دون تدريب مسبق.
+	
+	\textbf{القياسات:} قارن أزمنة التنسيق مع وبدون قاموس سابق. احسب \(K_{\mathrm{eff}}\) كنسبة الزمن الساذج إلى الزمن المنسق. أظهر أنه حتى مع انتشار المؤشر بسرعة محدودة (سرعة الصوت أو الضوء)، يمكن أن يبدو التنسيق الفعال فورياً تقريباً مقارنة بالطريقة الساذجة.
+	
+	\textbf{النتيجة المتوقعة:} سيتحجم \(K_{\mathrm{eff}}\) مع تعقيد الأوامر وحجم القاموس المشترك، مؤكداً التوقعات النظرية.
+	
+	\subsection{التحقق التجريبي من نظرية فصل السعات}
+	\label{subsec:capacity-theorem}
+	
+	تنص نظرية فصل السعات (نظرية \ref{thm:capacity-separation}) على أن \(C_{\text{coord}} = K_{\mathrm{eff}} \cdot C_{\text{channel}} \cdot \eta\). للتحقق من ذلك، نحتاج إلى قياس كل من \(C_{\text{coord}}\) و \(C_{\text{channel}}\) بشكل مستقل.
+	
+	\textbf{الطريقة:}
+	\begin{itemize}
+		\item استخدم نفس الإعداد كما في القسم \ref{subsec:lab-delayed-choice} ولكن غير عرض النطاق الترددي للقناة (مثل بإدخال تحديد معدل اصطناعي).
+		\item لكل إعداد عرض نطاق، قس أقصى معدل يمكن عنده إرسال المؤشرات بشكل موثوق (\(C_{\text{channel}}\)).
+		\item في نفس الوقت، قس المعدل الذي تكتمل به الأفعال ذات المعنى (\(C_{\text{coord}}\)) بعدد الأفعال المفعلة بنجاح في الثانية.
+		\item ارسم \(C_{\text{coord}}\) مقابل \(C_{\text{channel}}\) لأحجام قاموس مختلفة. يجب أن يكون الميل \(K_{\mathrm{eff}}\)، ويجب أن يكون التقاطع صفراً (حتى عامل الكفاءة الزمنية \(\eta\)).
+	\end{itemize}
+	
+	\subsection{التفسير والآثار}
+	
+	هذه التجارب تثبت مباشرة الفكرة الأساسية لـ YPSDC: فصل توزيع القاموس خارج الخط عن إرسال المؤشر على الخط يسمح بكفاءة تنسيق \(K_{\mathrm{eff}} > 1\) دون انتهاك السببية. تحل مفارقة المعرفة المسبقة لأن القاموس تمت مشاركته مسبقاً، والمؤشر نفسه لا يحمل معلومات جديدة تتجاوز الإشارة إلى مدخل موجود.
+	
+	علاوة على ذلك، توفر التجارب مقاييس كمية لـ \(K_{\mathrm{eff}}\) تحت ظروف خاضعة للرقابة، مما يمكن معايرة النظرية ومقارنتها بأنظمة العالم الحقيقي (مثل بروتوكولات الإنترنت، الشبكات المالية، الإشارات البيولوجية). كما تعمل كأدوات تعليمية لتوضيح الطبيعة غير البديهية ولكن السببية للتنسيق عالي الكفاءة.
+	
+	\subsection{استنتاج القسم التجريبي}
+	
+	بتنفيذ هذه البروتوكولات — التي تتراوح من تجربة فكرية بسيطة إلى اختبارات معملية واجتماعية — يمكن للباحثين التحقق تجريبياً من مفارقة التنسيق الزمني ونظرية فصل السعات. ستؤكد النتائج أن \(K_{\mathrm{eff}}\) ليس مجرد بناء نظري بل كمية قابلة للقياس يمكن أن تتجاوز الواحد، مما يمهد الطريق لتطبيقات عملية في الاتصالات والحوسبة الموزعة واتخاذ القرار الجماعي.
+	
+\end{document}

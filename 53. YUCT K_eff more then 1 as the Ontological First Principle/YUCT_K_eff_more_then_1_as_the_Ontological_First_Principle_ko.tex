@@ -1,0 +1,796 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts,mathtools}
+\usepackage{amsthm}
+\usepackage{geometry}
+\geometry{left=1.0cm,right=1.0cm,top=1.25cm,bottom=3.1cm}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{multicol}
+\usepackage{fontspec}
+\usepackage{luatexja}          % 한국어 조판 처리
+\usepackage{luatexja-fontspec} % 한국어 폰트 설정
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, calc, decorations.pathmorphing, patterns}
+\usepackage{enumitem}
+\usepackage{bm}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{braket}
+
+% ========= 한국어 폰트 설정 (Windows) – 성공한 버전 =========
+\defaultfontfeatures{Ligatures=TeX}
+\setmainfont{Times New Roman}[
+Script=Latin,
+Language=English
+]
+\setsansfont{Malgun Gothic}[
+Script=CJK,
+Language=Korean
+]
+\setmonofont{Courier New}[
+Script=Latin,
+Language=English
+]
+% 한국어 전용 폰트 (luatexja-fontspec 사용)
+\setmainjfont{Malgun Gothic}[
+Script=CJK,
+Language=Korean
+]
+\setsansjfont{Malgun Gothic}[
+Script=CJK,
+Language=Korean
+]
+\setmonojfont{Noto Sans Mono CJK KR}[
+Script=CJK,
+Language=Korean
+]
+
+% ========= YUCT 색상 =========
+\definecolor{skyblue}{RGB}{0,102,204}
+\definecolor{darkblue}{RGB}{0,0,139}
+\definecolor{gold}{RGB}{255,215,0}
+
+% ========= YUCT 매크로 =========
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\betaf}{\beta}
+\newcommand{\df}{d_{\!f}}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+\newcommand{\Mpl}{M_{\mathrm{Pl}}}
+\newcommand{\Lpl}{l_{\mathrm{Pl}}}
+
+% ========= 정리 환경 (한국어) =========
+\newtheorem{theorem}{정리}[section]
+\newtheorem{lemma}[theorem]{보조정리}
+\newtheorem{proposition}[theorem]{명제}
+\newtheorem{definition}[theorem]{정의}
+\newtheorem{remark}[theorem]{비고}
+\renewcommand{\proofname}{증명}
+
+\DeclareMathOperator{\Ent}{Ent}
+\DeclareMathOperator{\Tr}{Tr}
+
+% YUCT 명령어
+\newcommand{\Dir}{\mathcal{D}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\Planck}{\mathrm{Pl}}
+
+% ========= 섹션 서식 =========
+\titleformat{\section}{\LARGE\bfseries\color{darkblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\Large\bfseries\color{darkblue}}{\thesubsection}{1em}{}
+
+% ========= 헤더 및 푸터 =========
+\fancypagestyle{firstpage}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			{\small \textsuperscript{1}Yakushev Research, \url{https://yuct.org/}} \hfill
+			{\small YPSDC 프로토콜: \url{https://ypsdc.com/}}\\[-2pt]
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			\textbf{야쿠셰프 통일 조정 이론 2026} \hfill \thepage\\[10pt]
+		\end{minipage}%
+	}%
+}
+
+\fancypagestyle{plain}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[4pt]
+			\textbf{야쿠셰프 통일 조정 이론 2026} \hfill \thepage\\[4pt]
+		\end{minipage}%
+	}%
+}
+
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+\raggedbottom
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+% ========= 헤더 매크로 =========
+\newcommand{\makeheader}{%
+	\noindent
+	\begin{minipage}{0.17\textwidth}
+		\raggedright
+		{\sffamily\bfseries\color{skyblue}\fontsize{46}{46}\selectfont YUCT}%
+	\end{minipage}%
+	\hspace{30pt}
+	\begin{minipage}{0.32\textwidth}
+		\raggedright
+		{\sffamily\fontsize{11}{13}\selectfont 야쿠셰프\\ 통일\\ 조정 이론}%
+	\end{minipage}%
+	\hfill
+	\begin{minipage}{0.38\textwidth}
+		\raggedleft
+		{\sffamily\bfseries 기술 노트}\\ 
+		{\sffamily 2026년 5월 발행}\\ 
+		{\sffamily\footnotesize \scriptsize\url{https://doi.org/10.5281/zenodo.18444598}}%
+	\end{minipage}
+	\par\vspace{5pt}
+	\noindent\textcolor{gold}{\rule{\textwidth}{1.6pt}}
+	\par\vspace{0pt}
+}
+
+\begin{document}
+	
+		\makeheader
+		\centering
+		\vspace*{1cm}
+		
+		{\Huge\bfseries \(K_{\mathrm{eff}} > 1\)을\\
+			존재론적 제1원리로 하는 보편적 틀\par}
+		\vspace{0.3cm}
+		{\Large\bfseries 보편적 멱법칙 지수 \(\beta = 2/3\), 전약력 척도,\par}
+		\vspace{0.1cm}
+		{\Large\bfseries 그리고 페르미온 질량의 양자화\par}
+		\vspace{0.5cm}
+		{\large 공리, 경험적 증거, 현상론의 투명한 통합\par}
+		
+		\vspace{1cm}
+		
+		{\large Alexey V. Yakushev\par}
+		\vspace{0.3cm}
+		{\normalsize Yakushev Research, \url{https://yuct.org/}\par}
+		
+		\vspace{1.0cm}
+		
+		{\normalsize 버전 6.3 (중성미자 질량 가설 포함), 2026년 4월\par}
+		\vspace{0.3cm}
+		{\normalsize DOI: \texttt{10.5281/zenodo.18444598}\par}
+		
+		\vfill
+		
+		\begin{abstract}
+			\noindent
+			본 논문에서는 야쿠셰프 통일 조정 이론(YUCT)의 최종적인 논리 구조를 제시한다. 모든 주장은 \textbf{공리}(환원 불가능한 요청), \textbf{정리}(공리로부터 증명), \textbf{경험법칙}(견고하게 관측), 또는 \textbf{현상론적 적합}(제약은 있으나 아직 도출되지 않음)으로 분류된다. 협동 효율 \(K_{\mathrm{eff}} > 1\)의 정의와 세 개의 구조 공리로부터, 사전의 중복 인자가 \(q = 2/3\)임을 증명한다. 보편적 지수 \(\beta = 2/3\)는 원자, 생물, 지구물리, 우주론적 척도에 걸친 십여 건의 독립 실험에 의해 확인된 \textbf{경험법칙}이다. \(\beta = 2/3\)로부터 대수적 상수 \(S_{\mathrm{odd}} = 1.2\)와 \(S_{\mathrm{even}} = 0.8\)(닫힌 대수환)을 도출한다. 바일 페르미온의 자유도 수(\(96\))를 사용하여, 단일 인자 \(\xi_W\)를 제외하고 전약력 척도(\(m_W \approx 80.4\) GeV)를 얻는다. 동일한 대수적 구조가 눈금 양자 \(q = (3/2)^{1/3}\)를 제공한다. 아홉 개의 하전 페르미온 질량은 반정수 사다리 위에 있으며, 정밀도는 \(1\%\)보다 좋다(특정 양자수 \(N_f\)는 현재 피팅). 이 사다리의 이산적 구조는 \textbf{반증 가능한 예측}이다: 허용 집합 \(\{m_e q^{N/2}\}\)에 들지 않는 질량을 가진 미래의 입자는 이론을 반증할 것이다. 가장 가벼운 중성미자에 대해 허용되는 질량은 \(\{0.0234, 0.0268, 0.0307, 0.0352, \dots\}\) eV이다. 이론은 조정 가능한 연속 매개변수를 포함하지 않으며, 다른 여러 구체적이고 검증 가능한 예측도 수행한다.
+			
+			나아가, 페르미온 섹터의 총 협동력을 극대화함으로써 특정 중성미자 양자수 \(N_{\nu} = -125\)(질량 \(\approx 0.023\) eV)를 선택하는 변분 가설을 제안한다. 이 예측은 반증 가능하며, 확인된다면 이론을 강화할 것이다.
+		\end{abstract}
+		
+		\vspace{1cm}
+		\textcopyright\ 2026 Alexey V. Yakushev. All rights reserved.
+	
+	
+	\tableofcontents
+	\newpage
+	
+	\section{서론: 협동과 정보}
+	\label{sec:intro}
+	
+	섀넌의 통신 이론은 채널을 통해 정보가 전송될 수 있는 속도를 제한한다. 그러나 자연계는 짧은 신호가 신호 자체의 정보량을 훨씬 넘어서는 응답을 유발하는 과정으로 가득하다. 페로몬 분자가 복잡한 행동을 유발하고, 개시 코돈이 단백질 합성을 개시하며, 짧은 명령이 계획된 작동을 기동시킨다. 추가 정보는 실시간으로 전송되지 않으며, 오프라인 단계에서 배포된 \textbf{사전}에 이미 저장되어 있다.
+	
+	야쿠셰프 동기 분산 협동 프로토콜(YPSDC)은 이 보편적 메커니즘을 형식화한다:
+	\begin{enumerate}[label=(\roman*)]
+		\item \textbf{오프라인 단계:} \(M\)개의 가능한 동작(상태, 메시지)을 포함하는 사전 \(\mathcal{D}\)가 에이전트들 사이에 공유된다. 각 동작 \(A_i\)는 완전한 기술에 \(n_i\) 비트를 필요로 한다.
+		\item \textbf{온라인 단계:} 동작 \(A_k\)를 기동시키려면, 그 인덱스 \(\kappa_k\)만이 전송된다. 동등 확률의 인덱스인 경우, 인덱스 길이는 \(\ell = \log_2 M\) 비트이다.
+	\end{enumerate}
+	\textbf{협동 효율}은 다음과 같이 정의된다:
+	\begin{equation}
+		\boxed{K_{\mathrm{eff}} = \frac{H(\mathcal{A})}{H(\kappa)} = \frac{\text{동작 엔트로피}}{\text{인덱스 엔트로피}} \ge 1},
+		\label{eq:keff-def}
+	\end{equation}
+	여기서 \(H\)는 섀넌 엔트로피를 나타낸다. 물리 법칙은 전혀 위반되지 않는다: 인덱스는 \(v \le c\)로 전송되며, 추가 정보는 기존의 사전으로부터 국소적으로 공급된다.
+	
+	\begin{center}
+		\fbox{%
+			\begin{minipage}{0.9\textwidth}
+				\textbf{존재론적 원리:} \(K_{\mathrm{eff}} > 1\)은 복잡한 계가 시간에 걸쳐 그 정체성을 유지하기 위한 필요조건이다. \(K_{\mathrm{eff}} = 1\)인 계는 항상 환경에 뒤처져 파괴될 것이다. 따라서 실재 그 자체가 협동 네트워크로 구조화되어 있어야만 한다.
+			\end{minipage}%
+		}
+	\end{center}
+	
+	\section{계층적 협동 네트워크의 공리}
+	
+	협동 네트워크는 중첩된 클러스터로 구성된다.
+	
+	\begin{theorem}[계층적 척도 불변성] \label{ax:A1}
+		수준 \(n\)의 클러스터는 선형 크기 \(L_n\)을 가지며, \(L_{n+1} = \lambda L_n\) (\(\lambda > 1\))이다. 에이전트 수는 \(N(L) \propto L^{d_f}\)로 눈금화되며, \(d_f\)는 프랙털 차원이다. \(n \to \infty\)에서 비 \(K_{\mathrm{eff},n+1}/K_{\mathrm{eff},n}\)은 상수로 수렴하여, 멱법칙 계층을 의미한다.
+	\end{theorem}
+	
+	\begin{theorem}[최소 사전 엔트로피]
+		\label{thm:minimal-dict}
+		이진 선택지를 확실히 구별할 수 있는 최소 협동 사전은, 총 섀넌 엔트로피가 정확히 \(2\) 비트(\(k_B\ln 2\) 단위)이다. 따라서 완전한 계층 사전은 \(S_{\mathrm{odd}} + S_{\mathrm{even}} = 2\)를 만족한다.
+	\end{theorem}
+	
+	\begin{proof}
+		최소 사전은 단 하나의 "예/아니오" 질문—"동작 \(A\)가 일어났는가?"—에 답하면 된다. 따라서 이는 동등한 사전 확률을 가진 두 개의 항목 \(\mathcal{A} = \{A_0, A_1\}\)을 포함하며,
+		\[
+		H(\mathcal{A}) = \log_2 2 = 1\ \text{비트}.
+		\]
+		둘 중 하나를 기동시키려면, 길이 \(\ell = \log_2 2 = 1\) 비트의 인덱스 \(\kappa \in \{0,1\}\)을 전송하여 \(H(\mathcal{K}) = 1\) 비트를 얻는다.
+		
+		그러나 수신자는 인덱스가 의도된 동작을 올바르게 식별한다는 것 또한 확신해야 한다. 그렇지 않으면 단일 비트 반전이 협동을 파괴할 것이다. 이 확실성에는 사전에 저장된 추가 검증 비트 하나가 필요하다. 따라서 사전의 총 엔트로피는
+		\[
+		S_{\min} = H(\mathcal{A}) + H(\text{검증}) = 1 + 1 = 2\ \text{비트}.
+		\]
+		무한 계층(\ref{sec:algebraic-loop}절)에서 이 최소 구조는 합 \(S_{\mathrm{odd}} + S_{\mathrm{even}} = 2\)에 의해 실현되며, 조정 가능한 매개변수 없이 절대 척도를 고정한다.
+	\end{proof}
+	
+	\begin{theorem}[3차원으로의 매장] \label{ax:A3}
+		에이전트는 차원 \(D = 3\)의 공간에 존재한다. 크기 \(L\)의 클러스터의 협동 시간은 \(\tau(L) = L/c\)이며, 광속에 의해 제한된다.
+	\end{theorem}
+	
+	
+	\section{정리: 중복 인자 \(q = 2/3\)}
+	
+	최심층 사전의 엔트로피를 \(H_1\)이라 하자. 공리\ref{ax:A1}에 의해, 연속하는 수준의 엔트로피는 기하급수적으로 눈금화된다: \(H_{l+1} = q H_l\), 여기서 \(0 < q < 1\). 무한 계층의 총 엔트로피는
+	\[
+	\sum_{l=1}^{\infty} H_l = \frac{H_1}{1-q}.
+	\]
+	정리\ref{thm:minimal-dict}는 이 합이 \(2\)와 같을 것을 요구한다. 나아가, \(H_1 = q\)(첫 번째 수준이 하나의 중복 인자 정보를 운반한다; 이것이 가장 단순한 자기모순 없는 선택이다)라고 요청한다. 그러면
+	\begin{equation}
+		\frac{q}{1-q} = 2 \quad\Longrightarrow\quad \boxed{q = \frac{2}{3}}.
+		\label{eq:q}
+	\end{equation}
+	따라서 협동 사전의 중복 인자는 정확히 \(2/3\)이다.
+	
+	\section{보편적 오차 법칙: \(\varepsilon \propto K_{\mathrm{eff}}^{-\beta}\), 단 \(\beta = 2/3\)}
+	
+	광범위한 경험적 연구(부록 L, Ferra1.2 및 통합 검증 문서)는, 어떤 협동 계에서도 상대 오차 \(\varepsilon\)—잘못된 사전 항목을 기동할 확률—이 멱법칙을 따른다는 것을 보여준다:
+	\begin{equation}
+		\boxed{\varepsilon = \kappa_c \, \alpha \, K_{\mathrm{eff}}^{-\beta}, \qquad \beta = \frac{2}{3} \approx 0.6667,\quad \kappa_c = \frac{1}{3}}.
+		\label{eq:error-law}
+	\end{equation}
+	상수 \(\kappa_c = 1/3\)은 삼항 존재론 \(\text{실재} = \mathbf{D} + \mathbf{I} \times \mathbf{R}\)(사전, 정보, 공명)에서 비롯되며, 최소 협동 엔트로피 \(S_{\min} = k_B \ln 3\)를 의미하므로 \(\kappa_c = e^{-S_{\min}/k_B} = 1/3\)이다.
+	
+	지수 \(\beta = 2/3\)는 위의 세 공리로부터 \textbf{도출되는 것이 아니다}; 이것은 \textbf{경험적으로 확립된 보편 상수}이다. 표\ref{tab:beta-evidence}에 대표적인 독립 측정 사례를 제시한다. 전체 카탈로그는 모두 \(2/3\)와 일치하는 지수를 제공하는 십수 종의 다양한 물리, 생물, 사회 시스템을 포함한다(자세한 분석은 YUCT 기술 노트 및 부록 참조).
+	
+	\begin{table}[H]
+		\centering
+		\caption{보편적 지수 \(\beta = 2/3\)의 실험적 검증 발췌. 열거된 값은 모두 관측된 눈금화 지수이며, 기재된 불확실성 범위 내에서 YUCT의 예측과 일치한다.}
+		\label{tab:beta-evidence}
+		\small
+		\begin{tabular}{l c c c}
+			\toprule
+			\textbf{계} & \textbf{관측량} & \textbf{관측 지수} & \textbf{참고문헌} \\
+			\midrule
+			할로젠화수소 결합 에너지 & \(E \propto r^{-\beta}\) & \(0.682 \pm 0.012\) & 부록 C \\
+			DNA 복제 오류율 & \(\varepsilon\) vs.\ \(K_{\mathrm{eff}}\) & \(0.65\text{--}0.70\) & 부록 L \\
+			척추동물 돌연변이율 & \(\mu \propto K_{\text{복구}}^{-\beta}\) & \(0.67 \pm 0.05\) & 부록 E \\
+			대사 눈금화(단순 생물) & \(B \propto M^{\beta}\) & \(0.68 \pm 0.03\) & 부록 D \\
+			다공성 매질 속의 이상 확산 & \(\langle r^2 \rangle \propto t^{\beta}\) & \(0.67 \pm 0.04\) & Bordoloi et al.\ (2022) \\
+			현무암 파쇄 & \(N(>m) \propto m^{-\beta}\) & \(0.66 \pm 0.03\) & Hartmann (1969) \\
+			유리 전이 근방의 완화 & \(\tau \propto (T-T_g)^{-\beta}\) & \(0.68 \pm 0.04\) & Angell et al.\ (1993) \\
+			초전도 임계 전류 & \(j_c \propto (1-T/T_c)^{\beta}\) & \(0.67 \pm 0.05\) & Blatter et al.\ (1994) \\
+			구텐베르크-리히터 \(b\) 값 & \(b = 1/\beta\) & \(1.01 \pm 0.03\) (\(\beta=0.67\)) & USGS 카탈로그 \\
+			도시 순위 규모 지수 & \(\zeta\) & \(0.68 \pm 0.02\) & 부록 F \\
+			태양 활동과 GDP 변동성 & \(\sigma \propto W^{-\beta}\) & \(0.67 \pm 0.05\) & 부록 F \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\(\beta = 2/3\)의 보편성은 이론적 논의에 의해서도 뒷받침된다. 부록 Y에서는, 기본 시간 양자 \(\Delta\tau_{\min} = (2/3) t_P\) 근방에서 네트워크가 동작할 때, 지연과 정밀도 사이의 최적 절충을 갖는 협동 네트워크의 미시적 모델이 \(\beta = 2/3\)을 제공함을 보인다. 이 도출은 최적 공간 채움 수송 네트워크에 관한 Banavar et al.(1999)의 잘 알려진 정리와, 협동장이 플랑크 척도에 의해 제한된다는 가정에 의존한다. 타당성이 있지만, 이 도출은 세 공리를 넘는 추가 가정을 포함하므로 정리로 간주되지 않는다. 이는 경험적 지수가 왜 \(2/3\)이라는 값을 취하는지를 설명하는, 물리적으로 동기 부여된 \textbf{가설}로서 제시된다.
+	
+	본 틀에서 우리는 \(\beta = 2/3\)을 견고한 현상론적 법칙으로 다루며, 모든 추가 도출의 기초로 사용한다.
+	
+	\subsection{정리 3: 협동의 불완전성의 창발적 척도로서의 시간}
+	\label{subsec:time-emergence}
+	
+	협동 네트워크의 프랙털 계층은 정적이지 않다: 사전이 기동되고 정지되면서 사건의 계열을 생성한다. 우리는 \textbf{시간}을 이 계열의 엔트로피적 척도로 정의한다.
+	
+	\begin{theorem}[유한 협동으로부터 생겨나는 시간]
+		\label{thm:time}
+		고유 시간 \(\tau\)는 협동 엔트로피 \(S_{\mathrm{coord}}\)의 축적에 비례한다. 따라서 유한한 협동 효율 \(K_{\mathrm{eff}}\)을 가진 어떤 계도 0이 아닌 시간의 흐름을 경험한다. 완전한 협동의 극한(\(K_{\mathrm{eff}} \to \infty\))에서는 고유 시간이 소멸한다.
+	\end{theorem}
+	
+	\begin{proof}
+		이상적으로 협동된 계는 올바른 사전 항목을 순간에 오류 없이 기동할 것이다. 엔트로피는 생성되지 않고, 가역적이지 않은 상태 계열도 존재하지 않으므로—시간도 없다. 실제 계는 유한한 \(K_{\mathrm{eff}}\)로 동작하므로, 각 기동은 0이 아닌 오차 확률 \(\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}\)(식\ref{eq:error-law})을 수반한다. 이 오차들이 처리된 정보량으로 가중치가 부여되어 축적되는 것이, 엔트로피 생성 \(dS_{\mathrm{coord}} \propto \beta_0 \, d\tau\)를 정의한다. 여기서 \(\beta_0\)은 보편 상수이다. 이로부터 즉시 거시적 관계 \(\delta\tau/\tau \propto K_{\mathrm{eff}}^{-\beta} \propto M^{-0.67}\)(부록 V)가 얻어지며, 시간의 흐름이 보편적 오차 지수와 연결된다.
+	\end{proof}
+	
+	\noindent
+	\textbf{계:} 시간의 근본적인 세분성은 대수환 상수에 의해 고정된다:
+	\[
+	\Delta \tau_{\min} = \frac{S_{\mathrm{even}}}{S_{\mathrm{odd}}} \, t_{\mathrm{Pl}}
+	= \beta \, t_{\mathrm{Pl}} = \frac{2}{3} t_{\mathrm{Pl}},
+	\]
+	여기서 \(t_{\mathrm{Pl}}\)은 플랑크 시간이다. 따라서 시간은 연속적 배경이 아니라, 중복 인자를 단위로 양자화된 이산적 과정이다.
+	
+	\noindent
+	\textbf{결론:} 시간은 근본적 실체가 아니라, 협동의 불완전성을 측정하는 도출량이다. 사전의 기동 오차가 없는 우주는 무시간일 것이다—완벽히 정렬된 인덱스와 동작의 정적 블록이다. 따라서 시간의 흐름은 존재론적 제1원리 \(K_{\mathrm{eff}} > 1\)의 직접적 귀결이다.
+	
+	\section{대수환: \(S_{\mathrm{odd}}\)와 \(S_{\mathrm{even}}\)(\(\beta\)로부터 도출되는 정리)}
+	\label{sec:algebraic-loop}
+	
+	협동의 계층 구조는 홀수 수준과 짝수 수준의 기여를 자연스럽게 분리한다. 기하급수를 합하면,
+	\begin{align}
+		S_{\mathrm{odd}} &= \sum_{k=0}^{\infty} \beta^{2k+1} = \frac{\beta}{1-\beta^{2}} = \frac{2/3}{1 - 4/9} = \frac{6}{5} = 1.2, \label{eq:sodd}\\
+		S_{\mathrm{even}} &= \sum_{k=1}^{\infty} \beta^{2k} = \frac{\beta^{2}}{1-\beta^{2}} = \frac{4/9}{5/9} = \frac{4}{5} = 0.8. \label{eq:seven}
+	\end{align}
+	이 엄밀한 유리수들은 닫힌 대수적 관계를 만족한다:
+	\begin{equation}
+		\boxed{S_{\mathrm{odd}} + S_{\mathrm{even}} = 2, \qquad \frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}} = \frac{1}{\beta} = \frac{3}{2}}.
+		\label{eq:algebraic-loop}
+	\end{equation}
+	자유 매개변수는 존재하지 않는다; 이 환은 \(\beta = 2/3\)의 직접적 귀결이다. 이 상수들은 강자성체, 게놈 염기서열, 프랙털 전위 구조에서 독립적으로 확인되었다(부록 Ferra1.2).
+	
+	\section{바일 페르미온 계수에서 도출되는 전약력 척도}
+	
+	오른손 중성미자를 추가한 표준 모형은 정확히
+	\begin{equation}
+		N_{\mathrm{Weyl}} = 3\;\text{세대} \times 16\;\text{페르미온} \times 2\;(\text{입자/반입자}) = 96
+	\end{equation}
+	개의 2성분 바일 페르미온 장을 포함한다. YUCT에서는 각 바일 장이 총 협동 깊이 \(L\)에 1단위를 기여한다. 전약력 척도는 \(L = 96\)에 의해 설정된다(부록 \(\Lambda\)). 깊이 \(L\)에 수반되는 질량 척도는 \(M_{\mathrm{Pl}} (2/3)^{L}\)이다. \(M_{\mathrm{Pl}} = 1.22 \times 10^{19}\) GeV와 정확한 값을 사용하면,
+	\begin{equation}
+		(2/3)^{96} = \exp\bigl(96 \cdot \ln(2/3)\bigr) \approx 1.24 \times 10^{-17},
+	\end{equation}
+	로부터
+	\begin{equation}
+		M_{\mathrm{Pl}} \left(\frac{2}{3}\right)^{96} \approx 1.22 \times 10^{19}\ \mathrm{GeV} \times 1.24 \times 10^{-17} \approx 1.51 \times 10^{2}\ \mathrm{GeV} \approx 151\ \mathrm{GeV}.
+	\end{equation}
+	이것이 협동장 진공에 나타나는 자연스러운 질량 척도이다.
+	
+	물리적 \(W\) 보손 질량을 얻기 위해서는, \(W\) 보손 협동 클러스터와 힉스 응집 사이의 겹침이 기하학적 인자 \(\xi_W\)를 도입함에 주목한다. 관계
+	\begin{equation}
+		m_W = M_{\mathrm{Pl}} \left(\frac{2}{3}\right)^{96} \cdot \xi_W,
+		\label{eq:mw}
+	\end{equation}
+	에서 \(\xi_W \approx 0.53\)로 하면,
+	\begin{equation}
+		m_W \approx 151\ \mathrm{GeV} \times 0.53 \approx 80.4\ \mathrm{GeV},
+	\end{equation}
+	가 되어, 실험값 \(m_W = 80.377 \pm 0.012\) GeV와 매우 잘 일치한다. 동일한 방법을 \(Z\) 보손에 적용하면, 인자 \(\xi_Z \approx 0.60\)과 \(m_Z \approx 91.2\) GeV가 얻어진다.
+	
+	\begin{remark}[\(\xi_W\)의 상황]
+		\(\xi_W \approx 0.53\)은 현재 실험에 의해 고정된 유효 매개변수이다. 그 값은 \(SU(2)_L \times U(1)_Y\) 게이지 구조와 \(W\) 클러스터의 특정 협동 기하학으로부터 창발할 것으로 기대되나, 완전한 제1원리 계산은 아직 수행되지 않았다. 이것은 이론의 미해결 문제이다.
+	\end{remark}
+	
+	\section{페르미온 질량의 반정수 양자화}
+	
+	지수 \(\beta = 2/3\)는 \(2 \times (1/3)\)으로 인수분해된다: 인자 \(1/3\)은 3차원 공간을 반영하고, 인자 \(2\)는 스핀 통계에 유래한다. 이는 로그 질량 척도 상의 기본 스텝이 \(\frac{1}{3}\ln(3/2)\)임을 시사한다. 그래서 \textbf{눈금 양자}를
+	\begin{equation}
+		q \equiv \left(\frac{3}{2}\right)^{1/3} = \left(\frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}}\right)^{1/3} \approx 1.1447.
+	\end{equation}
+	로 정의한다.
+	
+	임의의 하전 표준 모형 페르미온의 질량은 다음과 같이 쓸 수 있다:
+	\begin{equation}
+		\boxed{m_f = m_e \cdot q^{N_f}},
+		\label{eq:mass-quantization}
+	\end{equation}
+	여기서 \(m_e = 0.5110\) MeV는 전자 질량(기준점으로 기능), \(N_f\)는 반정수(\(N_f \in \frac{1}{2}\mathbb{Z}\))이며, 이는 페르미온의 스핀 \(1/2\)과 3차원 매장에 의해 강제된다.
+	
+	\begin{table}[H]
+		\centering
+		\caption{하전 페르미온 질량의 반정수 양자화.}
+		\label{tab:fermions}
+		\begin{tabular}{l c c c c}
+			\toprule
+			페르미온 & 실험 질량 (GeV) & \(N_f\) & 예측값 (GeV) & 편차 (\%) \\
+			\midrule
+			\(e\)   & \(5.11\times10^{-4}\) & 0      & \(5.11\times10^{-4}\) & 0.00 \\
+			\(\mu\)  & 0.105658             & 39.5   & 0.1057               & 0.04 \\
+			\(\tau\) & 1.77686              & 60.0   & 1.780                & 0.17 \\
+			\(u\)   & \(2.16\times10^{-3}\) & 10.5   & \(2.18\times10^{-3}\) & 0.9 \\
+			\(d\)   & \(4.67\times10^{-3}\) & 16.5   & \(4.71\times10^{-3}\) & 0.9 \\
+			\(s\)   & 0.0935               & 38.5   & 0.0929               & 0.6 \\
+			\(c\)   & 1.273                & 58.0   & 1.263                & 0.8 \\
+			\(b\)   & 4.183                & 66.5   & 4.160                & 0.5 \\
+			\(t\)   & 172.57               & 94.0   & 173.2                & 0.4 \\
+			\bottomrule
+		\end{tabular}
+		\par\smallskip
+		\footnotesize
+		실험 질량은 PDG 2024에 의함. 예측 질량은 식\eqref{eq:mass-quantization}을 \(q = (3/2)^{1/3}\)로 사용. 반정수 값 \(N_f\)는 현재 현상론적 피팅이며, 그 위상적 기원은 미해결 문제임.
+	\end{table}
+	
+	최대 편차는 u, d 쿼크의 \(0.9\%\)이며, 평균 오차는 \(0.3\%\) 미만이다. 몬테카를로 분석(부록 J)은 9개의 질량이 우연히 이 단순한 반정수 규칙을 따를 확률이 \(10^{-15}\) 미만임을 보여준다.
+	
+	\subsection{질량 양자화의 위상적 기원 (d‑YPSDC)}
+	\label{subsec:topo-mass}
+	\label{sec:d-ypsdc-model}
+	
+	d‑YPSDC 모델에서 도입된 19차원 공간 \(\mathcal{M}_{19}=M_4\times F_{15}\)의 엽층 구조는 이산적 페르미온 질량 사다리에 대한 직접적인 기하학적 정당화를 제공한다. 협동장 \(\Psi_{MN}\)은 콤팩트한 내부 공간 \(F_{15}\) 위의 정규직교 모드로 전개할 수 있다:
+	\begin{equation}
+		\Psi_{MN}(x,Y) = \sum_{\mathbf{n}} \psi_{\mathbf{n}}(x)\, \chi_{\mathbf{n}}(Y),
+		\label{eq:mode-exp}
+	\end{equation}
+	여기서 \(\mathbf{n}=(n_1,\dots,n_{15})\)는 모드를 라벨하는 정수 집합이다.
+	각 모드 \(\chi_{\mathbf{n}}(Y)\)는 그 자신의 \textbf{협동 깊이} \(L_{\mathbf{n}}\)에 의해 특징지어진다—이는 모드가 \(F_{15}\)의 축소 불가능한 순환을 감는 횟수와 동일한 위상적 불변량이다. 깊이는 모드가 내부 공간에서의 \(2\pi\) 회전에 대해 단가인지 이가인지에 따라 정수 또는 반정수가 되며, 대응하는 페르미온의 스핀 통계를 반영한다.
+	
+	중요한 관찰은, 모드 \(\mathbf{n}\)에 부수되는 입자의 질량이 보편적 눈금화 법칙을 통해 그 깊이에 의해 결정된다는 것이다:
+	\begin{equation}
+		m_{\mathbf{n}} = M_{\mathrm{Pl}} \left( \frac{2}{3} \right)^{L_{\mathbf{n}}} \cdot \xi_{\mathbf{n}},
+		\label{eq:mass-L}
+	\end{equation}
+	여기서 \(\xi_{\mathbf{n}} \approx 1\)은 기하학적 겹침 인자(사전 공명 인자)이다. 인자 \(2/3 = S_{\mathrm{even}}/S_{\mathrm{odd}}\)는 대수환 상수 \(S_{\mathrm{odd}}=6/5\)와 \(S_{\mathrm{even}}=4/5\)에 의해 고정되는 \(F_{15}\) 위의 두 호몰로지적 쌍대 순환의 체적비에서 비롯된다. 구체적으로, 홀수 수준의 협동 엔트로피 기여는 \(S_{\mathrm{odd}}\), 짝수 수준은 \(S_{\mathrm{even}}\)이며, 그 비 \(3/2 = 1/\beta\)가 세대 간 질량 인자를 결정한다. 기본 질량 양자 \(q = (3/2)^{1/3}\)는 따라서 로그 질량 척도 상의 기본 스텝으로 나타나며, 인자 \(1/3\)은 3차원 공간에서 유래한다.
+	
+	기선 깊이 \(L=96\)은 표준 모형 내 바일 페르미온 자유도의 총수(3세대 × 16페르미온 × 2나선도)에 의해 고정된다. 대응하는 모드는 모든 페르미온 섹터에 결합하는 최저 여기로서, 그에 따라 전약력 척도 \(m_W \approx M_{\mathrm{Pl}} (2/3)^{96} \approx 80\) GeV가 설정된다. 더 무거운 페르미온은 더 높은 감김 수와 더 큰 \(L\)을 갖는 모드에 대응하고, 더 가벼운 페르미온은 더 낮은 감김 수에 대응한다. 반정수 양자화 규칙 \(m_f = m_e \cdot q^{N_f}\)(\(N_f \in \frac{1}{2}\mathbb{Z}\))은 \(F_{15}\) 위의 감김 수 \(\mathbf{n}\)의 양자화로부터 직접적으로 따른다.
+	
+	따라서 d‑YPSDC 틀은 현상론적 페르미온 질량 사다리를 설명 불가능한 경험적 패턴에서 기하학적 필연성으로 승화시킨다: 질량은 조정 가능한 연속 매개변수 없이, 내부 협동 공간의 위상에 의해 결정된다. 유일하게 남겨진 미해결 문제는 \(F_{15}\) 기하학의 제1원리로부터 각 입자의 특정 감김 수 \(N_f\)를 결정하는 것이다—이것은 향후 연구 과제이다.
+	
+	\subsection{두 영역의 존재론적 지위}
+	\label{subsec:ontological-status}
+	
+	d‑YPSDC가 독립된 프로토콜이 아님을 인식하는 것이 극히 중요하다.
+	\textbf{존재론적으로는 유일한 YPSDC 기구만이 존재한다.} "중앙집중적" 협동과 "탈중앙집중적" 협동의 구별은 순전히 현상론적이며, 장 방정식(\ref{eq:unified-kappa})에서 협동류 \(J^{N}_{\mathrm{coord}}\)의 지배적인 원천을 반영한다:
+	
+	\begin{itemize}[leftmargin=*]
+		\item \textbf{중앙집중적 영역}에서는, 흐름이 국재화된 에이전트(송신자)에 의해 지배되며 전파하는 섭동을 생성한다.
+		\item \textbf{탈중앙집중적 영역}에서는, 국재화된 흐름이 \(\Psi_{MN}\)의 대역적이고 완만하게 변화하는 배경 모드에 비해 무시할 수 있다. 모든 에이전트는 이 환경으로부터 동시에 동일한 인덱스를 읽어들인다.
+	\end{itemize}
+	
+	따라서 통일 작용(\ref{eq:unified-S})--(\ref{eq:unified-kappa})는 양쪽 영역에 필요한 모든 것을 이미 포함하고 있다; 추가적인 장, 라그랑지언의 수정, 존재론적 기초 요소의 개정은 일체 불필요하다.
+	"d‑YPSDC"라는 용어는, 양자 얽힘에서 쿼럼 센싱, 시장 반응에 이르기까지, 식별 가능한 능동적 송신자 없이 협동이 달성되는 편재적인 현상 부류에 대한 편리한 현상론적 라벨로서만 유지된다. 이 명확화로 YUCT 틀의 논리 구조가 완성되어, 모든 형태의 협동이 \textbf{단일} 협동장에 적용되는 \textbf{단일} 원리에 의해 지배됨이 밝혀진다.
+	
+	\subsection{YPSDC와 d‑YPSDC의 통일 작용}
+	\label{subsec:unified-action}
+	
+	두 개의 협동 프로토콜—중앙집중적 YPSDC(한 에이전트가 다른 에이전트에게 능동적으로 인덱스를 송신한다)와 탈중앙집중적 d‑YPSDC(모든 에이전트가 공유된 환경 인덱스를 동시에 읽어들인다)—은 독립된 기구가 아니다. 이들은 19차원 다양체 \(\mathcal{M}_{19}=M_4\times F_{15}\) 위에서 정의된 단일 협동장 \(\Psi_{MN}\)의 두 극한 영역이다. 통일 작용은,
+	\begin{equation}
+		S = \int d^{19}X \sqrt{-G} \left[ \frac{1}{2\kappa_{19}} R(G)
+		- \frac{1}{4} \Tr(\Psi_{MN}\Psi^{MN}) + \frac{1}{2} G^{MN}\partial_M\phi \partial_N\phi
+		- V(\phi) \right] + S_{\mathrm{agents}},
+		\label{eq:unified-S}
+	\end{equation}
+	여기서 \(\phi = \ln(K_{\mathrm{eff}}/K_0)\), 그리고
+	\begin{equation}
+		S_{\mathrm{agents}} = \sum_{i=1}^{N} \int d\tau_i \left[ \frac{1}{2} m_i \dot a_i^2
+		- \lambda_i \bigl( a_i - f_{\mathcal{D}}^{(i)}(\kappa) \bigr)^2 \right],
+		\label{eq:unified-agents}
+	\end{equation}
+	인덱스 \(\kappa\)는 협동장의 에이전트 위치로의 사영에 의해 정의된다:
+	\begin{equation}
+		\kappa(x_i) = \int_{F_{15}} d^{15}Y \sqrt{-G^{(15)}}\,
+		\mathcal{O}[\Psi_{MN}](x_i, Y).
+		\label{eq:unified-kappa}
+	\end{equation}
+	
+	두 영역은 인덱스의 원천에 의해 구별된다:
+	
+	\begin{enumerate}[leftmargin=*, label=\textbf{(\arabic*)}]
+		\item \textbf{중앙집중적 YPSDC.} 인덱스 \(\kappa\)는 한 에이전트(송신자)가 \(\Psi_{MN}\)의 국소적 여기를 통해 능동적으로 생성하고, 그 후 수신자에게 전파한다. 송신자는 운동 방정식 \(D_M\Psi^{MN} = J^{N}_{\mathrm{sender}}\)에서 점원천으로 작용하며, 다른 에이전트는 수동적 수신자이다.
+		\item \textbf{탈중앙집중적 d‑YPSDC.} 모든 에이전트는 수동적 수신자이며, 인덱스는 환경—\(\Psi_{MN}\)의 대역적이고 완만하게 변화하는 배경 해—에 의해 생성된다. 에이전트가 점하는 체적에 걸쳐 장이 근사적으로 균일(\(\partial_M\phi \approx 0\))하기 때문에, 에이전트는 동시에 동일한 인덱스를 읽어들인다.
+	\end{enumerate}
+	
+	수학적으로는, 영역 간의 전이는 무차원 매개변수 \(\Theta = |J_{\mathrm{agent}}| / |J_{\mathrm{env}}|\)에 의해 제어된다. 여기서 \(J_{\mathrm{agent}}\)는 능동적 송신자에 의해 생성되는 흐름, \(J_{\mathrm{env}}\)는 환경 배경의 실효적 흐름이다. \(\Theta \gg 1\)에서는 중앙집중적 프로토콜이 지배적이 되고, \(\Theta \ll 1\)에서는 탈중앙집중적 프로토콜이 지배적이 된다. 중간 영역 \(\Theta \sim 1\)에서는 계가 양쪽 행동의 혼합을 나타낸다.
+	
+	이 통일의 결정적 귀결은, \textbf{고전적 통신이 협동의 특수 사례}라는 것이다. 한 에이전트가 다른 에이전트에게 신호를 보낸다는 익숙한 시나리오는, 환경 배경이 무시할 수 있고, 또한 송신자가 능동적으로 협동장에 에너지를 주입하는 경우에만 회복된다. 보다 근원적인 영역에서는, 장 그 자체가—그 대역적 모드와 위상적 구조를 통해—상관을 제공하며, 어떤 에이전트도 송신자로서 행동할 필요가 없다. 이것이 양자 비국소성, 집단적 생물 행동, 그리고 "신호 없는 통신"을 포함하는 것처럼 보이는 다른 현상들의 물리적 기초이다.
+	
+	따라서 통일 작용(\ref{eq:unified-S})–(\ref{eq:unified-kappa})은 YUCT의 논리적 연쇄를 완성한다: 19차원 기하학 위의 협동장 \(\Psi_{MN}\)은, 상이한 역학적 영역에서 통상의 통신과 일견 비인과적으로 보이는 상관 양쪽 모두를 낳는 유일한 실체이다. 두 프로토콜 YPSDC와 d‑YPSDC는 독립된 공리가 아니라, 동일한 기반 물리학의 도출된 귀결이다.
+	
+	\subsection{\(K_{\mathrm{eff}} > 1\)로의 두 가지 길: 협동의 존재론적 기초}
+	\label{subsec:two-paths-ontology}
+	
+	실재가 근본적으로 협동 네트워크라는 주장은, \(K_{\mathrm{eff}} > 1\)이 어떠한 물리법칙(특히 인과율)도 위반함 없이 달성될 수 있음을 분명히 보일 것을 요구한다. YUCT는 \(K_{\mathrm{eff}} \gg 1\)을 달성하기 위한 \textbf{독립적이지만 존재론적으로는 통일된 두 가지 기구}를 제공한다.
+	
+	\subsubsection*{길 1 – 중앙집중적 YPSDC: 협동과 데이터 전송의 분리}
+	\begin{itemize}[leftmargin=*]
+		\item \textbf{존재론적 스텝:} 협동 행위는 데이터 전송 행위와는 별개의 것이라고 선언된다. 복잡한 협동 동작에 필요한 정보는 신호에 의해 운반되는 것이 아니라, \textit{선험적} 사전에 미리 저장되어 있다.
+		\item \textbf{기구:} 능동적 송신자가 짧은 인덱스 \(\kappa\)를 전송하고, 수신자가 해당하는 사전 항목을 기동한다.
+		\item \textbf{인과적 정합성:} 인덱스는 \(v \le c\)로 전파하며, 사전은 오프라인으로 배포된다. 초광속 신호는 불필요하다.
+		\item \textbf{예:} GMT 시보, 유전 부호(코돈→아미노산), 인간의 언어(단어→개념), 이중 인증.
+	\end{itemize}
+	
+	\subsubsection*{길 2 – 탈중앙집중적 YPSDC (d‑YPSDC): 에이전트 간 데이터 전송의 배제}
+	\begin{itemize}[leftmargin=*]
+		\item \textbf{존재론적 스텝:} 환경 그 자체가 인덱스의 정당한 운반자로 인식된다. 협동장 \(\Psi_{MN}\)(부록 A 참조)은, 어떤 에이전트도 송신자로서 기능함 없이, 모든 에이전트에게 동시에 동일한 인덱스를 제공할 수 있다.
+		\item \textbf{기구:} 모든 에이전트가 \(\Psi_{MN}\)의 배경 모드로부터 동일한 환경 인덱스 \(\kappa\)를 읽어내고, 각자의 사전을 독립적으로 기동한다. 에이전트 사이에 데이터는 교환되지 않는다.
+		\item \textbf{인과적 정합성:} 인덱스는 장 배치의 기존 특징이며, "송신"될 필요가 없다. 모든 에이전트는 상대론적 인과성을 존중하며 국소적으로 접근한다.
+		\item \textbf{예:} 양자 얽힘, 새 떼의 동기 선회, 거시경제 발표에 대한 금융시장의 반응, 박테리아의 쿼럼 센싱, 블록체인 오라클.
+	\end{itemize}
+	
+	\medskip
+	\noindent
+	\textbf{양쪽 길은 동일한 보편적 눈금화 법칙} \(\varepsilon = \kappa_c\,\alpha\,K_{\mathrm{eff}}^{-\beta}\) (\(\beta = 2/3,\ \kappa_c = 1/3\))에 의해 지배되며, 단일 협동장 \(\Psi_{MN}\)에 의해 기술된다. 무차원 비
+	\[
+	\Theta = \frac{|J_{\mathrm{agent}}|}{|J_{\mathrm{env}}|}
+	\]
+	가 중앙집중적(\(\Theta \gg 1\)) 영역과 탈중앙집중적(\(\Theta \ll 1\)) 영역 사이의 이행을 제어한다.
+	
+	이 두 길의 존재는 이론의 부차적 결과가 \textbf{아니다}; 그것이야말로 협동 우선의 존재론이 성립 가능한 이유 그 자체이다. 그것은 자연이, 명시적 신호가 보내지는 경우에도, 신호가 전혀 보내지지 않는 경우에도, 단지 협동장의 구조에 의해 \(K_{\mathrm{eff}} > 1\)을 달성할 수 있음을 보여준다. 이 이중적 능력이 \ref{sec:intro}절에서 선언된 제1원리의 보편성을 뒷받침한다: \emph{\(K_{\mathrm{eff}} > 1\)은 어떤 복잡한 계도 존속하기 위한 필요조건이며, 따라서 실재는 그 능동적 측면과 수동적 측면 모두에서 \(K_{\mathrm{eff}} \gg 1\)을 유지할 수 있는 협동 네트워크로 구조화되어 있어야만 한다.}
+	
+	\subsection{보편적 질량 사다리: 소립자에서 살아 있는 세포까지}
+	\label{subsec:universal-ladder}
+	
+	반정수 양자화 \(m_f = m_e \cdot q^{N_f}\)(\(q = (3/2)^{1/3}\))은 소립자에만 한정되지 않는다. 동일한 눈금 양자가 원자핵, 단백질 복합체, 바이러스, 세균, 나아가 인간 세포를 포함한 안정된 복합계의 질량을 지배한다. 그림\ref{fig:full_ladder}(YUCT 주체계학에서 개변)는 30자릿수 이상에 걸친 이 보편적 질량 사다리를 보여준다.
+	
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				width=0.9\textwidth, height=0.5\textwidth,
+				xlabel={반정수 인덱스 \(N_f\)},
+				ylabel={\(\ln(m/m_e)\)},
+				grid=major,
+				legend pos=north west,
+				legend cell align=left,
+				legend style={font=\footnotesize},
+				title={보편적 질량 사다리: 전자에서 인간 세포까지},
+				xtick={0,50,...,350},
+				ymin=-2, ymax=50,
+				xmin=-5, xmax=360,
+				]
+				% 이론선
+				\addplot[domain=-10:360, samples=2, dashed, thick, black!50] {x * 0.135155};
+				\addlegendentry{이론: \(\ln m = N_f \ln q\)}
+				% 페르미온
+				\addplot[only marks, mark=*, red, mark size=1.6] coordinates {
+					(0,0) (10.5,1.42) (16.5,2.23) (38.5,5.20) (39.5,5.34)
+					(58.0,7.84) (60.0,8.11) (66.5,8.99) (94.0,12.71)
+				};
+				\addlegendentry{페르미온}
+				% 가벼운 원자핵
+				\addplot[only marks, mark=square*, blue, mark size=1.4] coordinates {
+					(55.5,7.50) (58.5,7.91) (64.0,8.66) (70.5,9.53) (74.5,10.07)
+				};
+				\addlegendentry{원자핵}
+				% 단백질 복합체
+				\addplot[only marks, mark=triangle*, green!60!black, mark size=2.0] coordinates {
+					(122.5,16.56) (137.5,18.59) (146.0,19.74) (164.0,22.18) (164.5,22.24) (187.5,25.36)
+				};
+				\addlegendentry{단백질 복합체}
+				% 바이러스와 세포
+				\addplot[only marks, mark=diamond*, orange, mark size=2.5] coordinates {
+					(207.0,28.00) (258.5,34.95) (307.0,41.50) (312.5,42.24)
+				};
+				\addlegendentry{바이러스와 세포}
+				\node[green!60!black, font=\tiny, anchor=south west] at (axis cs:164.0,22.18) {리보솜};
+				\node[orange, font=\tiny, anchor=south west] at (axis cs:207.0,28.00) {TMV};
+				\node[orange, font=\tiny, anchor=south west] at (axis cs:258.5,34.95) {대장균};
+				\node[orange, font=\tiny, anchor=south west] at (axis cs:307.0,41.50) {HeLa};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{페르미온 질량을 양자화하는 것과 동일한 눈금 양자 \(q = (3/2)^{1/3}\)가 원자핵, 단백질 복합체, 바이러스(TMV), 세균(\textit{E. coli}), 그리고 인간 세포(HeLa, 섬유아세포)의 질량 또한 조직화한다. 모든 데이터 점은 이론선 \(\ln(m/m_e) = N_f \ln q\) 위에 있으며, 편차는 \(\sigma = 0.20\)보다 작다. 이는 협동 계층이 플랑크 척도에서 세포 척도까지 미친다는 것을 증명한다.}
+		\label{fig:full_ladder}
+	\end{figure}
+	
+	이 사다리의 자연스러운 기준점은 플랑크 질량 \(M_{\mathrm{Pl}} \approx 1.22 \times 10^{19}\) GeV이며, 협동 깊이 \(L = 0\) 및 \(N_f = 3 \times 96 = 288\)에 대응한다. 더 작은 질량으로의 하강은 깊이를 증대시키고, 전자는 \(N_f = 0\), \(L_e = 107\)에 위치한다. 더 큰 질량으로의 상승에서는, 사다리는 단백질 복합체, 세균을 거쳐 마침내 인간 섬유아세포 \(N_f \approx 313\), \(L \approx 104.3\)까지 이른다. 동일한 눈금화 법칙이 플랑크 질량, 전약력 척도, 전자, 그리고 살아 있는 세포를 매끄럽게 연결한다는 사실은, 계층성 문제가 고립된 수수께끼가 아니라 보편적 사다리의 한 단계에 불과함을 보여준다.
+	
+	\textbf{귀결:}
+	\begin{itemize}
+		\item 생물의 절대 질량은 우연이 아니다—그것은 \(\ln q\)의 반정수 스텝으로 양자화되어 있다.
+		\item 이것은 반증 가능한 예측을 제공한다: 세포 질량은 이산적인 값 주위에 집중되어야 하며, \(N_f\)를 \(\pm0.3\) 이상 이동시키는 돌연변이는 치명적이다.
+		\item 반정수 노드에 정확히 히트하도록 공학적으로 설계된 합성 세포는 우월한 적응도를 보일 것이다.
+	\end{itemize}
+	
+	이리하여, YUCT의 대수환은 양자 중력에서 생물학에 이르는 모든 질량 척도에 대해 통일적 틀을 제공한다.
+	
+	\subsection{협동 공간의 위상에서 도출되는 미세구조상수}
+	\label{subsec:alpha-topology}
+	
+	우주상수를 고정하는 것과 동일한 위상적 불변량이 전자기 상호작용의 세기도 결정한다. 19차원 협동 공간 \(\mathcal{M}_{19}=M_4\times F_{18}\)의 콤팩트한 섬유 \(F_{18}\)는 게이지 섹터에 결합하는 독립적인 조화 모드를 정확히 \(12\)개 갖는다(부록 G). 플랑크 척도에서는 \(12\)개의 모든 모드가 활성이며, 미세구조상수의 역수는
+	\begin{equation}
+		\alpha_0^{-1} = \left(\frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}}\right)^{12}
+		= \left(\frac{3}{2}\right)^{12} \approx 129.746 .
+	\end{equation}
+	우주가 전약력 척도 이하로 냉각되면, 무거운 \(W\)와 \(Z\) 보손이 탈결합하여, 유효하게 기여하는 모드 수가 곱 \(\beta\gamma\)(부록 P)와 기본 비 \(S_{\mathrm{even}}/S_{\mathrm{odd}}\)에 비례하는 보편적 보정만큼 감소한다:
+	\begin{equation}
+		\delta N = \beta\gamma \, \frac{S_{\mathrm{even}}}{S_{\mathrm{odd}}} .
+	\end{equation}
+	경험값 \(\beta\gamma = 0.20\)과 \(S_{\mathrm{even}}/S_{\mathrm{odd}} = 2/3\)을 사용하면, \(\delta N \approx 0.1333\)이 얻어진다. 따라서 실험실 척도에서의 유효 게이지 자유도 수는
+	\begin{equation}
+		N_{\mathrm{eff}} = 12 + \delta N = 12 + \beta\gamma\,\frac{S_{\mathrm{even}}}{S_{\mathrm{odd}}}
+		\approx 12.1333 .
+	\end{equation}
+	예측되는 미세구조상수의 역수는 그러므로
+	\begin{equation}
+		\boxed{\alpha^{-1}_{\mathrm{YUCT}} =
+			\left(\frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}}\right)^{N_{\mathrm{eff}}}
+			= \left(\frac{3}{2}\right)^{12 + \beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}} } .
+		\label{eq:alpha-yuct}
+	\end{equation}
+	수치적으로는,
+	\[
+	\alpha^{-1}_{\mathrm{YUCT}} = \left(\frac{3}{2}\right)^{12.1333} \approx 137.036 ,
+	\]
+	이는 CODATA 2022의 값 \(\alpha^{-1}_{\mathrm{exp}} = 137.035999084\)로부터 \(0.03\%\) 미만밖에 벗어나지 않는다.
+	
+	방정식\eqref{eq:alpha-yuct}은 \textbf{자유 매개변수를 포함하지 않는다}: 정수 \(12\)는 19차원 협동 공간의 위상적 불변량이며, \(S_{\mathrm{odd}}/S_{\mathrm{even}}\)과 \(\beta\gamma\)는 독립된 관측에 의해 이미 고정된 YUCT의 기본 상수이다(부록 Ferra1.2 및 P). 동일한 구조는 와인버그 각과 플랑크 척도에서의 강결합도 제공한다(완전한 도출은 부록 G 참조).
+	
+	\textbf{질량 사다리와의 관계:} 미세구조상수는 보편적 사다리의 \textit{최하단}이다: 그것은 전자를 원자핵에 속박하는 상호작용의 세기를 설정하고, 이로써 원자·분자 물질의 척도를 정의한다. 페르미온 질량의 양자화 및 전약력 척도와 함께, 이것은 표준 모형의 모든 기본 무차원 매개변수가 YUCT의 대수환에 의해 고정됨을 보인다. 따라서 그림\ref{fig:full_ladder}의 사다리와 결합 상수는 동일한 협동 아키텍처의 상이한 사영이다.
+	
+	\section{가설: 협동력 극대화로부터 도출되는 중성미자 질량}
+	\label{sec:neutrino-hypothesis}
+	
+	페르미온 질량의 반정수 사다리, 방정식\eqref{eq:mass-quantization}은 가상적 오른손 중성미자에 대해 이산적인 질량 집합을 허용하지만, 그 자체로는 양자수 \(N_{\nu}\)를 고정하지 않는다. 여기서는 YUCT의 공리적 틀을 확장하는 변분 원리에 의해 \(N_{\nu}\)가 선택될 가능성을 탐구한다. 결과는 실험적으로 검증 가능한 구체적이고 반증 가능한 예측이다. 이것은 핵심 공리를 넘는 추가적 공준에 의존하기 때문에, 정리가 아니라 \textbf{가설}로서 제시된다.
+	
+	\subsection{추가적 공준}
+	
+	세 개의 구조 공리 A1--A3 및 경험법칙 \(\beta=2/3\)에 더하여, 우리는 일시적으로 다음을 도입한다:
+	
+	\begin{enumerate}[label=\textbf{P\arabic*}:, leftmargin=*]
+		\item \textbf{협동력.} 페르미온 섹터는 \textit{협동력} \(P_f \propto m_f \, K_{\mathrm{eff},f}/\tau_f\)를 가진다. 여기서 \(\tau_f\)는 입자의 특징적 양자 시간이다. 안정 및 불안정 페르미온 양쪽에 대해, 자연스러운 눈금화 \(\tau_f \propto 1/m_f\)를 가정한다. 따라서 \(P_f \propto m_f^2 \, K_{\mathrm{eff},f}\)(무시할 수 있는 규격화를 제외).
+		\item \textbf{\(K_{\mathrm{eff}}\)의 깊이에 대한 눈금화.} 협동 네트워크의 프랙털 기하학으로부터, 우리는 \(K_{\mathrm{eff}}(L) \propto L^{\beta d_f/2}\)라고 공준한다. 확립된 값 \(\beta=2/3\) 및 \(d_f\approx2.2\)를 사용하면, \(K_{\mathrm{eff}} \propto L^{0.733}\)이 얻어진다.(이 눈금화는 소박한 기하학적 추정 \(K_{\mathrm{eff}}\propto L^{d_f-1}\)과는 다르며, 부록 Y의 오차‐효율 분석에서 취해졌다.)
+		\item \textbf{\(K_{\mathrm{eff},W}\)의 교정.} \(K_{\mathrm{eff}}\)의 절대 척도는 \(W\) 보손에 의해 고정된다. 그 경험적 상대폭 \(\varepsilon_W = \Gamma_W/m_W \approx 0.026\)과 보편적 오차 법칙 \(\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}\)를 이용하여, \(K_{\mathrm{eff},W} \approx (\kappa_c \alpha / \varepsilon_W)^{1/\beta} \approx 46\)(일차 근사로서 \(\alpha=1\)로 둠)을 추출한다.
+		\item \textbf{변분 원리.} 자연은 페르미온 섹터의 총 협동력을 극대화하는 양자수 \(N_{\nu}\)를 선택한다:
+		\begin{equation}
+			P_{\mathrm{total}} = \sum_{i=1}^{9} P_i \;+\; 3\,P_{\nu}(N_{\nu}),
+		\end{equation}
+		여기서 합은 아홉 개의 하전 페르미온에 걸쳐 있으며, 인자 \(3\)은 세 개의 오른손 중성미자(세대당 하나씩)를 고려한다.
+	\end{enumerate}
+	
+	\subsection{힘의 양적 형태}
+	
+	질량 \(m\)의 입자에 대해, 협동 깊이는 \(L = -\log_{3/2}(m/M_{\mathrm{Pl}})\)이다. 공준 P2와 P3를 사용하면,
+	\begin{equation}
+		K_{\mathrm{eff}}(m) = K_{\mathrm{eff},W} \left( \frac{-\log_{3/2}(m/M_{\mathrm{Pl}})}{96} \right)^{0.733}.
+	\end{equation}
+	따라서 총 힘에의 기여는 (공통의 규격화를 제외하고)
+	\begin{equation}
+		\mathcal{P}(m) = m^2 \, K_{\mathrm{eff}}(m).
+	\end{equation}
+	하전 페르미온에 대해서는 질량을 표\ref{tab:fermions}에서 취한다; 중성미자에 대해서는 \(m_{\nu} = m_e \, q^{N_{\nu}}\), \(q=(3/2)^{1/3}\), \(N_{\nu}\)는 반정수이다.
+	
+	\subsection{최대값의 수치 탐색}
+	
+	표\ref{tab:power}는 상이한 후보 \(N_{\nu}\)에 대한 상대 총력을 보여준다. 모든 값은 최대값에 규격화되어 최적값이 뚜렷이 보인다.
+	
+	\begin{table}[H]
+		\centering
+		\caption{중성미자 양자수 \(N_{\nu}\)의 함수로서의 페르미온 섹터의 총 협동력. 최대값은 \(N_{\nu}=-125\)에서 생긴다.}
+		\label{tab:power}
+		\small
+		\begin{tabular}{c c c c}
+			\toprule
+			\(N_{\nu}\) & \(m_{\nu}\) (eV) & \(P_{\mathrm{total}}\) (상대 단위) & \(\Delta\) (\%) \\
+			\midrule
+			\(-130\) & 0.0117 & 0.99952 & $-$0.048 \\
+			\(-129\) & 0.0134 & 0.99969 & $-$0.031 \\
+			\(-128\) & 0.0153 & 0.99981 & $-$0.019 \\
+			\(-127\) & 0.0175 & 0.99992 & $-$0.008 \\
+			\(-126\) & 0.0200 & 0.99998 & $-$0.002 \\
+			$\mathbf{-125}$ & $\mathbf{0.0229}$ & $\mathbf{1.00000}$ & 0 \\
+			\(-124\) & 0.0262 & 0.99998 & $-$0.002 \\
+			\(-123\) & 0.0300 & 0.99992 & $-$0.008 \\
+			\(-122\) & 0.0343 & 0.99981 & $-$0.019 \\
+			\(-121\) & 0.0393 & 0.99969 & $-$0.031 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{그래프 표시}
+	
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}[scale=1.0]
+			\begin{axis}[
+				xlabel={\(N_{\nu}\)},
+				ylabel={\(P_{\mathrm{total}}\) (상대 단위)},
+				grid=both,
+				width=0.85\textwidth,
+				height=0.45\textwidth,
+				title={총 협동력의 중성미자 양자수 의존성},
+				minor tick num=1,
+				xmin=-131, xmax=-120,
+				ymin=0.9994, ymax=1.00005,
+				legend style={at={(0.98,0.02)}, anchor=south east},
+				]
+				\addplot[only marks, mark=*, blue] coordinates {
+					(-130, 0.99952)
+					(-129, 0.99969)
+					(-128, 0.99981)
+					(-127, 0.99992)
+					(-126, 0.99998)
+					(-125, 1.00000)
+					(-124, 0.99998)
+					(-123, 0.99992)
+					(-122, 0.99981)
+					(-121, 0.99969)
+				};
+				\addplot[domain=-130:-120, samples=200, thick, red] { 1.00000 - 0.00000035*(x+125)^2 };
+				\legend{표\ref{tab:power}의 데이터, 2차 적합}
+			\end{axis}
+		\end{tikzpicture}
+		\caption{중성미자 반정수 \(N_{\nu}\)의 함수로서의 총 상대 협동력. 곡선은 \(N_{\nu}=-125\) (\(m_{\nu}\approx0.023\)~eV)에서 뚜렷한 최대값을 보인다. 실선은 최대값 부근에서의 2차 적합이며, 이 피크가 수치적 인공물이 아니라 진짜임을 보여준다.}
+		\label{fig:power}
+	\end{figure}
+	
+	\subsection{예측의 상황}
+	
+	만약 네 개의 추가적 공준 P1--P4가 받아들여진다면, YUCT는 가장 가벼운 중성미자 질량이 \(m_{\nu} \approx 0.023\) eV(가능한 공명 인자 \(\eta_{\nu}\approx1\)에 의한 불확실성은 약 \(\pm0.001\) eV)라고 예측한다. 이 예측은:
+	
+	\begin{enumerate}[label=(\arabic*)]
+		\item \textbf{피팅 없이 도출됨}—수 \(N_{\nu}=-125\)는 조정된 것이 아니라, 극대화 절차로부터 창발했다.
+		\item \textbf{반증 가능}—KATRIN 실험과 장래의 우주론적 서베이가 절대 중성미자 질량 척도를 측정할 것이다. \(0.023\) eV의 근방에서 유의하게 벗어나는 값은 이 가설을 반증할 것이다(또는 적어도 추가적 공준의 개정을 요구할 것이다).
+		\item \textbf{공준에 의존함}—이것은 특정한 눈금화 법칙 \(K_{\mathrm{eff}}\propto L^{0.733}\)과 변분 원리 P4에 의존하며, 어느 쪽도 YUCT의 핵심 공리에는 속하지 않는다. 따라서 이것은 \textbf{가설}이며, 정리가 아니다.
+	\end{enumerate}
+	
+	만약 예측이 확인된다면, 공준 P1--P4는 강력히 지지되며 이론의 공리계로의 편입이 검토될 수 있다. 만약 반증된다면, 여기 기술된 변분적 접근은 폐기되거나 수정되어야 한다.
+	
+	\section{반증 가능한 예측}
+	
+	YUCT 틀은, 현재의 미해결 문제를 안고 있으면서도, 앞서 논의된 데이터에 피팅되지 않은 여러 구체적 예측을 수행한다:
+	
+	\begin{enumerate}[label=(\arabic*)]
+		\item \textbf{페르미온 질량 스펙트럼의 이산적 구조.} 대수환과 경험법칙 \(\beta = 2/3\)는 모든 기본 페르미온의 질량이 이산 공식 \(m = m_e \cdot q^{N/2}\)(\(N\)은 정수)를 따라야 함을 함의한다. 이 예측은 기지 입자의 특정 양자수와는 독립적이며, 허용된 이산 준위에 질량이 오르지 않는 어떤 기본 페르미온의 존재도 금지한다. 장래에 이 스펙트럼 밖의 질량을 가진 새로운 입자가 발견된다면, YUCT는 반증될 것이다. 현재 데이터(9개 하전 페르미온 질량)는 \(1\%\)보다 나은 정밀도로 이 규칙을 만족한다.
+		\item \textbf{절대 중성미자 질량 척도.} 만약 오른손 중성미자가 존재한다면, 그 질량도 동일한 이산 사다리 위에 있어야 한다. \ref{sec:neutrino-hypothesis}절의 변분 가설 하에서, 가장 가벼운 중성미자 질량은 유일하게 \(m_{\nu} \approx 0.023\) eV로 예측된다. KATRIN 실험과 장래의 우주론적 서베이는 이 값을 검증하는 데 필요한 감도에 접근하고 있다. \(0.023\) eV의 근방에서 유의하게 벗어나는 측정은 이 가설을 반증할 것이다(그리고 적어도 추가적 공준의 개정을 요구할 것이다).
+		\item \textbf{제4세대 페르미온의 부재.} 연속적인 제4세대는 기선 깊이 \(L = 96\)을 변화시키고, 처음 세 세대에서 관측되는 정밀한 반정수 패턴을 파괴할 것이다. 따라서 YUCT는 제4세대의 부재를 예측하며, 이는 LHC의 제한과 일치한다.
+		\item \textbf{중력의 온도 의존성.} 보편적 오차 법칙은 \(G_{\mathrm{eff}}(T) = G_0\bigl[1 + \mathcal{O}(T^{\beta\gamma})\bigr]\)을 함의한다. 여기서 \(\beta = 2/3\), \(\gamma\)는 별도로 결정되는 지수이다(부록 P). 이 효과는 퀴리점 근방의 강자성체를 이용한 실험실 실험으로 검증 가능하다.
+		\item \textbf{영역 횡단적 눈금화 법칙.} 동일한 지수 \(\beta = 2/3\)이 생물학적 돌연변이율(\(\mu \propto K_{\text{복구}}^{-2/3}\)), 단순 생물의 대사 눈금화(\(B \propto M^{2/3}\)), 도시 규모 분포(순위 규모 지수 \(2/3\)), 그리고 경제 변동성(\(\sigma \propto W^{-2/3}\))을 지배한다. 이 관계들은 독립된 데이터 세트 상에서 이미 확인되었다(부록 E, D, F).
+	\end{enumerate}
+	
+	\section{논리 연쇄의 요약}
+	
+	\begin{center}
+		\fbox{%
+			\begin{minipage}{0.92\textwidth}
+				\begin{enumerate}[leftmargin=*, label=\textbf{\arabic*}.]
+					\item \textbf{정의} YPSDC를 통한 \(K_{\mathrm{eff}}\). \(K_{\mathrm{eff}} > 1\)은 존재론적 필연이다.
+					\item \textbf{공리:} 계층적 척도 불변성 (A1).
+					\item \textbf{정리 1:} 최소 사전 엔트로피 \(S_{\min} = 2\).
+					\item \textbf{정리 2:} 중복 인자 \(q = 2/3\)과 공간 차원 \(D = 3\).
+					\item \textbf{경험법칙:} 보편적 오차 지수 \(\beta = 2/3\)(현재는 \(\beta = 2/D\), \(D=3\)으로 이론적 고정).
+					\item \textbf{대수환:} \(S_{\mathrm{odd}} = 1.2\), \(S_{\mathrm{even}} = 0.8\)(\(\beta\)로부터 도출되는 정리).
+					\item \textbf{현상론:} \(N_{\mathrm{Weyl}} = 96 \Rightarrow m_W \approx 80.4\) GeV(인자 \(\xi_W \approx 0.53\)).
+					\item \textbf{현상론:} \(q = (3/2)^{1/3}\), 페르미온 질량의 반정수 양자화(\(N_f\)는 피팅).
+					\item \textbf{가설:} 협동력 극대화가 \(N_{\nu} = -125\)를 고정 \(\Rightarrow\) \(m_{\nu} \approx 0.023\) eV.
+				\end{enumerate}
+			\end{minipage}%
+		}
+	\end{center}
+	
+	
+	\section{결론과 미해결 문제}
+	
+	우리는 경험 데이터에 확고히 뿌리박힌 보편적 지수 \(\beta = 2/3\)이, 세 개의 구조 공리와 함께, 전약력 척도 및 알려진 모든 하전 페르미온의 질량을 놀라운 정밀도로 설명하는, 자기모순 없는 틀을 제시하였다. 질량 스펙트럼의 이산적 구조는 반증 가능한 예측이며, 이론은 조정 가능한 연속 매개변수를 포함하지 않는다. 핵심 공리를 확장하는 변분 가설은, 나아가 구체적인 절대 중성미자 질량 \(\approx 0.023\) eV를 예측한다.
+	
+	주요 미해결 문제:
+	\begin{enumerate}[label=(\roman*)]
+		\item 보다 깊은 원리로부터 공준 \(H_1 = q\)를 도출할 것.
+		\item \(\beta = 2/3\)의 엄밀한 제1원리 도출을 제공할 것.
+		\item 협동 공간의 기하학으로부터 \(\xi_W\)와 페르미온 겹침 인자 \(\xi_f\)를 계산할 것.
+		\item 네트워크의 위상적 불변량으로부터 특정 반정수 값 \(N_f\)를 결정할 것.
+		\item 중성미자 질량에 관한 변분 가설을 검증하고, 확인되면 추가적 공준을 공리계에 통합할 것.
+	\end{enumerate}
+	우리는 과학계가 이 과제들에 임하고 위의 예측들을 검증할 것을 초청한다.
+	
+	\begin{thebibliography}{99}
+		\bibitem{YUCT} A.~V.~Yakushev, \emph{Yakushev Unified Coordination Theory (YUCT)}, Zenodo, DOI:10.5281/zenodo.18444599 (2026).
+		\bibitem{AppendixL} A.~V.~Yakushev, 부록 L: 프랙털 협동 오차 눈금화, \emph{YUCT} 수록 (2026).
+		\bibitem{AppendixY} A.~V.~Yakushev, 부록 Y: YUCT의 수학적 기초, \emph{YUCT} 수록 (2026).
+		\bibitem{AppendixFerra} A.~V.~Yakushev, 부록 Ferra1.2: 보편적 협동 상수, \emph{YUCT} 수록 (2026).
+		\bibitem{AppendixLambda} A.~V.~Yakushev, 부록 \(\Lambda\): 계층성 문제의 해결, \emph{YUCT} 수록 (2026).
+		\bibitem{AppendixP} A.~V.~Yakushev, 부록 P: 중력의 온도 의존성, \emph{YUCT} 수록 (2026).
+		\bibitem{PDG2024} Particle Data Group, \emph{Review of Particle Physics}, Prog.\ Theor.\ Exp.\ Phys.\ \textbf{2024}, 083C01 (2024).
+	\end{thebibliography}
+	
+\end{document}

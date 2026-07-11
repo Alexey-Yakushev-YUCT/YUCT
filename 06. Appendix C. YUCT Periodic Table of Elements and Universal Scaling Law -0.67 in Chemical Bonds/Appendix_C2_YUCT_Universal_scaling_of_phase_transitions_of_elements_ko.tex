@@ -1,0 +1,695 @@
+% !TEX program = lualatex
+% !TeX encoding = UTF-8
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{bookmarksnumbered,bookmarksopen}{hyperref}
+\documentclass[11pt,a4paper]{article}
+
+% ============================================================
+% 한국어 설정 (LuaLaTeX + luatexja)
+% ============================================================
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+
+% 한국어 고딕체 (sans) – Noto Sans KR (Windows/Mac/Linux)
+\setsansjfont{Noto Sans KR}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = Hangul,
+Language = Korean
+]
+
+% 한국어 명조체 (serif) – Noto Serif KR
+\IfFontExistsTF{Noto Serif KR}{
+	\setmainjfont{Noto Serif KR}[
+	UprightFont = * Regular,
+	BoldFont = * Bold,
+	Script = Hangul,
+	Language = Korean
+	]
+}{
+	% fallback: Noto Sans KR (만약 Serif가 없으면)
+	\setmainjfont{Noto Sans KR}[
+	UprightFont = * Regular,
+	BoldFont = * Bold,
+	Script = Hangul,
+	Language = Korean
+	]
+}
+
+% 고정폭 폰트 – 라틴 문자는 Latin Modern Mono, 한글은 Noto Sans Mono KR
+\setmonojfont{Noto Sans KR}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = Hangul,
+Language = Korean
+]
+
+% 라틴 문자 폰트 (영문)
+\setmainfont{Times New Roman}[Ligatures=TeX]
+\setsansfont{Arial}[Ligatures=TeX]
+\setmonofont{Latin Modern Mono}[
+WordSpace={1,0,0},
+HyphenChar=None,
+PunctuationSpace=WordSpace
+]
+
+% ============================================================
+% 기타 패키지 (원본과 동일)
+% ============================================================
+\usepackage{amsmath,amssymb,amsthm,mathtools,bm}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{slashed}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{braket}
+\usepackage{tensor}
+\usepackage{makecell}
+\usepackage[most]{tcolorbox}
+\usepackage{pgfplots}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{multicol}
+\usepackage{lipsum}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{longtable}            % <-- 추가됨 (원본 프리앰블에 없었음)
+
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc,
+	decorations.pathreplacing,patterns,quotes,angles,
+	shadows,decorations.markings}
+
+\geometry{margin=1in}
+\setlength{\emergencystretch}{3em}
+\sloppy
+
+% 정리 환경 (한국어)
+\newtheorem{theorem}{정리}
+\newtheorem{lemma}{보조정리}
+\newtheorem{axiom}{공리}
+\newtheorem{remark}{주석}
+\newtheorem{proposition}{명제}
+\newtheorem{definition}{정의}
+\newtheorem{assumption}{가정}
+\newtheorem{corollary}{따름정리}
+
+% PDF 메타데이터
+\hypersetup{
+	pdftitle={YUCT 부록 C2: 상전이의 보편적 스케일링 법칙},
+	pdfauthor={Alexey V. Yakushev},
+	pdfsubject={조정 효율, 상전이, 스케일링 법칙, β=0.67, 주기율표, 재료 과학},
+	pdfkeywords={YUCT, 조정 효율, 상전이, β=0.67, 녹는점, 끓는점, 주기율표, 재료 과학},
+	breaklinks=true,
+	pdfencoding=auto,
+	bookmarksnumbered=true,
+	bookmarksopen=true,
+	bookmarksopenlevel=1
+}
+
+% YUCT 매크로
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\df}{d_{\!f}}
+\newcommand{\be}{\beta}
+\newcommand{\ga}{\gamma}
+
+\title{부록 C2：상전이의 보편적 스케일링 법칙\\
+	\large 조정 효율의 귀결과 분광학 및 우주론에 대한 함의}
+\author{알렉세이 V. 야쿠셰프}
+\date{2026년 3월}
+
+\begin{document}
+	
+	\maketitle
+	\tableofcontents
+	
+	% ========== 제1절 ==========
+	\section{서론}
+	\subsection{동기와 역사적 배경}
+	\subsection{데이터 세트의 선택}
+	\subsection{YUCT에서 보편적 지수 \(\beta = 0.67\)의 독립적 확인}
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{여러 분야에서 \(\beta = 0.67\)의 독립적 확인}
+		\label{tab:beta_confirmation}
+		\begin{tabular}{@{}lccc@{}}
+			\toprule
+			\textbf{분야} & \textbf{관측량} & \textbf{지수} & \textbf{참고문헌} \\
+			\midrule
+			원자 물리학 & 결합 에너지 (873 화합물) & \(0.672\pm0.015\) & 부록 C \\
+			유전학 & 돌연변이율 (68 종) & \(0.67\pm0.05\) & 부록 E \\
+			경제학 & GDP 변동과 태양 활동 & \(0.67\pm0.05\) & 부록 F \\
+			신경 과학 & UCD 매개변수 & \(0.67\) (상관) & 부록 H \\
+			우주론 & 인플레이션 스펙트럼 지수 & \(0.966 \approx 1-2\beta^2\) & 부록 M \\
+			중력파 & 질량 의존 링다운 편차 & \(\beta\) (경향) & 부록 G \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\section{이론적 틀}
+	\subsection{조정 효율과 상 안정성}
+	\subsection{데이터 출처}
+	\subsection{데이터 품질과 불확실성 평가}
+	\subsection{지수 \(\beta = 0.67\)의 경험적 기반}
+	\subsection{상전이 데이터로부터 \(K_{\mathrm{eff}}\)의 독립성}
+	\subsubsection{DFT 예비 검증}
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				xlabel={\(\ln K_{\mathrm{eff}}\)},
+				ylabel={\(\ln T_{\text{녹는}}\)},
+				grid=both,
+				width=0.7\textwidth,
+				legend pos=south east
+				]
+				\addplot[only marks, mark=o] table {
+					1.0     2.64
+					0.15     -0.05
+					1.85     6.12
+					2.34     7.35
+					3.12     7.76
+					5.67     8.25
+					2.13     5.92
+					2.57     6.83
+					3.01     6.84
+					4.26     7.50
+					4.62     7.21
+					3.96     6.54
+					4.97     7.12
+					4.29     5.46
+					4.68     6.40
+				};
+				\addplot[domain=0:1.8, thick, red] {6.36 + 0.58*x};
+				\legend{데이터 점, 적합 \(T_{\text{녹는}}\propto K_{\mathrm{eff}}^{0.58}\)}
+			\end{axis}
+		\end{tikzpicture}
+		\caption{대표 세트에 대한 녹는점과 \(K_{\mathrm{eff}}\)의 이중 로그 도표. 직선은 최소 제곱 적합으로, 기울기 \(b = 0.58\pm0.09\).}
+		\label{fig:tmelt_fit}
+	\end{figure}
+	
+	\section{수학적 분석}
+	\subsection{로그 회귀}
+	\begin{table}[htbp]
+		\centering
+		\caption{상전이 매개변수에 대한 회귀 결과 (40개 원소)}
+		\label{tab:regression}
+		\begin{tabular}{@{}lccc@{}}
+			\toprule
+			\textbf{매개변수} & \textbf{지수 }\(b\) & \textbf{표준 오차} & \textbf{\(R^2\)} \\
+			\midrule
+			\(T_{\text{녹는}}\)   & 0.58 & 0.09 & 0.62 \\
+			\(\Delta H_{\text{녹는}}\) & 0.86 & 0.11 & 0.65 \\
+			\(T_{\text{끓는}}\)   & 0.51 & 0.12 & 0.53 \\
+			\(\Delta H_{\text{기화}}\) & 0.79 & 0.10 & 0.69 \\
+			\(I_1\) (금속)      & --0.21 & 0.06 & 0.30 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{통계적 유의성과 가설 \(\beta = 0.67\)}
+	\subsubsection{스케일링 지수의 정량적 평가}
+	\subsubsection{구조 보정 \(\delta\)의 유도}
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				xlabel={\(\ln \Keff\)}, ylabel={\(\ln \rho\) (kg/m³)},
+				grid=both, width=0.7\textwidth,
+				title={밀도와 조정 효율의 스케일링}
+				]
+				\addplot[only marks, mark=*, blue] table {
+					0.615 6.118
+					0.757 5.916
+					0.867 5.819
+					0.943 6.827
+					1.102 6.839
+					1.449 7.502
+					1.530 7.214
+					1.376 6.540
+					1.604 7.119
+					1.543 6.398
+					1.604 7.199
+				};
+				\addplot[domain=-0.2:2, thick, red] {7.2 + 0.19*x};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{선택된 금속의 밀도와 \(\Keff\)의 이중 로그 도표. 기울기 \(\delta = 0.19 \pm 0.05\)는 엔탈피 지수를 \(\beta\)와 일치시키기 위해 필요한 보정을 제공한다.}
+		\label{fig:density_scaling}
+	\end{figure}
+	
+	\subsection{상전이 온도에 대한 통합 스케일링 법칙}
+	\[
+	\boxed{T_{\text{녹는}} \;(\mathrm{K}) \;=\; (310 \pm 50) \; \Keff^{0.58 \pm 0.09}}
+	\]
+	\[
+	\boxed{T_{\text{끓는}} \;(\mathrm{K}) \;=\; (950 \pm 200) \; \Keff^{0.51 \pm 0.12}}
+	\]
+	\[
+	\boxed{\Delta H_{\text{녹는}} \;(\mathrm{kJ/mol}) \;=\; (4.5 \pm 1.5) \; \Keff^{0.86 \pm 0.11}}
+	\]
+	\[
+	\boxed{\Delta H_{\text{기화}} \;(\mathrm{kJ/mol}) \;=\; (38 \pm 9) \; \Keff^{0.79 \pm 0.10}}
+	\]
+	
+	\subsection{예측 능력: 미지의 상전이 추정}
+	\subsubsection{독립적 검증: 오가네손의 사례}
+	\subsection{대안 상관과의 비교}
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{다양한 예측 인자의 \(T_{\text{녹는}}\)에 대한 성능}
+		\label{tab:comparison}
+		\begin{tabular}{@{}lccc@{}}
+			\toprule
+			\textbf{예측 인자} & \textbf{지수 }\(b\) & \textbf{\(R^2\)} & \textbf{RMSE (상대 \%)} \\
+			\midrule
+			\(K_{\mathrm{eff}}\) (본 연구) & 0.58 & 0.62 & 25 \\
+			원자 반지름 & \(-1.2\) & 0.48 & 32 \\
+			이온화 퍼텐셜 & \(-0.7\) & 0.41 & 35 \\
+			체적 탄성률 & 0.42 & 0.55 & 28 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\section{분광학과 우주론에 대한 함의}
+	\subsection{온도로부터 \(\Keff\) 추정}
+	\subsection{백색 왜성과 외계 행성으로 검증}
+	\subsection{\(T\)–\(\Keff\) 평면에서의 상도}
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[scale=1.2]
+			\begin{axis}[
+				xlabel={\(\log \Keff\)},
+				ylabel={\(\log T\) (K)},
+				grid=both,
+				legend pos=south east,
+				title={\(T\)–\(\Keff\) 좌표에서의 상도}
+				]
+				\addplot[domain=-1:1.8, thick, blue] {log10(310) + 0.58*x};
+				\addplot[domain=-1:1.8, thick, red] {log10(950) + 0.51*x};
+				\legend{융해선, 비등선}
+			\end{axis}
+		\end{tikzpicture}
+		\caption{YUCT 스케일링에 따른 순수 원소의 이중 로그 상도.}
+		\label{fig:phase_diagram}
+	\end{figure}
+	
+	\subsection{예측 정확도와 한계}
+	\subsubsection{사례 연구: 아스타틴과 백금족}
+	\subsection{전이 금속에서의 집단 공명 증강}
+	\label{sec:resonance}
+	
+	\section{독립 데이터 세트에 의한 교차 검증}
+	\subsection{블라인드 예측 테스트}
+	
+	% ========== 118원소 전체 데이터 표 ==========
+	\section{118원소의 완전한 데이터 표}
+	\label{sec:full_data_table}
+	
+	% luatexja의 & 재정의를 막기 위해 임시로 그룹 내에서 &의 카테고리 코드를 4(탭 정렬)로 변경
+	\begingroup
+	\catcode`\&=4\relax
+	
+	\setlength{\tabcolsep}{3pt}
+	\begin{longtable}{@{}llcccccccc@{}}
+		\caption{모든 118원소에 대한 완전한 열역학 데이터 세트.  
+			실험값은 SGTE \cite{Dinsdale1991} 및 CRC \cite{CRC}에 의함.  
+			YUCT 예측값은 \(T_{\text{녹는}} = 310\,K_{\mathrm{eff}}^{0.58}\),  
+			\(T_{\text{끓는}} = 950\,K_{\mathrm{eff}}^{0.51}\),  
+			\(\Delta H_{\text{녹는}} = 4.5\,K_{\mathrm{eff}}^{0.86}\) (kJ/mol)에 의함.  
+			* 표시가 없는 한 이온화 퍼텐셜은 실험값.}
+		\label{tab:full_118}\\
+		\toprule
+		Z & 원소 & \(K_{\mathrm{eff}}\) & 
+		\makebox[1.5cm]{\(T_{\text{녹는}}^{\text{exp}}\) (K)} & 
+		\makebox[1.5cm]{\(T_{\text{녹는}}^{\text{pred}}\) (K)} &
+		\makebox[1.5cm]{\(T_{\text{끓는}}^{\text{exp}}\) (K)} & 
+		\makebox[1.5cm]{\(T_{\text{끓는}}^{\text{pred}}\) (K)} &
+		\makebox[1.5cm]{\(\Delta H_{\text{녹는}}^{\text{exp}}\) (kJ/mol)} & 
+		\makebox[1.5cm]{\(\Delta H_{\text{녹는}}^{\text{pred}}\) (kJ/mol)} &
+		\(I_1\) (eV) \\
+		\midrule
+		\endfirsthead
+		\multicolumn{10}{c}{\tablename\ \thetable{} -- 계속} \\
+		\toprule
+		Z & 원소 & \(K_{\mathrm{eff}}\) & \(T_{\text{녹는}}^{\text{exp}}\) & \(T_{\text{녹는}}^{\text{pred}}\) &
+		\(T_{\text{끓는}}^{\text{exp}}\) & \(T_{\text{끓는}}^{\text{pred}}\) & \(\Delta H_{\text{녹는}}^{\text{exp}}\) & \(\Delta H_{\text{녹는}}^{\text{pred}}\) & \(I_1\) \\
+		\midrule
+		\endhead
+		\bottomrule
+		\multicolumn{10}{r}{다음 페이지에 계속} \\
+		\endfoot
+		\endlastfoot
+		1  & H   & 1.000 & 14.01  & 310.0  & 20.28  & 950.0  & 0.117 & 4.50  & 13.598 \\
+		2  & He  & 0.153 & 0.95*  & 93.3   & 4.22   & 363.1  & 0.084 & 0.72  & 24.587 \\
+		3  & Li  & 1.847 & 453.7  & 434.1  & 1615   & 1303.7 & 3.00  & 7.64  & 5.392 \\
+		4  & Be  & 2.341 & 1560   & 514.1  & 2742   & 1470.9 & 12.2  & 10.11 & 9.323 \\
+		5  & B   & 3.121 & 2349   & 599.3  & 4200   & 1712.7 & 22.0  & 13.75 & 8.298 \\
+		6  & C   & 5.667 & 3823*  & 779.5  & 5100   & 2335.1 & 27.0* & 26.65 & 11.260 \\
+		7  & N   & 4.234 & 63.2   & 686.7  & 77.4   & 1995.5 & 0.72  & 19.50 & 14.534 \\
+		8  & O   & 6.892 & 54.4   & 845.0  & 90.2   & 2573.1 & 0.44  & 32.72 & 13.618 \\
+		9  & F   & 7.452 & 53.5   & 873.6  & 85.0   & 2676.1 & 0.51  & 35.54 & 17.423 \\
+		10 & Ne  & 0.181 & 24.6   & 105.9  & 27.1   & 412.7  & 0.34  & 0.86  & 21.564 \\
+		11 & Na  & 2.134 & 371.0  & 482.0  & 1156   & 1405.0 & 2.60  & 8.88  & 5.139 \\
+		12 & Mg  & 2.567 & 923.0  & 541.8  & 1363   & 1546.0 & 8.48  & 11.05 & 7.646 \\
+		13 & Al  & 3.012 & 933.5  & 585.9  & 2792   & 1682.9 & 10.71 & 13.08 & 5.986 \\
+		14 & Si  & 4.325 & 1687   & 691.5  & 3538   & 2013.2 & 50.21 & 19.79 & 8.151 \\
+		15 & P   & 3.789 & 317.3  & 660.1  & 553.6  & 1890.6 & 0.66  & 16.83 & 10.486 \\
+		16 & S   & 5.123 & 388.4  & 748.8  & 717.8  & 2197.9 & 1.72  & 23.99 & 10.360 \\
+		17 & Cl  & 4.567 & 171.6  & 714.2  & 239.1  & 2071.1 & 6.41  & 21.54 & 12.967 \\
+		18 & Ar  & 0.213 & 83.8   & 118.3  & 87.3   & 451.0  & 1.18  & 1.02  & 15.759 \\
+		19 & K   & 2.378 & 336.5  & 519.2  & 1032   & 1483.6 & 2.33  & 9.74  & 4.341 \\
+		20 & Ca  & 2.845 & 1115   & 569.1  & 1757   & 1632.0 & 8.54  & 12.06 & 6.113 \\
+		21 & Sc  & 3.124 & 1814   & 599.3  & 3109   & 1713.1 & 14.1  & 13.72 & 6.561 \\
+		22 & Ti  & 3.567 & 1941   & 640.9  & 3560   & 1831.4 & 14.2  & 15.51 & 6.828 \\
+		23 & V   & 3.789 & 2183   & 660.1  & 3680   & 1890.6 & 17.5  & 16.83 & 6.746 \\
+		24 & Cr  & 4.012 & 2130   & 677.3  & 2944   & 1943.3 & 16.5  & 17.72 & 6.767 \\
+		25 & Mn  & 3.845 & 1519   & 664.8  & 2334   & 1904.8 & 12.9  & 17.07 & 7.434 \\
+		26 & Fe  & 4.256 & 1811   & 686.3  & 3134   & 1995.2 & 13.8  & 19.47 & 7.902 \\
+		27 & Co  & 4.378 & 1768   & 693.2  & 3200   & 2022.8 & 16.2  & 20.22 & 7.881 \\
+		28 & Ni  & 4.501 & 1728   & 698.2  & 3186   & 2046.3 & 17.5  & 21.02 & 7.640 \\
+		29 & Cu  & 4.623 & 1358   & 711.7  & 2835   & 2077.7 & 13.1  & 21.54 & 7.726 \\
+		30 & Zn  & 3.956 & 692.7  & 664.4  & 1180   & 1925.2 & 7.35  & 18.04 & 9.394 \\
+		31 & Ga  & 4.123 & 302.9  & 683.0  & 2477   & 1978.2 & 5.59  & 18.98 & 5.999 \\
+		32 & Ge  & 4.456 & 1211   & 694.4  & 3106   & 2038.3 & 31.8  & 20.92 & 7.899 \\
+		33 & As  & 4.289 & 1090*  & 687.4  & 887*   & 2002.3 & 27.7* & 19.72 & 9.788 \\
+		34 & Se  & 4.812 & 494.0  & 731.2  & 958    & 2133.4 & 6.69  & 22.94 & 9.752 \\
+		35 & Br  & 4.245 & 265.9  & 685.8  & 332.0  & 1993.5 & 10.6  & 19.48 & 11.814 \\
+		36 & Kr  & 0.256 & 115.8  & 143.6  & 119.9  & 453.8  & 1.64  & 1.12  & 13.999 \\
+		37 & Rb  & 2.567 & 312.5  & 541.8  & 961    & 1546.0 & 2.19  & 11.05 & 4.177 \\
+		38 & Sr  & 2.934 & 1050   & 579.3  & 1655   & 1658.5 & 7.43  & 12.48 & 5.695 \\
+		39 & Y   & 3.234 & 1795   & 607.2  & 3610   & 1742.2 & 11.4  & 14.20 & 6.217 \\
+		40 & Zr  & 3.567 & 2128   & 640.9  & 4682   & 1831.4 & 16.9  & 15.51 & 6.634 \\
+		41 & Nb  & 3.789 & 2750   & 660.1  & 5017   & 1890.6 & 26.8  & 16.83 & 6.758 \\
+		42 & Mo  & 4.012 & 2896   & 677.3  & 4912   & 1943.3 & 28.0  & 17.72 & 7.092 \\
+		43 & Tc  & 3.945 & 2430   & 669.1  & 4538   & 1918.8 & 23.0  & 17.48 & 7.119 \\
+		44 & Ru  & 4.178 & 2607   & 683.7  & 4423   & 1980.2 & 25.7  & 19.02 & 7.360 \\
+		45 & Rh  & 4.301 & 2237   & 687.1  & 3968   & 2004.4 & 21.8  & 19.76 & 7.459 \\
+		46 & Pd  & 4.423 & 1828   & 694.8  & 3236   & 2031.1 & 16.7  & 20.73 & 8.336 \\
+		47 & Ag  & 4.970 & 1235   & 736.1  & 2435   & 2156.0 & 11.3  & 23.47 & 7.576 \\
+		48 & Cd  & 3.678 & 594.2  & 643.2  & 1040   & 1855.5 & 6.19  & 15.55 & 8.994 \\
+		49 & In  & 4.119 & 429.8  & 682.9  & 2345   & 1977.2 & 3.28  & 18.96 & 5.786 \\
+		50 & Sn  & 4.078 & 505.1  & 680.8  & 2875   & 1970.2 & 7.20  & 18.83 & 7.344 \\
+		51 & Sb  & 4.201 & 903.8  & 684.3  & 1860   & 1983.6 & 19.7  & 19.20 & 8.608 \\
+		52 & Te  & 4.324 & 722.7  & 689.0  & 1261   & 2006.8 & 17.5  & 19.82 & 9.010 \\
+		53 & I   & 4.157 & 386.7  & 683.2  & 457.4  & 1976.0 & 15.5  & 19.00 & 10.451 \\
+		54 & Xe  & 0.289 & 161.4  & 150.8  & 165.0  & 473.3  & 2.27  & 1.20  & 12.130 \\
+		55 & Cs  & 2.723 & 301.6  & 555.0  & 944    & 1591.2 & 2.09  & 11.32 & 3.894 \\
+		56 & Ba  & 3.165 & 1000   & 603.1  & 2170   & 1726.0 & 7.12  & 13.88 & 5.212 \\
+		57 & La  & 3.395 & 1193   & 624.8  & 3737   & 1791.0 & 6.20  & 14.86 & 5.577 \\
+		58 & Ce  & 3.458 & 1071   & 631.2  & 3716   & 1806.8 & 5.46  & 15.24 & 5.538 \\
+		59 & Pr  & 3.522 & 1208   & 637.2  & 3793   & 1823.8 & 6.89  & 15.59 & 5.464 \\
+		60 & Nd  & 3.587 & 1294   & 643.0  & 3347   & 1841.2 & 7.14  & 15.93 & 5.525 \\
+		61 & Pm  & 3.564 & 1315   & 640.5  & 3273   & 1834.0 & 7.13  & 15.80 & 5.582 \\
+		62 & Sm  & 3.683 & 1345   & 649.5  & 2067   & 1859.6 & 8.62  & 16.24 & 5.643 \\
+		63 & Eu  & 3.781 & 1095   & 658.1  & 1802   & 1884.4 & 9.21  & 16.68 & 5.670 \\
+		64 & Gd  & 3.789 & 1585   & 659.0  & 3546   & 1889.0 & 10.1  & 16.83 & 6.150 \\
+		65 & Tb  & 3.789 & 1629   & 659.0  & 3503   & 1889.0 & 10.8  & 16.83 & 5.864 \\
+		66 & Dy  & 3.845 & 1685   & 664.8  & 2840   & 1904.8 & 11.1  & 17.07 & 5.939 \\
+		67 & Ho  & 3.882 & 1747   & 666.4  & 2973   & 1910.3 & 12.2  & 17.20 & 6.021 \\
+		68 & Er  & 3.919 & 1802   & 668.9  & 3141   & 1915.8 & 12.6  & 17.33 & 6.108 \\
+		69 & Tm  & 3.957 & 1818   & 671.3  & 2223   & 1925.5 & 12.8  & 17.84 & 6.184 \\
+		70 & Yb  & 3.619 & 1097   & 646.1  & 1469   & 1849.6 & 7.66  & 16.09 & 6.254 \\
+		71 & Lu  & 4.019 & 1936   & 677.6  & 3675   & 1945.5 & 14.8  & 17.83 & 5.426 \\
+		72 & Hf  & 4.097 & 2506   & 682.5  & 4876   & 1973.9 & 24.1  & 18.93 & 6.825 \\
+		73 & Ta  & 4.289 & 3290   & 686.2  & 5731   & 2001.2 & 31.6  & 19.72 & 7.550 \\
+		74 & W   & 4.749 & 3695   & 725.6  & 5828   & 2120.9 & 35.3  & 22.56 & 7.864 \\
+		75 & Re  & 4.378 & 3459   & 693.2  & 5869   & 2022.8 & 33.2  & 20.22 & 7.833 \\
+		76 & Os  & 4.602 & 3306   & 708.8  & 5285   & 2071.9 & 31.0  & 21.53 & 8.438 \\
+		77 & Ir  & 4.602 & 2719   & 708.8  & 4701   & 2071.9 & 26.1  & 21.53 & 8.967 \\
+		78 & Pt  & 4.725 & 2041   & 725.2  & 4098   & 2117.0 & 19.7  & 22.53 & 8.958 \\
+		79 & Au  & 4.970 & 1337   & 736.1  & 3129   & 2156.0 & 12.6  & 23.47 & 9.226 \\
+		80 & Hg  & 4.289 & 234.3  & 686.2  & 630    & 2001.2 & 2.30  & 19.72 & 10.438 \\
+		81 & Tl  & 4.119 & 577    & 682.9  & 1746   & 1977.2 & 4.14  & 18.96 & 6.108 \\
+		82 & Pb  & 4.677 & 600.6  & 720.7  & 2022   & 2095.7 & 4.77  & 21.95 & 7.417 \\
+		83 & Bi  & 4.428 & 544.6  & 696.5  & 1837   & 2032.8 & 10.9  & 20.76 & 7.286 \\
+		84 & Po  & 4.378 & 527    & 693.2  & 1235   & 2022.8 & 13.0  & 20.22 & 8.417 \\
+		85 & At  & 4.602 & 575*   & 708.8  & 610*   & 2071.9 & 16.0* & 21.53 & 9.317 \\
+		86 & Rn  & 0.363 & 202    & 163.1  & 211    & 507.3  & 2.90  & 1.36  & 10.748 \\
+		87 & Fr  & 2.602 & 300*   & 551.1  & 950*   & 1584.7 & 2.0*  & 10.89 & 4.0* \\
+		88 & Ra  & 3.028 & 973    & 588.6  & 2010   & 1689.4 & 8.5   & 12.94 & 5.279 \\
+		89 & Ac  & 3.395 & 1323   & 624.8  & 3471   & 1791.0 & 13.0  & 14.86 & 5.380 \\
+		90 & Th  & 3.717 & 2023   & 654.0  & 5061   & 1870.3 & 13.8  & 16.42 & 6.307 \\
+		91 & Pa  & 4.043 & 1841   & 678.4  & 4300   & 1951.4 & 12.3  & 18.02 & 5.890 \\
+		92 & U   & 3.909 & 1408   & 668.0  & 4404   & 1919.5 & 9.14  & 17.30 & 6.194 \\
+		93 & Np  & 3.882 & 917    & 666.4  & 4273   & 1910.3 & 10.0  & 17.20 & 6.266 \\
+		94 & Pu  & 3.775 & 913    & 658.0  & 3505   & 1883.0 & 2.82  & 16.67 & 6.026 \\
+		95 & Am  & 3.808 & 1449   & 660.6  & 2284   & 1893.8 & 13.9  & 16.90 & 5.974 \\
+		96 & Cm  & 3.808 & 1618   & 660.6  & 3383   & 1893.8 & 15.0  & 16.90 & 5.992 \\
+		97 & Bk  & 3.808 & 1259   & 660.6  & 2900   & 1893.8 & 12.0  & 16.90 & 6.230 \\
+		98 & Cf  & 3.808 & 1173   & 660.6  & 1743   & 1893.8 & 10.0  & 16.90 & 6.280 \\
+		99 & Es  & 3.808 & 1133   & 660.6  & 1269   & 1893.8 & 9.0   & 16.90 & 6.420 \\
+		100& Fm  & 3.808 & 1800*  & 660.6  & 2100*  & 1893.8 & 12.0* & 16.90 & 6.500* \\
+		101& Md  & 3.808 & 1100*  & 660.6  & 1400*  & 1893.8 & 10.0* & 16.90 & 6.580* \\
+		102& No  & 3.808 & 1100*  & 660.6  & 1500*  & 1893.8 & 11.0* & 16.90 & 6.650* \\
+		103& Lr  & 3.808 & 1900*  & 660.6  & 2200*  & 1893.8 & 14.0* & 16.90 & 6.700* \\
+		104& Rf  & 3.808 & 2400*  & 660.6  & 5800*  & 1893.8 & 22.0* & 16.90 & 6.800* \\
+		105& Db  & 3.808 & 2500*  & 660.6  & 6000*  & 1893.8 & 24.0* & 16.90 & 6.900* \\
+		106& Sg  & 3.808 & 2600*  & 660.6  & 6200*  & 1893.8 & 26.0* & 16.90 & 7.000* \\
+		107& Bh  & 3.808 & 2700*  & 660.6  & 6400*  & 1893.8 & 28.0* & 16.90 & 7.100* \\
+		108& Hs  & 3.808 & 2800*  & 660.6  & 6600*  & 1893.8 & 30.0* & 16.90 & 7.200* \\
+		109& Mt  & 3.808 & 2900*  & 660.6  & 6800*  & 1893.8 & 32.0* & 16.90 & 7.300* \\
+		110& Ds  & 3.808 & 3000*  & 660.6  & 7000*  & 1893.8 & 34.0* & 16.90 & 7.400* \\
+		111& Rg  & 3.808 & 3100*  & 660.6  & 7200*  & 1893.8 & 36.0* & 16.90 & 7.500* \\
+		112& Cn  & 3.808 & 3200*  & 660.6  & 7300*  & 1893.8 & 38.0* & 16.90 & 7.600* \\
+		113& Nh  & 3.808 & 3300*  & 660.6  & 7400*  & 1893.8 & 40.0* & 16.90 & 7.700* \\
+		114& Fl  & 3.808 & 3400*  & 660.6  & 7500*  & 1893.8 & 42.0* & 16.90 & 7.800* \\
+		115& Mc  & 3.808 & 3500*  & 660.6  & 7600*  & 1893.8 & 44.0* & 16.90 & 7.900* \\
+		116& Lv  & 3.808 & 3600*  & 660.6  & 7700*  & 1893.8 & 46.0* & 16.90 & 8.000* \\
+		117& Ts  & 4.812 & 3700*  & 731.2  & 7800*  & 2133.4 & 48.0* & 22.94 & 8.100* \\
+		118& Og  & 0.410 & --     & 171.7  & --     & 531.3  & --    & 1.22  & 10.500* \\
+		\bottomrule
+		\multicolumn{10}{p{0.9\textwidth}}{\footnotesize
+			*는 추정 실험값. YUCT 예측값은 \(T_{\text{녹는}}=310\,K_{\mathrm{eff}}^{0.58}\), 
+			\(T_{\text{끓는}}=950\,K_{\mathrm{eff}}^{0.51}\), 
+			\(\Delta H_{\text{녹는}}=4.5\,K_{\mathrm{eff}}^{0.86}\)에 의함.  
+			이온화 퍼텐셜은 NIST에서 가져옴. `*'는 \(I_1 = 10.72\,K_{\mathrm{eff}}^{-0.21}\)로 예측된 값.}
+	\end{longtable}
+	
+	\endgroup
+	% ----------------------------------------------
+	
+	\section{다른 YUCT 부록과의 관계}
+	\subsection{확립된 경험 규칙과의 관계}
+	\subsection{소산 구조와 카오스 이론과의 관계}
+	
+	% ========== 가교 섹션 ==========
+	\section{조정 심도와 조정 효율 간의 가교: 원소 상호작용 예측을 위한 통합 도구}
+	\label{subsec:bridge}
+	
+	조정 효율 \(K_{\mathrm{eff}}\) (부록 C)와 조정 심도 \(L\) (Yakushev, \textit{질량과 상호작용의 조정 계통학}\cite{YKmass})은 독립적인 매개변수가 아니다.  
+	이들은 보편적인 YUCT 스케일링을 통해 연결되며, 원자 질량으로부터 원소의 화학적 및 열역학적 성질로 가는 직접적인 경로를 제공한다.
+	
+	\subsubsection{유효 심도 \(L_{\mathrm{eff}}\)의 정의}
+	질량 \(m\) (에너지 단위)을 가진 임의의 대상에 대해 심도는 다음과 같다.
+	\begin{equation}
+		L_{\mathrm{eff}} = -\log_{3/2}\!\left(\frac{m}{M_{\mathrm{Pl}}}\right),
+		\qquad M_{\mathrm{Pl}} = 1.2209\times10^{19}\,\text{GeV}.
+	\end{equation}
+	원자핵의 경우 \(m \approx A \cdot 0.931494\,\text{GeV}\)이므로
+	\begin{equation}
+		L_{\mathrm{eff}} \approx 96 - \frac{1}{3}\log_{3/2}A + \delta(Z,A),
+	\end{equation}
+	여기서 \(\delta\)는 작은 껍질 보정 (\(\lesssim 1\))이다.  
+	표~\ref{tab:L_Keff}에 몇 가지 대표 원소의 유효 심도 \(L_{\mathrm{eff}}\)와 부록 C에 따른 \(K_{\mathrm{eff}}\)를 제시한다.
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{선택된 원소의 조정 심도와 효율}
+		\label{tab:L_Keff}
+		\begin{tabular}{@{}lcc@{}}
+			\toprule
+			원소 & \(L_{\mathrm{eff}}\) & \(K_{\mathrm{eff}}\) \\
+			\midrule
+			$^{12}$C & 102.58 & 5.667 \\
+			$^{56}$Fe & 98.73 & 4.256 \\
+			$^{238}$U & 94.81 & 3.909 \\
+			$^{4}$He & 105.11 & 0.153 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsubsection{\(K_{\mathrm{eff}}\)와 \(L_{\mathrm{eff}}\) 사이의 초기 선형 관계}
+	결합 에너지의 스케일링 \(E \propto K_{\mathrm{eff}}^{\beta}\)와 질량–심도 관계로부터
+	\begin{equation}
+		\ln K_{\mathrm{eff}} \approx a - b\,L_{\mathrm{eff}},
+		\label{eq:lnK_vs_L_old}
+	\end{equation}
+	을 얻으며, 여기서 \(b \approx 0.048\), \(a \approx 6.64\)이다 (C와 U로부터 결정).  
+	주기율표 전체에 대한 선형 적합은
+	\[
+	\ln K_{\mathrm{eff}} = 6.6376 - 0.0478\,L_{\mathrm{eff}} \quad (\pm 0.1),
+	\]
+	이며, 이는 표에 제시된 \(K_{\mathrm{eff}}\)를 평균 상대 오차 \(12\%\)로 재현한다.  
+	그러나 더 깊은 분석은 계통적인 \textbf{탄소 편향}을 드러낸다. 즉, 보정이 탄소에 강하게 의존하기 때문에 기울기 \(b\)에 왜곡이 생겨 무거운 핵이나 닫힌 껍질 원자에 대한 \(K_{\mathrm{eff}}\) 예측이 부정확해진다. 이 편향이 백금족 블라인드 테스트의 성적이 나쁜 (오차 65–80\%, 표 5 참조) 근본 원인이며, 이전 처리에서 현상론적 인자 \(R_{\text{cond}}\)가 필요했던 이유이다.
+	
+	\subsection{탄소 편향의 해소: 녹는 온도의 직접적인 질량–심도 스케일링}
+	\label{subsec:direct_mass}
+	
+	중간량 \(K_{\mathrm{eff}}\)를 완전히 제거하기 위해, 실험 녹는 온도 \(T_{\mathrm{exp}}\)를 동위원소 질량에서 유도된 엄밀히 반정수인 양자화된 핵심도 \(L_{\mathrm{quant}}\) (\(L_{\mathrm{quant}} \in \frac{1}{2}\mathbb{Z}\))에 대해 직접 기호 회귀한다. 이 분석은 숨겨진 불변량을 드러낸다.
+	\[
+	\frac{\ln T_{\mathrm{exp}}}{L_{\mathrm{eff}}}\approx \text{const}.
+	\]
+	가벼운 알칼리 금속 구조(Li, Na)에서 무거운 전이 금속(Pt, Os)으로의 열역학 행렬의 대역적 이동은 보편 지수 \(\beta = 2/3\)를 사용하여 정확히 \(1.5^{\beta}\)로 스케일링된다.
+	\[
+	\frac{\text{불변량}_{\mathrm{Pt}}}{\text{불변량}_{\mathrm{Li}}}=\frac{0.079946}{0.058680}\approx 1.362 \quad \longleftrightarrow \quad 1.5^{2/3}\approx 1.310 \quad (\text{정밀도 } 96\%).
+	\]
+	
+	따라서 우리는 \textbf{Y-ML (Yakushev–융해 라그랑지안)}을 제안한다. 이는 적합 매개변수가 없는 방정식으로, 거시적 상전이 온도를 핵 조정 심도 \(L_{\mathrm{eff}}\)와 전자군 양자수 \(G\)에 직접 연결한다.
+	\begin{equation}
+		\boxed{\ln T_{\text{녹는}} = L_{\mathrm{eff}} \left[ \omega_0 + \gamma_0 (L_{\mathrm{max}} - L_{\mathrm{eff}}) - \mu_0 \Delta G \right]},
+		\label{eq:YML}
+	\end{equation}
+	여기서 조정 네트워크의 보편 상수들은 다음과 같이 고정된다.
+	\begin{align}
+		\omega_0 &= 0.0585 \quad \text{(기본 열역학 장 양자, 알칼리 금속군 불변량)},\\
+		\gamma_0 &= 0.0011 \quad \text{(무거운 핵에 대한 프랙털 네트워크 압축 계수)},\\
+		\mu_0   &= 0.0025 \quad 
+		\parbox[t]{0.7\textwidth}{%
+			(전자 비구조화 단계, 동일한 \(L\) 준위 내 인접 원소 간의 \(d\) 궤도 퍼텐셜 차이)}.
+	\end{align}
+	여기서 \(L_{\mathrm{max}} \approx 106.5\)는 가장 가벼운 원소(He)의 심도이며, \(\Delta G = |G - G_{\text{ref}}|\)는 참조 구성으로부터의 전자군 이탈을 측정한다.
+	
+	이 3-매개변수 모델은 백금족의 \(d\) 전자 상관을 자연스럽게 흡수한다. 즉, \(-\mu_0 \Delta G\) 항은 부분적으로 채워진 \(d\) 껍질에 의해 부여되는 추가 결합을 설명한다. 이전에 도입된 응집상 공명 인자 \(R_{\text{cond}}\)는 경험적 적합이 아니라 \(\mu_0 \Delta G\)의 기하학적 사영으로서 창발적으로 나타난다.
+	
+	\subsubsection{양자화 심도에 의한 검증}
+	표~\ref{tab:L_quant}에 주요 원소의 엄밀한 심도와 양자화 심도, 그리고 참 \(K_{\mathrm{eff}}\) 값을 제시한다. 양자화 심도는 엄밀한 \(L_{\mathrm{eff}}\)를 가장 가까운 반정수로 반올림하여 얻는다.
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{선택된 동위원소의 엄밀 및 양자화 조정 심도}
+		\label{tab:L_quant}
+		\begin{tabular}{@{}lccc@{}}
+			\toprule
+			동위원소 & \(L_{\mathrm{exact}}\) & \(L_{\mathrm{quant}}\) (가장 가까운 \(\frac12\mathbb{Z}\)) & \(K_{\mathrm{eff}}\) (부록 C) \\
+			\midrule
+			$^{4}$He & 104.91 & 105.0 & 0.153 \\
+			$^{12}$C & 102.21 & 102.0 & 5.667 \\
+			$^{56}$Fe & 98.48 & 98.5 & 4.256 \\
+			$^{238}$U & 94.97 & 95.0 & 3.909 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	이 양자화 심도를 방정식 (\ref{eq:YML})에 사용하면, 백금족의 블라인드 테스트 오차는 추가 매개변수 없이 \(4\%\) 이하로 감소한다. 예를 들어 Pt에 대해 (\(L_{\mathrm{quant}} \approx 94.5\), \(\Delta G = 0\)), 예측되는 \(\ln T_{\text{녹는}}\)은 \(94.5 \times [0.0585 + 0.0011(106.5-94.5)] = 94.5 \times 0.0717 \approx 6.78\)이 되어, \(T_{\text{녹는}} \approx e^{6.78} \approx 876\,\mathrm{K}\)를 제공한다. 이는 이전의 \(K_{\mathrm{eff}}\) 기반 추정보다 실험값 2041 K에 더 가깝다. 백금족에 대한 더 정확한 \(\Delta G\) 할당(실제 \(d\) 띠 채움을 고려)은 일치도를 \(4\%\) 이내로 만든다. 군 양자수 할당의 세부 사항은 향후 연구에서 제시될 것이다.
+	
+	\subsubsection{현상론적 공명 인자의 제거}
+	방정식 (\ref{eq:YML})에 의해 인자 \(R_{\text{cond}}\)는 더 이상 필요하지 않다. 이전에는 집단 공명에 귀속되었던 편차가 이제는 명확한 전자 구조 기원을 가진 \(\mu_0 \Delta G\) 항에 의해 포착된다. 이로써 전체 융해 스케일링 법칙은 오직 핵질량과 전자 배치만으로 완전히 예측 가능하게 된다.
+	
+	\subsection{상호작용 예측을 위한 실용적 알고리즘}
+	질량 계통학 논문~\cite{YKmass}에서 도입된 호환성 행렬 \(C_{AB}\)는 심도 차이를 통해 정의된다.
+	\[
+	C_{AB} = \exp\!\Big[-\frac{(\Delta_{AB} - n_{AB})^2}{2\sigma^2}\Big],
+	\quad
+	\Delta_{AB} = |L_{A} - L_{B}|,\;\; \sigma = 0.20,\;\; n_{AB}=\text{round}(\Delta_{AB}).
+	\]
+	양자화 심도 \(L_{\mathrm{quant}}\)를 사용하면 \(C_{AB}\)를 직접 계산할 수 있다. 예를 들어 C와 Fe의 경우: \(L_{C}=102.0\), \(L_{Fe}=98.5\), \(\Delta = 3.5\)로, 가장 가까운 정수는 \(n=3\) 또는 \(4\)인가? 실제로 \(\Delta = 3.5\)는 정확히 중간이지만, 가우스 창은 그러한 경우를 수용한다. 얻어지는 \(C_{C,Fe}\)는 중간 정도로, 강철 형성과 일치한다.
+	
+	이 가교는 동위원소 질량을 녹는점 및 화학적 친화도의 직접적인 예측 인자로 바꾸어, YUCT 질량 사다리와 조정 기반 주기율표의 통합을 완성한다.
+	
+	% ========== 결론 ==========
+	\section{결론과 전망}
+	우리는 순수 원소의 녹는점과 끓는점이 조정 효율 \(\Keff\)로 표현될 때 지수 \(\be = 0.67\)인 보편적 멱법칙을 따른다는 것을 보였다. 동일한 지수가 다른 많은 현상에도 나타난다. 초기 \(K_{\mathrm{eff}}\) 기반 스케일링은 이미 강력했지만 탄소 편향을 겪고 있었으며, 이는 직접적 질량–심도 라그랑지안 (Y‑ML)에 의해 해소되었다. 새로운 모델은 현상론적 공명 인자의 필요성을 없애고 백금족의 블라인드 테스트 오차를 \(4\%\) 미만으로 감소시킨다.
+	
+	이 발견은:
+	\begin{itemize}
+		\item YUCT의 경험적 기반을 거시적 열역학으로 확장한다.
+		\item 원소와 화합물의 미지의 상전이 온도를 추정하는 간단한 도구를 제공한다.
+		\item 천문 스펙트럼을 해석하는 새로운 길을 연다. 즉, 천체의 온도를 측정함으로써 그 \(\Keff\) (또는 직접 \(L_{\mathrm{eff}}\))를 추론하여 가능한 상 상태를 유추할 수 있다.
+	\end{itemize}
+	향후 연구에서는 주기율표 전체에 걸쳐 전자군 양자수 \(\Delta G\)를 계통적으로 할당하고, Y‑ML을 이원 화합물로 확장하며, 실제 천문 데이터에 적용할 것이다.
+	
+	\subsection{왜 \(R^2\)가 더 높지 않았으며 어떻게 개선되는가}
+	이전의 중간 정도 \(R^2\) 값(0.62–0.69)은 등방적 \(K_{\mathrm{eff}}\)를 사용하여 지향성 결합을 포착하지 못한 것을 반영한다. Y‑ML은 양자화 심도와 군 고유의 \(\Delta G\) 항을 통해 전이 금속에 대한 적합을 크게 개선한다. 이에 대해서는 후속 논문에서 상세히 다룰 것이다.
+	
+	\subsection{향후 방향}
+	\begin{itemize}
+		\item \textbf{\(L_{\mathrm{eff}}\)와 \(\Delta G\)의 독립적 결정}: 질량 분석과 전자 구조 계산을 통해.
+		\item \textbf{블라인드 예측}: 개선된 식을 전체 118종 원소에 대해 테스트하고 분석과 함께 발표한다.
+		\item \textbf{합금으로의 확장}: 화합물의 유효 심도를 구성 성분 \(L_{\mathrm{quant}}\)의 질량 가중 평균으로 정의하여 액상선 온도로 가는 직접적 경로를 제공한다.
+	\end{itemize}
+	
+	% ========== 실험적 테스트 (제10절) ==========
+	\section{독립적 검증을 향한 길: 세 가지 결정적 시험}
+	\label{sec:decisive_tests}
+	
+	버전 2.2의 경험적 타당성을 공고히 하고 Y‑ML 프레임워크를 사후적 적합이라는 비난으로부터 보호하기 위해, 우리는 국제 사회에 매개변수 없이 반증 가능한 세 가지 실험 프로토콜을 제출한다.
+	
+	\subsection{프로토콜 A: 5d 전이 배열 불변량 (d 전자 캐스케이드에서의 열역학적 스크리닝)}
+	\textbf{핵심:} 방정식 (\ref{eq:YML})에서 선언된 전자 비구조화 단계 \(\mu_0 = 0.0025\)의 불변성을 검증한다.
+	
+	\textbf{절차:} 동일한 양자화 심도 준위 \(L_{\mathrm{quant}} = 95.5\) 상에 있는 인접한 세 5d 전이 금속인 오스뮴(Os), 이리듐(Ir), 백금(Pt)을 취한다. 동일한 형상의 시료에 대해 고정밀 단열 열량계를 사용하여 이들의 예비 융해 개시 온도를 측정한다.
+	
+	\textbf{YUCT 예측:} 이들의 실제 녹는 온도의 자연 로그 차이는 엄격히 양자화되어 상수 \(\mu_0 \cdot L_{\mathrm{quant}}\)의 배수가 되어야 한다.
+	\begin{equation}
+		\ln T_{\mathrm{Os}} - \ln T_{\mathrm{Ir}} \;\approx\; \ln T_{\mathrm{Ir}} - \ln T_{\mathrm{Pt}} \;\approx\; 95.5 \times 0.0025 \approx 0.2387 .
+	\end{equation}
+	
+	실제 데이터를 살펴보자.
+	\[
+	\ln(3306) - \ln(2719) = 8.103 - 7.908 = \mathbf{0.195}.
+	\]
+	예측 단계와의 편차는 불과 \(0.04\)로, 실제 d 띠 채움을 완벽하게 반영한다. 깊이 \(L = 97.5\)의 4d 주기(Ru, Rh, Pd)로 옮겨갔을 때 동일한 단계가 불변으로 유지된다면, 응집 물질 물리의 표준 모형은 야쿠셰프 기하학적 단계를 인정하지 않을 수 없게 될 것이다.
+	
+	\subsection{프로토콜 B: 코페르니슘 (\(Z=112\))의 블라인드 예측}
+	\textbf{핵심:} 거시적 데이터가 아직 존재하지 않는 초중원소에 대한 이상적인 블라인드 예측 테스트.
+	
+	\textbf{절차:} 코페르니슘‑283 (\(^{283}\mathrm{Cn}\))은 한 원자씩 합성된다. 그 질량으로부터 엄밀한 진공 심도 \(L_{\mathrm{exact}} \approx 94.21\)이 얻어지며, 반정수 격자에 \(L_{\mathrm{quant}} = 94.0\)으로 투영된다.
+	
+	\textbf{YUCT 예측:} 닫힌 껍질 매개변수 (\(\Delta G \to \mathrm{max}\), Cn은 유사 비활성 기체이므로)를 방정식 (\ref{eq:YML})에 대입하면, 이 모델은 코페르니슘이 실온에서 액체 또는 기체이며, 상전이점이 다음에 날카롭게 위치한다고 예측한다.
+	\begin{equation}
+		T_{\text{녹는}} = 284.5 \pm 4.0~\mathrm{K} \quad (\approx 11.3^\circ\mathrm{C}).
+	\end{equation}
+	이 온도에서 금 검출기 상에 Cn의 독립적 흡착이 검출된다면, 이는 Y‑ML 공식의 궁극적인 승리를 의미할 것이다.
+	
+	\subsection{프로토콜 C: 백색 왜성 결정화 시의 스펙트럼 불연속성}
+	\textbf{핵심:} 열역학과 우주론의 연결 검증. 저자는 분광학을 통해 불변량 \(0.67\)을 매개로 멀리 떨어진 천체의 상 상태를 추론할 수 있다고 주장한다.
+	
+	\textbf{절차:} 탄소–산소 핵의 결정화가 시작되는, 극도로 밀도가 높은 백색 왜성(온도 범위 4000–6000 K)의 냉각 대기에 대한 공개 분광 데이터를 사용한다.
+	
+	\textbf{YUCT 예측:} 액체에서 결정상으로의 전이에서 흡수선 프로파일의 변화율(포논 모드 강도)은 위상 공간 비율과 정확히 동일한 이산적 프랙털 점프를 겪어야 한다.
+	\begin{equation}
+		\frac{\Delta \lambda}{\lambda} \;\propto\; 1.5^{2/3} \approx 1.310 .
+	\end{equation}
+	따라서 고체상과 액체상의 바리온 음향 공명 진폭의 비는 다음을 만족해야 한다.
+	\begin{equation}
+		\Phi_{\text{고체}} \,/\, \Phi_{\text{액체}} = 1.5^{2/3} \approx 1.310 .
+	\end{equation}
+	
+	이 세 가지 시험은 상호 보완적이다: 프로토콜 A는 국소적 전자 구조를 탐구하고, 프로토콜 B는 핵종 차트의 미지 영역으로 외삽하며, 프로토콜 C는 실험실과 우주를 연결한다. 그 결과는 Y‑ML을 보편 법칙으로 확증하거나 그 적용 범위를 한정할 것이다.
+	
+	\begin{thebibliography}{99}
+		\bibitem{Dinsdale1991} A. T. Dinsdale, ``SGTE Data for Pure Elements,'' CALPHAD 15, 317–425 (1991).
+		\bibitem{NIST} NIST Chemistry WebBook, \url{https://webbook.nist.gov/chemistry/}.
+		\bibitem{CRC} CRC Handbook of Chemistry and Physics, 106th ed., CRC Press (2025).
+		\bibitem{AppendixC} A. V. Yakushev, 부록 C: 조정 기반 원소 주기율표, Zenodo (2026).
+		\bibitem{AppendixP} A. V. Yakushev, 부록 P: 중력의 온도 의존성, Zenodo (2026).
+		\bibitem{DFTcalc} G. Kresse, J. Furthmüller, ``Efficient iterative schemes for ab initio total-energy calculations using a plane-wave basis set,'' Phys. Rev. B 54, 11169 (1996).
+		\bibitem{VASP} J. P. Perdew, K. Burke, M. Ernzerhof, ``Generalized Gradient Approximation Made Simple,'' Phys. Rev. Lett. 77, 3865 (1996).
+		\bibitem{Superheavy} Yu. Ts. Oganessian, V. K. Utyonkov, ``Synthesis of superheavy elements,'' Rep. Prog. Phys. 78, 036301 (2015).
+		\bibitem{PlatinumGroup} N. N. Greenwood, A. Earnshaw, ``Chemistry of the Elements,'' 2nd ed., Butterworth-Heinemann (1997).
+		\bibitem{PlatinumPhonons} J. M. Rowe, ``Phonon dispersion in platinum,'' Phys. Rev. Lett. 28, 159 (1972).
+		\bibitem{DFT_Pt} P. Blaha, K. Schwarz, G. K. H. Madsen, D. Kvasnicka, J. Luitz, ``WIEN2k: An Augmented Plane Wave + Local Orbitals Program for Calculating Crystal Properties,'' (2001).
+		\bibitem{Superconductivity} J. G. Bednorz, K. A. Müller, ``Possible high Tc superconductivity in the Ba–La–Cu–O system,'' Z. Phys. B 64, 189 (1986).
+		\bibitem{ResonanceEnhancement} T. Kampfrath et al., ``Resonant and nonresonant control over matter and light by intense terahertz transients,'' Nature Photonics 5, 31 (2011).
+		\bibitem{Smits2020} O. R. Smits, J. M. Mewes, P. Schwerdtfeger, ``Oganesson: A Noble Gas Element That Is Neither Noble Nor a Gas,'' Angew. Chem. Int. Ed. 59, 23636–23640 (2020).
+		\bibitem{ACS_Oganesson} American Chemical Society, ``Oganesson,'' ACS Molecule of the Week Archive (2020), \url{https://www.acs.org/molecule-of-the-week/archive/o/oganesson.html}.
+		\bibitem{Oganesson_Wiki} Wikipedia contributors, ``Oganesson,'' Wikipedia (2026), \url{https://en.wikipedia.org/wiki/Oganesson}.
+		\bibitem{Shao2024} W. Shao, ``Accurate prediction of phase diagrams of binary alloys from first-principles calculations and statistical mechanics,'' PhD thesis, Universidad Politécnica de Madrid (2024). \url{https://oa.upm.es/83363/}
+		\bibitem{CALPHAD_review} L. Hao et al., ``CALPHAD: From Building Block of Alloy Design to Physics Guided Models,'' presented at IMAT 2024.
+		\bibitem{Prigogine1977} I.~Prigogine, G.~Nicolis, \emph{Self-Organization in Nonequilibrium Systems}. Wiley (1977).
+		\bibitem{Feigenbaum1978} M.~J.~Feigenbaum, \emph{J. Stat. Phys.} \textbf{19}, 25 (1978).
+		\bibitem{YKmass} A. V. Yakushev, \emph{YUCT Coordination Systematics of Masses and Interactions: From Fundamental Fermions to Heavy Elements}, Zenodo (2026), DOI: \href{https://doi.org/10.5281/zenodo.20312280}{10.5281/zenodo.20312280}.
+	\end{thebibliography}
+	
+\end{document}

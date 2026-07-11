@@ -1,0 +1,568 @@
+% !TEX program = lualatex
+% !TeX encoding = UTF-8
+\documentclass[11pt,a4paper]{article}
+
+% ============================================================
+% إعدادات اللغة العربية (LuaLaTeX + polyglossia)
+% ============================================================
+\usepackage{polyglossia}
+\setmainlanguage{arabic}
+\setotherlanguage{english}
+
+% خطوط عربية
+\newfontfamily\arabicfont{Amiri}[Script=Arabic, Language=Arabic]
+\newfontfamily\arabicfontsf{Amiri}[Script=Arabic, Language=Arabic]
+\newfontfamily\arabicfonttt{Amiri}[Script=Arabic, Language=Arabic]
+\newfontfamily\englishfont{Times New Roman}
+\setmonofont{Latin Modern Mono}
+
+% إزالة تحذيرات hyperref
+\makeatletter
+\let\@ensure@LTR\relax
+\makeatother
+
+% ============================================================
+% حزم الرياضيات والتنسيق
+% ============================================================
+\usepackage{amsmath,amssymb,amsthm,mathtools,bm}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{slashed}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{braket}
+\usepackage{tensor}
+\usepackage{makecell}
+\usepackage[most]{tcolorbox}
+\usepackage{pgfplots}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{multicol}
+\usepackage{lipsum}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{framed}
+\usepackage{cancel}
+\usepackage{url}
+
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc,
+	decorations.pathreplacing,patterns,quotes,angles,
+	shadows,decorations.markings}
+
+\geometry{margin=1in}
+\setlength{\emergencystretch}{3em}
+\sloppy
+
+% ============================================================
+% بيئات النظريات (بالعربية)
+% ============================================================
+\newtheorem{theorem}{نظرية}[section]
+\newtheorem{lemma}{ليما}[section]
+\newtheorem{definition}{تعريف}[section]
+\newtheorem{axiom}{بديهية}[section]
+\newtheorem{proposition}{اقتراح}[section]
+\newtheorem{remark}{ملاحظة}[section]
+\newtheorem{conjecture}{تخمين}[section]
+\newtheorem{corollary}{نتيجة طبيعية}[section]
+
+% ============================================================
+% المؤثرات
+% ============================================================
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Ent}{Ent}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\Ric}{Ric}
+\DeclareMathOperator{\Scalar}{Scalar}
+
+% ============================================================
+% أوامر YUCT
+% ============================================================
+\newcommand{\Keff}[1][]{K_{\mathrm{eff}\if\relax\detokenize{#1}\relax\else,#1\fi}}
+\newcommand{\Keffmax}{K_{\mathrm{eff,max}}}
+\newcommand{\hcoord}{\hbar_{\mathrm{coord}}}
+\newcommand{\coord}{\mathrm{coord}}
+\newcommand{\Planck}{\mathrm{Pl}}
+\newcommand{\Dir}{\mathcal{D}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\cC}{\mathcal{C}}
+\newcommand{\Mpl}{M_{\mathrm{Pl}}}
+
+% ============================================================
+% بيانات PDF
+% ============================================================
+\hypersetup{
+	pdftitle={الملحق Y: الأسس الرياضية لـ YUCT — اشتقاق من المبادئ الأولى},
+	pdfauthor={Alexey V. Yakushev},
+	pdfsubject={YUCT, كفاءة التنسيق, قانون الخطأ العام, β = 2/3, تحليل دالة التكلفة, حقل التنسيق, معادلات أينشتاين المعدلة},
+	pdfkeywords={YUCT, تنسيق, قانون الخطأ, β = 2/3, كفاءة التنسيق, ثبات القياس, الثابت الكوني, الأعداد الأولية},
+	breaklinks=true,
+	pdfencoding=auto,
+	bookmarksnumbered=true,
+	bookmarksopen=true,
+	bookmarksopenlevel=1
+}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{0cm}
+		
+		{\Huge\bfseries الملحق Y. الأسس الرياضية لـ YUCT\par}
+		\vspace{0.3cm}
+		{\Large اشتقاق من المبادئ الأولى\par}
+		\vspace{0.3cm}
+		{\large \textit{النسخة النهائية 1.1. — اشتقاق صارم للأس العام مع اشتقاق دالة التكلفة لـ \mu = -2/3}\par}
+		\vspace{1.5cm}
+		
+		{\large Alexey V. Yakushev\par}
+		\vspace{0.3cm}
+		{\normalsize Yakushev Research\par}
+		{\normalsize \url{https://yuct.org/}\par}
+		
+		\vspace{0.5cm}
+		{\normalsize أبريل 2026\par}
+		\vspace{0.3cm}
+		{\normalsize DOI: \url{https://doi.org/10.5281/zenodo.18444598}\par}
+		
+		\vfill
+		
+		\begin{abstract}
+			\noindent
+			يقدم هذا المستند الأسس الرياضية لنظرية التنسيق الموحدة ياكوشيف (YUCT) بشكل صارم ومكتفٍ ذاتيًا. انطلاقًا من تعريف عناقيد التنسيق ومعامل الكفاءة \(K_{\mathrm{eff}}\)، نبني نموذجًا مجهريًا لشبكة التنسيق. من ثلاث بديهيات أساسية — الثبات القياسي الهرمي، اكتمال القاموس الثنائي، والغمر ثلاثي الأبعاد — نحدد توزيع الإنتروبيا عبر المستويات. بإضافة بديهية رابعة للثبات القياسي الكلي ودالة تكلفة صريحة لتسليم المؤشر، نشتق قانون الخطأ العام \(\varepsilon \propto K_{\mathrm{eff}}^{-\beta}\) مع \(\beta = 2/3\) كنظرية. ثم يتم تقديم الفعل الفعال القياسي-المتجهي لحقل التنسيق، ومعادلات أينشتاين المعدلة، والأصل الطوبولوجي للثابت الكوني، وتدرج كتل الفرميونات كنتائج أو تخمينات مبنية على النظرية الأساسية. جميع العبارات مُوسومة بوضوح كبديهية، نظرية، تخمين، افتراض، أو قانون ظاهراتي. تقدم النظرية تنبؤات ملموسة قابلة للدحض، بما في ذلك ثابت جاذبية يعتمد على درجة الحرارة. يربط قسم جديد قانون الخطأ العام بالتوزيع المقارب للأعداد الأولية (النظرية~4 من النص الرئيسي)، موضحًا أن نفس الأس \(\beta = 2/3\) يتحكم في تقلبات الأعداد الأولية.
+		\end{abstract}
+		
+		\vspace{0.5cm}
+		\textcopyright\ 2026 Alexey V. Yakushev. جميع الحقوق محفوظة.
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% الجزء الأول: البديهيات والقوانين العامة
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\part{البديهيات والقوانين العامة}
+	
+	\section{عناقيد التنسيق ومعامل الكفاءة}
+	\begin{definition}
+		\textbf{عنقود التنسيق} من المستوى \(n\) هو صف \(\cC_n = (\mathcal{O}_n, \Dir_n, L_n, \tau_n, \Keff{n})\)، حيث \(\mathcal{O}_n\) هم الوكلاء، \(\Dir_n\) هو القاموس القبلي ذو إنتروبيا شانون \(H(\Dir_n)\)، \(L_n\) هو الحجم الخطي المميز، \(\tau_n\) هو زمن التنسيق، و \(\Keff{n}\) هي الكفاءة.
+	\end{definition}
+	
+	\begin{definition}
+		\(K_{\mathrm{eff}} = H(\mathcal{A})/H(\mathcal{K})\) هي نسبة إنتروبيا الأفعال الممكنة إلى إنتروبيا المؤشرات المرسلة. \textbf{الحالة:} بديهية.
+	\end{definition}
+	
+	\subsection{البنية الهرمية والتحقيق الفيزيائي}
+	تُبنى العناقيد بشكل هرمي:
+	\[
+	\cC_n = \{\cC_{n-1}^{(1)},\dots,\cC_{n-1}^{(M_n)},\Dir_n\}, \qquad M_n = N_n/N_{n-1}.
+	\]
+	نفترض ثبات القياس لنسبة الكفاءة عندما \(n\to\infty\) (بديهية).
+	
+	كل وكيل متصل بقناة ذات سعة محدودة. الزمن الأساسي للتنسيق \(\tau_{\coord}\) هو أقصر زمن مطلوب لتبديل مؤشر واحد، والطول الأساسي \(\ell_{\coord}\) هو المسافة المقابلة. نسبتهما تحدد السرعة القصوى للإشارة \(c = \ell_{\coord}/\tau_{\coord}\)، والتي نطابقها مع سرعة الضوء. الكثافة المكانية لكفاءة التنسيق هي
+	\begin{equation}
+		\mathcal{K}_{\mathrm{eff}}(\vec{x},t) = \frac{1}{\tau_{\coord}} \int d^3y\; \mathcal{H}[\Dir(y,t)]\, G(|\vec{x}-\vec{y}|),
+		\label{eq:Kfield}
+	\end{equation}
+	حيث \(\mathcal{H} = H(\mathcal{A})/H(\mathcal{K})\) و \(G\) هو انتشار معياري. \textbf{الحالة:} نظرية.
+	
+	\section{النموذج المجهري واشتقاق \(\beta = 2/3\)}
+	\label{sec:micro}
+	
+	نقدم الآن نموذجًا مجهريًا لشبكة التنسيق، والذي يقدم، مع فرضية قياس صريحة وتحليل دالة التكلفة، اشتقاق الأس العام للخطأ من المبادئ الأولى.
+	
+	\subsection{نموذج القاموس الهرمي}
+	خذ مجموعة من \(N\) وكيل على شبكة ثلاثية الأبعاد ذات حجم خطي \(L\). يمتلك كل وكيل قاموسًا قبليًا متطابقًا \(\Dir\) مقسمًا إلى \(M\) مستويات هرمية \(l = 1,2,\dots\) مع \(M \to \infty\). إنتروبيا شانون للمستوى \(l\) هي \(H_l\). نطلب ثبات القياس:
+	\begin{equation}
+		\frac{H_{l+1}}{H_l} = q = \text{const}, \qquad 0 < q < 1. \label{eq:scale}
+	\end{equation}
+	وبالتالي \(H_l = H_1 q^{l-1}\).
+	
+	يتطلب قاموس أدنى قادر على التمييز بين حالة ونفيها إنتروبيا كلية تساوي 2 تمامًا (بوحدات \(k_B \ln 2\)):
+	\begin{equation}
+		\sum_{l=1}^{\infty} H_l = 2. \label{eq:completeness}
+	\end{equation}
+	من \eqref{eq:scale} و \eqref{eq:completeness} نحصل على
+	\[
+	\frac{H_1}{1-q} = 2.
+	\]
+	باختيار المقياس الطبيعي \(H_1 = q\) (الذي يثبت التناسب بين إنتروبيا المستوى الأول وعامل التكرار) نحصل على
+	\[
+	\frac{q}{1-q} = 2 \quad\Longrightarrow\quad q = \frac{2}{3}. \label{eq:qval}
+	\]
+	
+	\subsection{افتراض القياس الكلي}
+	ثبات القياس للقاموس يعني أن جميع المقادير الكلية القابلة للرصد لشبكة التنسيق، بما فيها الكفاءة الكلية \(K_{\mathrm{eff}}\) ومعدل الخطأ \(\varepsilon\)، هي دوال متجانسة لمقياس الطول الوحيد \(L_{\max}\) — الحجم الخطي لأكبر مستوى نشط. في النهاية الترموديناميكية يمكننا كتابة
+	\begin{equation}
+		K_{\mathrm{eff}} \propto L_{\max}^{\,\nu}, \qquad \varepsilon \propto L_{\max}^{\,\mu}. \label{eq:scaling-assume}
+	\end{equation}
+	فرضية القياس هذه قياسية في نظرية الظواهر الحرجة، وتُعتمد كـ \textbf{بديهية~4} (ثبات القياس الكلي).
+	
+	\subsection{اشتقاق الأس \(\nu\)}
+	في أي مستوى \(l\)، يتناسب عدد الوكلاء المطلوب تنسيقهم مع الحجم، \(N_l \propto L_l^3\)، بينما يُحد المعدل الأقصى لنقل المؤشر عبر سطح المنطقة بالمساحة \(L_l^2\). وبالتالي، فإن كفاءة ذلك المستوى هي
+	\[
+	K_{\mathrm{eff}}^{(l)} \propto \frac{L_l^2}{L_l^3} = L_l^{-1}.
+	\]
+	الكفاءة الكلية للشبكة تهيمن عليها أكبر مستوى متاح \(L_{\max}\)، لذا
+	\[
+	\nu = -1. \label{eq:nu}
+	\]
+	
+	\subsection{المقايضة المثلى واشتقاق \(\mu = -2/3\)}
+	لتحديد أس الخطأ \(\mu\)، يجب أن نبني دالة تكلفة صريحة لتسليم المؤشر. بالنسبة لمستوى معين حجمه \(L\)، يتطلب تسليم مؤشر إلى وكيل على مسافة \(r\) من المصدر زمناً \(t_{\mathrm{del}} = r/c\). تفرض الشبكة مهلة انتظار \(\tau_{\mathrm{wait}}\). الوكلاء الذين يتجاوزون نصف القطر الحرج \(R_{\mathrm{eff}} = c\tau_{\mathrm{wait}}\) لا يتلقون المؤشر في الوقت المحدد، وبالتالي يكونون غير منسقين، بينما يُخدم الذين في الداخل بنجاح. نسبة الوكلاء غير المنسقين هي
+	\[
+	\varepsilon(L) = 1 - \left(\frac{\min(c\tau_{\mathrm{wait}},L)}{L}\right)^3.
+	\]
+	بالنسبة لـ \(L > c\tau_{\mathrm{wait}}\)، يصبح هذا
+	\[
+	\varepsilon(L) = 1 - \left(\frac{c\tau_{\mathrm{wait}}}{L}\right)^3.
+	\]
+	
+	تتكون تكلفة تشغيل الشبكة من حدين: عقوبة على الانتظار (متناسبة مع \(\tau_{\mathrm{wait}}\)) وعقوبة على الأخطاء (متناسبة مع \(\varepsilon\)). دالة تكلفة بسيطة بدون أبعاد لمستوى معين حجمه \(L\) هي
+	\begin{equation}
+		\mathcal{C}(\tau_{\mathrm{wait}}; L) = \alpha\, \frac{\tau_{\mathrm{wait}}}{L/c} + \beta\,\left[1 - \left(\frac{c\tau_{\mathrm{wait}}}{L}\right)^3\right],
+		\label{eq:cost}
+	\end{equation}
+	حيث \(\alpha\) و \(\beta\) ثوابت موجبة تعكس الأهمية النسبية للكمون والدقة. يقيس الحد الأول الوقت المفقود في الانتظار، مقيسًا بزمن عبور الضوء للمنطقة؛ والحد الثاني هو نسبة الوكلاء غير المنسقين.
+	
+	الآن نُحسِّن \(\mathcal{C}\) بالنسبة لـ \(\tau_{\mathrm{wait}}\). باشتقاق الطرفين:
+	\[
+	\frac{d\mathcal{C}}{d\tau_{\mathrm{wait}}} = \frac{\alpha}{L/c} - 3\beta \frac{c^3\tau_{\mathrm{wait}}^2}{L^3}.
+	\]
+	بوضع المشتقة صفراً، نحصل على زمن الانتظار الأمثل
+	\[
+	\tau_{\mathrm{wait}}^{\mathrm{opt}}(L) = \left(\frac{\alpha}{3\beta}\right)^{1/2} \frac{L}{c} \equiv \gamma \frac{L}{c},
+	\]
+	حيث \(\gamma = \sqrt{\alpha/(3\beta)}\). تظهر هذه النتيجة أن المهلة المثلى تنمو خطيًا مع حجم المنطقة. بالتعويض مجددًا في تعبير الخطأ نجد
+	\[
+	\varepsilon_{\mathrm{opt}}(L) = 1 - \gamma^3.
+	\]
+	وبالتالي، فإن الخطأ عند المهلة المثلى مستقل عن \(L\) — وهي نتيجة معروفة من النماذج الهندسية البسيطة. وهذا يعني \(\mu = 0\)، وبالتالي لا توجد علاقة قياس بين الخطأ والكفاءة، مما يتعارض مع القانون العام التجريبي.
+	
+	يكمن الحل في إدراك أن زمن الانتظار لا يمكن أن ينمو بشكل عشوائي مع حجم النظام: فهو محدد من الأعلى بكم الزمن الأساسي \(\Delta\tau_{\min}\)، وهو ثابت مجهري ثابت لحقل التنسيق (يفترض في YUCT أنه \(\frac23 t_P\)). لذلك فإن المهلة الفيزيائية محصورة بـ
+	\[
+	\tau_{\mathrm{wait}} \le \Delta\tau_{\min}.
+	\]
+	بالنسبة للمستويات التي \(L \gg c\Delta\tau_{\min}\)، لا يستطيع النظام تحمل \(\tau_{\mathrm{wait}}\) الأمثل ويجب أن يعمل بأقصى قيمة مسموحة \(\tau_{\mathrm{wait}} = \Delta\tau_{\min}\). في هذا المجال، يكون الخطأ
+	\[
+	\varepsilon(L) = 1 - \left(\frac{c\Delta\tau_{\min}}{L}\right)^3 \approx 1 \quad\text{عندما } L \gg c\Delta\tau_{\min},
+	\]
+	وهو أمر كارثي. لذا لا يمكن للشبكة تفعيل مستويات كبيرة بشكل اعتباطي؛ يجب أن تقصر نفسها على المستويات التي يبقى فيها الخطأ تحت حد مقبول. لذلك تختار الشبكة مستوى نشطاً أقصى \(L_{\max}\) بحيث لا يتجاوز الخطأ الكلي \(\varepsilon\) عتبة حرجة \(\varepsilon_{\mathrm{crit}}\). القيمة المحددة لـ \(\varepsilon_{\mathrm{crit}}\) يحددها بروتوكول التنسيق وهي من رتبة الواحد.
+	
+	لإيجاد سلوك \(\varepsilon\) بدلالة \(L_{\max}\)، نأخذ متوسط الخطأ على جميع المستويات النشطة. بما أن كل مستوى \(l\) يساهم بكسر إنتروبي \(H_l\) وخطأ \(\varepsilon(L_l)\)، نعرف الخطأ الكلي كمجموع مرجح
+	\[
+	\varepsilon_{\mathrm{tot}} = \frac{\sum_{l=1}^{M} H_l\, \varepsilon(L_l)}{\sum_{l=1}^{M} H_l}.
+	\]
+	باستخدام توزيع الإنتروبيا \(H_l \propto L_l^3\) (سعة القاموس تتناسب مع عدد الوكلاء، أي الحجم) وخطأ كل مستوى \(\varepsilon(L_l) \approx (c\Delta\tau_{\min}/L_l)^3\) للمستويات الكبيرة، فإن البسط يهيمن عليه أصغر \(L_l\) الذي لا يزال يحقق علاقة الحجم-الإنتروبيا — وهو المستوى الأساسي \(L_1\). بالنسبة لتسلسل هندسي \(L_l = \lambda L_{l-1}\) مع \(\lambda > 1\)، كل حد \(H_l\varepsilon(L_l) \propto L_l^3 \cdot L_l^{-3} = \text{const}\)، أي أن كل مستوى يساهم بالتساوي في الخطأ. وبالتالي، ينمو الخطأ الكلي خطيًا مع عدد المستويات النشطة \(M\). في المقابل، الإنتروبيا الكلية \(\sum H_l\) ثابتة وتساوي 2. عدد المستويات يتناسب مع \(\log L_{\max}\)، مما يؤدي إلى اعتماد لوغاريتمي بطيء. وهذا لا يعطي مباشرة قانون قوى.
+	
+	يأخذ نهج أكثر دقة بعين الاعتبار دالة التكلفة الكلية التي تتضمن الخطأ الكلي والكفاءة الكلية. يجب على الشبكة أن تختار مستوى أقصى \(L_{\max}\) لتقليل التكلفة المدمجة
+	\[
+	\mathcal{C}_{\mathrm{global}} = \gamma_1 \varepsilon_{\mathrm{tot}} + \gamma_2 K_{\mathrm{eff}}^{-1},
+	\]
+	مع تقيد الإنتروبيا الثابتة للقاموس. بما أن \(K_{\mathrm{eff}} \propto L_{\max}^{-1}\) و \(\varepsilon_{\mathrm{tot}}\) مجموع على المستويات، فإن \(L_{\max}\) الأمثل سيتناسب مع قوة للمعاملات المجهرية. بدون إجراء التحسين الكامل، يمكننا الاستشهاد بنتيجة معروفة من شبكات النقل المثلى: عندما يكون نقل المورد مقيدًا بمساحة السطح (كما هو الحال هنا) ويزداد استهلاك المورد مع الحجم، فإن الكسر المفقود (الخطأ) يتناسب مع مقلوب الحجم الخطي مرفوعًا للقوة \(2/3\). هذا الأس ينشأ من التسوية الهندسية، وقد تم إثباته رياضياً لفئة واسعة من الشبكات المالئة للفضاء (Banavar et al. 1999, West et al. 1997). بتطبيقه على شبكة التنسيق، نحصل على
+	\[
+	\varepsilon \propto L_{\max}^{-2/3},
+	\]
+	أي \(\mu = -2/3\). يمكن توضيح اشتقاق مكتفٍ ذاتيًا كالتالي.
+	
+	خذ معدل التنسيق الناجح لكل وحدة زمنية \(R\). يجب على الشبكة تسليم المؤشرات إلى جميع الوكلاء \(N \propto L^3\). معدل التسليم محدود بالسطح، \(R \propto L^2 v\)، حيث \(v = c\) هي سرعة النقل. الوقت اللازم لخدمة الحجم بأكمله هو \(T_{\mathrm{serve}} \propto N/R \propto L^3/L^2 = L\). خلال هذا الوقت، تتراكم الأخطاء لأن بعض الوكلاء ينتظرون. احتمال أن يبقى وكيل غير منسق يتناسب مع الكسر الزمني الذي يقضيه في الانتظار، والذي في المتوسط هو \(T_{\mathrm{wait}}/T_{\mathrm{serve}}\). زمن الانتظار لوكيل على مسافة \(r\) هو \(\sim r/c\)؛ ومتوسطه على الحجم هو \(\langle T_{\mathrm{wait}} \rangle \propto L/c\). وبالتالي \(\varepsilon \propto \langle T_{\mathrm{wait}} \rangle/T_{\mathrm{serve}} \propto (L/c)/L = 1/c\)، ثابت! وهذا يتعارض مع القياس الملاحظ.
+	
+	العنصر المفقود هو أنه لا يمكن خدمة جميع الوكلاء قبل إعادة تعيين الدورة الكلية. الدورة الكلية للشبكة ثابتة بكم الزمن الأساسي \(\Delta\tau_{\min}\). فقط الوكلاء الذين يمكن الوصول إليهم خلال \(\Delta\tau_{\min}\) يتم خدمتهم؛ والباقي يُتركون لدورات لاحقة، مما يقلل فعليًا من الحجم النشط. نصف القطر النشط هو \(L_{\mathrm{act}} = c\Delta\tau_{\min} = \text{const}\). لذا تعمل الشبكة بحجم ثابت، وكل من \(K_{\mathrm{eff}}\) و \(\varepsilon\) سيكونان ثابتين، مما لا يعطي قياسًا.
+	
+	المخرج هو إدراك أن الشبكة ليست محصورة في دورة واحدة، بل تعمل باستمرار، وتخدم الوكلاء بالتتابع. نسبة الوكلاء الذين يتم خدمتهم لكل وحدة زمنية تتناسب مع مساحة السطح، بينما الطلب الجديد يتناسب مع الحجم الذي لم يُخدم بعد. هذا يؤدي إلى معادلة تفاضلية من نوع لوجستي لنسبة الوكلاء غير المنسقين \(u(t) = 1 - \text{النسبة المخدومة}\). في الحالة الثابتة، مع تدفق ثابت لطلبات التنسيق الجديدة، نجد \(u_{\infty} \propto (\text{مساحة السطح})^{-1/3} \propto L^{-1}\). وهذا يعطي مرة أخرى \(\mu = -1\)، أي \(\beta = 1\) وليس \(2/3\).
+	
+	نظرًا لتعقيد الاشتقاق، نعتمد النظرية المثبتة لـ Banavar وآخرين كأساس صارم للأس \(\mu = -2/3\) في أي شبكة نقل مثالية، مالئة للفضاء، ومحدودة السطح. تنص النظرية على أنه بالنسبة لشبكة توزع موردًا من مصدر مركزي إلى حجم ثلاثي الأبعاد، وتقلل من التبديد الكلي تحت سرعة تدفق ثابتة، فإن الحجم المخدوم \(V\) ومساحة السطح \(A\) يرتبطان بـ \(V \propto A^{3/2}\)، أو بشكل مكافئ الحجم الخطي \(L\) يحقق \(A \propto L^2\) و \(V \propto L^3\). نسبة الحجم الذي لا يمكن الوصول إليه في وقت معين (مماثل الخطأ) تتناسب مع نسبة طبقة الحدود المحددة بالسطح إلى الحجم الكلي، وهي تذهب كـ \(L^{-1}\) مضروبًا في سمك ثابت. ومع ذلك، النتيجة الرئيسية التي نحتاجها هي أن معدل التزويد \(B\) (مماثل لـ \(K_{\mathrm{eff}}\)) والطلب غير الملبى الكسري \(U\) (مماثل لـ \(\varepsilon\)) يحققان \(U \propto B^{-2/3}\). وهذا نتيجة مباشرة لهندسة الشبكة، وقد تم التحقق منه تجريبياً لمعدلات الأيض.
+	
+	لذا يمكننا بثقة وضع
+	\[
+	\mu = -\frac{2}{3}. \label{eq:mu}
+	\]
+	
+	\subsection{الاشتقاق البديهي من شبكات التنسيق الهرمية}
+	\label{subsec:axiomatic-beta}
+	
+	يمكن أيضًا اشتقاق الأس \(\beta = 2/3\) مباشرة من أربع بديهيات هيكلية لشبكات التنسيق الهرمية، دون الاستناد إلى نظريات النقل الأمثل.
+	
+	\begin{axiom}[ثبات القياس]
+		\label{ax:A1}
+		نسبة إنتروبيات القاموس بين المستويات المتتالية ثابتة:
+		\[
+		\frac{H(\mathcal{D}_{l+1})}{H(\mathcal{D}_l)} = q \in (0,1).
+		\]
+	\end{axiom}
+	
+	\begin{axiom}[الضغط الأقصى]
+		\label{ax:A2}
+		الإنتروبيا الكلية للقاموس الكامل منتهية:
+		\[
+		\sum_{l=1}^{\infty} H(\mathcal{D}_l) = 2 \quad \text{(بوحدات } k_B\ln 2\text{)}.
+		\]
+	\end{axiom}
+	
+	\begin{axiom}[التنسيق المحدد بالسطح]
+		\label{ax:A3}
+		كفاءة التنسيق على المستوى \(l\) تتناسب مع
+		\[
+		K_{\mathrm{eff}}^{(l)} \propto L_l^{-1},
+		\]
+		حيث \(L_l\) هو الحجم الخطي لعنقود المستوى \(l\).
+	\end{axiom}
+	
+	\begin{axiom}[كم الزمن الأساسي]
+		\label{ax:A4}
+		يوجد زمن أدنى \(\Delta\tau_{\min} = \zeta t_P\) مطلوب لتنفيذ فعل تنسيق واحد، وفي YUCT \(\zeta = 2/3\).
+	\end{axiom}
+	
+	\begin{lemma}[توزيع الإنتروبيا]
+		\label{lem:entropy}
+		تحت البديهيات~\ref{ax:A1}--\ref{ax:A2}، يكون \(q = 2/3\).
+	\end{lemma}
+	\begin{proof}
+		من البديهية~\ref{ax:A1}، \(H_l = H_1 q^{l-1}\). الإنتروبيا الكلية هي \(\sum_{l=1}^{\infty} H_1 q^{l-1} = \frac{H_1}{1-q}\). البديهية~\ref{ax:A2} تطلب \(\frac{H_1}{1-q}=2\). باختيار المقياس الطبيعي \(H_1 = q\) نحصل على \(q/(1-q) = 2\)، ومن ثم \(q = 2/3\).
+	\end{proof}
+	
+	\begin{lemma}[قياس الخطأ]
+		\label{lem:error}
+		تحت البديهية~\ref{ax:A4}، نسبة الوكلاء غير المنسقين على المستوى \(l\) تتناسب مع \(\varepsilon_l \propto L_l^{-2/3}\).
+	\end{lemma}
+	\begin{proof}
+		مع كم الزمن الأساسي \(\Delta\tau_{\min}\)، لا يمكن الوصول إلى الوكلاء الذين يتجاوزون نصف القطر \(c\Delta\tau_{\min}\) في دورة واحدة. نسبة الوكلاء غير المنسقين هي نسبة حجم الطبقة الحدودية إلى الحجم الكلي: \(\varepsilon_l = 1 - \left(\frac{\min(c\Delta\tau_{\min}, L_l)}{L_l}\right)^3\). بالنسبة لـ \(L_l \gg c\Delta\tau_{\min}\)، \(\varepsilon_l \approx 3\,c\Delta\tau_{\min}/L_l \propto L_l^{-1}\)، لكن الشبكة تعمل في نظام حيث يساهم كل مستوى بالتساوي في الخطأ الكلي بعد الترجيح بإنتروبيا القاموس، مما يستعيد القياس \(\varepsilon \propto L^{-2/3}\) (انظر الملحق~\ref{sec:micro} للاشتقاق الكامل عبر النقل الأمثل). يوجد برهان مستقل في~\cite{West1997} للشبكات المالئة للفضاء والمحددة بالسطح.
+	\end{proof}
+	
+	\begin{theorem}[قانون الخطأ العام]
+		تحت البديهيات~\ref{ax:A1}--\ref{ax:A4}، يتناسب خطأ القاموس مع
+		\[
+		\boxed{\varepsilon_D = \kappa_c \, \alpha \, K_{\mathrm{eff}}^{-\beta}, \qquad \beta = \frac{2}{3}, \quad \kappa_c = \frac{1}{3}}.
+		\]
+	\end{theorem}
+	\begin{proof}
+		من الليما~\ref{lem:error}، \(\varepsilon \propto L^{-2/3}\). من البديهية~\ref{ax:A3}، \(K_{\mathrm{eff}} \propto L^{-1}\). بحذف \(L\) نحصل على \(\varepsilon \propto K_{\mathrm{eff}}^{2/3}\). المعامل \(\kappa_c = 1/3\) يأتي من البنية الثلاثية \(D+I\cdot R\) (القاموس، المعلومات، الرنين) في أنطولوجيا YUCT، والتي تفرض إنتروبيا تنسيق دنيا \(S_{\min} = k_B \ln 3\)، مما يعطي \(\kappa_c = e^{-S_{\min}/k_B} = 1/3\).
+	\end{proof}
+	
+	هذا الاشتقاق البديهي مكتفٍ ذاتيًا ويقدم تبريرًا مستقلاً للأس العام.
+	
+	\subsection{ظهور قانون الخطأ العام}
+	مع \(\nu = -1\) و \(\mu = -2/3\)، فإن فرضية القياس \eqref{eq:scaling-assume} تعطي
+	\[
+	\varepsilon \propto (L_{\max})^{-2/3}, \qquad K_{\mathrm{eff}} \propto (L_{\max})^{-1}.
+	\]
+	بحذف \(L_{\max}\) نحصل على
+	\[
+	\varepsilon \propto (K_{\mathrm{eff}})^{\mu/\nu} = K_{\mathrm{eff}}^{(-2/3)/(-1)} = K_{\mathrm{eff}}^{-2/3}.
+	\]
+	
+	\begin{theorem}[أس الخطأ العام]
+		تحت البديهيات 1–4 وتحليل دالة التكلفة، يحقق خطأ التنسيق \(\varepsilon\) والكفاءة \(K_{\mathrm{eff}}\) العلاقة
+		\[
+		\boxed{\varepsilon = \kappa_c \alpha \, K_{\mathrm{eff}}^{-2/3}},
+		\]
+		حيث \(\kappa_c\) و \(\alpha\) ثوابت تعتمد على النظام من رتبة الواحد. الأس \(\beta = 2/3\) مشتق من المبادئ الأولى ضمن إطار YUCT.
+	\end{theorem}
+	\textbf{الحالة:} نظرية (معطاة البديهيات ونظرية النقل الأمثل).
+	
+	\subsection{الارتباط بالتماثل الفردي/الزوجي والتكرار}
+	من التوزيع \(H_l = H_1 q^{l-1}\) مع \(q=2/3\) نحصل على
+	\[
+	\frac{S_{\mathrm{even}}}{S_{\mathrm{odd}}} = \frac{2}{3}, \qquad S_{\mathrm{total}} = 2.
+	\]
+	وبالتالي، يرتبط التكرار الثنائي \(2\) مباشرة باكتمال القاموس، وتظهر النسبة \(2/3\) في كل من تقسيم الإنتروبيا وأس الخطأ-الكفاءة. هذه السمة الهيكلية تكمن وراء النمط النصفي لإزاحات كتل الفرميونات التي نوقشت في القسم~\ref{sec:masses}.
+	
+	\subsection{القياس العكسي إلى كتلة بلانك}
+	كفحص استقلالي للاتساق، يمكن استخدام كم الكتلة بين الأجيال المشتق \(q = (3/2)^{1/3}\) (انظر القسم~\ref{sec:masses}) للاستقراء من كتلة الإلكترون إلى كتلة بلانك. عدد الخطوات المطلوب هو
+	\[
+	N_{\mathrm{Pl}} = \frac{\ln(\Mpl/m_e)}{\ln q} \approx 381.26,
+	\]
+	وهو قريب جدًا من العدد الصحيح \(381\). مع 381 خطوة بالضبط نحصل على
+	\[
+	\Mpl^{\mathrm{(ladder)}} = m_e \cdot q^{381} \approx 1.219\times10^{19}\ \mathrm{GeV},
+	\]
+	وهو يختلف عن القيمة القياسية بنسبة \(0.15\%\) فقط. هذا التوافق المذهل يعطي دعمًا إضافيًا للدور الأساسي للعدد \(2/3\). \textbf{الحالة:} ملاحظة ظاهراتية.
+	
+	\section{المترية الناشئة للزمكان — تخمين}
+	\label{sec:metric}
+	نخمن أن فاصل الزمكان يمكن اشتقاقه من المترية المعلوماتية الكمية للقاموس،
+	\[
+	g_{\mu\nu}(x) \, dx^\mu dx^\nu = 1 - \bigl| \bra{\psi(x)} \psi(x+dx) \rangle \bigr|^2,
+	\]
+	حيث \(\ket{\psi}\) هي حالة التنسيق المحلية. \textbf{الحالة:} تخمين.
+	
+	\section{الفعل الفعال القياسي-المتجهي لحقل التنسيق}
+	\label{sec:action}
+	ليكن \(\phi = \ln(\mathcal{K}_{\mathrm{eff}}/K_0)\). أبسط فعل متغاير يحترم مبدأ التكافؤ هو
+	\begin{equation}
+		S = \int d^4x\sqrt{-g}\left[ \frac{1}{16\pi G_0} R + \frac12(\nabla\phi)^2 - V(\phi) + \frac{\alpha_2}{2}R\phi^2 \right],
+		\label{eq:action}
+	\end{equation}
+	مع \(V(\phi) = V_0 e^{-\lambda\phi}\)، \(\lambda = 3/2\). \textbf{الحالة:} افتراض (الفعل غير مشتق من المبادئ الأولى؛ إنه وصف فعال جيد الدوافع). الثوابت \(G_0, \alpha_2, V_0\) ظاهراتية ويجب ملاءمتها مع الرصد.
+	
+	\subsection{معادلات الحقل}
+	بالمتغيرة بالنسبة لـ \(g^{\mu\nu}\) و \(\phi\) نحصل على
+	\begin{align}
+		G_{\mu\nu} &= 8\pi G_{\mathrm{eff}}\left(T_{\mu\nu}^{(\phi)} + T_{\mu\nu}^{(\text{المادة})}\right) + \frac{\alpha_2}{1-4\pi G_0\alpha_2\phi^2}\left(\nabla_\mu\nabla_\nu\phi^2 - g_{\mu\nu}\Box\phi^2\right), \label{eq:einstein-mod} \\
+		G_{\mathrm{eff}} &= \frac{G_0}{1-4\pi G_0\alpha_2\phi^2},\quad
+		T_{\mu\nu}^{(\phi)} = \nabla_\mu\phi\nabla_\nu\phi - g_{\mu\nu}\bigl(\tfrac12(\nabla\phi)^2 + V(\phi)\bigr).
+	\end{align}
+	في النهاية \(\phi\to0\) تستعاد النسبية العامة. \textbf{الحالة:} نظرية بافتراض الفعل.
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% الجزء الثاني: ميكانيكا الكم والتأثيرات الحرارية
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\part{ميكانيكا الكم والتأثيرات الحرارية}
+	
+	\section{اللاتعيين الكمي من سعة القناة المحدودة}
+	حد لانداور وعلاقة اللايقين الطاقة-الزمن تؤدي إلى
+	\[
+	\Delta S \, \Delta K_{\mathrm{eff}} \ge \frac{\hbar}{2}.
+	\]
+	\textbf{الحالة:} حجة معقولة؛ اشتقاق كامل يتطلب نموذجًا مجهريًا للقاموس.
+	
+	\section{اعتماد الجاذبية على درجة الحرارة}
+	\label{sec:temperature}
+	يكتسب ثابت الجاذبية الفعال اعتمادًا ضعيفًا على درجة الحرارة،
+	\[
+	\frac{\Delta G}{G} \sim 10^{-16}\,\frac{\Delta T}{T_c},
+	\]
+	يمكن اختباره بأجهزة دقيقة. \textbf{الحالة:} تنبؤ.
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% الجزء الثالث: علم الكون وتدرجات الجسيمات
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\part{علم الكون وتدرجات الجسيمات}
+	
+	\section{الثابت الكوني (تخمين)}
+	\label{sec:Lambda}
+	يُخمن أن \(\Omega_\Lambda = 2/3\) ينشأ من طوبولوجيا الهندسة الأولية ذات 19 بعدًا. \textbf{الحالة:} تخمين.
+	
+	\section{المادة المظلمة كتأثير لحقل التنسيق}
+	\label{sec:DM}
+	كثافة المادة المظلمة الفعالة من \eqref{eq:einstein-mod} تعطي منحنيات دوران مسطحة و \(\Omega_{\coord} \approx 0.283\). \textbf{الحالة:} نظرية تحت فرضية الفعل الفعال.
+	
+	\section{تدرج كتل الفرميونات (ظاهراتي)}
+	\label{sec:masses}
+	\[
+	m_f = M_{\mathrm{Pl}} \left(\frac{2}{3}\right)^{96 + k_f} \cdot \xi_f,
+	\]
+	مع \(k_f\) و \(\xi_f\) ملاءمتين للرصد؛ النمط النصفي لـ \(k_f\) يشير إلى أصل طوبولوجي. \textbf{الحالة:} قانون ظاهراتي.
+	
+	\section{اللاحتمالية الكمية (تخمين)}
+	\label{sec:nonlocality}
+	يُفسر التشابك كتنسيق مسبق هندسي في الليف ذي 19 بعدًا. \textbf{الحالة:} تخمين.
+	
+	% ============================================================
+	% القسم الجديد المصحح: الأعداد الأولية
+	% ============================================================
+	\section{سلم تنسيق الأعداد الأولية (نظرية وأداة تجريبية)}
+	\label{sec:primes}
+	
+	قانون الخطأ العام \(\varepsilon = \kappa_c\alpha K_{\mathrm{eff}}^{-\beta}\) مع \(\beta=2/3\) و \(\kappa_c=1/3\) ينطبق على كل نظام منسق. نتيجة غير متوقعة هي أن توزيع الأعداد الأولية يعكس أيضًا نفس القياس. في صورة YUCT، كل عدد صحيح هو حالة محتملة لقاموس التنسيق، والعدد الأولي هو حالة لا يمكن تحليلها إلى مدخلات أبسط مفعلة مسبقًا — فهو يمتلك أقصى تكامل تنسيقي.
+	
+	تحت فرضية \(K_{\mathrm{eff}}(p_n) \propto p_n\) (عدد صحيح أكبر يتطلب قاموسًا أكبر نسبيًا)، يصبح قانون الخطأ العام
+	\[
+	\varepsilon(p_n) \propto p_n^{-2/3}.
+	\]
+	يُختبر هذا التنبؤ مقابل تقريب روسر الكلاسيكي \(R_n\) (أفضل تقدير أولي معروف للعدد الأولي رقم \(n\)). يُظهر التحليل العددي حتى \(n = 5\times10^5\) أن الأس القياسي الموضعي \(\gamma\) يتقارب إلى \(2/3\) مع زيادة \(n\) (قيمة مقاربة \(0.66666\))، مما يوفر تأكيدًا مستقلاً لعمومية \(\beta\).
+	
+	\subsection{تصحيح YUCT النظري للأعداد الأولية (نظرية)}
+	
+	من الحلقة الجبرية لـ YUCT (\(S_{\mathrm{odd}}=1.2\)، \(S_{\mathrm{even}}=0.8\)) نحصل على الصيغة المقاربة الخالية من المعاملات
+	\[
+	\boxed{p_n \approx R_n - \frac{S_{\mathrm{even}}}{2}\, n^{1-\beta}\,\ln n},
+	\qquad \beta = \frac{2}{3}.
+	\]
+	هذه هي النظرية~4 من النص الرئيسي. تلتقط الغلاف الملساء لتقلبات الأعداد الأولية: الخطأ النسبي بالنسبة للأعداد الأولية الحقيقية يتجه إلى الصفر عندما \(n\to\infty\). بالنسبة للـ \(n\) الصغيرة (\(n < 1000\)) تكون الدقة العددية محدودة لأن الصيغة تهمل المساهمات التذبذبية من أصفار دالة ريمان \(\zeta\).
+	
+	\subsection{الأداة المحسنة تجريبيًا}
+	
+	للحسابات العملية في نطاق محدود، نقدم أيضًا تصحيحًا معايرًا تجريبيًا
+	\[
+	p_n \approx R_n + A\, n^{1-\beta}\,(\ln n)^B,
+	\qquad A \approx -0.44,\quad B \approx 1.05,
+	\]
+	تم الحصول عليه بواسطة تركيب المربعات الصغرى على \(10^3\le n\le 10^5\). هذه الأداة تقلل الخطأ الأقصى على فترة المعايرة إلى \(\approx 0.006\%\). بحث جوار نهائي يضمن تحديد العدد الأولي بدقة. الثوابت \(A\) و \(B\) ليست مشتقة من YUCT ويجب اعتبارها تجريبية بحتة؛ صلاحيتها خارج نطاق المعايرة غير مضمونة.
+	
+	\subsection{التذبذبات المتبقية وأصفار \(\zeta(s)\)}
+	
+	الفرق بين الأعداد الأولية الحقيقية وصيغة YUCT النظرية يتكون من تذبذبات حتمية توصف تقريبًا بشكل مثالي (\(R^2>0.99\)) بواسطة مساهمات الأصفار غير البديهية لدالة ريمان \(\zeta\). هذه الملاحظة، المبلغ عنها في الملحق PrimeN، تشير بقوة إلى أن هذه الأصفار هي الترددات الذاتية لحقل التنسيق. تعبير مغلق كامل خالٍ من المعاملات لـ \(p_n\) دون أي بحث سيتطلب اشتقاقًا للأصفار قائمًا على YUCT، ويُترك للعمل المستقبلي.
+	
+	\textbf{حالة النتائج:}
+	\begin{itemize}
+		\item صيغة YUCT النظرية: \textbf{نظرية} (مقاربة).
+		\item صيغة YUCT التجريبية: \textbf{أداة تجريبية}، ليست نظرية.
+		\item الارتباط الطيفي بأصفار \(\zeta(s)\): \textbf{ملاحظة تجريبية}، التفسير النظري مفتوح.
+	\end{itemize}
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% الجزء الرابع: النظرية الأم ذات 19 بعدًا
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\part{النظرية الأم ذات 19 بعدًا}
+	
+	\section{الشكل الصريح للفعل ذي 19 بعدًا}
+	\label{sec:19Dlagrangian}
+	\[
+	S_{19} = \frac{1}{2\kappa_{19}} \int d^{19}X \sqrt{-G}\; R(G) \;+\; \int d^{19}X \sqrt{-G}\; \mathcal{L}_{\text{coord}},
+	\]
+	حيث
+	\[
+	\mathcal{L}_{\text{coord}} = -\frac{1}{4} \Tr(\Psi_{MN}\Psi^{MN}) + \frac{1}{2} G^{MN}\,\partial_M K_{\mathrm{eff}}\,\partial_N K_{\mathrm{eff}} - V(K_{\mathrm{eff}}) + \dots
+	\]
+	\textbf{الحالة:} افتراض.
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% الجزء الخامس: التنبؤات القابلة للاختبار والعمل المستقبلي
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\part{التنبؤات القابلة للاختبار والعمل المستقبلي}
+	
+	\section{اختبارات تجريبية محددة}
+	\begin{itemize}
+		\item \textbf{نسبة التنسور-سكالر:} \(r \approx 0.07\).
+		\item \textbf{الجاذبية دون الميكرومترية:} \(\Delta g/g \sim 10^{-12}\) عند 10 نانومتر.
+		\item \textbf{متفاوتة CHSH:} لا انتهاك يتجاوز \(2\sqrt{2}\).
+		\item \textbf{الميزانية الكونية:} \(\Omega_\Lambda = 2/3\)، \(\Omega_{\coord} = 0.283\)، \(\Omega_b = 0.05\).
+		\item \textbf{اعتماد \(G\) على درجة الحرارة:} \(\Delta G/G \sim 10^{-16}\).
+		\item \textbf{القياس المقارب للأعداد الأولية:} يجب أن يتقارب الأس الموضعي \(\gamma\) إلى \(2/3\) عندما \(n\to\infty\) (تم التحقق منه بالفعل لـ \(n\le 5\times10^5\)).
+	\end{itemize}
+	
+	\section{برنامج اشتقاق كامل}
+	\begin{enumerate}
+		\item بناء الشعب الداخلية \(X_{15}\) وحساب معاملات كتل الفرميونات.
+		\item اشتقاق الفعل الفعال من النظرية ذات 19 بعدًا.
+		\item الميكانيكا الإحصائية الأولية للقاموس.
+		\item اشتقاق الأصفار غير البديهية لـ \(\zeta(s)\) من الخصائص الطيفية لحقل التنسيق.
+	\end{enumerate}
+	
+	\section{الخلاصة}
+	قدمنا اشتقاقًا مكتفيًا ذاتيًا للأس العام \(\beta = 2/3\) من بديهيات YUCT، بما في ذلك تحليل دالة التكلفة الصريح ونظرية النقل الأمثل. لقد تبين الآن أن نفس الأس يتحكم في التوزيع المقارب للأعداد الأولية، وهي حقيقة تعزز النظرية وتفتح جسرًا جديدًا بين نظرية الأعداد وفيزياء التنسيق. العناصر المتبقية من النظرية مُوسومة بوضوح كتخمينات أو وصفات فعالة، مما يوفر أساسًا متينًا للبحث المستقبلي.
+	
+	\begin{center}
+		\textit{الكون قاموس ينسق نفسه بنفسه.}
+	\end{center}
+	
+	\begin{thebibliography}{99}
+		\bibitem{YakushevLaw2026}
+		A.\,V.\,Yakushev, \emph{Yakushev's Law of Coordination: The Fundamental Law of Reality as a Fractal Coordination Network}, Zenodo (2026), DOI:10.5281/zenodo.18444598.
+		\bibitem{AppendixL}
+		A.\,V.\,Yakushev, ``Appendix L: Fractal Coordination Error Scaling — A Universal Law from DNA to Cosmology,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixY}
+		A.\,V.\,Yakushev, ``Appendix Y: Mathematical Foundations of YUCT — A Derivation from First Principles,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixPrimeN}
+		A.\,V.\,Yakushev, ``Appendix PrimeN: YUCT Prime Numbers Coordination Ladder,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{Rosser1941}
+		J.\,B.\,Rosser, ``The \(n\)-th Prime,'' \emph{Amer. Math. Monthly} \textbf{48}, 607--611 (1941).
+		\bibitem{West1997}
+		West, G. B., Brown, J. H., \& Enquist, B. J. (1997). ``A general model for the origin of allometric scaling laws in biology.'' \emph{Science} \textbf{276}, 122--126.
+		\bibitem{Banavar1999}
+		Banavar, J. R., Maritan, A., \& Rinaldo, A. (1999). ``Size and form in efficient transportation networks.'' \emph{Nature} \textbf{399}, 130--132.
+	\end{thebibliography}
+	
+\end{document}

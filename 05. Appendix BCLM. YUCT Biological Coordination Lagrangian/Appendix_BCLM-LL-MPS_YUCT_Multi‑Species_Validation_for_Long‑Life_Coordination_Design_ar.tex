@@ -1,0 +1,283 @@
+% !TEX program = lualatex
+\documentclass[11pt,a4paper]{article}
+
+% ============================================================
+% إعدادات اللغة العربية
+% ============================================================
+\usepackage{polyglossia}
+\setmainlanguage{arabic}
+\setotherlanguage{english}
+
+% ========= خطوط عربية =========
+\newfontfamily\arabicfont{Amiri}[Script=Arabic, Language=Arabic]
+\newfontfamily\arabicfontsf{Amiri}[Script=Arabic, Language=Arabic]
+\newfontfamily\arabicfonttt{Amiri}[Script=Arabic, Language=Arabic]
+\newfontfamily\englishfont{Times New Roman}
+\setmonofont{Latin Modern Mono}
+
+% ========= حزم =========
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.5cm,right=1.5cm,top=1.5cm,bottom=2.0cm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{float}
+
+% ========= تنسيق العناوين =========
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+% --- ثوابت YUCT الأساسية ---
+\newcommand{\REL}{\mathcal{K}}          % كفاءة التنسيق النسبية
+\newcommand{\ABS}{K_{\mathrm{eff}}}     % المطلقة
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\betaf}{\beta}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{2cm}
+		{\Huge\bfseries الملحق BCLM-LL-MPS\\[0.3cm]
+			بروتوكول التحقق متعدد الأنواع لتصميم التنسيق طويل الحياة\par}
+		\vspace{0.5cm}
+		{\Large\bfseries تجربة متوازية على خمسة أنواع من الثدييات\\لتأكيد نظرية التنسيق للشيخوخة في YUCT\par}
+		\vspace{1.5cm}
+		{\large A.\,V.\,Yakushev\par}
+		{\normalsize YUCT Research, \url{https://yuct.org/}\par}
+		\vspace{1.0cm}
+		{\normalsize حزيران 2026 (الإصدار 1.2 – الاتساق متعدد الأنواع)}\par
+		\vfill
+		\begin{abstract}
+			\noindent
+			تسمح لاغرانجية التنسيق البيولوجي في YUCT (BCLM) بالتنبؤ بكفاءة التنسيق \(K_{\mathrm{eff}}\) لأي بروتين أو مسار انطلاقاً من بيانات التسلسل فقط. لإظهار عمومية نظرية التنسيق للشيخوخة، نقدم تصميمًا تجريبيًا متوازيًا لخمسة أنواع من الثدييات شائعة الاستخدام في المختبرات: الفأر (\textit{Mus musculus})، الجرذ (\textit{Rattus norvegicus})، الخنزير (\textit{Sus scrofa})، المكاك آكل السرطان (\textit{Macaca fascicularis})، والكلب (\textit{Canis familiaris}). لكل نوع نحدد الجينات المستهدفة المتجانسة، ونحسب كفاءات التنسيق النسبية الطبيعية والمُحسَّنة \(\REL\) باستخدام مسار BCLM، ونشتق تنبؤات كمية لمعدل الطفرة، والإجهاد التأكسدي، وتجمع البروتين، وسرعة الهجرة، وعمر التضاعف مباشرة من قانون الخطأ العالمي \(\varepsilon = \kappa_c \alpha \REL^{-\beta}\) (\(\beta=2/3\)، \(\kappa_c=1/3\)). يتضمن جدول مقارن القيم المقابلة للخلايا البشرية (من البروتوكول المرافق BCLM‑LL). يعتمد البروتوكول فقط على خطوط الخلايا المتاحة تجارياً، وقواعد بيانات التسلسل العامة، والمقايسات القياسية لبيولوجيا الخلية. تؤكد وحدة الانحدار الخاضع للرقابة (CCR) قابلية عكس النمط الظاهري للشيخوخة عبر الأنواع. جميع التنبؤات مسجلة مسبقاً وقابلة للتكذيب. يحذف البروتوكول عمداً طرق الإيصال \textit{in vivo}؛ وتُناقش الجوانب الأخلاقية في الملحق~\(\Sigma\).
+		\end{abstract}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{مقدمة}
+	\label{sec:intro}
+	قانون القياس العالمي للخطأ في YUCT،
+	\begin{equation}
+		\varepsilon = \kappa_c \, \alpha \, \REL^{-\beta}, \qquad \beta = \frac{2}{3},\quad \kappa_c = \frac{1}{3},
+		\label{eq:error-law}
+	\end{equation}
+	ينطبق على أي نظام منسق، بغض النظر عن المقياس أو الركيزة. في السياق الخلوي، تقيس الكفاءة النسبية \(\REL\) دقة الآلات الجزيئية؛ فانخفاضها المرتبط بالعمر يسرع تراكم الضرر ويؤدي في النهاية إلى الشيخوخة.
+	
+	توفر لاغرانجية التنسيق البيولوجي (BCLM، الملحق BCLM) طريقة موحدة لحساب \(\REL\) من بيانات التسلسل وتصميم بنيات محسَّنة الكودون ترفع \(\REL\) إلى المستويات اليافعة. يصف البروتوكول المرافق BCLM‑LL تجربة كاملة لخلايا عضلة القلب البشرية. نقوم هنا بتوسيع التصميم ليشمل خمسة أنواع إضافية من الثدييات — الفأر، الجرذ، الخنزير، المكاك، والكلب — لكل منها جينوم موضح بالكامل، واستخدام كودون محدد، وخطوط خلايا أولية متاحة تجارياً. الهدف هو اختبار عمومية آلية الشيخوخة في YUCT: إذا ثبتت نفس العلاقة الكمية بين \(\REL\) والصحة الخلوية عبر جميع الأنواع، فسيتم دعم نظرية التنسيق للشيخوخة بقوة.
+	
+	\subsection{الدعم التجريبي الحالي}
+	الأهداف الجزيئية لتصميم الحياة الطويلة مدعومة بأعمال منشورة فردياً:
+	\begin{itemize}
+		\item طفرة فائقة الدقة في الريبوسوم تطيل العمر في الخميرة والديدان والذباب \cite{Bjedov2021}.
+		\item تُظهر الثدييات طويلة العمر استنفاد الكودونات عالية التغير في جينات حفظ البروتين \cite{Kerekes2025}.
+		\item الإفراط في التعبير عن شابرونات الميتوكوندريا يقلل الضرر التأكسدي ويطيل عمر \textit{Drosophila} \cite{Morrow2004}.
+		\item حفظ البروتين المعزز يؤخر السمية البروتينية المتوسطة بالتراص \cite{Walker2003}.
+		\item يساهم خلل تنظيم إشارات الإنتغرين المرتبط بالعمر في الشيخوخة الخلوية \cite{Takeda2019}.
+	\end{itemize}
+	ولكن لم يُدخل أي من هذه الدراسات معلمة تنسيق كمية واحدة. يقوم BCLM بذلك تماماً، ويقدم البروتوكول متعدد الأنواع أدناه اختباراً حاسماً.
+	
+	\section{الأنواع المستهدفة وخطوط الخلايا}
+	\label{sec:species}
+	تم اختيار خمسة أنواع لتغطية نطاق نسالي واسع مع الاحتفاظ بمزايا الزرع الخلوي العملي. بالنسبة لكل نوع، تُعتبر الأرومات الليفية الأولية أكثر أنواع الخلايا الطبيعية المتاحة التي يمكن استنباتها لعدة ممرات دون تحول.
+	
+	\begin{table}[H]
+		\centering
+		\caption{الأنواع الخمسة وخطوط خلاياها الأولية}
+		\label{tab:species}
+		\begin{tabular}{@{}lllll@{}}
+			\toprule
+			\textbf{النوع} & \textbf{الاسم الشائع} & \textbf{نوع الخلية} & \textbf{المصدر} \\
+			\midrule
+			\textit{Mus musculus} (C57BL/6) & فأر المنزل & أرومات ليفية جنينية (MEF) & ATCC CRL‑2214 \\
+			\textit{Rattus norvegicus} (F344) & جرذ بني & أرومات ليفية جلدية & Cell Biolabs RAT‑DF \\
+			\textit{Sus scrofa} (Landrace) & خنزير محلي & أرومات ليفية جلدية & Cell Applications 12405 \\
+			\textit{Macaca fascicularis} & مكاك آكل السرطان & أرومات ليفية جلدية & Coriell AG08333 \\
+			\textit{Canis familiaris} (Beagle) & كلب & أرومات ليفية جلدية & Coriell AG07090 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\section{الجينات المستهدفة المتجانسة و \(\REL\) الخاصة بها}
+	\label{sec:genes}
+	لكل نوع، حددنا المتجانسات (orthologs) للبروتينات البشرية المستهدفة في تصميم الحياة الطويلة (BCLM‑LL). تتواليات الأحماض الأمينية محفوظة بدرجة عالية؛ وبالتالي فإن مساهمة الأحماض الأمينية في \(K_{\mathrm{eff}}\) متطابقة أساساً عبر الأنواع. يأتي الاختلاف الرئيسي من تحسين الكودون، لأن مجموعة الكودونات المثلى تعتمد على جدول استخدام الكودون الخاص بالنوع (قاعدة بيانات Kazusa \cite{codon_usage_db}). لكل جين قمنا بحساب كفاءتي تنسيق نسبيتين: \(\REL_{\mathrm{WT}}\) (التسلسل الأصلي) و \(\REL_{\mathrm{LL}}\) (التسلسل المُحسَّن الكودون). اتبع الحساب القواعد الموصوفة في BCLM، القسم 2.
+	
+	يسرد الجدول~\ref{tab:targets} المتجانسات وقيم \(\REL\) المتوقعة للمرجع البشري (من BCLM‑LL) وللأنواع الحيوانية الخمسة. تم إنشاء جميع القيم بواسطة برنامج `bclm\_multi\_species.py` المتوفر في مستودع YPSDC.
+	
+	\begin{table}[H]
+		\centering
+		\caption{الجينات المستهدفة المتجانسة و \(\REL\) المتوقعة لها}
+		\label{tab:targets}
+		{\footnotesize
+			\begin{tabular}{@{}llcccccc@{}}
+				\toprule
+				\textbf{الطبقة} & \textbf{الجين البشري} & \textbf{الفأر} & \textbf{الجرذ} & \textbf{الخنزير} & \textbf{المكاك} & \textbf{الكلب} & \textbf{عامل الخطأ\footnotemark[1]} \\
+				\midrule
+				1 & BRCA1 & 0.62←0.78 & 0.63←0.79 & 0.62←0.78 & 0.62←0.78 & 0.85 \\
+				& PARP1 & 0.60←0.77 & 0.61←0.78 & 0.60←0.77 & 0.60←0.77 & 0.86 \\
+				& MLH1  & 0.59←0.76 & 0.60←0.77 & 0.59←0.76 & 0.59←0.76 & 0.87 \\
+				2 & NDUFS1 & 0.55←0.72 & 0.56←0.73 & 0.55←0.72 & 0.55←0.72 & 0.80 \\
+				& NDUFV1 & 0.56←0.73 & 0.57←0.74 & 0.56←0.73 & 0.56←0.73 & 0.80 \\
+				& NDUFA9 & 0.54←0.70 & 0.55←0.71 & 0.54←0.70 & 0.54←0.70 & 0.81 \\
+				3 & HSPA1A & 0.52←0.69 & 0.53←0.70 & 0.52←0.69 & 0.52←0.69 & 0.78 \\
+				& DNAJB1 & 0.50←0.68 & 0.51←0.69 & 0.50←0.68 & 0.50←0.68 & 0.79 \\
+				& HSPA9  & 0.53←0.70 & 0.54←0.71 & 0.53←0.70 & 0.53←0.70 & 0.78 \\
+				4 & ITGAV  & 0.58←0.74 & 0.59←0.75 & 0.58←0.74 & 0.58←0.74 & 0.83 \\
+				& ITGB3  & 0.57←0.73 & 0.58←0.74 & 0.57←0.73 & 0.57←0.73 & 0.83 \\
+				& FN1    & 0.60←0.76 & 0.61←0.77 & 0.60←0.76 & 0.60←0.76 & 0.84 \\
+				\bottomrule
+		\end{tabular}}
+		\footnotetext[1]{عامل الخطأ \(\varepsilon_{\mathrm{LL}}/\varepsilon_{\mathrm{WT}} = (\REL_{\mathrm{LL}}/\REL_{\mathrm{WT}})^{-2/3}\). بسبب الحفظ العالي جداً للتسلسل، يختلف العامل بأقل من \(0.5\%\) بين الأنواع؛ القيم المدرجة هي المتوسطات.}
+	\end{table}
+	
+	\section{التغيرات المظهرية المتوقعة}
+	\label{sec:predictions}
+	لكل طبقة، يُحصل على التحسن الكلي كمتوسط هندسي لعوامل الخطأ للبروتينات الفردية، لأن المكونات المستهدفة تعمل في مسارات متداخلة. نسب الخطأ الناتجة الخاصة بكل طبقة هي:
+	
+	\begin{itemize}
+		\item \textbf{الطبقة 1 – استقرار الجينوم:} \(\mu_{\mathrm{LL}}/\mu_{\mathrm{WT}} = \sqrt[3]{0.85\times0.86\times0.87} \approx 0.86\).
+		\item \textbf{الطبقة 2 – أنواع الأكسجين التفاعلية الميتوكوندرية:} \(\mathrm{ROS}_{\mathrm{LL}}/\mathrm{ROS}_{\mathrm{WT}} = \sqrt[3]{0.80\times0.80\times0.81} \approx 0.80\).
+		\item \textbf{الطبقة 3 – تراص البروتين:} \(\mathrm{Agg}_{\mathrm{LL}}/\mathrm{Agg}_{\mathrm{WT}} = \sqrt[3]{0.78\times0.79\times0.78} \approx 0.78\).
+		\item \textbf{الطبقة 4 – خطأ التصاق المصفوفة خارج الخلية:} \(\mathrm{Err}_{\mathrm{LL}}/\mathrm{Err}_{\mathrm{WT}} = \sqrt[3]{0.83\times0.83\times0.84} \approx 0.83\). ولأن سرعة الهجرة تتناسب عكسياً مع أخطاء الالتصاق، فإن \(v_{\mathrm{LL}}/v_{\mathrm{WT}} \approx 1/0.83 = 1.20\).
+	\end{itemize}
+	
+	بافتراض أن الطبقات الأربع تفشل بشكل مستقل، فإن احتمال الخطأ المميت الكلي هو حاصل ضرب النسب الأربع:
+	\[
+	\frac{\varepsilon_{\mathrm{fatal,LL}}}{\varepsilon_{\mathrm{fatal,WT}}} \approx 0.86 \times 0.80 \times 0.78 \times 0.83 \approx 0.45.
+	\]
+	في ظل فرضية أن عمر التضاعف (المقاس بعدد التضاعفات التراكمية) يتناسب عكسياً مع احتمال الخطأ المميت، فإن امتداد العمر المتوقع هو
+	\[
+	\frac{\mathrm{PD}_{\mathrm{LL}}}{\mathrm{PD}_{\mathrm{WT}}} \approx \frac{1}{0.45} \approx 2.2.
+	\]
+	هذا حد أعلى؛ فالتداخل بين الطبقات ومسارات الضرر المتبقية ستقلل الكسب الفعلي. تقدير متحفظ، تم اعتماده في التنبؤ المسجل مسبقاً، يضع عامل امتداد العمر في المجال \textbf{1.5–2.0} لجميع الأنواع.
+	
+	لأن متواليات الأحماض الأمينية متطابقة تقريباً، فإن هذه التنبؤات هي نفسها عبر الأنواع الحيوانية الخمسة وتطابق التنبؤ البشري من BCLM‑LL.
+	
+	\section{البروتوكول التجريبي}
+	\label{sec:protocol}
+	
+	\subsection{البنيات الوراثية}
+	لكل نوع، يتم تحضير متغيرين اصطناعيين لكل جين مستهدف:
+	\begin{itemize}
+		\item \textbf{WT‑OE}: التسلسل الأصلي، مستنسخ في ناقل lentiviral محرض بالدوكسيسايكلين (pLV‑TRE‑Tight‑IRES‑EGFP).
+		\item \textbf{LL‑OPT}: التسلسل المُحسَّن بواسطة BCLM (محسَّن الكودون للعائل المحدد) في نفس الناقل.
+	\end{itemize}
+	يتم إنشاء ضبط مشوش (SCR) لـ BRCA1 عن طريق تبديل الكودونات المترادفة بشكل عشوائي.
+	
+	\subsection{الضوابط}
+	لكل نوع، تُجرى ثلاثة ضوابط بالتوازي:
+	\begin{enumerate}
+		\item ناقل فارغ (EV).
+		\item WT‑OE (مستويات بروتين متطابقة).
+		\item SCR (ضبط خصوصية).
+	\end{enumerate}
+	
+	\subsection{الجدول الزمني للقياسات}
+	تُجرى نفس المقايسات الخمسة كما في BCLM‑LL لكل نوع.
+	
+	\begin{table}[H]
+		\centering
+		\caption{الجدول الزمني التجريبي}
+		\label{tab:schedule}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{اليوم} & \textbf{المقايسة} & \textbf{الطبقة} & \textbf{القراءة} \\
+			\midrule
+			0–7   & العدوى، الانتخاب & --- & EGFP \\
+			7–14  & تحريض الدوكسيسايكلين & الكل & مستويات البروتين \\
+			14–21 & مقايسة طفرة HPRT & 1 & مستعمرات 6‑TG\(^{\mathrm{R}}\) \\
+			14–21 & MitoSOX, TMRE & 2 & قياس التدفق الخلوي \\
+			21–28 & مقايسة إدراج HTT‑Q72 & 3 & المجهر الفلوري \\
+			21–28 & مقايسة الجرح بالخدش & 4 & سرعة إغلاق الجرح \\
+			28–56 & التمرير التسلسلي & الكل & شيخوخة \(\beta\)-gal، qPCR للتيلومير \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{تحديد عمر التضاعف}
+	تُمرر الخلايا عند 80\% اكتظاظ ويُسجل عدد التضاعفات التراكمية (CPD). نقطة النهاية الأولية هي CPD عند توقف النمو. يُتوقع أن تصل الخلايا المُحسَّنة بـ BCLM إلى \(1.5\)–\(2.0\times\) CPD لضوابط WT‑OE.
+	
+	\section{انحدار التنسيق الخاضع للرقابة (CCR) عبر الأنواع}
+	\label{sec:CCR}
+	تُختبر قابلية عكس النمط الظاهري للشيخوخة في كل نوع عن طريق كبت جين واحد مُحسَّن مؤقتاً لكل طبقة.
+	
+	\begin{table}[H]
+		\centering
+		\caption{تدخلات CCR للأنواع الخمسة}
+		\label{tab:CCR}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{الطبقة} & \textbf{الجين المستهدف} & \textbf{الطريقة} & \textbf{التأثير المتوقع} \\
+			\midrule
+			1 & BRCA1\_LL & shRNA محرض بالدوكسيسايكلين & \(\REL \to 0.62\); ارتفاع معدل الطفرة بعامل 1.86 \\
+			2 & NDUFS1\_LL & تحرير قاعدة CRISPR (I182F) & \(\REL \to 0.55\); ارتفاع ROS بعامل 1.80 \\
+			3 & HSPA1A\_LL & Tet‑CRISPRi & \(\REL \to 0.52\); ارتفاع الراسب بعامل 1.78 \\
+			4 & ITGB3\_LL & siRNA & \(\REL \to 0.57\); انخفاض سرعة الهجرة بعامل 1.20 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	بعد 72 ساعة من الكبت، يجب أن تتحول المؤشرات الحيوية نحو النمط الظاهري للبرية. بعد الغسل أو تخفيف siRNA، يجب أن تستعيد الخلايا حالة الحياة الطويلة خلال 48–72 ساعة. يُشتق التنبؤ الكمي لكل مؤشر حيوي مباشرة من قيم \(\REL\) في الجدول~\ref{tab:targets} وقانون الخطأ العالمي.
+	
+	\section{قابلية التكذيب}
+	\label{sec:falsifiability}
+	جميع التنبؤات في الجدول~\ref{tab:predictions} مسجلة مسبقاً في مستودع YPSDC. ستُعتبر نظرية التنسيق للشيخوخة في YUCT مكذوبة إذا خرجت النتائج التجريبية، بعد ثلاث مكررات مستقلة، عن النطاقات المذكورة لأربعة من خمسة أنواع.
+	
+	\begin{table}[H]
+		\centering
+		\caption{التنبؤات المسجلة مسبقاً (متطابقة لجميع الأنواع الخمسة)}
+		\label{tab:predictions}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{التنبؤ} & \textbf{المقايسة} & \textbf{المتوقع (LL/WT)} & \textbf{التكذيب إذا} \\
+			\midrule
+			معدل الطفرة       & HPRT           & \(0.86 \pm 0.05\) & LL/WT \(> 0.95\) \\
+			ROS               & MitoSOX        & \(0.80 \pm 0.05\) & LL/WT \(> 0.90\) \\
+			الراسب            & بؤر HTT‑Q72    & \(0.78 \pm 0.05\) & LL/WT \(> 0.90\) \\
+			سرعة الهجرة       & مقايسة الخدش   & \(1.20 \pm 0.05\) & LL/WT \(< 1.05\) \\
+			عمر التضاعف       & CPD            & \(1.5\)–\(2.0\)   & LL/WT \(< 1.3\) \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\section{الاعتبارات الأخلاقية}
+	\label{sec:ethics}
+	يستخدم هذا البروتوكول حصراً خطوط الخلايا المتاحة تجارياً. لا حاجة لحيوانات حية. يتم إيصال البنيات الوراثية \textit{in vitro} عبر كواشف العدوى القياسية؛ لم تُوصف طرق الإيصال \textit{in vivo}. يُنصح الباحثون باستشارة الملحق~\(\Sigma\) قبل توسيع هذا العمل ليشمل خلايا مستنبتة فقط.
+	
+	\section{الاستنتاج}
+	\label{sec:conclusion}
+	يوفر بروتوكول BCLM‑LL‑MPS إطاراً صارماً ومتسقاً داخلياً لاختبار نظرية التنسيق للشيخوخة في YUCT عبر خمسة أنواع من الثدييات متباعدة تطورياً. تُحسب جميع التنبؤات من مجموعة واحدة من الثوابت العالمية وجداول الكودون الخاصة بكل نوع؛ لا يتم تعديل أي معاملات حرة \textit{بعد الحقيقة}. من شأن النتيجة الناجحة أن تثبت \(K_{\mathrm{eff}}\) كمقياس كمي أول عبر الأنواع للتنسيق البيولوجي واستعادته كاستراتيجية مضادة للشيخوخة عقلانية.
+	
+	\vspace{0.5cm}
+	\noindent\textbf{البيانات والشفرة:} جميع التسلسلات المتجانسة، وجداول استخدام الكودون، وقيم \(\REL\) المحسوبة، والتنبؤات المسجلة مسبقاً متاحة في \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}.
+	
+	\begin{thebibliography}{99}
+		\bibitem{BCLM} A.\,V.\,Yakushev, ``Appendix BCLM: Biological Coordination Lagrangian,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{BCLM_LL} A.\,V.\,Yakushev, ``Appendix BCLM‑LL: Experimental Protocol … Human Cardiomyocytes,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixL} A.\,V.\,Yakushev, ``Appendix L: Fractal Coordination Error Scaling,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixP} A.\,V.\,Yakushev, ``Appendix P: Temperature Dependence of Gravity,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixSigma} A.\,V.\,Yakushev, ``Appendix \(\Sigma\): Ethical Imperatives and Governance,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{Bjedov2021} I.~Bjedov \emph{et al.}, ``A single hyper‑accurate mutation in the ribosome extends lifespan in yeast, worms, and flies,'' \emph{Cell Metabolism}, 33, 1054–1070 (2021).
+		\bibitem{Kerekes2025} K.~Kerekes \emph{et al.}, ``Codon optimisation and evolutionary pressure in long‑lived mammals,'' \emph{bioRxiv} (2025).
+		\bibitem{Morrow2004} G.~Morrow \emph{et al.}, ``Overexpression of … Hsp22 extends \textit{Drosophila} lifespan,'' \emph{FASEB J.}, 18, 598–599 (2004).
+		\bibitem{Walker2003} G.\,A.~Walker, G.\,J.~Lithgow, ``Lifespan extension in \textit{C. elegans} by a molecular chaperone,'' \emph{Aging Cell}, 2, 131–139 (2003).
+		\bibitem{Takeda2019} M.~Takeda \emph{et al.}, ``Downregulation of \(\alpha\)5 integrin induces cellular senescence,'' \emph{FEBS Lett.}, 593, 1284–1293 (2019).
+		\bibitem{codon_usage_db} Y.\,Nakamura \emph{et al.}, Codon usage tabulated … \url{https://www.kazusa.or.jp/codon/}.
+		\bibitem{YPSDC_repo} A.\,V.\,Yakushev, YPSDC Repository, \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}.
+	\end{thebibliography}
+	
+\end{document}

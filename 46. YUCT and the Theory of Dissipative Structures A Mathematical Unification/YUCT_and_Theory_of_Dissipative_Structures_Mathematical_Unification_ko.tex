@@ -1,0 +1,198 @@
+% !TeX program = lualatex
+\documentclass[12pt,a4paper]{article}
+
+% ========= 한국어 폰트 설정 (Windows) – 성공한 버전 =========
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+\defaultfontfeatures{Ligatures=TeX}
+\setmainfont{Times New Roman}[Script=Latin, Language=English]
+\setsansfont{Malgun Gothic}[Script=CJK, Language=Korean]
+\setmonofont{Courier New}[Script=Latin, Language=English]
+\setmainjfont{Malgun Gothic}[Script=CJK, Language=Korean]
+\setsansjfont{Malgun Gothic}[Script=CJK, Language=Korean]
+\setmonojfont{Noto Sans Mono CJK KR}[Script=CJK, Language=Korean]
+
+% ========= 패키지 =========
+\usepackage{amsmath,amssymb,amsfonts,mathtools}
+\usepackage{geometry}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{float}
+\usepackage{physics}
+\usepackage{bm}
+
+% ========= YUCT 매크로 =========
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\betaf}{\beta}
+\newcommand{\dint}{D\!+\!I\!\cdot\!R}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+
+% ========= 섹션 서식 =========
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+% ========= 하이퍼링크 설정 =========
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+	pdftitle={YUCT와 산재 구조: 조정 기반 비평형 불안정성 해석},
+	pdfauthor={Alexey V. Yakushev}
+}
+
+\begin{document}
+	
+	\title{\huge\textbf{YUCT와 산재 구조}\\[0.2cm]
+		\Large 조정 기반 비평형 불안정성의 해석\\[0.3cm]
+		\large \textit{보편 오차 법칙과 대류 개시의 연결}}
+	\author{Alexey V. Yakushev\\[0.2cm] \small Yakushev Research \quad \url{https://yuct.org/}}
+	\date{\small 2026년 5월 \quad 버전 1.0}
+	\maketitle
+	
+	\begin{abstract}
+		\noindent 
+		야쿠셰프 통일 조정 이론(YUCT)은 단일 매개변수인 조정 효율 \(K_{\mathrm{eff}}\)와 보편 오차 스케일링 법칙 \(\varepsilon = \kappa_c\alpha K_{\mathrm{eff}}^{-\beta}\) (\(\beta = 2/3\), \(\kappa_c = 1/3\))을 통해 질서 있는 복잡성을 설명한다. 본 부록에서는 이 법칙이 비평형 정상 상태의 안정성, 특히 베나르 대류의 개시에 대해 갖는 결과를 탐구한다. 우리는 단순 유체의 조정 효율 \(K_{\mathrm{eff}}\)를 열전도율과 전단 점도——일상적으로 측정 가능한 양——로 정의할 것을 제안한다. 이 정의를 사용하여 엔트로피 생성률 \(\sigma\)를 \(K_{\mathrm{eff}}\)의 함수로 표현하고, 선형 안정성 임계값이 조정 효율의 보편 임계값 \(K_{\mathrm{eff}}^{\mathrm{crit}} = (S_{\mathrm{odd}}/S_{\mathrm{even}})^{1/\beta} \approx 1.837\)에 해당함을 보여준다. 이 값은 YUCT의 대수적 닫힌 루프(\(S_{\mathrm{odd}} = 6/5,\; S_{\mathrm{even}} = 4/5,\; \beta = 2/3\))로부터 직접 유도되며, 자유 매개변수를 포함하지 않는다. 예측은 다음과 같다: 임의의 뉴턴 유체에 대해, 여기서 정의된 유효 조정 효율이 약 1.837 미만으로 떨어질 때 대류가 발생한다. 임계 레일리 수와 유체의 프란틀 수 사이의 정량적이고 반증 가능한 관계를 유도하며, 이는 기존 실험 데이터로 검증 가능하다. 유도는 KPZ 관계나 프랙탈 차원을 전혀 사용하지 않고 YUCT의 대수적 구조에만 의존한다. 본 현상론적 취급의 한계를 명시적으로 논의한다.
+	\end{abstract}
+	\vspace{0.5cm}
+	\noindent\textbf{키워드:} YUCT, 베나르 대류, 조정 효율, 엔트로피 생성, 프란틀 수, 대수적 닫힌 루프.
+	
+	\newpage
+	\tableofcontents
+	\newpage
+	
+	\section{서론}
+	
+	야쿠셰프 통일 조정 이론(YUCT)은 조정——시스템 구성 요소가 사전에 공유된 사전을 사용하여 상태를 정렬하는 능력——이 물리 법칙이 출현하는 근본적인 과정이라는 전제 위에 세워졌다~\cite{Yakushev2026}. 그 예측력은 조정의 상대 오차에 관한 단일 스케일링 법칙에 기반한다:
+	\begin{equation}\label{eq:universal}
+		\varepsilon = \kappa_c\,\alpha\, K_{\mathrm{eff}}^{-\beta},\qquad 
+		\beta = \frac{2}{3},\quad \kappa_c = \frac{1}{3},
+	\end{equation}
+	여기서 \(\alpha\)는 1 정도의 시스템 특정 상수이다. \(\beta\)와 \(\kappa_c\)의 값은 자유 매개변수가 아니라 계층적 조정 네트워크의 대수적 자기일관성으로부터 유도된다(부록~\cite{AppendixY, AppendixL, AppendixFerra, AppendixAF} 참조). 결과로 얻어지는 대수적 닫힌 루프는 두 개의 정확한 유리 상수를 제공한다:
+	\begin{equation}\label{eq:S-constants}
+		S_{\mathrm{odd}} = \frac{6}{5} = 1.2,\qquad
+		S_{\mathrm{even}} = \frac{4}{5} = 0.8,
+	\end{equation}
+	이는 \(S_{\mathrm{odd}} + S_{\mathrm{event}} = 2\) 및 \(S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2 = 1/\beta\)를 만족한다. 이 숫자들은 이후 모든 유도의 기초가 된다.
+	
+	다른 연구 분야에서, 일리야 프리고진이 정식화한 산재 구조 이론은 열역학적 평형에서 멀리 떨어진 개방계가 어떻게 자발적으로 더 높은 복잡성의 상태로 진화할 수 있는지를 설명한다~\cite{Prigogine1977, Glansdorff1971}. 그 전형적인 예가 베나르 대류이다: 아래에서 가열된 수평 유체층은 온도 구배가 임계값을 초과할 때 규칙적인 대류 롤 패턴을 발달시킨다~\cite{Chandrasekhar1961}. 프리고진의 안정성 기준은 과잉 엔트로피 생성 \(\delta_X P\)이 양수가 될 때 정상 상태가 불안정해진다고 말한다.
+	
+	본 부록의 목적은 프리고진의 기준을 YUCT의 언어로 재정식화하고, YUCT의 대수적 닫힌 루프가 대류 개시에 대해 정량적이고 검증 가능한 예측을 수행함을 보이는 것이다. 유도는 현상론적이지만, YUCT 프레임워크에 이미 존재하는 매개변수 외에는 임의의 매개변수를 포함하지 않는다. 또한 본 접근법의 한계를 명시적으로 인식하고, 완전한 미시 이론에 필요한 단계를 개괄한다.
+	
+	\section{단순 유체의 조정 효율}
+	
+	YUCT를 물리 시스템에 적용하려면 관련된 ``사전''과 ``인덱스''를 식별하고, 그로부터 \(K_{\mathrm{eff}}\)를 계산해야 한다. 온도 구배 속의 유체에서 열 수송은 일련의 국소적 조정 사건으로 볼 수 있다: 더 높은 온도의 분자가 충돌을 통해 더 낮은 온도의 분자에게 에너지를 전달한다. 이 과정의 효율은 두 가지 요인에 의해 제한된다: 매체가 열을 전도하는 고유 능력(열전도율 \(\lambda\))과 에너지를 소산시키는 내부 마찰(전단 점도 \(\eta\))이다. 높은 \(\lambda\)와 낮은 \(\eta\)를 가진 유체는 에너지가 적은 손실로 빠르게 이동하기 때문에 ``좋은 조정자''이다.
+	
+	따라서 우리는 다음과 같은 조작적 정의를 제안한다:
+	\begin{equation}\label{eq:Keff-fluid}
+		K_{\mathrm{eff}} \equiv \frac{\lambda}{\lambda_0} \left( \frac{\eta_0}{\eta} \right)^{\gamma},
+	\end{equation}
+	여기서 \(\lambda_0\)와 \(\eta_0\)는 기준값(예: 20°C의 물), 지수 \(\gamma\)는 \(K_{\mathrm{eff}}\)가 무차원이고 스케일 불변이 되도록 선택된다. 비율 \(\lambda/\eta\)는 차원 \((\text{길이})^2/(\text{시간}\cdot\text{온도})\)을 가지므로, 자연스러운 선택은 \(\gamma = 1\)이며,
+	\begin{equation}\label{eq:Keff-fluid2}
+		K_{\mathrm{eff}} = \frac{\lambda / \lambda_0}{\eta / \eta_0}.
+	\end{equation}
+	이 정의는 부록 C에서 화학 원소에 대해 도입된 ``조정 수''와 유사하며, \(K_{\mathrm{eff}}\)를 직접 측정 가능하게 만든다.
+	
+	\section{엔트로피 생성과 보편 오차 법칙}
+	
+	온도 구배 \(\nabla T\) 속에서 정지해 있는 유체에서 유일한 열역학적 흐름은 열 흐름 \(J = -\lambda \nabla T\)이며, 켤레 힘은 \(X = \nabla(1/T)\)이다. 단위 부피당 엔트로피 생성률은
+	\begin{equation}\label{eq:sigma}
+		\sigma = J \cdot \nabla\left(\frac{1}{T}\right) \approx \frac{\lambda |\nabla T|^2}{T^2}.
+	\end{equation}
+	YUCT의 그림에서 열 흐름은 많은 미시적 조정 행위의 결과이다. 이 행위들 중 비율 \(\varepsilon\)은 에너지를 코히런트하게 전달하지 못하며, 유효 흐름은 감소한다:
+	\begin{equation}\label{eq:J-effective}
+		J_{\mathrm{eff}} = J \; \bigl(1 - \varepsilon\bigr).
+	\end{equation}
+	``잃어버린'' 흐름은 엔트로피 생성에는 기여하지만 구배의 코히런트한 제거에는 기여하지 않는다. 보편 오차 법칙 \eqref{eq:universal}을 사용하면,
+	\begin{equation}\label{eq:sigma-K}
+		\sigma = \frac{\lambda |\nabla T|^2}{T^2} \frac{1}{1 - \kappa_c\alpha K_{\mathrm{eff}}^{-\beta}}.
+	\end{equation}
+	를 얻는다. \(K_{\mathrm{eff}} \gg 1\)에서는 보정이 무시할 수 있으며, 계는 통상의 선형 푸리에 법칙을 따른다. \(K_{\mathrm{eff}}\)가 감소함에 따라(유체가 전도율에 비해 점성이 커짐) 오차는 증가하고, 같은 인가된 구배에 대한 엔트로피 생성은 증가한다.
+	
+	\section{안정성 임계값과 임계 조정 효율}
+	
+	프리고진의 안정성 기준에 따르면, 변동이 과잉 엔트로피 생성을 양수로 만들 때 정상 상태는 불안정해진다~\cite{Glansdorff1971}. YUCT 정식화에서 변동은 유체의 조정 상태의 국소적 변화——\(K_{\mathrm{eff}}\)의 정상값으로부터의 일시적 이탈——로 생각할 수 있다. \eqref{eq:sigma-K}을 사용하면, 작은 변동 \(\delta K_{\mathrm{eff}}\)는 엔트로피 생성의 변화를 초래한다:
+	\begin{equation}
+		\delta_X P \propto - \delta K_{\mathrm{eff}}.
+	\end{equation}
+	따라서 \(K_{\mathrm{eff}}\)를 감소시키는 변동은 \(\delta_X P > 0\)이 되며 증폭되기 쉽다. 이 증폭은 조정의 악화를 가속화하고, 계를 새로운 상태로 몰아간다.
+	
+	그러므로 전도 정상 상태는 \(K_{\mathrm{eff}}\)가 임계값 아래로 떨어질 때 불안정해진다. YUCT의 대수적 닫힌 루프가 모든 무차원 비율을 고정하기 때문에, 이 임계값은 기본 상수를 사용하여 표현되어야 한다:
+	\begin{equation}\label{eq:Kcrit}
+		K_{\mathrm{eff}}^{\mathrm{crit}} = \left( \frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}} \right)^{1/\beta}
+		= \left( \frac{3}{2} \right)^{3/2} \approx 1.837.
+	\end{equation}
+	지수 \(1/\beta\)는 임계값에서의 오차 매개변수 \(\varepsilon\)이 1 정도(계가 유용한 조정과 잡음을 구별할 수 없게 됨)라는 요구 사항을 따른다. 비율 \(S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2\)는 YUCT의 보편적 질서-무질서 비율이다. 식 \eqref{eq:Kcrit}은 자유 매개변수를 포함하지 않는다.
+	
+	\section{임계 레일리 수에 대한 예측}
+	
+	깊이 \(d\), 밀도 \(\rho\), 비열 \(c_p\), 열팽창 계수 \(\alpha_T\), 인가된 온도차 \(\Delta T\)를 가진 유체층에 대한 레일리 수는
+	\begin{equation}
+		\mathrm{Ra} = \frac{\rho^2 c_p \alpha_T g \Delta T d^3}{\lambda \eta}.
+	\end{equation}
+	이다. 조정 효율 \eqref{eq:Keff-fluid2}을 사용하면,
+	\begin{equation}
+		\mathrm{Ra} = \frac{A}{K_{\mathrm{eff}}},
+	\end{equation}
+	로 쓸 수 있다. 여기서 \(A\)는 유체의 성질에는 의존하지 않고, 형상과 경계 조건에만 의존하는 상수이다. 이 동일시를 통해, 임계 조건 \(K_{\mathrm{eff}} = K_{\mathrm{eff}}^{\mathrm{crit}}\)은 임계 레일리 수로 변환된다:
+	\begin{equation}\label{eq:Racrit}
+		\mathrm{Ra_c} = \frac{A}{K_{\mathrm{eff}}^{\mathrm{crit}}}.
+	\end{equation}
+	만약 상수 \(A\)가 하나의 기준 유체(예: 물)에 대해 결정될 수 있다면, 물에 대한 고전적 임계 레일리 수(강체 경계에서 \(\mathrm{Ra}_{\text{물}} \approx 1708\))와 우리의 정의로부터 얻어지는 \(K_{\mathrm{eff}}^{\text{물}}\)을 사용하여, 다른 임의의 유체에 대한 임계 레일리 수를 예측할 수 있다:
+	\begin{equation}\label{eq:Racrit-predict}
+		\boxed{ \mathrm{Ra_c}(\text{유체}) = \mathrm{Ra_c}(\text{물}) \;
+			\frac{K_{\mathrm{eff}}^{\text{물}}}{K_{\mathrm{eff}}(\text{유체})} }.
+	\end{equation}
+	\eqref{eq:Keff-fluid2}을 사용하면, 이는 임계 레일리 수와 유체의 열전도율·점도 사이의 관계가 된다:
+	\begin{equation}
+		\mathrm{Ra_c} \propto \frac{\eta / \eta_0}{\lambda / \lambda_0}.
+	\end{equation}
+	따라서 점도가 높은(조정이 나쁜) 유체는 더 큰 임계 레일리 수를 가져야 한다——대류를 발생시키기가 더 어렵다. 이 예측은 고전적 결과와 질적으로 일치한다: 기름과 같은 점성이 높은 유체는 물보다 훨씬 큰 임계 레일리 수를 가진다. 정량적 검증을 위해서는 유체의 \(\lambda\)와 \(\eta\)를 측정하고, \eqref{eq:Keff-fluid2}로부터 \(K_{\mathrm{eff}}\)를 계산한 후, 예측된 \(\mathrm{Ra_c}\)를 실험적으로 관측된 대류 개시와 비교해야 한다. 기준 유체에 대한 단일 교정 이후에는 조정 가능한 매개변수가 남지 않는다.
+	
+	\section{검증 가능한 귀결과 실험 프로토콜}
+	
+	\subsection{기존 데이터를 통한 즉시 테스트}
+	문헌에는 다양한 유체의 임계 레일리 수에 대한 광범위한 표가 존재한다(예:~\cite{Chandrasekhar1961, Cross1993}의 리뷰 참조). 관련 온도에서의 \(\lambda\)와 \(\eta\)의 측정값을 사용하여 각 유체의 \(K_{\mathrm{eff}}\)를 계산하고, 비율 \(\mathrm{Ra_c}/\mathrm{Ra_c}^{\text{물}}\)이 \(K_{\mathrm{eff}}^{\text{물}} / K_{\mathrm{eff}}\)와 같은지 검증할 수 있다. \(R^2 > 0.9\)의 양의 상관관계는 YUCT 메커니즘에 대한 강력한 증거가 될 것이다.
+	
+	\subsection{전용 실험}
+	조정 효율이 크게 다른 두 유체, 예를 들어 물과 실리콘 오일을 사용하여 제어된 실험을 수행할 수 있다. 각 유체에 대해, 임계 온도차 \(\Delta T_c\)를 높은 정밀도로 측정한다. YUCT의 예측은, 고정된 기하학에서 임계 온도차의 비율이 \eqref{eq:Keff-fluid2}로 정의된 조정 효율의 역비와 같다는 것이다. 이는 매개변수-없음, 반증 가능한 예측이다.
+	
+	\section{한계와 미해결 문제}
+	
+	본 분석은 현상론적이다. 완전한 미시 이론은 조정 오차 \(\varepsilon\)와 열역학적 흐름 사이의 관계를 첫 원리로부터 유도하고, \eqref{eq:J-effective}을 가정하지 않고 얻어야 한다. 더욱이, \eqref{eq:Keff-fluid2}에서의 \(K_{\mathrm{eff}}\) 정의는 동기 부여된 가정이며, 다른 정의도 가능하고 데이터와 대조되어야 한다. 또한 화학 반응의 역할도 무시되었다——화학 반응은 대류의 개시를 강하게 변조하는 것으로 알려져 있다. 이는 향후 연구의 과제이다.
+	
+	이러한 한계에도 불구하고, YUCT 루프로부터 임계 조정 효율 \(K_{\mathrm{eff}}^{\mathrm{crit}} \approx 1.837\)을 대수적으로 유도한 것은 프레임워크 내에서 정확하다. 자연이 실제로 이 값을 사용하는지 여부는 실험으로 결정될 수 있다.
+	
+	\section{결론}
+	
+	우리는 YUCT 프레임워크가 베나르 대류의 개시에 대해 정량적이고 검증 가능한 해석을 제공함을 보였다. 임계 레일리 수는 유체의 조정 효율로 표현되며, 조정 효율은 측정 가능한 수송 계수와 연결된다. 예측된 스케일링 관계 \(\mathrm{Ra_c} \propto \eta/\lambda\)는 기존 실험 데이터로 검증 가능하다. 이 연구는 YUCT가 열역학의 단순한 철학적 재해석이 아니라, 반증 가능한 수치 예측을 생성할 수 있는 프레임워크임을 입증한다.
+	
+	\section*{감사의 글}
+	저자는 비판적 논의에 대해 YUCT 세미나 참가자들에게 감사드린다.
+	
+	\begin{thebibliography}{99}
+		\bibitem{Yakushev2026} A.~V.~Yakushev, \emph{Yakushev Unified Coordination Theory (YUCT)}, Zenodo, DOI:10.5281/zenodo.18444599 (2026).
+		\bibitem{AppendixY} A.~V.~Yakushev, ``Appendix Y: Mathematical Foundations of YUCT,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixL} A.~V.~Yakushev, ``Appendix L: Fractal Coordination Error Scaling,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixFerra} A.~V.~Yakushev, ``Appendix Ferra1.2: Universal Coordination Constants for Ordered and Disordered Phases,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixAF} A.~V.~Yakushev, ``Appendix AF: The Algebraic Framework of Reality in YUCT,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{Prigogine1977} I.~Prigogine and G.~Nicolis, \emph{Self‑Organization in Nonequilibrium Systems}. Wiley (1977).
+		\bibitem{Glansdorff1971} P.~Glansdorff and I.~Prigogine, \emph{Thermodynamic Theory of Structure, Stability and Fluctuations}. Wiley (1971).
+		\bibitem{Chandrasekhar1961} S.~Chandrasekhar, \emph{Hydrodynamic and Hydromagnetic Stability}. Oxford (1961).
+		\bibitem{Cross1993} M.~C.~Cross and P.~C.~Hohenberg, ``Pattern formation outside of equilibrium,'' \emph{Rev. Mod. Phys.} \textbf{65}, 851 (1993).
+	\end{thebibliography}
+	
+\end{document}

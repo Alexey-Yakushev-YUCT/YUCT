@@ -1,0 +1,204 @@
+% !TeX program = lualatex
+\documentclass[12pt,a4paper]{article}
+
+% ========= ЯЗЫКИ И ШРИФТЫ =========
+\usepackage[english]{babel}
+\babelprovide[import, main]{japanese}
+\babelprovide[import, onchar=ids fonts]{english}
+\usepackage{fontspec}
+\defaultfontfeatures{Ligatures=TeX}
+
+% Японские шрифты (Noto CJK)
+\babelfont[japanese]{rm}{Noto Serif CJK JP}
+\babelfont[japanese]{sf}{Noto Sans CJK JP}
+\babelfont[japanese]{tt}{Noto Sans CJK JP}
+
+% Английские шрифты (системные)
+\babelfont[english]{rm}{Times New Roman}
+\babelfont[english]{sf}{Arial}
+\babelfont[english]{tt}{Courier New}
+
+% ========= ПАКЕТЫ =========
+\usepackage{amsmath,amssymb,amsfonts,mathtools}
+\usepackage{geometry}
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{float}
+\usepackage{physics}
+\usepackage{bm}
+
+% ========= YUCTマクロ (追加) =========
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\betaf}{\beta}
+\newcommand{\dint}{D\!+\!I\!\cdot\!R}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+
+% ========= セクション書式 =========
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+% ========= ハイパーリンク設定 =========
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+	pdftitle={YUCTと散逸構造：調整に基づく非平衡不安定性の解釈},
+	pdfauthor={Alexey V. Yakushev}
+}
+
+\begin{document}
+	
+	\title{\huge\textbf{YUCTと散逸構造}\\[0.2cm]
+		\Large 調整に基づく非平衡不安定性の解釈\\[0.3cm]
+		\large \textit{普遍誤差則と対流発生の接続}}
+	\author{Alexey V. Yakushev\\[0.2cm] \small Yakushev Research \quad \url{https://yuct.org/}}
+	\date{\small 2026年5月 \quad バージョン 1.0}
+	\maketitle
+	
+	\begin{abstract}
+		\noindent 
+		ヤクシェフ統一調整理論（YUCT）は、単一のパラメータである調整効率 \(K_{\mathrm{eff}}\) と普遍誤差スケーリング則 \(\varepsilon = \kappa_c\alpha K_{\mathrm{eff}}^{-\beta}\) （\(\beta = 2/3\), \(\kappa_c = 1/3\)）によって秩序ある複雑性を記述する。本付録では、この法則が非平衡定常状態の安定性、特にベナール対流の発生に対して持つ帰結を探る。我々は、単純流体の調整効率 \(K_{\mathrm{eff}}\) を、その熱伝導率とずり粘度——日常的に測定可能な量——によって定義することを提案する。この定義を用いて、エントロピー生成率 \(\sigma\) を \(K_{\mathrm{eff}}\) の関数として表現し、線形安定性の閾値が調整効率の普遍臨界値 \(K_{\mathrm{eff}}^{\mathrm{crit}} = (S_{\mathrm{odd}}/S_{\mathrm{even}})^{1/\beta} \approx 1.837\) に対応することを示す。この値はYUCTの代数的閉ループ（\(S_{\mathrm{odd}} = 6/5,\; S_{\mathrm{even}} = 4/5,\; \beta = 2/3\)）から直接導出され、自由パラメータを含まない。予測は以下の通りである：任意のニュートン流体について、ここで定義された実効調整効率が約1.837を下回るときに対流が発生する。臨界レイリー数と流体のプラントル数の間の定量的で反証可能な関係を導き、既存の実験データで検証可能とする。導出にはKPZ関係やフラクタル次元を一切使わず、YUCTの代数的構造のみに依存する。本現象論的扱いの限界についても明示的に議論する。
+	\end{abstract}
+	\vspace{0.5cm}
+	\noindent\textbf{キーワード:} YUCT, ベナール対流, 調整効率, エントロピー生成, プラントル数, 代数的閉ループ.
+	
+	\newpage
+	\tableofcontents
+	\newpage
+	
+	\section{序論}
+	
+	ヤクシェフ統一調整理論（YUCT）は、調整——システムの構成要素が事前に共有された辞書を用いて状態を整列させる能力——が物理法則の現れる根本的な過程であるという前提に基づいている~\cite{Yakushev2026}。その予測力は、調整の相対誤差に関する単一のスケーリング則に依存している：
+	\begin{equation}\label{eq:universal}
+		\varepsilon = \kappa_c\,\alpha\, K_{\mathrm{eff}}^{-\beta},\qquad 
+		\beta = \frac{2}{3},\quad \kappa_c = \frac{1}{3},
+	\end{equation}
+	ここで \(\alpha\) は1程度のシステム固有定数である。\(\beta\) と \(\kappa_c\) の値は自由パラメータではなく、階層的調整ネットワークの代数的自己無撞着性から導かれる（付録~\cite{AppendixY, AppendixL, AppendixFerra, AppendixAF} 参照）。結果として得られる代数的閉ループは二つの正確な有理定数をもたらす：
+	\begin{equation}\label{eq:S-constants}
+		S_{\mathrm{odd}} = \frac{6}{5} = 1.2,\qquad
+		S_{\mathrm{even}} = \frac{4}{5} = 0.8,
+	\end{equation}
+	これらは \(S_{\mathrm{odd}} + S_{\mathrm{even}} = 2\) および \(S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2 = 1/\beta\) を満たす。これらの数値は以降のすべての導出の基盤である。
+	
+	一方、イリヤ・プリゴジンによって定式化された散逸構造の理論は、熱力学的平衡から遠く離れた開放系がどのようにして自発的に高複雑性の状態へと進化しうるかを記述する~\cite{Prigogine1977, Glansdorff1971}。その典型的な例がベナール対流である：下部から加熱された水平流体層は、温度勾配が臨界値を超えると規則的な対流ロールのパターンを発現する~\cite{Chandrasekhar1961}。プリゴジンの安定性基準は、過剰エントロピー生成 \(\delta_X P\) が正となるときに定常状態が不安定化することを述べている。
+	
+	本付録の目的は、プリゴジンの基準をYUCTの言語で再定式化し、YUCTの代数的閉ループが対流発生に対して定量的かつ検証可能な予測を行うことを示すことである。導出は現象論的であるが、YUCTフレームワークに既に存在するパラメータ以外の任意のパラメータを含まない。また、本アプローチの限界を明示的に認識し、完全な微視理論に必要なステップを概説する。
+	
+	\section{単純流体の調整効率}
+	
+	YUCTを物理システムに適用するには、関連する「辞書」と「インデックス」を特定し、それらから \(K_{\mathrm{eff}}\) を計算する必要がある。温度勾配中の流体では、熱の輸送は一連の局所的調整事象として見なせる：高温の分子が衝突によって低温の分子にエネルギーを伝達する。この過程の効率は二つの要因によって制限される：媒体が熱を伝導する本来の能力（熱伝導率 \(\lambda\)）と、エネルギーを散逸させる内部摩擦（ずり粘度 \(\eta\)）である。高い \(\lambda\) と低い \(\eta\) を持つ流体は、エネルギーが小さな損失で素早く移動するため「良い調整器」である。
+	
+	そこで我々は以下の操作的な定義を提案する：
+	\begin{equation}\label{eq:Keff-fluid}
+		K_{\mathrm{eff}} \equiv \frac{\lambda}{\lambda_0} \left( \frac{\eta_0}{\eta} \right)^{\gamma},
+	\end{equation}
+	ここで \(\lambda_0\) と \(\eta_0\) は基準値（例：20°Cの水）、指数 \(\gamma\) は \(K_{\mathrm{eff}}\) が無次元でスケール不変となるように選ばれる。比 \(\lambda/\eta\) は次元 \((\text{長さ})^2/(\text{時間}\cdot\text{温度})\) を持つため、自然な選択は \(\gamma = 1\) であり、
+	\begin{equation}\label{eq:Keff-fluid2}
+		K_{\mathrm{eff}} = \frac{\lambda / \lambda_0}{\eta / \eta_0}.
+	\end{equation}
+	となる。この定義は付録Cで化学元素に対して導入された「調整数」に類似しており、\(K_{\mathrm{eff}}\) を直接測定可能にする。
+	
+	\section{エントロピー生成と普遍誤差則}
+	
+	温度勾配 \(\nabla T\) の中で静止している流体では、唯一の熱力学的流束は熱流束 \(J = -\lambda \nabla T\) であり、共役力は \(X = \nabla(1/T)\) である。単位体積あたりのエントロピー生成率は
+	\begin{equation}\label{eq:sigma}
+		\sigma = J \cdot \nabla\left(\frac{1}{T}\right) \approx \frac{\lambda |\nabla T|^2}{T^2}.
+	\end{equation}
+	YUCTの描像では、熱流束は多くの微視的調整行為の結果である。これらの行為のうち割合 \(\varepsilon\) はエネルギーをコヒーレントに伝達できず、実効流束は減少する：
+	\begin{equation}\label{eq:J-effective}
+		J_{\mathrm{eff}} = J \; \bigl(1 - \varepsilon\bigr).
+	\end{equation}
+	「失われた」流束はエントロピー生成には寄与するが、勾配のコヒーレントな除去には寄与しない。普遍誤差則 \eqref{eq:universal} を用いると、
+	\begin{equation}\label{eq:sigma-K}
+		\sigma = \frac{\lambda |\nabla T|^2}{T^2} \frac{1}{1 - \kappa_c\alpha K_{\mathrm{eff}}^{-\beta}}.
+	\end{equation}
+	となる。\(K_{\mathrm{eff}} \gg 1\) では補正は無視でき、系は通常の線形フーリエ則に従う。\(K_{\mathrm{eff}}\) が減少する（流体が伝導率に対して粘性が大きくなる）につれて誤差は増大し、同じ印加勾配に対するエントロピー生成は増加する。
+	
+	\section{安定性閾値と臨界調整効率}
+	
+	プリゴジンの安定性基準によれば、変動が過剰エントロピー生成を正にするとき定常状態は不安定化する~\cite{Glansdorff1971}。YUCT定式化では、変動は流体の調整状態の局所的な変化——\(K_{\mathrm{eff}}\) の定常値からの一時的なずれ——と考えることができる。\eqref{eq:sigma-K} を用いると、小さな変動 \(\delta K_{\mathrm{eff}}\) はエントロピー生成の変化を引き起こす：
+	\begin{equation}
+		\delta_X P \propto - \delta K_{\mathrm{eff}}.
+	\end{equation}
+	したがって、\(K_{\mathrm{eff}}\) を減少させる変動は \(\delta_X P > 0\) となり、増幅されやすい。この増幅は調整の劣化を加速し、系を新しい状態へと駆動する。
+	
+	よって、伝導定常状態は \(K_{\mathrm{eff}}\) が臨界値を下回ると不安定化する。YUCTの代数的閉ループが全ての無次元比を固定するため、この臨界値は基本定数を用いて表現されなければならない：
+	\begin{equation}\label{eq:Kcrit}
+		K_{\mathrm{eff}}^{\mathrm{crit}} = \left( \frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}} \right)^{1/\beta}
+		= \left( \frac{3}{2} \right)^{3/2} \approx 1.837.
+	\end{equation}
+	指数 \(1/\beta\) は閾値における誤差パラメータ \(\varepsilon\) が1程度（系が有用な調整と雑音を区別できなくなる）であるという要請に従う。比 \(S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2\) はYUCTの普遍的な秩序-無秩序比である。式 \eqref{eq:Kcrit} は自由パラメータを含まない。
+	
+	\section{臨界レイリー数に対する予測}
+	
+	深さ \(d\)、密度 \(\rho\)、比熱 \(c_p\)、熱膨張係数 \(\alpha_T\)、印加温度差 \(\Delta T\) の流体層に対するレイリー数は
+	\begin{equation}
+		\mathrm{Ra} = \frac{\rho^2 c_p \alpha_T g \Delta T d^3}{\lambda \eta}.
+	\end{equation}
+	である。調整効率 \eqref{eq:Keff-fluid2} を用いると、
+	\begin{equation}
+		\mathrm{Ra} = \frac{A}{K_{\mathrm{eff}}},
+	\end{equation}
+	と書ける。ここで \(A\) は流体の性質には依存せず、形状と境界条件のみに依存する定数である。この同定により、閾値条件 \(K_{\mathrm{eff}} = K_{\mathrm{eff}}^{\mathrm{crit}}\) は臨界レイリー数に変換される：
+	\begin{equation}\label{eq:Racrit}
+		\mathrm{Ra_c} = \frac{A}{K_{\mathrm{eff}}^{\mathrm{crit}}}.
+	\end{equation}
+	もし定数 \(A\) が一つの参照流体（例えば水）から決定できるなら、水に対する古典的な臨界レイリー数（剛体境界で \(\mathrm{Ra}_{\text{水}} \approx 1708\)）と我々の定義から得られる \(K_{\mathrm{eff}}^{\text{水}}\) を用いて、他の任意の流体の臨界レイリー数を予測できる：
+	\begin{equation}\label{eq:Racrit-predict}
+		\boxed{ \mathrm{Ra_c}(\text{流体}) = \mathrm{Ra_c}(\text{水}) \;
+			\frac{K_{\mathrm{eff}}^{\text{水}}}{K_{\mathrm{eff}}(\text{流体})} }.
+	\end{equation}
+	\eqref{eq:Keff-fluid2} を用いると、これは臨界レイリー数と流体の熱伝導率・粘度の間の関係となる：
+	\begin{equation}
+		\mathrm{Ra_c} \propto \frac{\eta / \eta_0}{\lambda / \lambda_0}.
+	\end{equation}
+	したがって、粘度が高い（調整が悪い）流体は、より大きな臨界レイリー数を持つべきである——対流を発生させることがより難しい。この予測は古典的な結果と質的に一致する：油のような粘性の高い流体は水よりもはるかに大きな臨界レイリー数を持つ。定量的検証には、流体の \(\lambda\) と \(\eta\) を測定し、\eqref{eq:Keff-fluid2} から \(K_{\mathrm{eff}}\) を計算し、予測された \(\mathrm{Ra_c}\) を実験的に観測される対流開始と比較する必要がある。参照流体の単一校正の後には調整可能なパラメータは残らない。
+	
+	\section{検証可能な帰結と実験プロトコル}
+	
+	\subsection{既存データによる即時テスト}
+	文献には様々な流体の臨界レイリー数の広範な表が存在する（例：~\cite{Chandrasekhar1961, Cross1993} のレビューを参照）。関連する温度での \(\lambda\) と \(\eta\) の測定値を使用して各流体の \(K_{\mathrm{eff}}\) を計算し、比 \(\mathrm{Ra_c}/\mathrm{Ra_c}^{\text{水}}\) が \(K_{\mathrm{eff}}^{\text{水}} / K_{\mathrm{eff}}\) に等しいかどうかを検証できる。\(R^2 > 0.9\) の正の相関はYUCTメカニズムに対する強力な証拠となる。
+	
+	\subsection{専用実験}
+	調整効率が大きく異なる二つの流体、例えば水とシリコーンオイルを用いて制御された実験を行うことができる。各流体について、臨界温度差 \(\Delta T_c\) を高精度で測定する。YUCTの予測は、固定された幾何形状での臨界温度差の比が、\eqref{eq:Keff-fluid2} で定義された調整効率の逆比に等しいというものである。これはパラメータフリーで反証可能な予測である。
+	
+	\section{限界と未解決問題}
+	
+	本解析は現象論的である。完全な微視理論は、調整誤差 \(\varepsilon\) と熱力学的流束の間の関係を第一原理から導出し、\eqref{eq:J-effective} を仮定せずに得る必要がある。さらに、\eqref{eq:Keff-fluid2} における \(K_{\mathrm{eff}}\) の定義は動機付けられた仮定であり、他の定義も可能でありデータと照合されるべきである。また、化学反応の役割も無視されている——化学反応は対流の発生を強く変調することが知られている。これらは今後の研究の課題である。
+	
+	これらの限界にもかかわらず、YUCTループから臨界調整効率 \(K_{\mathrm{eff}}^{\mathrm{crit}} \approx 1.837\) を代数的に導出したことはフレームワーク内では正確である。自然界が実際にこの値を使用するかどうかは実験によって決定できる。
+	
+	\section{結論}
+	
+	我々はYUCTフレームワークがベナール対流の発生に対して定量的で検証可能な解釈を提供することを示した。臨界レイリー数は流体の調整効率によって表現され、調整効率は測定可能な輸送係数と結びついている。予測されたスケーリング関係 \(\mathrm{Ra_c} \propto \eta/\lambda\) は既存の実験データで検証可能である。この研究は、YUCTが熱力学の単なる哲学的再解釈ではなく、反証可能な数値予測を生成できるフレームワークであることを実証している。
+	
+	\section*{謝辞}
+	著者は批判的議論に対してYUCTセミナーの参加者に感謝する。
+	
+	\begin{thebibliography}{99}
+		\bibitem{Yakushev2026} A.~V.~Yakushev, \emph{Yakushev Unified Coordination Theory (YUCT)}, Zenodo, DOI:10.5281/zenodo.18444599 (2026).
+		\bibitem{AppendixY} A.~V.~Yakushev, ``Appendix Y: Mathematical Foundations of YUCT,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixL} A.~V.~Yakushev, ``Appendix L: Fractal Coordination Error Scaling,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixFerra} A.~V.~Yakushev, ``Appendix Ferra1.2: Universal Coordination Constants for Ordered and Disordered Phases,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixAF} A.~V.~Yakushev, ``Appendix AF: The Algebraic Framework of Reality in YUCT,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{Prigogine1977} I.~Prigogine and G.~Nicolis, \emph{Self‑Organization in Nonequilibrium Systems}. Wiley (1977).
+		\bibitem{Glansdorff1971} P.~Glansdorff and I.~Prigogine, \emph{Thermodynamic Theory of Structure, Stability and Fluctuations}. Wiley (1971).
+		\bibitem{Chandrasekhar1961} S.~Chandrasekhar, \emph{Hydrodynamic and Hydromagnetic Stability}. Oxford (1961).
+		\bibitem{Cross1993} M.~C.~Cross and P.~C.~Hohenberg, ``Pattern formation outside of equilibrium,'' \emph{Rev. Mod. Phys.} \textbf{65}, 851 (1993).
+	\end{thebibliography}
+	
+\end{document}

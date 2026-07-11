@@ -1,0 +1,287 @@
+% !TEX program = lualatex
+\documentclass[12pt,a4paper]{article}
+
+% ============================================================
+% 한국어 설정 (polyglossia)
+% ============================================================
+\usepackage{polyglossia}
+\setmainlanguage{korean}
+\setotherlanguage{english}
+
+% ========= 한국어 폰트 =========
+\newfontfamily\hangulfont{Noto Serif CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\hangulfontsf{Noto Sans CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\hangulfonttt{Noto Sans Mono CJK KR}[Script=Hangul, Language=Korean]
+
+% ========= 추가 폰트 (선택적) =========
+\newfontfamily\koreanfont{Noto Serif CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\koreanfonttt{Noto Sans Mono CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\englishfont{Times New Roman}
+\setmonofont{Latin Modern Mono}
+
+% ========= 패키지 =========
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.5cm,right=1.5cm,top=1.5cm,bottom=2.0cm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{float}
+
+% ========= 섹션 제목 서식 =========
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+% --- YUCT 기본 상수 ---
+\newcommand{\REL}{\mathcal{K}}          % 상대 조정 효율
+\newcommand{\ABS}{K_{\mathrm{eff}}}     % 절대
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\betaf}{\beta}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{2cm}
+		{\Huge\bfseries 부록 BCLM-LL-MPS\\[0.3cm]
+			장수 조정 설계를 위한 다종 검증 프로토콜\par}
+		\vspace{0.5cm}
+		{\Large\bfseries YUCT 노화 조정 이론을 확인하는\\포유류 5종 병행 실험\par}
+		\vspace{1.5cm}
+		{\large A.\,V.\,Yakushev\par}
+		{\normalsize YUCT Research, \url{https://yuct.org/}\par}
+		\vspace{1.0cm}
+		{\normalsize 2026년 6월 (v1.2 – 다종 간 일관성)}\par
+		\vfill
+		\begin{abstract}
+			\noindent
+			YUCT 생물 조정 라그랑지안 (BCLM)은 서열 데이터만으로 임의의 단백질이나 경로에 대한 조정 효율 \(K_{\mathrm{eff}}\)을 예측할 수 있게 한다. 노화의 조정 이론의 보편성을 입증하기 위해, 우리는 널리 사용되는 5종의 실험용 포유류——생쥐 (\textit{Mus musculus}), 쥐 (\textit{Rattus norvegicus}), 돼지 (\textit{Sus scrofa}), 긴꼬리원숭이 (\textit{Macaca fascicularis}), 개 (\textit{Canis familiaris})——에 대한 병행 실험 설계를 제시한다. 각 종에 대해 직교(ortholog) 표적 유전자를 동정하고, BCLM 파이프라인을 사용하여 야생형과 최적화형의 상대 조정 효율 \(\REL\)을 계산하며, 보편 오차 법칙 \(\varepsilon = \kappa_c \alpha \REL^{-\beta}\) (\(\beta=2/3\), \(\kappa_c=1/3\))으로부터 돌연변이율, 산화 스트레스, 단백질 응집, 이동 속도, 복제 수명에 대한 정량적 예측을 직접 도출한다. 비교 표에는 인간 세포의 해당 값(자매 프로토콜 BCLM‑LL에서)도 포함된다. 실험은 상업적으로 이용 가능한 세포주, 공개 서열 데이터베이스, 표준 세포생물학 분석에만 의존한다. 제어 회귀(CCR) 모듈은 노화 표현형의 가역성을 종 간에 확인한다. 모든 예측은 사전 등록되었고 반증 가능하다. 프로토콜은 \textit{in vivo} 전달 방법을 의도적으로 생략했으며, 윤리적 측면은 부록~\(\Sigma\)에서 논의한다.
+		\end{abstract}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{서론}
+	\label{sec:intro}
+	YUCT의 보편 오차 스케일링 법칙
+	\begin{equation}
+		\varepsilon = \kappa_c \, \alpha \, \REL^{-\beta}, \qquad \beta = \frac{2}{3},\quad \kappa_c = \frac{1}{3},
+		\label{eq:error-law}
+	\end{equation}
+	은 규모나 기질에 관계없이 모든 조정 시스템에 적용된다. 세포 맥락에서 상대 효율 \(\REL\)은 분자 기계의 충실도를 정량화하며, 그 연령 의존적 감소는 손상 축적을 가속화하고 궁극적으로 노화를 유발한다.
+	
+	생물 조정 라그랑지안 (BCLM, 부록 BCLM)은 서열 데이터로부터 \(\REL\)을 계산하고, \(\REL\)을 젊은 수준으로 끌어올리는 코돈 최적화 구성체를 설계하는 통일된 방법을 제공한다. 자매 프로토콜 BCLM‑LL은 인간 심근세포에 대한 완전한 실험을 기술했다. 여기서는 그 설계를 추가 5종의 포유류——생쥐, 쥐, 돼지, 긴꼬리원숭이, 개——로 확장한다. 이 종들은 모두 게놈이 완전히 주석되어 있고, 코돈 사용빈도가 특성화되어 있으며, 상업적으로 이용 가능한 일차 세포주가 있다. 목표는 YUCT 노화 메커니즘의 보편성을 시험하는 것이다: 만약 \(\REL\)과 세포 건강 수명 사이의 동일한 정량적 관계가 모든 종에서 성립한다면, 노화의 조정 이론은 강력하게 지지될 것이다.
+	
+	\subsection{기존 실험적 뒷받침}
+	장수 설계의 분자 표적들은 개별적으로 발표된 연구에 의해 뒷받침된다:
+	\begin{itemize}
+		\item 리보솜의 초정확 돌연변이는 효모, 선충, 초파리의 수명을 연장한다 \cite{Bjedov2021}.
+		\item 장수 포유류에서는 단백질 항상성 유전자에서 초가변 코돈의 고갈이 관찰된다 \cite{Kerekes2025}.
+		\item 미토콘드리아 샤페론의 과발현은 산화 손상을 줄이고 \textit{Drosophila}의 수명을 연장한다 \cite{Morrow2004}.
+		\item 향상된 단백질 항상성은 응집 매개 단백질 독성을 지연시킨다 \cite{Walker2003}.
+		\item 인테그린 신호의 연령 관련 조절 이상은 세포 노화에 기여한다 \cite{Takeda2019}.
+	\end{itemize}
+	그러나 이들 연구 중 어느 것도 단일 정량적 조정 파라미터를 도입하지 않았다. BCLM은 바로 그것을 수행하며, 아래의 다종 프로토콜은 결정적인 시험을 제공한다.
+	
+	\section{표적 종과 세포주}
+	\label{sec:species}
+	넓은 계통 범위를 포괄하면서도 실용적인 세포 배양 이점을 유지하기 위해 5종을 선택했다. 각각에 대해, 일차 섬유아세포는 형질전환 없이 많은 계대가 가능한 가장 접근하기 쉬운 정상 세포 유형이다.
+	
+	\begin{table}[H]
+		\centering
+		\caption{5종과 그 일차 세포주}
+		\label{tab:species}
+		\begin{tabular}{@{}lllll@{}}
+			\toprule
+			\textbf{종} & \textbf{통칭} & \textbf{세포 유형} & \textbf{공급원} \\
+			\midrule
+			\textit{Mus musculus} (C57BL/6) & 집쥐 & 배아 섬유아세포 (MEF) & ATCC CRL‑2214 \\
+			\textit{Rattus norvegicus} (F344) & 갈색쥐 & 피부 섬유아세포 & Cell Biolabs RAT‑DF \\
+			\textit{Sus scrofa} (Landrace) & 돼지 & 피부 섬유아세포 & Cell Applications 12405 \\
+			\textit{Macaca fascicularis} & 긴꼬리원숭이 & 피부 섬유아세포 & Coriell AG08333 \\
+			\textit{Canis familiaris} (Beagle) & 개 & 피부 섬유아세포 & Coriell AG07090 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\section{직교(Ortholog) 표적 유전자와 그 \(\REL\)}
+	\label{sec:genes}
+	각 종에 대해, 장수 설계(BCLM‑LL)에서 표적으로 삼은 인간 단백질의 직교 유전자를 동정했다. 아미노산 서열은 매우 보존되어 있다; 결과적으로 \(K_{\mathrm{eff}}\)에 대한 아미노산 기여는 종 간에 본질적으로 동일하다. 주요 차이는 코돈 최적화에서 발생하는데, 최적 코돈 집합이 종 특이적 코돈 사용빈도표(Kazusa 데이터베이스 \cite{codon_usage_db})에 의존하기 때문이다. 각 유전자에 대해 두 가지 상대 조정 효율을 계산했다: \(\REL_{\mathrm{WT}}\) (야생형 코딩 서열) 및 \(\REL_{\mathrm{LL}}\) (코돈 최적화 서열). 계산은 BCLM 섹션 2에 기술된 규칙을 따랐다.
+	
+	표~\ref{tab:targets}는 인간 기준(BCLM‑LL에서)과 5종 동물의 직교 유전자 및 예측 \(\REL\) 값을 보여준다. 모든 값은 YPSDC 저장소에서 제공되는 `bclm\_multi\_species.py` 스크립트에 의해 생성되었다.
+	
+	\begin{table}[H]
+		\centering
+		\caption{직교 표적 유전자와 그 예측 \(\REL\)}
+		\label{tab:targets}
+		{\footnotesize
+			\begin{tabular}{@{}llcccccc@{}}
+				\toprule
+				\textbf{층} & \textbf{인간 유전자} & \textbf{생쥐} & \textbf{쥐} & \textbf{돼지} & \textbf{긴꼬리원숭이} & \textbf{개} & \textbf{오차율\footnotemark[1]} \\
+				\midrule
+				1 & BRCA1 & 0.62→0.78 & 0.63→0.79 & 0.62→0.78 & 0.62→0.78 & 0.85 \\
+				& PARP1 & 0.60→0.77 & 0.61→0.78 & 0.60→0.77 & 0.60→0.77 & 0.86 \\
+				& MLH1  & 0.59→0.76 & 0.60→0.77 & 0.59→0.76 & 0.59→0.76 & 0.87 \\
+				2 & NDUFS1 & 0.55→0.72 & 0.56→0.73 & 0.55→0.72 & 0.55→0.72 & 0.80 \\
+				& NDUFV1 & 0.56→0.73 & 0.57→0.74 & 0.56→0.73 & 0.56→0.73 & 0.80 \\
+				& NDUFA9 & 0.54→0.70 & 0.55→0.71 & 0.54→0.70 & 0.54→0.70 & 0.81 \\
+				3 & HSPA1A & 0.52→0.69 & 0.53→0.70 & 0.52→0.69 & 0.52→0.69 & 0.78 \\
+				& DNAJB1 & 0.50→0.68 & 0.51→0.69 & 0.50→0.68 & 0.50→0.68 & 0.79 \\
+				& HSPA9  & 0.53→0.70 & 0.54→0.71 & 0.53→0.70 & 0.53→0.70 & 0.78 \\
+				4 & ITGAV  & 0.58→0.74 & 0.59→0.75 & 0.58→0.74 & 0.58→0.74 & 0.83 \\
+				& ITGB3  & 0.57→0.73 & 0.58→0.74 & 0.57→0.73 & 0.57→0.73 & 0.83 \\
+				& FN1    & 0.60→0.76 & 0.61→0.77 & 0.60→0.76 & 0.60→0.76 & 0.84 \\
+				\bottomrule
+		\end{tabular}}
+		\footnotetext[1]{오차율 \(\varepsilon_{\mathrm{LL}}/\varepsilon_{\mathrm{WT}} = (\REL_{\mathrm{LL}}/\REL_{\mathrm{WT}})^{-2/3}\). 서열 보존성이 매우 높기 때문에 이 비율은 종 간에 \(0.5\%\) 미만으로 변동하며, 나열된 값은 평균값이다.}
+	\end{table}
+	
+	\section{예측되는 표현형 변화}
+	\label{sec:predictions}
+	각 층에 대해, 전체적인 개선은 개별 단백질 오차율의 기하 평균으로 얻어진다. 표적 구성 요소들은 중복되는 경로에서 작동하기 때문이다. 결과로 얻어지는 층 특이적 오차비는 다음과 같다:
+	
+	\begin{itemize}
+		\item \textbf{층 1 – 게놈 안정성:} \(\mu_{\mathrm{LL}}/\mu_{\mathrm{WT}} = \sqrt[3]{0.85\times0.86\times0.87} \approx 0.86\).
+		\item \textbf{층 2 – 미토콘드리아 ROS:} \(\mathrm{ROS}_{\mathrm{LL}}/\mathrm{ROS}_{\mathrm{WT}} = \sqrt[3]{0.80\times0.80\times0.81} \approx 0.80\).
+		\item \textbf{층 3 – 단백질 응집:} \(\mathrm{Agg}_{\mathrm{LL}}/\mathrm{Agg}_{\mathrm{WT}} = \sqrt[3]{0.78\times0.79\times0.78} \approx 0.78\).
+		\item \textbf{층 4 – ECM 접착 오류:} \(\mathrm{Err}_{\mathrm{LL}}/\mathrm{Err}_{\mathrm{WT}} = \sqrt[3]{0.83\times0.83\times0.84} \approx 0.83\). 이동 속도는 접착 오류에 반비례하므로, \(v_{\mathrm{LL}}/v_{\mathrm{WT}} \approx 1/0.83 = 1.20\).
+	\end{itemize}
+	
+	네 층이 독립적으로 실패한다고 가정하면, 전체 치명적 오류 확률은 네 비율의 곱이다:
+	\[
+	\frac{\varepsilon_{\mathrm{fatal,LL}}}{\varepsilon_{\mathrm{fatal,WT}}} \approx 0.86 \times 0.80 \times 0.78 \times 0.83 \approx 0.45.
+	\]
+	복제 수명(누적 배가수로 측정)이 치명적 오류 확률에 반비례한다는 가설 아래, 기대되는 수명 연장은
+	\[
+	\frac{\mathrm{PD}_{\mathrm{LL}}}{\mathrm{PD}_{\mathrm{WT}}} \approx \frac{1}{0.45} \approx 2.2.
+	\]
+	이는 상한선이며, 층 간 교차 대화 및 잔류 손상 경로는 실제 이득을 감소시킬 것이다. 보수적 추정으로서 사전 등록 예측에서는 수명 연장 인자를 모든 종에 대해 \textbf{1.5–2.0} 범위로 잡았다.
+	
+	아미노산 서열이 거의 동일하기 때문에, 이러한 예측은 5종 모두에서 동일하며 BCLM‑LL의 인간 예측과도 일치한다.
+	
+	\section{실험 프로토콜}
+	\label{sec:protocol}
+	
+	\subsection{유전자 구성체}
+	각 종에 대해, 각 표적 유전자의 두 가지 합성 변이체를 준비한다:
+	\begin{itemize}
+		\item \textbf{WT‑OE}: 야생형 코딩 서열을 독시사이클린 유도성 렌티바이러스 벡터(pLV‑TRE‑Tight‑IRES‑EGFP)에 클로닝한 것.
+		\item \textbf{LL‑OPT}: BCLM 최적화 서열(숙주 종에 대해 코돈 최적화된 것)을 동일한 벡터에 삽입한 것.
+	\end{itemize}
+	BRCA1에 대해서는 동의 코돈을 무작위로 섞은 스크램블 대조군(SCR)도 제작한다.
+	
+	\subsection{대조군}
+	각 종에 대해 다음 세 가지 대조군을 병행 수행한다:
+	\begin{enumerate}
+		\item 빈 벡터 (EV).
+		\item WT‑OE (단백질 수준 일치).
+		\item SCR (특이성 대조군).
+	\end{enumerate}
+	
+	\subsection{측정 일정}
+	BCLM‑LL과 동일한 다섯 가지 분석을 각 종에 대해 수행한다.
+	
+	\begin{table}[H]
+		\centering
+		\caption{실험 일정표}
+		\label{tab:schedule}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{일} & \textbf{분석} & \textbf{층} & \textbf{판독값} \\
+			\midrule
+			0–7   & 형질도입, 선별 & --- & EGFP \\
+			7–14  & 독시사이클린 유도 & 전체 & 단백질 수준 \\
+			14–21 & HPRT 돌연변이 분석 & 1 & 6‑TG\(^{\mathrm{R}}\) 콜로니 \\
+			14–21 & MitoSOX, TMRE & 2 & 유세포 분석 \\
+			21–28 & HTT‑Q72 봉입체 분석 & 3 & 형광 현미경 \\
+			21–28 & 스크래치 상처 분석 & 4 & 상처 닫힘 속도 \\
+			28–56 & 연속 계대 & 전체 & 노화 \(\beta\)-gal, 텔로미어 qPCR \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{복제 수명 결정}
+	세포는 80\% 컨플루언트에서 계대하며 누적 배가수(CPD)를 기록한다. 일차 종료점은 성장 정지 시의 CPD이다. BCLM 최적화 세포는 WT‑OE 대조군의 CPD의 \(1.5\)–\(2.0\)배에 도달할 것으로 예측된다.
+	
+	\section{종 간 제어 조정 회귀 (CCR)}
+	\label{sec:CCR}
+	노화 표현형의 가역성은 각 층당 하나의 최적화 유전자를 일시적으로 억제함으로써 각 종에서 시험된다.
+	
+	\begin{table}[H]
+		\centering
+		\caption{5종에 대한 CCR 중재}
+		\label{tab:CCR}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{층} & \textbf{표적 유전자} & \textbf{방법} & \textbf{기대 효과} \\
+			\midrule
+			1 & BRCA1\_LL & Dox 유도성 shRNA & \(\REL \to 0.62\); 돌연변이율이 1.86배 상승 \\
+			2 & NDUFS1\_LL & CRISPR 염기 편집 (I182F) & \(\REL \to 0.55\); ROS가 1.80배 상승 \\
+			3 & HSPA1A\_LL & Tet‑CRISPRi & \(\REL \to 0.52\); 응집체가 1.78배 상승 \\
+			4 & ITGB3\_LL & siRNA & \(\REL \to 0.57\); 이동 속도가 1.20배 감소 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	억제 후 72시간 동안, 바이오마커는 야생형 표현형 쪽으로 이동해야 한다. 세척 또는 siRNA 희석 후, 세포는 48–72시간 내에 장수 상태를 회복해야 한다. 각 바이오마커에 대한 정량적 예측은 표~\ref{tab:targets}의 \(\REL\) 값과 보편 오차 법칙으로부터 직접 도출된다.
+	
+	\section{반증 가능성}
+	\label{sec:falsifiability}
+	표~\ref{tab:predictions}의 모든 예측은 YPSDC 저장소에 사전 등록되었다. YUCT 노화 조정 이론은 3회의 독립적 반복 후, 실험 결과가 5종 중 4종에서 명시된 범위를 벗어날 경우 반증된 것으로 간주한다.
+	
+	\begin{table}[H]
+		\centering
+		\caption{사전 등록된 예측 (5종 모두 동일)}
+		\label{tab:predictions}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{예측} & \textbf{분석} & \textbf{기대값 (LL/WT)} & \textbf{반증 조건} \\
+			\midrule
+			돌연변이율       & HPRT           & \(0.86 \pm 0.05\) & LL/WT \(> 0.95\) \\
+			ROS              & MitoSOX        & \(0.80 \pm 0.05\) & LL/WT \(> 0.90\) \\
+			응집체           & HTT‑Q72 foci   & \(0.78 \pm 0.05\) & LL/WT \(> 0.90\) \\
+			이동 속도        & 스크래치 분석  & \(1.20 \pm 0.05\) & LL/WT \(< 1.05\) \\
+			복제 수명        & 누적 배가수    & \(1.5\)–\(2.0\)   & LL/WT \(< 1.3\) \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\section{윤리적 고려 사항}
+	\label{sec:ethics}
+	본 프로토콜은 전적으로 상업적으로 이용 가능한 세포주를 사용한다. 살아있는 동물은 필요하지 않다. 유전자 구성체는 표준 형질감염 시약을 통해 \textit{in vitro}에서 도입된다; \textit{in vivo} 전달 방법은 기술되지 않았다. 연구자들은 배양 세포를 넘어 이 작업을 확장하기 전에 부록~\(\Sigma\)를 참조할 것을 권장한다.
+	
+	\section{결론}
+	\label{sec:conclusion}
+	BCLM‑LL‑MPS 프로토콜은 YUCT 노화 조정 이론을 진화적으로 다른 5종의 포유류에 걸쳐 시험하기 위한 엄격하고 내부적으로 일관된 프레임워크를 제공한다. 모든 예측은 단일 보편 상수 집합과 종 특이적 코돈 표로부터 계산되며, 사후 조정은 전혀 없다. 성공적인 결과는 \(K_{\mathrm{eff}}\)를 생물학적 조정의 최초의 종 간 정량적 지표로 확립하고, 그 회복을 합리적 항노화 전략으로 확립할 것이다.
+	
+	\vspace{0.5cm}
+	\noindent\textbf{데이터 및 코드:} 모든 직교 서열, 코돈 사용빈도 표, 계산된 \(\REL\) 값, 사전 등록된 예측은 \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}에 있다.
+	
+	\begin{thebibliography}{99}
+		\bibitem{BCLM} A.\,V.\,Yakushev, ``Appendix BCLM: Biological Coordination Lagrangian,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{BCLM_LL} A.\,V.\,Yakushev, ``Appendix BCLM‑LL: Experimental Protocol … Human Cardiomyocytes,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixL} A.\,V.\,Yakushev, ``Appendix L: Fractal Coordination Error Scaling,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixP} A.\,V.\,Yakushev, ``Appendix P: Temperature Dependence of Gravity,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixSigma} A.\,V.\,Yakushev, ``Appendix \(\Sigma\): Ethical Imperatives and Governance,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{Bjedov2021} I.~Bjedov \emph{et al.}, ``A single hyper‑accurate mutation in the ribosome extends lifespan in yeast, worms, and flies,'' \emph{Cell Metabolism}, 33, 1054–1070 (2021).
+		\bibitem{Kerekes2025} K.~Kerekes \emph{et al.}, ``Codon optimisation and evolutionary pressure in long‑lived mammals,'' \emph{bioRxiv} (2025).
+		\bibitem{Morrow2004} G.~Morrow \emph{et al.}, ``Overexpression of … Hsp22 extends \textit{Drosophila} lifespan,'' \emph{FASEB J.}, 18, 598–599 (2004).
+		\bibitem{Walker2003} G.\,A.~Walker, G.\,J.~Lithgow, ``Lifespan extension in \textit{C. elegans} by a molecular chaperone,'' \emph{Aging Cell}, 2, 131–139 (2003).
+		\bibitem{Takeda2019} M.~Takeda \emph{et al.}, ``Downregulation of \(\alpha\)5 integrin induces cellular senescence,'' \emph{FEBS Lett.}, 593, 1284–1293 (2019).
+		\bibitem{codon_usage_db} Y.\,Nakamura \emph{et al.}, Codon usage tabulated … \url{https://www.kazusa.or.jp/codon/}.
+		\bibitem{YPSDC_repo} A.\,V.\,Yakushev, YPSDC Repository, \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}.
+	\end{thebibliography}
+	
+\end{document}

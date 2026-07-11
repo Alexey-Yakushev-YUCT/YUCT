@@ -1,0 +1,275 @@
+\documentclass[12pt,a4paper]{article}
+% 支持中文的引擎
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\setCJKmainfont{SimSun}   % 或 Microsoft YaHei
+\setCJKmonofont{SimSun}
+\setmainfont{Times New Roman}
+
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.5cm,right=1.5cm,top=1.5cm,bottom=2.0cm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{float}
+
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+% --- YUCT 基本常数（保持不变）---
+\newcommand{\REL}{\mathcal{K}}          % 相对协调效率
+\newcommand{\ABS}{K_{\mathrm{eff}}}     % 绝对
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\betaf}{\beta}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{2cm}
+		{\Huge\bfseries 附录 BCLM-LL-MPS\\[0.3cm]
+			长寿协调设计的多物种验证协议\par}
+		\vspace{0.5cm}
+		{\Large\bfseries 在五种哺乳动物上平行进行的实验\\
+			以确认 YUCT 衰老协调理论\par}
+		\vspace{1.5cm}
+		{\large A.\,V.\,Yakushev\par}
+		{\normalsize YUCT 研究, \url{https://yuct.org/}\par}
+		\vspace{0.5cm}
+		{\normalsize 主 DOI: \url{https://doi.org/10.5281/zenodo.18444598}\par}
+		\vspace{0.5cm}
+		{\normalsize 2026年6月 (v1.2 – 多物种一致性)\par}
+		\vfill
+		\begin{abstract}
+			\noindent
+			YUCT 生物协调拉格朗日量 (BCLM) 使得仅从序列数据就能预测任何蛋白质或途径的协调效率 \(K_{\mathrm{eff}}\)。为了证明衰老协调理论的普适性，我们提出了一个平行实验设计，涵盖五种广泛使用的实验室哺乳动物：小鼠（\textit{Mus musculus}）、大鼠（\textit{Rattus norvegicus}）、猪（\textit{Sus scrofa}）、食蟹猕猴（\textit{Macaca fascicularis}）和狗（\textit{Canis familiaris}）。对于每个物种，我们识别同源靶基因，使用 BCLM 流程计算其天然和优化后的相对协调效率 \(\REL\)，并直接从普适误差律 \(\varepsilon = \kappa_c \alpha \REL^{-\beta}\)（\(\beta=2/3\)，\(\kappa_c=1/3\)）推导出突变率、氧化应激、蛋白质聚集、迁移速度和复制寿命的定量预言。一个比较表包含了人类细胞的相应值（来自配套协议 BCLM‑LL）。该实验仅依赖市售细胞系、公共序列数据库和标准细胞生物学检测。一个受控回归 (CCR) 模块确认了衰老表型跨物种的可逆性。所有预言均已预注册且可证伪。本协议有意省略 \textit{体内} 递送方法；伦理方面在附录~\(\Sigma\) 中讨论。
+		\end{abstract}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{引言}
+	\label{sec:intro}
+	YUCT 的普适误差标度律，
+	\begin{equation}
+		\varepsilon = \kappa_c \, \alpha \, \REL^{-\beta}, \qquad \beta = \frac{2}{3},\quad \kappa_c = \frac{1}{3},
+		\label{eq:error-law}
+	\end{equation}
+	适用于任何协调系统，无论尺度或底物如何。在细胞环境中，相对效率 \(\REL\) 量化了分子机器的保真度；其年龄依赖性下降加速了损伤积累并最终触发衰老。
+	
+	生物协调拉格朗日量 (BCLM，附录 BCLM) 提供了一种统一的方法，从序列数据计算 \(\REL\)，并设计将 \(\REL\) 提升回幼年水平的密码子优化构建体。配套协议 BCLM‑LL 描述了针对人心肌细胞的完整实验。在此，我们将该设计扩展到另外五种哺乳动物物种——小鼠、大鼠、猪、猕猴和狗——每种都有完整注释的基因组、特征化的密码子使用和市售的原代细胞系。目的是检验 YUCT 衰老机制的普适性：如果 \(\REL\) 与细胞健康寿命之间的相同定量关系在所有物种中都成立，则衰老协调理论将得到有力支持。
+	
+	\subsection{已有的实验支持}
+	长寿设计的分子靶点各自都有已发表的工作支持：
+	\begin{itemize}
+		\item 核糖体中的一个超精确突变可延长酵母、蠕虫和果蝇的寿命 \cite{Bjedov2021}。
+		\item 长寿哺乳动物在蛋白质稳态基因中显示出高突变密码子的耗竭 \cite{Kerekes2025}。
+		\item 线粒体分子伴侣的过表达可减少氧化损伤并延长\textit{果蝇}寿命 \cite{Morrow2004}。
+		\item 增强的蛋白质稳态延迟了聚集介导的蛋白质毒性 \cite{Walker2003}。
+		\item 年龄相关的整合素信号失调导致细胞衰老 \cite{Takeda2019}。
+	\end{itemize}
+	然而，这些研究都没有引入一个单一的定量协调参数。BCLM 正好做到了这一点，下面多物种协议提供了一个决定性的检验。
+	
+	\section{目标物种与细胞系}
+	\label{sec:species}
+	选择五个物种以覆盖广泛的系统发育范围，同时保留实际细胞培养的优势。对于每个物种，原代成纤维细胞是最易获得的正常细胞类型，可以不经转化传代多次。
+	
+	\begin{table}[H]
+		\centering
+		\caption{五个物种及其原代细胞系。}
+		\label{tab:species}
+		\begin{tabular}{@{}lllll@{}}
+			\toprule
+			\textbf{物种} & \textbf{通用名} & \textbf{细胞类型} & \textbf{来源} \\
+			\midrule
+			\textit{Mus musculus} (C57BL/6) & 家鼠 & 胚胎成纤维细胞 (MEF) & ATCC CRL‑2214 \\
+			\textit{Rattus norvegicus} (F344) & 褐家鼠 & 真皮成纤维细胞 & Cell Biolabs RAT‑DF \\
+			\textit{Sus scrofa} (Landrace) & 家猪 & 真皮成纤维细胞 & Cell Applications 12405 \\
+			\textit{Macaca fascicularis} & 食蟹猕猴 & 真皮成纤维细胞 & Coriell AG08333 \\
+			\textit{Canis familiaris} (Beagle) & 狗 & 真皮成纤维细胞 & Coriell AG07090 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\section{同源靶基因及其 \(\REL\)}
+	\label{sec:genes}
+	对于每个物种，我们识别了长寿设计 (BCLM‑LL) 中靶向的人类蛋白质的同源物。氨基酸序列高度保守；因此，氨基酸对 \(K_{\mathrm{eff}}\) 的贡献在各个物种间基本相同。主要差异来自密码子优化，因为最优密码子的集合取决于物种特异的密码子使用表（Kazusa 数据库 \cite{codon_usage_db}）。对于每个基因，我们计算了两个相对协调效率：\(\REL_{\mathrm{WT}}\)（天然编码序列）和 \(\REL_{\mathrm{LL}}\)（密码子优化序列）。计算遵循 BCLM 第 2 节中描述的规则。
+	
+	表~\ref{tab:targets} 列出了人类参考（来自 BCLM‑LL）和五种动物物种的同源物及预测的 \(\REL\) 值。所有值均由 YPSDC 仓库中提供的 `bclm\_multi\_species.py` 脚本生成。
+	
+	\begin{table}[H]
+		\centering
+		\caption{同源靶基因及其预测的 \(\REL\)。}
+		\label{tab:targets}
+		{\footnotesize
+			\begin{tabular}{@{}llcccccc@{}}
+				\toprule
+				\textbf{层} & \textbf{人类基因} & \textbf{小鼠} & \textbf{大鼠} & \textbf{猪} & \textbf{猕猴} & \textbf{狗} & \textbf{误差因子\footnotemark[1]} \\
+				\midrule
+				1 & BRCA1 & 0.62→0.78 & 0.63→0.79 & 0.62→0.78 & 0.62→0.78 & 0.85 \\
+				& PARP1 & 0.60→0.77 & 0.61→0.78 & 0.60→0.77 & 0.60→0.77 & 0.86 \\
+				& MLH1  & 0.59→0.76 & 0.60→0.77 & 0.59→0.76 & 0.59→0.76 & 0.87 \\
+				2 & NDUFS1 & 0.55→0.72 & 0.56→0.73 & 0.55→0.72 & 0.55→0.72 & 0.80 \\
+				& NDUFV1 & 0.56→0.73 & 0.57→0.74 & 0.56→0.73 & 0.56→0.73 & 0.80 \\
+				& NDUFA9 & 0.54→0.70 & 0.55→0.71 & 0.54→0.70 & 0.54→0.70 & 0.81 \\
+				3 & HSPA1A & 0.52→0.69 & 0.53→0.70 & 0.52→0.69 & 0.52→0.69 & 0.78 \\
+				& DNAJB1 & 0.50→0.68 & 0.51→0.69 & 0.50→0.68 & 0.50→0.68 & 0.79 \\
+				& HSPA9  & 0.53→0.70 & 0.54→0.71 & 0.53→0.70 & 0.53→0.70 & 0.78 \\
+				4 & ITGAV  & 0.58→0.74 & 0.59→0.75 & 0.58→0.74 & 0.58→0.74 & 0.83 \\
+				& ITGB3  & 0.57→0.73 & 0.58→0.74 & 0.57→0.73 & 0.57→0.73 & 0.83 \\
+				& FN1    & 0.60→0.76 & 0.61→0.77 & 0.60→0.76 & 0.60→0.76 & 0.84 \\
+				\bottomrule
+		\end{tabular}}
+		\footnotetext[1]{误差因子 \(\varepsilon_{\mathrm{LL}}/\varepsilon_{\mathrm{WT}} = (\REL_{\mathrm{LL}}/\REL_{\mathrm{WT}})^{-2/3}\)。由于极高的序列保守性，该因子在物种间的差异 \(<0.5\%\)；列出的值是平均值。}
+	\end{table}
+	
+	\section{预测的表型变化}
+	\label{sec:predictions}
+	对于每一层，总体改进通过取各个蛋白质误差因子的几何平均值获得，因为靶向组分在重叠的途径中运作。由此得到的每层特异性误差比为：
+	
+	\begin{itemize}
+		\item \textbf{第 1 层 – 基因组稳定性：} \(\mu_{\mathrm{LL}}/\mu_{\mathrm{WT}} = \sqrt[3]{0.85\times0.86\times0.87} \approx 0.86\)。
+		\item \textbf{第 2 层 – 线粒体 ROS：} \(\mathrm{ROS}_{\mathrm{LL}}/\mathrm{ROS}_{\mathrm{WT}} = \sqrt[3]{0.80\times0.80\times0.81} \approx 0.80\)。
+		\item \textbf{第 3 层 – 蛋白质聚集：} \(\mathrm{Agg}_{\mathrm{LL}}/\mathrm{Agg}_{\mathrm{WT}} = \sqrt[3]{0.78\times0.79\times0.78} \approx 0.78\)。
+		\item \textbf{第 4 层 – ECM 粘附误差：} \(\mathrm{Err}_{\mathrm{LL}}/\mathrm{Err}_{\mathrm{WT}} = \sqrt[3]{0.83\times0.83\times0.84} \approx 0.83\)。由于迁移速度与粘附误差成反比，\(v_{\mathrm{LL}}/v_{\mathrm{WT}} \approx 1/0.83 = 1.20\)。
+	\end{itemize}
+	
+	假设四个层独立失效，总体致命误差概率为四个比值的乘积：
+	\[
+	\frac{\varepsilon_{\mathrm{fatal,LL}}}{\varepsilon_{\mathrm{fatal,WT}}} \approx 0.86 \times 0.80 \times 0.78 \times 0.83 \approx 0.45.
+	\]
+	在复制寿命（以累积群体倍增数衡量）与致命误差概率成反比的假设下，预期的寿命延长为
+	\[
+	\frac{\mathrm{PD}_{\mathrm{LL}}}{\mathrm{PD}_{\mathrm{WT}}} \approx \frac{1}{0.45} \approx 2.2.
+	\]
+	这是一个上界；层间的串扰和残留损伤途径将减少实际增益。一个保守的估计（被采用为预注册的预言）将寿命延长因子置于 \textbf{1.5–2.0} 范围内，对所有物种都相同。
+	
+	由于氨基酸序列几乎相同，这些预言在所有五种动物物种中都是一样的，并且与 BCLM‑LL 中人类的预言相匹配。
+	
+	\section{实验协议}
+	\label{sec:protocol}
+	
+	\subsection{遗传构建体}
+	对于每个物种，制备每个靶基因的两个合成变体：
+	\begin{itemize}
+		\item \textbf{WT‑OE}：天然编码序列，克隆到多西环素诱导的慢病毒载体 (pLV‑TRE‑Tight‑IRES‑EGFP) 中。
+		\item \textbf{LL‑OPT}：针对特定宿主物种进行密码子优化的 BCLM 优化序列，克隆到相同载体中。
+	\end{itemize}
+	对于 BRCA1，通过随机排列同义密码子生成一个乱序对照 (SCR)。
+	
+	\subsection{对照}
+	对于每个物种，平行运行三个对照：
+	\begin{enumerate}
+		\item 空载体 (EV)。
+		\item WT‑OE（匹配蛋白水平）。
+		\item SCR（特异性对照）。
+	\end{enumerate}
+	
+	\subsection{测量时间表}
+	对每个物种执行与 BCLM‑LL 中相同的五种检测。
+	
+	\begin{table}[H]
+		\centering
+		\caption{实验时间表。}
+		\label{tab:schedule}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{天} & \textbf{检测} & \textbf{层} & \textbf{读数} \\
+			\midrule
+			0–7   & 转导、筛选 & --- & EGFP \\
+			7–14  & 多西环素诱导 & 全部 & 蛋白水平 \\
+			14–21 & HPRT 突变检测 & 1 & 6‑TG\(^{\mathrm{R}}\) 集落 \\
+			14–21 & MitoSOX, TMRE & 2 & 流式细胞术 \\
+			21–28 & HTT‑Q72 包涵体检测 & 3 & 荧光显微镜 \\
+			21–28 & 划痕愈合检测 & 4 & 伤口闭合速度 \\
+			28–56 & 连续传代 & 全部 & 衰老 \(\beta\)-半乳糖苷酶、端粒 qPCR \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{复制寿命测定}
+	细胞在 80\% 汇合度时传代，记录累积群体倍增数 (CPD)。主要终点是生长停滞时的 CPD。预测 BCLM 优化细胞的 CPD 达到 WT‑OE 对照的 \(1.5\)–\(2.0\) 倍。
+	
+	\section{跨物种受控协调回归 (CCR)}
+	\label{sec:CCR}
+	在每个物种中，通过瞬时抑制每层中的一个优化基因来测试衰老表型的可逆性。
+	
+	\begin{table}[H]
+		\centering
+		\caption{五个物种的 CCR 干预。}
+		\label{tab:CCR}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{层} & \textbf{靶基因} & \textbf{方法} & \textbf{预期效应} \\
+			\midrule
+			1 & BRCA1\_LL & Dox 诱导的 shRNA & \(\REL \to 0.62\)；突变率上升因子 \(1.86\) \\
+			2 & NDUFS1\_LL & CRISPR 碱基编辑 (I182F) & \(\REL \to 0.55\)；ROS 上升因子 \(1.80\) \\
+			3 & HSPA1A\_LL & Tet‑CRISPRi & \(\REL \to 0.52\)；聚集体上升因子 \(1.78\) \\
+			4 & ITGB3\_LL & siRNA & \(\REL \to 0.57\)；迁移速度下降因子 \(1.20\) \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	抑制 72 小时后，生物标志物必须向野生型表型转变。洗脱或 siRNA 稀释后，细胞应在 48–72 小时内恢复长寿状态。每个生物标志物的定量预言直接来自表~\ref{tab:targets} 中的 \(\REL\) 值和普适误差律。
+	
+	\section{可证伪性}
+	\label{sec:falsifiability}
+	表~\ref{tab:predictions} 中的所有预言已在 YPSDC 仓库中预注册。如果在三次独立重复后，五个物种中有四个的实验结果落在规定范围之外，则 YUCT 衰老协调理论将被认为被证伪。
+	
+	\begin{table}[H]
+		\centering
+		\caption{预注册的预言（对所有五个物种相同）。}
+		\label{tab:predictions}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{预言} & \textbf{检测} & \textbf{预期 (LL/WT)} & \textbf{证伪条件} \\
+			\midrule
+			突变率       & HPRT           & \(0.86 \pm 0.05\) & LL/WT \(> 0.95\) \\
+			ROS                 & MitoSOX        & \(0.80 \pm 0.05\) & LL/WT \(> 0.90\) \\
+			聚集体          & HTT‑Q72 焦点   & \(0.78 \pm 0.05\) & LL/WT \(> 0.90\) \\
+			迁移速度     & 划痕检测  & \(1.20 \pm 0.05\) & LL/WT \(< 1.05\) \\
+			复制寿命 & 累积 PD  & \(1.5\)–\(2.0\)   & LL/WT \(< 1.3\) \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\section{伦理考虑}
+	\label{sec:ethics}
+	本协议仅使用市售细胞系。不需要活体动物。遗传构建体通过标准转染试剂 \textit{体外} 递送；不描述 \textit{体内} 递送方法。鼓励研究者在将此工作扩展到培养细胞之外时查阅附录~\(\Sigma\)。
+	
+	\section{结论}
+	\label{sec:conclusion}
+	BCLM‑LL‑MPS 协议提供了一个严格的、内部一致的框架，用于检验跨越五个演化上不同的哺乳动物物种的 YUCT 衰老协调理论。所有预言均从一组普适常数和物种特异性密码子表计算得出；没有 \textit{事后} 调整的自由参数。成功的成果将确立 \(K_{\mathrm{eff}}\) 作为第一个跨物种的、定量的生物协调度量，以及将其恢复作为合理的抗衰老策略。
+	
+	\vspace{0.5cm}
+	\noindent\textbf{数据和代码:} 所有同源序列、密码子使用表、计算的 \(\REL\) 值以及预注册的预言均可在 \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC} 获得。
+	
+	\begin{thebibliography}{99}
+		\bibitem{BCLM} A.\,V.\,Yakushev, ``附录 BCLM：生物协调拉格朗日量,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{BCLM_LL} A.\,V.\,Yakushev, ``附录 BCLM‑LL：验证人心肌细胞中长寿协调设计的实验协议,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixL} A.\,V.\,Yakushev, ``附录 L：分形协调误差标度,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixP} A.\,V.\,Yakushev, ``附录 P：引力的温度依赖性,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixSigma} A.\,V.\,Yakushev, ``附录 \(\Sigma\)：伦理要求与治理,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{Bjedov2021} I.~Bjedov \emph{et al.}, ``A single hyper‑accurate mutation in the ribosome extends lifespan in yeast, worms, and flies,'' \emph{Cell Metabolism}, 33, 1054–1070 (2021).
+		\bibitem{Kerekes2025} K.~Kerekes \emph{et al.}, ``Codon optimisation and evolutionary pressure in long‑lived mammals,'' \emph{bioRxiv} (2025).
+		\bibitem{Morrow2004} G.~Morrow \emph{et al.}, ``Overexpression of … Hsp22 extends \textit{Drosophila} lifespan,'' \emph{FASEB J.}, 18, 598–599 (2004).
+		\bibitem{Walker2003} G.\,A.~Walker, G.\,J.~Lithgow, ``Lifespan extension in \textit{C. elegans} by a molecular chaperone,'' \emph{Aging Cell}, 2, 131–139 (2003).
+		\bibitem{Takeda2019} M.~Takeda \emph{et al.}, ``Downregulation of \(\alpha\)5 integrin induces cellular senescence,'' \emph{FEBS Lett.}, 593, 1284–1293 (2019).
+		\bibitem{codon_usage_db} Y.\,Nakamura \emph{et al.}, Codon usage tabulated … \url{https://www.kazusa.or.jp/codon/}.
+		\bibitem{YPSDC_repo} A.\,V.\,Yakushev, YPSDC 仓库, \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}.
+	\end{thebibliography}
+	
+\end{document}

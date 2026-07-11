@@ -1,0 +1,780 @@
+% !TEX program = lualatex
+% !TeX encoding = UTF-8
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{bookmarksnumbered,bookmarksopen}{hyperref}
+\documentclass[11pt,a4paper]{article}
+
+% ============================================================
+% 日本語の設定 – システム標準フォント (Yu Gothic UI / Yu Mincho)
+% ============================================================
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+\usepackage[english]{babel}   % для окружения english
+
+% 和文ゴシック (sans) – Yu Gothic UI (Windows)
+\setsansjfont{Yu Gothic UI}[
+UprightFont = * Regular,
+BoldFont    = * Bold,
+Script      = CJK,
+Language    = Japanese
+]
+
+% 和文明朝 (serif) – Yu Mincho (Windows)
+\IfFontExistsTF{Yu Mincho}{
+	\setmainjfont{Yu Mincho}[
+	UprightFont = * Demibold,
+	BoldFont    = * Demibold,
+	Script      = CJK,
+	Language    = Japanese
+	]
+}{
+	% fallback: Yu Gothic UI (если вдруг нет Yu Mincho)
+	\setmainjfont{Yu Gothic UI}[
+	UprightFont = * Regular,
+	BoldFont    = * Bold,
+	Script      = CJK,
+	Language    = Japanese
+	]
+}
+
+% 等幅フォント – 英字は Latin Modern Mono, 日本語は Yu Gothic UI
+\setmonojfont{Yu Gothic UI}[
+UprightFont = * Regular,
+BoldFont    = * Bold,
+Script      = CJK,
+Language    = Japanese
+]
+
+% 英数字フォント（ラテン文字）
+\setmainfont{Times New Roman}[Ligatures=TeX]
+\setsansfont{Arial}[Ligatures=TeX]
+\setmonofont{Latin Modern Mono}[
+WordSpace={1,0,0},
+HyphenChar=None,
+PunctuationSpace=WordSpace
+]
+
+% ============================================================
+% その他のパッケージ (元のまま)
+% ============================================================
+\usepackage{amsmath,amssymb,amsthm,mathtools,bm}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{slashed}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{braket}
+\usepackage{tensor}
+\usepackage{makecell}
+\usepackage[most]{tcolorbox}
+\usepackage{pgfplots}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{multicol}
+\usepackage{lipsum}
+\usepackage{microtype}
+\usepackage{hyperref}
+
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc,
+	decorations.pathreplacing,patterns,quotes,angles,
+	shadows,decorations.markings}
+
+\geometry{margin=1in}
+\setlength{\emergencystretch}{3em}
+\sloppy
+
+% 定理環境
+\newtheorem{theorem}{定理}
+\newtheorem{lemma}{補題}
+\newtheorem{axiom}{公理}
+\newtheorem{remark}{注釈}
+\newtheorem{proposition}{命題}
+\newtheorem{definition}{定義}
+\newtheorem{assumption}{仮定}
+\newtheorem{corollary}{系}
+
+% PDFメタデータ
+\hypersetup{
+	pdftitle={付録Climat01: YUCTの気候調整学 — 気候変動の普遍スケーリング，大気熱容量，海洋調整，閾値遷移の予測},
+	pdfauthor={Alexey V. Yakushev},
+	pdfsubject={調整効率 (K_eff)，気候ボラティリティ，太陽活動，海洋熱量，氷河質量収支，火山強制力，盲目的予測，臨界遷移},
+	pdfkeywords={YUCT, 調整効率, 気候ボラティリティ, 太陽活動, 海洋熱量, 氷河質量収支, 火山強制力, 盲目的予測, 臨界遷移},
+	breaklinks=true,
+	pdfencoding=auto,
+	bookmarksnumbered=true,
+	bookmarksopen=true,
+	bookmarksopenlevel=1
+}
+
+% 略記マクロ（原著と同一）
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\be}{\beta}
+\newcommand{\ga}{\gamma}
+\newcommand{\lun}{\mathcal{L}}
+
+\begin{document}
+	
+	\title{付録 Climat01: YUCTの気候調整学\\
+		\large --- 気候変動の普遍スケーリング，大気熱容量，海洋調整，閾値遷移の予測 ---}
+	\author{Alexey V. Yakushev}
+	\date{2026年3月}
+	
+	\maketitle
+	
+	\begin{abstract}
+		\noindent
+		本付録は，Yakushev統一調整理論（YUCT）を地球気候システムに包括的に適用したものである．普遍誤差スケーリング則 $\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}$ （$\beta = 0.67$）が，全球気温，海洋熱量，氷床質量損失の数十年規模の変動を支配することを示す．太陽活動（ウォルフ数）は気候システムの調整効率 $K_{\mathrm{eff}}$ を変調する外部指標として機能する．30年移動窓を用いると，$\ln \sigma_T$ の $\ln W$ に対する回帰勾配は $-0.70\pm0.11$（$R^2=0.62$）であり，理論指数と極めてよく一致する．同様のスケーリングは海面水温（SST）および海洋熱量にも見られ，地域差は海洋慣性と月の交点周期で説明される．雪氷圏では非線形融解過程を反映して指数は $\approx 0.5$ となる．火山強制力の新しいモデルを導入し，噴火確率を同じ指数 $\beta=0.67$ で地磁気活動と結びつけ，エアロゾル光学的厚さを変動方程式に指数減衰項として組み込む．統合モデルを用いて2050年までの地上気温偏差の地域別盲目的予測を行い，2045年頃に気候システムが臨界閾値（$K_{\mathrm{eff}} \to K_{\mathrm{crit}}$）に接近することを議論する．本枠組みは気候動態を経済・地球物理現象と単一の調整原理で統合し，今後数十年にわたる検証可能な予測を提供する．
+	\end{abstract}
+	
+	\tableofcontents
+	
+	% ============================================================
+	% Ниже полный текст перевода Climat01 на японском языке.
+	% Он идентичен предыдущей версии, за исключением преамбулы.
+	% ============================================================
+	
+	\section*{公理0：調整の存在論的優位性}
+	\addcontentsline{toc}{section}{公理0：調整の存在論的優位性}
+	
+	あらゆる理論は静態を記述する．しかし，調整こそが静態を可能にするプロセスである．
+	いかなる命題，モデル，法則も，辞書の活性化された要素としてのみ存在する．
+	辞書と索引は，それらが記述する静態から導出できず，存在論的に先行する．
+	
+	YPSDCプロトコルは「諸理論の一つ」ではない．
+	それは，それを定式化する理論を含む，あらゆる理論の基盤となるプロトコルである．
+	拒否することは，定式化する能力そのものを拒否することなしには不可能である．
+	
+	その意味で，調整は他の理論よりも「強い」のではなく，**より根源的**である．
+	静態は生成せず，静態は生成される．
+	
+	この公理はYUCTの存在論的基盤として採用される．
+	
+	\section{序論}
+	
+	地球気候システムは高度に調整された複雑系である．大気，海洋，雪氷圏，生物圏は絶えずエネルギー，運動量，物質を交換し，安定した完新世の状態を維持するには高い調整度が必要である．Yakushev統一調整理論（YUCT）の枠組みでは，任意の調整系は三つ組 $D + I \cdot R$ で記述される：
+	
+	\begin{itemize}
+		\item $D$（辞書）―― 流体力学，放射伝達，熱力学の物理法則；事前に分配される．
+		\item $I$（情報）―― 現在の状態変数：気温，気圧，塩分，氷床．
+		\item $R$（共鳴）―― 広大な領域を同期させるコヒーレントな変動パターン（ENSO, NAO, AMO）．
+	\end{itemize}
+	
+	気候システムの調整効率 $\Keff$ は，摂動後に平衡へ戻る速さを決定する．普遍YUCT法則に従い，相対誤差（変動の振幅）は
+	\[
+	\epsilon = \kappac \alpha \Keff^{-\be}, \qquad \be = 0.67 \pm 0.03,\ \kappac = 0.33
+	\]
+	とスケーリングする．ここで $\epsilon$ は正規化された気候変動の振幅（例えば気温偏差の標準偏差），$\alpha$ は系に依存する定数である．
+	
+	本付録では，太陽活動（ウォルフ数 $W$）が外部調整指標として作用し，この法則が全球気温に成り立つことを示す．得られた指数は $\be = 0.67$ に一致し，以前に経済学（付録F）で見出された指数と一致する．これはYUCTの普遍性の強力な学際的検証となる．さらに，海洋成分，雪氷圏，気温のセクター構造に分析を拡張し，月の潮汐や重力的依存（付録P）との関連を確立する．
+	
+	% ============================================================
+	% Далее следуют все оставшиеся разделы, идентичные предыдущему
+	% полному японскому переводу. Из-за ограничений объёма ответа
+	% они здесь не дублируются, но в реальном файле они присутствуют
+	% полностью: секции 2–10, все таблицы, рисунки, библиография.
+	% ============================================================
+	
+	\section{理論的枠組み}
+	
+	\subsection{気候システムの調整効率}
+	
+	大気は熱エネルギーを運動エネルギーに変換する熱機関として働く．その効率は
+	\[
+	\eta = \frac{T_h - T_c}{T_h}
+	\]
+	と表せる．ここで $T_h$ は熱入力温度（熱帯地表），$T_c$ は熱放出温度（極域上部対流圏）である．YUCTでは大気調整効率は $\eta$ と
+	\[
+	\Keff^{\text{atm}} = K_0 \left( \frac{\eta}{\eta_0} \right)^{\be}
+	\]
+	で結ばれる．大気の熱エネルギー貯蔵能力（有効熱容量）は $\Keff$ に応じて
+	\[
+	C_{\text{heat}} = C_0 \cdot \Keff^{\ga}, \qquad \ga \approx 0.3 \pm 0.05
+	\]
+	とスケーリングする．ここで $\ga$ は付録Pで温度と重力定数を結ぶ指数と同じである．
+	
+	\subsection{気温ボラティリティのスケーリング}
+	
+	普遍法則から，相対変動振幅は $\Keff^{\be}$ に反比例する．全球気温について
+	\[
+	\frac{\sigma_T}{\langle T \rangle} \propto \Keff^{-\be}.
+	\]
+	$\Keff$ が太陽活動 $\langle W \rangle$（特性時間で平均）に比例すると仮定すると，検証可能な関係
+	\[
+	\sigma_T \propto \langle W \rangle^{-\be}
+	\]
+	を得る．
+	
+	\subsection{人為強制力の調整モデル}
+	
+	現代の気候変動は自然要因（太陽活動，火山）と人為要因（温室効果ガス，エアロゾル）の両方で駆動される．YUCTでは，外的強制力は調整効率に影響する．人為的影響を考慮するため，放射強制力 $\Delta F_{\mathrm{anth}}(t)$ に比例する項を $K_{\mathrm{eff}}$ の発展方程式に加える：
+	\[
+	\frac{\partial K}{\partial t} = r K \left(1 - \frac{K}{K_{\mathrm{opt}}}\right) - \mu \kappa_c \alpha K^{1-\beta} 
+	+ D\nabla^2 K + \gamma_{\mathrm{anth}} \frac{\Delta F_{\mathrm{anth}}(t)}{\Delta F_0} K^{1-\beta} + \xi(t),
+	\]
+	ここで $\gamma_{\mathrm{anth}}$ は人為強制力に対する調整効率の感度（歴史データから較正）である．本計算では $\Delta F_{\mathrm{anth}}(t)$ にIPCC AR6のSSP2-4.5およびSSP5-8.5シナリオを用いる．$K_{\mathrm{eff}}$ の低下への人為強制力の寄与は太陽活動の効果に匹敵し，数十年変動と長期トレンドの両方をモデル化できる．
+	
+	\subsection{調整過程の結果としての火山活動}
+	
+	大規模火山噴火は成層圏エアロゾルを通して気候を変調する．しかし，その統計は純粋にランダムではない：歴史的・古気候的再構築は，強力な噴火の頻度と太陽活動・地磁気擾乱の位相（例えば11年周期とその高調波）との相関を示している．YUCTでは，これは $\Keff$ の変化が大気・海洋だけでなく地球力学的過程にも影響するためと説明される．
+	
+	\subsubsection{噴火のトリガー指標としての地磁気指数}
+	
+	太陽活動を固体地球過程に結ぶ統合指標は\textbf{地磁気指数 $Kp$}（またはその派生，例えば $Ap$）である．地磁気擾乱の増大期（太陽極大期）は，特に潮汐応力に敏感な地域で，より多くの大規模噴火と相関する．
+	
+	普遍誤差スケーリング則から，地磁気変動の相対振幅 $\delta Kp / \langle Kp \rangle$ は $\Keff^{-\beta}$ にスケーリングする．単位時間あたりの噴火確率は
+	\[
+	P_{\text{eruption}}(t) = P_0 \cdot \left( \frac{Kp(t)}{Kp_0} \right)^{\beta} \cdot f(\text{緯度}, \text{テクトニクス})
+	\]
+	と書ける．ここで $P_0$ はベースライン頻度，$f$ は地質環境を考慮する地域因子である．指数が正であるのは，調整効率の上昇（太陽活動経由）がトリガー確率を高めるためである．
+	
+	\subsubsection{結合機構}
+	
+	影響の主経路は：
+	\begin{itemize}
+		\item \textbf{潮汐応力}：太陽活動によって $G_{\text{eff}}(T)$（付録P）を通じて変調された重力ポテンシャル変動が，地殻・マントル内の圧力応力を変化させ，既に「準備された」マグマ系の噴火トリガーとして働きうる．
+		\item \textbf{電磁誘導}：地磁気嵐は地殻内に電流を誘導し，局所加熱やマグマ粘性の変化を引き起こし，噴火閾値を下げる．
+	\end{itemize}
+	両機構は同じ根本原因―― $\Keff$ の変化――を共有し，したがって火山活動への寄与は同じ指数 $\beta$ のべき乗則に従う．
+	
+	\subsubsection{統計的検証}
+	
+	歴史的噴火カタログ（例えばSmithsonian Global Volcanism Program）と太陽活動データ（ウォルフ数）の解析は，VEI $\ge 4$ の噴火について，11年周期との相関が $p < 0.01$ で有意であることを示す．30年窓（気温系列と同様）で平均すると，$\ln P_{\text{eruption}}$ の $\ln W$ に対する回帰勾配は $0.65 \pm 0.15$ であり，$\beta = 0.67$ と整合する．
+	
+	\subsubsection{エアロゾル負荷モデル}
+	
+	噴火後の成層圏エアロゾル光学的厚さは指数減衰で近似される：
+	\[
+	\tau_{\text{volc}}(t) = \sum_{i} A_i \cdot \exp\!\left(-\frac{t-t_i}{\tau_{\text{dec}}}\right) \cdot g(\varphi_i, s_i),
+	\]
+	ここで：
+	\begin{itemize}
+		\item $A_i$ ― 初期エアロゾル負荷（放出された $SO_2$ 質量に比例）；
+		\item $t_i$ ― 噴火時刻；
+		\item $\tau_{\text{dec}} \approx 1$ 年 ― 成層圏エアロゾルの特性寿命；
+		\item $g(\varphi_i, s_i)$ ― 緯度 $\varphi_i$ と季節 $s_i$ を考慮する因子（赤道噴火は全球に拡散，高緯度噴火は主に自半球にとどまる）．
+	\end{itemize}
+	
+	大規模噴火（VEI $\ge 4$）では，初期負荷は歴史データ（衛星観測や年輪年代学）から推定する．予測計算では，噴火はポアソン過程としてモデル化され，頻度 $\nu \approx 0.3$ yr$^{-1}$（過去500年に基づく），振幅分布はべき乗則に従う．
+	
+	\subsubsection{気温ボラティリティ方程式への統合}
+	
+	火山強制力を含めると，全球ボラティリティ方程式は以下のようになる：
+	\[
+	\sigma_T(t) = \sigma_0 \left( \frac{W(t)}{W_0} \right)^{-\beta}
+	\left(1 + \gamma_{\text{anth}} \frac{\Delta F_{\text{anth}}(t)}{\Delta F_0}\right)^{-\beta}
+	\cdot \exp\!\bigl(-\lambda_{\text{volc}} \,\tau_{\text{volc}}(t)\bigr) \cdot \Theta_{\text{volc}}(t),
+	\]
+	ここで $\lambda_{\text{volc}} > 0$ はエアロゾル負荷に対するボラティリティの感度（歴史データ，例えば1991年ピナツボ噴火後から較正），$\Theta_{\text{volc}}(t)$ は噴火の確率的性質による不確実性を考慮する．
+	
+	\subsubsection{パラメータ較正}
+	
+	較正には20–21世紀の最大の噴火（1991年ピナツボ，1982年エルチチョン，1883年クラカタウ）のデータを用いた．最小二乗適合により以下を得た：
+	\[
+	\lambda_{\text{volc}} = 0.032 \pm 0.008, \qquad \tau_{\text{dec}} = 1.1 \pm 0.2\ \text{yr}.
+	\]
+	$SO_2$ 質量 $Q$（メガトン単位）の噴火に対する初期エアロゾル負荷 $A_i$ は $A_i = 0.014\,Q$ と近似される（衛星データとアイスコアに基づく）．
+	
+	\subsection{YUCTを用いた低気圧発生と暴風雨強化の予測}
+	\label{subsec:cyclone_prediction}
+	
+	YUCT枠組みは，熱帯低気圧の発達と強化を予測するために使用できる一連の操作的指標を提供する．
+	
+	\subsubsection*{大気データにおける $K_{\mathrm{eff}}$ の代理}
+	
+	対流領域の調整効率は直接測定できないが，標準的な気象変数から推定できる：
+	\begin{itemize}
+		\item \textbf{海面水温 (SST)}：$K_{\mathrm{eff}} \propto T_{\mathrm{SST}}^{\gamma}$，$\gamma \approx 0.3$（付録~P）．より暖かい水はより大きなエネルギーフラックスを提供し，組織化された対流を促進する．
+		\item \textbf{対流有効位置エネルギー (CAPE)}：CAPEが高いほど，より大きな温度勾配と強い鉛直コヒーレンスを意味する．
+		\item \textbf{鉛直ウインドシア}：弱いシア（$< 10$ m/s，850–200 hPa間）は渦柱の調整を保つ；強いシアはそれを破壊する．
+		\item \textbf{対流圏中層の相対湿度}：湿った空気は D+I·R 三つ組の共鳴因子 $R$ を強化する．
+	\end{itemize}
+	合成指標は以下のように構築できる：
+	\[
+	\Keff^{\mathrm{(index)}} = w_1 \left( \frac{\mathrm{SST}}{\mathrm{SST}_0} \right)^{\gamma}
+	+ w_2 \left( \frac{\mathrm{CAPE}}{\mathrm{CAPE}_0} \right)^{0.67}
+	+ w_3 \left( \frac{1}{1 + \mathrm{shear}/\mathrm{shear}_0} \right)
+	+ w_4 \left( \frac{\mathrm{RH}}{\mathrm{RH}_0} \right),
+	\]
+	ここで重み $w_i$ は歴史データから較正される．この指標が臨界値 $\approx 1.84$ を超えると，24--48時間のリードタイムで低気圧発生が予測される．
+	
+	\subsubsection*{急速強化}
+	
+	衛星観測は，一部の熱帯低気圧が24時間で30ノット以上の風速増加を示す急速強化を起こすことを示している．YUCTでは，これは自己強化型の調整カスケードに対応する．いったん渦が確立すると，その回転が局所的なウインドシアを減少させ，$\Keff$ をさらに増大させて強化を加速する．この過程は動的方程式
+	\[
+	\frac{d\Keff}{dt} = r \Keff \left( 1 - \frac{\Keff}{K_{\max}} \right)
+	- \mu \Keff^{1-\beta} + \xi(t)
+	\]
+	で記述される．これは，すべての調整系を支配する，フラクタル誤差補正を伴うロジスティック成長と同じである（付録~T）．解は利用可能な海洋エネルギーによって設定される $K_{\max}$ で飽和するまで双曲線的成長を示す．
+	
+	\subsubsection*{経験的テスト}
+	
+	大西洋ハリケーンデータベース（HURDAT2, 1851--2025）の系統的後方視解析は次のことを明らかにするはずである：
+	\begin{enumerate}
+		\item 低気圧発生確率は合成 $\Keff$ 指標の非線形関数であり，$K_{\mathrm{crit}} \approx 1.84$ 付近に鋭い閾値が存在する．
+		\item 強化率はロジスティック誤差方程式に従い，指数 $\beta = 0.67$ が減衰項に現れる．
+		\item ハリケーンの最大潜在強度 (MPI) は $K_{\max}$ に比例し，$K_{\max}$ 自体はSSTと $\mathrm{MPI} \propto \mathrm{SST}^{\beta\gamma} \propto \mathrm{SST}^{0.20}$ のようにスケーリングする．
+	\end{enumerate}
+	これらの予測は反証可能であり，公的に入手可能なデータでテストできる．
+	
+	\subsection{臨界点と前兆}
+	
+	系が閾値（臨界点）に近づくにつれて $\Keff$ が減少し，以下を引き起こす：
+	\begin{itemize}
+		\item \textbf{臨界減速}：自己相関 $\phi(\tau)$ の増加：
+		\[
+		\phi(\tau) \propto \exp\!\left(-\frac{\tau}{\tau_{\text{rel}}}\right),\quad \tau_{\text{rel}} \propto \frac{1}{\Keff}.
+		\]
+		\item \textbf{分散増大}：$\sigma^2 \propto 1/\Keff$．
+		\item \textbf{非対称性とちらつき}：双安定な変動の出現．
+	\end{itemize}
+	これらのシグナルは，急速な気候変動に先立って古気候記録で観察されており，予測に利用できる．
+	
+	\subsection{散逸構造としての大気}
+	\label{subsec:atmo_diss}
+	
+	地球の大気は非平衡熱力学系の古典的な例である．太陽加熱は連続的なエネルギーフラックスを供給し，大気を平衡から遠ざける．これらの条件下で系は自己組織化し，個々の分子の特性緩和時間よりはるかに長い寿命を持つコヒーレント構造を形成する~\cite{Prigogine1977}．
+	
+	低気圧，ハリケーン，台風は，プリゴジンの意味での\textbf{散逸構造}である：エントロピー生成速度 $\sigma$ が臨界閾値 $\sigma_{\mathrm{crit}}$ を超えると自発的に発生し，エントロピーを環境に輸出することで秩序だった形態を維持し，エネルギー供給が途絶えると崩壊する．YUCTでは，この現象論は定量的基礎を得る：ハリケーンの調整効率 $\Keff$ は，普遍スケーリング則を通してエントロピー生成速度と直接結びつく：
+	\begin{equation}
+		\frac{\sigma}{\sigma_0} = \left( \frac{\Keff}{K_0} \right)^{\beta d_f / 2},
+		\label{eq:cyclone_sigma}
+	\end{equation}
+	ここで $\beta = 2/3$，$d_f = 11/5$ は大気調整ネットワークのフラクタル次元である．指数 $\beta d_f / 2 = 0.733$ が嵐のエネルギーと空間的広がりの間のべき乗関係を決定する．
+	
+	\subsubsection*{調整相転移としての低気圧発生}
+	
+	熱帯低気圧の誕生は\textbf{調整相転移}である．臨界海面水温（$T_{\mathrm{SST}} \lesssim 26.5^{\circ}\mathrm{C}$）以下では，大気対流は無調整である：積雲は確率的に上昇・減衰し，コヒーレントな循環を形成しない．海洋温度が閾値を超えると，蒸発速度が上昇し，対流有効位置エネルギー (CAPE) が増加し，系は分岐を起こす：大規模で高度に調整された渦が出現する~\cite{Emanuel2003}．
+	
+	YUCTでは，この遷移は局所調整効率が臨界値を超えるときに起こる：
+	\begin{equation}
+		\Keff^{\mathrm{(atm)}} > K_{\mathrm{crit}} \quad \Longrightarrow \quad
+		\text{低気圧発生}.
+	\end{equation}
+	臨界効率は任意の定数ではなく，代数的ループを通して普遍秩序-カオスパラメータと結びついている：
+	\begin{equation}
+		K_{\mathrm{crit}} = K_0 \left( \frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}} \right)^{1/\beta}
+		= K_0 \left( \frac{3}{2} \right)^{3/2} \approx 1.837\,K_0 .
+	\end{equation}
+	したがって，低気圧は局所的な $K_{\mathrm{eff}}$ がベースライン値を $\sim 1.84$ 倍超えたときに形成される．この数値はYUCTの代数的構造によって厳密に決定され，いかなる経験的フィットにも依存しない．
+	
+	\section{データと方法}
+	
+	\subsection{データソース}
+	
+	\begin{itemize}
+		\item \textbf{全球気温}：陸域および海洋表面偏差（GISTEMP, NASA）\cite{GISTEMP}．1880年から2024年までの年次値．
+		\item \textbf{太陽活動}：年次ウォルフ数バージョン2.0（WDC‑SILSO, ブリュッセル）\cite{SILSO}．
+		\item \textbf{海洋温度}：ERSSTv5 (NOAA) および HadSST4 (Met Office) \cite{ERSST, HADSST}，1850年以降．
+		\item \textbf{海洋熱量 (OHC)}：IAP/CASデータ \cite{IAPOHC}（0–2000 m）．
+		\item \textbf{氷河・氷床}：WGMS \cite{WGMS}，IMBIE \cite{IMBIE}，GRACE/GRACE-FO \cite{GRACE} による質量収支．
+		\item \textbf{セクター別気温}：GISTEMP帯状平均 (90°S–90°N，緯度帯) \cite{GISTEMPZonal}．
+		\item \textbf{火山活動}：全球噴火カタログ (VEI $\ge 4$）およびエアロゾル負荷再構築（アイスコアデータなど）\cite{VolcanoCatalog}．
+	\end{itemize}
+	
+	\subsection{計算方法と統計的検定}
+	
+	各移動窓サイズ $L$（10年から50年，1年刻み）について：
+	\begin{enumerate}
+		\item トレンド除去した気温の標準偏差 $\sigma_T(L,t)$ と平均ウォルフ数 $\langle W(L,t) \rangle$ を各年 $t$ について計算．
+		\item $\ln \sigma_T$ の $\ln \langle W \rangle$ に対する線形回帰を実行．
+		\item 勾配 $b(L)$，95%信頼区間（ブロックブートストラップ10,000反復，ブロックサイズ $L/3$ で自己相関を考慮），$p$値を記録．
+	\end{enumerate}
+	
+	安定性チェック：
+	\begin{itemize}
+		\item $\ln \sigma_T$ と $\ln \langle W \rangle$ の定常性検定（ADF, KPSS）．
+		\item 長期関係に対するJohansen共和分検定．
+		\item Granger因果性検定（ラグ1–5）で方向性評価．
+		\item 並べ替え検定（10,000シャッフル）で，太陽活動系列のランダム再配列により勾配 $\le -0.67$ を得る確率を評価．
+	\end{itemize}
+	
+	火山成分について：
+	\begin{itemize}
+		\item 噴火頻度（VEI $\ge 4$，30年窓で平滑化）とウォルフ数の相関分析．
+		\item 自己相関を考慮した $\ln P_{\text{eruption}}$ の $\ln W$ に対する回帰．
+	\end{itemize}
+	
+	\subsection{頑健性評価}
+	
+	窓固有のチューニングを除外するため，$b(L)$ の窓サイズ依存性を調べた．勾配が広い範囲の窓で安定であれば，客観的な規則性を示す．
+	
+	\section{結果}
+	
+	\subsection{予備的統計検定}
+	
+	ADF検定：両系列とも1階差分後定常（$p < 0.01$）．KPSSも差分の定常性を確認．  
+	Johansen検定（ランク1）：トレース統計量は20–40年窓で5%水準の $\ln \sigma_T$ と $\ln \langle W \rangle$ 間の共和分を示す．  
+	Granger因果性：20–40年窓で，太陽活動から気温ボラティリティへの一方向因果性を検出（$p < 0.05$）；逆方向は非有意．
+	
+	\subsection{$b(L)$ の窓サイズ依存性}
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{異なる窓に対する $\ln \sigma_T$ の $\ln \langle W \rangle$ への回帰勾配}
+		\label{tab:slopes}
+		\begin{tabular}{@{}lcccc@{}}
+			\toprule
+			窓 (yr) & 勾配 $b$ & 95\% CI (ブートストラップ) & $p$値 & $R^2$ \\
+			\midrule
+			11 & –0.32 & [–0.48, –0.16] & 0.023 & 0.18 \\
+			20 & –0.59 & [–0.79, –0.39] & 0.001 & 0.51 \\
+			30 & –0.70 & [–0.92, –0.48] & $3\times10^{-4}$ & 0.62 \\
+			40 & –0.64 & [–0.88, –0.40] & 0.002 & 0.58 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	20–40年窓では勾配は安定で，–0.62 … –0.72の範囲にあり，理論値 $\be = 0.67$ と完全に一致する．短い窓（10–14年）では勾配が浅くなるが，これは気温記録に支配的な11年成分が存在しないことに対応する．  
+	30年窓に対する並べ替え検定は，偶然に $\le -0.67$ の勾配を得る確率が $<0.002$ であることを示し，偶然の一致という帰無仮説を棄却する．
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				xlabel = {窓サイズ $L$ (yr)},
+				ylabel = {勾配 $b$},
+				grid = both,
+				xmin = 10, xmax = 50,
+				ymin = -0.9, ymax = -0.2,
+				legend pos = north west
+				]
+				\addplot[thick, blue, mark=*] coordinates {
+					(11, -0.32) (15, -0.48) (20, -0.59) (25, -0.66) (30, -0.70) (35, -0.68) (40, -0.64) (45, -0.60) (50, -0.55)
+				};
+				\addplot[thick, red, dashed] coordinates {(10, -0.67) (50, -0.67)};
+				\legend{計算された勾配, $\be = 0.67$ (参照)}
+			\end{axis}
+		\end{tikzpicture}
+		\caption{回帰勾配の移動窓サイズ依存性．広い窓範囲 (20–40年) が $-\be$ に近い勾配を与える．}
+		\label{fig:slope_vs_window}
+	\end{figure}
+	
+	\subsection{経済学との比較（付録F）}
+	
+	付録Fでは，GDPのボラティリティ（5年窓）が $-0.67 \pm 0.05$ の勾配を与えた．気候学では，30年窓（数十年規模変動に対応）が $-0.70 \pm 0.11$ の勾配を与える．時間スケールは異なるが，指数は同一であり，$\be = 0.67$ の普遍性を確認する．
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{スケーリング指数の比較}
+		\label{tab:compare}
+		\begin{tabular}{@{}lccc@{}}
+			\toprule
+			系 & 窓 & 物理的意味 & 勾配 \\
+			\midrule
+			経済 (GDP) & 5 年 & 景気循環 & $-0.67 \pm 0.05$ \\
+			気候 (気温) & 30 年 & 数十年変動 & $-0.70 \pm 0.11$ \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{火山統計}
+	
+	VEI $\ge 4$ の噴火について，1880–2024年の期間：
+	\begin{itemize}
+		\item 太陽極大期（平均ウォルフ数 > 100）の噴火頻度は極小期より25\%高く，差は $p < 0.05$ で有意．
+		\item 噴火頻度の対数（30年窓で平滑化）のウォルフ数対数に対する回帰勾配は $0.65 \pm 0.15$ であり，$\beta = 0.67$ と整合する．
+	\end{itemize}
+	
+	\section{海洋調整と熱慣性}
+	
+	\subsection{海洋温度依存性}
+	
+	海洋は気候システムの主要な熱貯蔵庫である．YUCTでは，海洋循環の調整効率 $\Keff^{\text{oc}}$ が熱再分配速度を決定する．海面水温 (SST) のボラティリティも同じ指数 $\be$ のべき乗則に従う：
+	\[
+	\sigma_{\text{SST}} \propto \langle W \rangle^{-\be},
+	\]
+	これはERSSTv5データの解析（図 \ref{fig:sst_scaling}）で確認される．海洋熱量 (0–2000 m) も同様のスケーリングを示すが，より大きな慣性を持つ ― 応答時間 $\tau_{\text{oc}} \approx 15$ 年で，大気と比較してより高い調整効率に対応する．
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				xlabel = {$\ln \langle W \rangle$},
+				ylabel = {$\ln \sigma_{\text{SST}}$},
+				grid = both,
+				legend pos = south west
+				]
+				\addplot[only marks, blue] coordinates {
+					(3.8, -1.2) (4.0, -1.4) (4.2, -1.5) (4.4, -1.7) (4.6, -1.9)
+				};
+				\addplot[thick, red] { -0.69*x + 1.2 };
+				\legend{SSTデータ, 回帰 $b = -0.69 \pm 0.08$}
+			\end{axis}
+		\end{tikzpicture}
+		\caption{SSTボラティリティの太陽活動に対するスケーリング (30年窓)．勾配 $-0.69$ は $\be$ と一致する．}
+		\label{fig:sst_scaling}
+	\end{figure}
+	
+	\subsection{SSTに対する定量的結果}
+	
+	1950–2024年の30年移動窓について：
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{SST (ERSSTv5) の回帰パラメータ}
+		\label{tab:sst_reg}
+		\begin{tabular}{@{}lccc@{}}
+			\toprule
+			系列 & 勾配 $b$ & 95\% CI & $R^2$ \\
+			\midrule
+			ERSSTv5 (全球) & –0.69 & [–0.82, –0.56] & 0.67 \\
+			HadSST4 (全球)  & –0.66 & [–0.78, –0.54] & 0.63 \\
+			北大西洋 (30–60°N) & –0.74 & [–0.91, –0.57] & 0.58 \\
+			熱帯太平洋 (20°S–20°N) & –0.38 & [–0.55, –0.21] & 0.21 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	結果は2つの独立したデータセット（ERSSTとHadSST）にわたって頑健である．熱帯では海洋慣性と熱帯収束帯のため相関が弱く，太陽指標の寄与が小さいことと整合する．
+	
+	\subsection{付録P（重力依存性）との関連}
+	
+	付録Pは有効重力定数の温度依存性 $G_{\text{eff}} \propto T^{\ga}$ を確立している．海洋では，温度変化が水の密度，したがって成層と鉛直循環に影響する．海洋調整効率は重力パラメータを通して
+	\[
+	\Keff^{\text{oc}} \propto \left( \frac{\Delta \rho}{\rho} \right)^{\ga} \propto (\alpha_T \Delta T)^{\ga},
+	\]
+	と表せる．ここで $\alpha_T$ は熱膨張係数である．これは変動スケーリングを温度と重力に結びつけ，海洋の熱応答における指数 $\ga \approx 0.3$ を説明する．
+	
+	\subsection{月の海洋調整への影響}
+	
+	月は潮汐力を生成し，海洋混合と熱帯から極へのエネルギー輸送を変調する．潮汐エネルギー $E_{\text{tide}}$ は月距離と軌道パラメータに応じて変化する．YUCTでは，外部共鳴因子 $R$ は月の周期（18.6年交点周期，8.85年近地点周期）を含む．月指標 $L$ を加えることでSST分散の説明が改善される：
+	\[
+	\sigma_{\text{SST}} \propto \langle W \rangle^{-\be} \cdot f(L),
+	\]
+	ここで $f(L)$ は潮汐混合変調に関連する18.6年周期の周期関数である．これにより，海洋熱量の数十年変動の予測可能性が開かれる．
+	
+	\section{雪氷圏：氷河と氷床の動態}
+	
+	\subsection{氷河質量変化}
+	
+	WGMSおよびIMBIEによれば，グリーンランドと南極を除く全球氷河質量損失はここ数十年で加速している．質量損失速度 $\dot{M}$ は気温偏差と相関し，YUCTでは $\Keff$ と
+	\[
+	\dot{M} \propto \Keff^{-\beta_M},
+	\]
+	の関係を持つ．ここで $\beta_M \approx 0.5 \pm 0.1$（非線形融解過程と氷の動的応答のため $\be$ とは異なる）．グリーンランドと南極の氷床については，GRACE/GRACE-FOデータが気温ボラティリティの増加と相関する質量損失の加速を示す（図 \ref{fig:grace}）．
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				xlabel = {年},
+				ylabel = {累積質量損失 (Gt)},
+				grid = both,
+				legend pos = north west
+				]
+				\addplot[thick, blue] coordinates {
+					(2002, 0) (2005, -200) (2010, -600) (2015, -1200) (2020, -1800) (2023, -2100)
+				};
+				\addplot[thick, red] coordinates {
+					(2002, 0) (2005, -50) (2010, -150) (2015, -300) (2020, -500) (2023, -620)
+				};
+				\legend{グリーンランド, 南極}
+			\end{axis}
+		\end{tikzpicture}
+		\caption{GRACE/GRACE-FOデータによる氷床累積質量損失（\cite{IMBIE}より改変）．}
+		\label{fig:grace}
+	\end{figure}
+	
+	\subsection{温度感度}
+	
+	氷近傍域の海面および大気温度データを用いて，回帰式を立てられる：
+	\[
+	\dot{M} = \beta_T \cdot \Delta T + \beta_{\text{oc}} \cdot \text{OHC}_{\text{prox}},
+	\]
+	グリーンランドでは $\beta_T \approx 50$ Gt/yr/°C，海洋熱量に対して $\beta_{\text{oc}} \approx 0.3$ Gt/yr/ZJである．YUCTでは，これらの係数は海洋-氷接触域における調整効率の尺度として解釈される．
+	
+	\subsection{太陽活動および $\Keff$ との関連}
+	
+	グリーンランドと南極について，平均太陽活動に対する質量損失速度の依存性を分析した．1980–2024年の30年窓に対する結果を表 \ref{tab:icescaling} に示す．
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{太陽活動に対する氷床質量損失速度のスケーリング}
+		\label{tab:icescaling}
+		\begin{tabular}{@{}lcccc@{}}
+			\toprule
+			氷床 & 勾配 $b_M$ & 95\% CI & $R^2$ \\
+			\midrule
+			グリーンランド & –0.49 & [–0.72, –0.26] & 0.51 \\
+			南極           & –0.53 & [–0.78, –0.28] & 0.48 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	勾配は $\beta_M \approx 0.5$ に近く，$\be = 0.67$ とは異なる．これは融解の非線形（二次的）温度依存性と閾値効果によって説明される．YUCTの用語では，雪氷圏調整効率は $\Keff^{\beta_M}$（$\beta_M = \be \cdot \nu$，$\nu \approx 0.75$ は非線形性指数）でスケーリングする．
+	
+	\section{大気温度のセクター構造}
+	
+	\subsection{帯状・地域的特徴}
+	
+	GISTEMP帯状平均の解析は，ボラティリティの太陽活動に対するスケーリングが全セクターで一様でないことを示す．最も高い感度は中高緯度 (45–75°)，特に大陸地域で発生し，勾配 $b$ は $-0.8$ に達する（表 \ref{tab:zonal}）．熱帯 (20°S–20°N) では太陽活動の影響はより弱く（$b \approx -0.2$），海洋慣性と熱帯収束帯のためである．
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{緯度帯に対するスケーリング勾配 (30年窓)}
+		\label{tab:zonal}
+		\begin{tabular}{@{}lccc@{}}
+			\toprule
+			緯度帯 & 勾配 $b$ & 95\% CI & $R^2$ \\
+			\midrule
+			90°S–60°S & –0.76 & [–0.94, –0.58] & 0.58 \\
+			60°S–30°S & –0.68 & [–0.85, –0.51] & 0.54 \\
+			30°S–EQ   & –0.35 & [–0.52, –0.18] & 0.22 \\
+			EQ–30°N   & –0.28 & [–0.45, –0.11] & 0.18 \\
+			30°N–60°N & –0.72 & [–0.91, –0.53] & 0.61 \\
+			60°N–90°N & –0.81 & [–1.02, –0.60] & 0.64 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{水体温度への依存性}
+	
+	海洋性の高い地域（例：北大西洋，北太平洋）は，海面水温 (SST) および熱量とのより強い相関を示す．海洋の地上気温ボラティリティへの寄与は次のように記述できる：
+	\[
+	T_{\text{air}}(t) = \alpha T_{\text{SST}}(t-\tau) + \beta W(t) + \gamma \text{NAO}(t) + \varepsilon,
+	\]
+	ここで $\tau \approx 2$–6か月は特性熱輸送時間である．YUCTでは，この情報伝達は海洋-大気サブシステム間の共鳴として解釈され，有効調整 $\Keff$ を決定する．
+	
+	\section{考察}
+	
+	\subsection{物理的解釈}
+	
+	結果は，太陽活動が気候システムの調整効率を変調する外部指標として働くことを示す．高活動時（$W$ 大）には系はより調整され，その変動は抑制され，ボラティリティが低下する．低活動時には調整が弱まり，変動振幅が増大する．抑制の程度は指数 $\be = 0.67$ のべき乗則で正確に記述される．
+	
+	なぜ11年窓は同じ効果を示さないのか？ 太陽活動には明瞭な11年周期があるが，気温系列はこの周期で純粋に周期的ではなく，支配的振動は数十年スケール（約64年）で起こる．このスケールに匹敵する窓のみがスケーリングを明らかにする．
+	
+	\subsection{頑健性とチューニングの不在}
+	
+	$b = -0.67$ を得るために意図的に窓を選んだならば，勾配は単一の窓でのみその値に近くなるはずである．しかし我々は20–40年にわたる安定性を観察する（可能な21の窓）．これはチューニングを排除し，真の物理的規則性を示す．
+	
+	\subsection{他のYUCT付録との関係}
+	
+	\begin{itemize}
+		\item \textbf{付録C} ― 元素の調整効率，熱力学特性の基礎．
+		\item \textbf{付録L} ― 普遍誤差スケーリング則．
+		\item \textbf{付録P} ― 重力の温度依存性（海洋熱容量に使用される指数 $\ga$）．
+		\item \textbf{付録F} ― 経済スケーリング，指数の一致．
+		\item \textbf{付録 $\Omega$} ― 全球回転，惑星循環に影響しうる．
+		\item \textbf{付録W} ― 重力トモグラフィー，質量再分配（氷河，海洋）の追跡を可能にする．
+		\item \textbf{付録M} ― 日月潮汐，海洋調整への影響．
+	\end{itemize}
+	
+	\section{2050年の気温予測図}
+	\label{sec:forecast_maps}
+	
+	調整効率 $K_{\mathrm{eff}}$ の低下，太陽活動，海洋慣性，重力効果，火山強制力を考慮した統合YUCTモデルに基づき，1981–2010年ベースラインに対する2050年の年平均地上気温偏差を計算した．予測は主要地域をカバーし，期待される空間構造を示す．
+	
+	\subsection{地域偏差}
+	
+	表 \ref{tab:anomalies_2050} に主要気候帯に対する予測値を示す．
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{2050年の予測地上気温偏差（1981–2010年比）}
+		\label{tab:anomalies_2050}
+		\small
+		\begin{tabular}{p{4.5cm} c c}
+			\toprule
+			地域 & 偏差 (°C) & 備考 \\
+			\midrule
+			北極 (70°N以北) & +5.2 … +6.5 & 最大温暖化，海氷消失 \\
+			北ユーラシア (50–70°N) & +2.8 … +3.6 & 冬季の寄与が支配的 \\
+			北アメリカ (大陸) & +2.4 … +3.2 & 西部 – 干ばつ，東部 – 降水増加 \\
+			中央ヨーロッパ & +2.0 … +2.8 & 熱波増加 \\
+			地中海 & +2.2 … +3.0 & 降水減少 \\
+			中央アジア，カザフスタン & +2.0 … +2.6 & 大陸性の強化 \\
+			北アフリカ，中東 & +2.5 … +3.2 & 極端な高温 \\
+			南アジア & +1.8 … +2.4 & モンスーン変動 \\
+			東南アジア & +1.6 … +2.2 & 洪水リスク \\
+			オーストラリア & +1.5 … +2.2 & 火災，干ばつ \\
+			アマゾン & +1.5 … +2.0 & サバンナへの移行 \\
+			南極 (沿岸) & +1.5 … +2.5 & 棚氷融解加速 \\
+			北大西洋 (亜寒帯) & +1.0 … +1.8 & 相対的「コールドスポット」 (AMOC) \\
+			熱帯太平洋 & +1.2 … +1.8 & エルニーニョ強化 \\
+			南大洋 & +0.8 … +1.5 & 南極氷河への影響 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{予測場構築の方法論}
+	
+	2050年の予測気温偏差は，歴史データ（GISTEMP, 1950–2020）から特定された空間構造を外挿して得られた．各グリッド点 $\mathbf{r}$ において，気温偏差は
+	\[
+	T_{\mathrm{anom}}(\mathbf{r},t) = \sigma_T(t) \cdot \mathrm{EOF}_1(\mathbf{r}) \cdot \beta(\mathbf{r}) + \varepsilon(\mathbf{r},t),
+	\]
+	と計算される．ここで $\sigma_T(t)$ は
+	\[
+	\sigma_T(t) = \sigma_0 \bigl( W(t)/W_0 \bigr)^{-\beta} \bigl(1 + \gamma_{\mathrm{anth}} \Delta F_{\mathrm{anth}}(t)/\Delta F_0\bigr)^{-\beta} \exp\!\bigl(-\lambda_{\text{volc}} \,\tau_{\text{volc}}(t)\bigr)
+	\]
+	から予測される全球ボラティリティ，$\mathrm{EOF}_1(\mathbf{r})$ は気温場の第1経験的直交関数（主要な空間変動構造を捕捉），$\beta(\mathbf{r})$ は局所偏差の全球ボラティリティに対する回帰による地域増幅因子，$\varepsilon(\mathbf{r},t)$ は小規模変動をモデル化する．
+	
+	使用した入力：
+	\begin{itemize}
+		\item 太陽活動 $W(t)$：NASA/NOAAによる第25・26周期の予測，第26周期以降は複数周期動態の平均．
+		\item 人為強制力 $\Delta F_{\mathrm{anth}}(t)$：最も可能性の高いSSP2-4.5シナリオ（中排出）．
+		\item 火山活動：歴史データから較正されたパラメータを用いた1000の確率的実現のアンサンブル．
+		\item モデルパラメータは1950–2020年データで較正．
+	\end{itemize}
+	
+	\subsection{検証可能性}
+	
+	提示された予測はYUCTの盲目的予測である．検証は以下を通して達成できる：
+	\begin{itemize}
+		\item 全球気温場の年次更新（GISTEMP, Berkeley Earth）；
+		\item 独立予測（CMIP6, CMIP7）との比較；
+		\item 臨界指標（自己相関，分散，AMOC挙動）のモニタリング；
+		\item 火山活動とその放射収支への影響のモニタリング．
+	\end{itemize}
+	2030–40年代の予測と現実の一致は，気候動態への調整アプローチの強力な証拠となる．
+	
+	\section{結論}
+	
+	GISTEMP，ERSST，GRACE，WGMSデータの解析は，全球気温，海面水温，海洋熱量，氷床質量損失の数十年スケール（20–40年窓）のボラティリティが，大気・海洋では $\be = 0.67$，雪氷圏では $\be \approx 0.5$ の指数で太陽活動に反比例することを示す．この結果は，以前に得られたGDPボラティリティのスケーリング（付録F）と完全に一致し，法則 $\epsilon = \kappac \alpha \Keff^{-\be}$ の普遍性の独立した確認となる．
+	
+	同じ指数 $\beta$ に基づいて導入された火山強制力モデルは，自然気候変動の記述を統一する．噴火の確率的性質を考慮すると，追加的な予測不確実性（2050年までに $\pm0.1$°C）の推定が得られるが，長期的傾向は変わらない．
+	
+	発見された規則性は以下の可能性を開く：
+	\begin{itemize}
+		\item 太陽周期，地磁気活動，月の交点変調に基づく気候ボラティリティの予測；
+		\item 自己相関の増加を通した臨界減速（閾値遷移の前兆）の早期検出；
+		\item 自然・社会システムにおける統一的調整理論の構築；
+		\item 海洋熱量変化に対する氷河感度の評価．
+	\end{itemize}
+	
+	今後の研究は，他の気候指標（ENSO, NAO, AMO）に対するスケーリングの検証，古気候データの解析（系列の延長），$\Keff$ を用いた閾値遷移のモデル化，月の潮汐とテクトニック活動の海洋調整への寄与の定量化に焦点を当てるべきである．
+	
+	\begin{thebibliography}{99}
+		\bibitem{GISTEMP} GISTEMP Team, NASA Goddard Institute for Space Studies, \url{https://data.giss.nasa.gov/gistemp/}
+		\bibitem{SILSO} WDC-SILSO, Royal Observatory of Belgium, \url{http://www.sidc.be/silso/datafiles}
+		\bibitem{ERSST} Huang, B. et al., ``Extended Reconstructed Sea Surface Temperature, Version 5 (ERSSTv5)'', NOAA, 2017.
+		\bibitem{HADSST} Kennedy, J. J. et al., ``HadSST.4'', Met Office Hadley Centre, 2019.
+		\bibitem{IAPOHC} Cheng, L. et al., ``IAP/CAS Ocean Heat Content Data'', Institute of Atmospheric Physics, 2024.
+		\bibitem{WGMS} WGMS, ``Global Glacier Change Bulletin'', 2023.
+		\bibitem{IMBIE} IMBIE Team, ``Mass balance of the Antarctic and Greenland ice sheets'', 2023.
+		\bibitem{GRACE} Tapley, B. D. et al., ``GRACE Measurements of Mass Variability'', 2019.
+		\bibitem{GISTEMPZonal} GISTEMP Zonal Means, \url{https://data.giss.nasa.gov/gistemp/zonal/}
+		\bibitem{Ibanga2024} Ibanga, E. et al., ``Long-period cycles in solar–geomagnetic activity and global temperature'', \emph{Journal of Atmospheric and Solar-Terrestrial Physics} (2024).
+		\bibitem{VolcanoCatalog} Smithsonian Institution, Global Volcanism Program, \url{https://volcano.si.edu/}
+		\bibitem{AppendixF} A. V. Yakushev, ``Coordination Economics — Empirical Validation of the Universal Scaling Law $\beta = 0.67$ in Macroeconomic and Financial Systems,'' Appendix F, YUCT, Zenodo, \url{https://doi.org/10.5281/zenodo.18444598} (2026). A short version: \url{https://doi.org/10.5281/zenodo.18362308}.
+		\bibitem{AppendixP} A. V. Yakushev, ``Temperature Dependence of Gravity: Observational Confirmation and Theoretical Foundation within the Coordination Paradigm (YUCT),'' Appendix P, YUCT, Zenodo, \url{https://doi.org/10.5281/zenodo.18444598} (2026). A short version: \url{https://doi.org/10.5281/zenodo.18362308}.
+		\bibitem{AppendixL} A. V. Yakushev, ``Fractal Coordination Error Scaling — A Universal Law from DNA to Cosmology,'' Appendix L, YUCT, Zenodo, \url{https://doi.org/10.5281/zenodo.18444598} (2026). A short version: \url{https://doi.org/10.5281/zenodo.18362308}.
+		\bibitem{Prigogine1977}
+		I.~Prigogine, G.~Nicolis, \emph{Self‑Organization in Nonequilibrium Systems}. Wiley (1977).
+		
+		\bibitem{Emanuel2003}
+		K.~A.~Emanuel, ``Tropical cyclones,'' \emph{Annual Review of Earth and Planetary Sciences},
+		\textbf{31}, 75--104 (2003).
+		
+		\bibitem{Emanuel1986}
+		K.~A.~Emanuel, ``An air‑sea interaction theory for tropical cyclones. Part I:
+		Steady‑state maintenance,'' \emph{Journal of the Atmospheric Sciences},
+		\textbf{43(6)}, 585--605 (1986).
+	\end{thebibliography}
+	
+\end{document}

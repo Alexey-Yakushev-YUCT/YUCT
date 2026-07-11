@@ -1,0 +1,403 @@
+% !TEX program = lualatex
+% !TeX encoding = UTF-8
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{bookmarksnumbered,bookmarksopen}{hyperref}
+\documentclass[12pt,a4paper]{article}
+
+% ============================================================
+% 日本語設定 (LuaLaTeX + luatexja)
+% ============================================================
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+
+% ラテン文字フォント
+\setmainfont{Times New Roman}[Ligatures=TeX]
+\setsansfont{Arial}[Ligatures=TeX]
+\setmonofont{Consolas}[Scale=MatchLowercase]
+
+% 日本語フォント – Yu Gothic (Windows に標準搭載)
+\setmainjfont{Yu Gothic}[UprightFont = * Regular, BoldFont = * Bold]
+\setsansjfont{Yu Gothic}[UprightFont = * Regular, BoldFont = * Bold]
+\setmonojfont{Yu Gothic}[UprightFont = * Regular, BoldFont = * Bold]
+
+% ============================================================
+% その他のパッケージ
+% ============================================================
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,arrows.meta,positioning,shapes.geometric}
+\usepackage{float}
+
+\geometry{a4paper, margin=1in}
+
+% ============================================================
+% YUCT マクロ
+% ============================================================
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\df}{d_{\!f}}
+
+% ============================================================
+% 定理環境（日本語）
+% ============================================================
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}[theorem]{補題}
+\newtheorem{definition}[theorem]{定義}
+\newtheorem{corollary}[theorem]{系}
+\newtheorem{proposition}[theorem]{命題}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{注記}
+\newtheorem{example}[theorem]{例}
+
+% ============================================================
+% ハイパーリンク設定
+% ============================================================
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{1cm}
+		{\Huge\bfseries 付録 S2: 二次元ショットキーヘテロ構造における調整のフラクタル次元と \\ YUCT スケーリング指数 $\beta = 2/3$ ($\approx 0.67$) の予測}\\[1cm]
+		{\large Alexey V. Yakushev}\\[0.3cm]
+		{\normalsize Yakushev Research, \url{https://yuct.org/}}\\[1.5cm]
+		{\normalsize DOI: \texttt{10.5281/zenodo.18444598}}\\[0.5cm]
+		{\normalsize 2026年5月\\バージョン 1.0}\\[2cm]
+		
+		\begin{minipage}{0.9\textwidth}
+			\begin{abstract}
+				\noindent
+				Ang, Yang \& Ang (Phys. Rev. Lett. 121, 056802, 2018) は、
+				二次元ショットキーヘテロ構造において普遍的な電流-温度スケーリング則
+				$\log(\mathcal{I}/T^{3/2}) \propto -1/T$（横方向コンタクト）および
+				$\log(\mathcal{I}/T^{1}) \propto -1/T$（運動量非保存の縦方向コンタクト）
+				を発見した。本付録では、両指数が輸送を制御する調整ネットワークの
+				実効フラクタル次元 $d_f$ によって支配されることを示す。
+				YUCT 普遍誤差スケーリング則 $\varepsilon = \kappa_c\alpha
+				K_{\mathrm{eff}}^{-\beta}$（$\beta = 2/3 \approx 0.67$）は
+				$\beta = 2/d_f$ を介して $d_f$ と結びつく。実験的な電流スケーリングから、
+				横方向コンタクトでは $d_f = 3$、縦方向コンタクトでは $d_f = 2$ を抽出し、
+				それぞれ $\beta = 2/3$ および $\beta = 1$ を与える。この分析は、
+				横方向ショットキーダイオードにおける相対電流変動が
+				$\varepsilon_{\mathrm{fluc}} \propto K_{\mathrm{eff}}^{-2/3}$ に従うと予測する。
+				これは標準的なノイズ分光法で検証可能な反証可能な予測である。
+				本付録は、二次元ショットキーヘテロ構造を、普遍的な YUCT 指数
+				$\beta = 2/3$ ($0.67$) を示すかまたは示すと予測される系のファミリーに
+				組み込み、理論の到達範囲を固体ナノエレクトロニクスに拡張する。
+			\end{abstract}
+			\vspace{1cm}
+			\noindent\small\textbf{キーワード:} YUCT, 調整効率, 普遍スケーリング,
+			$\beta = 2/3$, 0.67, ショットキーヘテロ構造, 二次元材料,
+			フラクタル次元, KPZ 普遍性.
+		\end{minipage}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{はじめに}
+	Yakushev 統一調整理論 (YUCT) は、任意の調整プロセスが普遍誤差スケーリング則に従うと仮定する：
+	\begin{equation}
+		\varepsilon = \kappa_c \, \alpha \, \Keff^{-\beta},
+		\qquad \beta = 2/3 \approx 0.67,\;\; \kappa_c = 1/3,
+		\label{eq:yuct-law}
+	\end{equation}
+	ここで $\Keff$ は調整効率、$\alpha$ はシステム固有の前因子である。
+	この法則は、化学結合から宇宙論的変動に至るまで、多様なシステムで検証されている
+	（付録~L,~M,~E,~F,~G,~V）。
+	
+	Ang, Yang and Ang~\cite{Ang2018} は、二次元材料ベースのショットキーヘテロ構造に
+	対する普遍的な電流-温度スケーリング則を導出した：
+	\begin{align}
+		\text{横方向コンタクト:}&\quad \log\Bigl(\frac{\mathcal{I}}{T^{3/2}}\Bigr) \propto -\frac{1}{T},
+		\label{eq:ang-lat}\\
+		\text{縦方向コンタクト（$k_\parallel$ 非保存）:}&\quad \log\Bigl(\frac{\mathcal{I}}{T^{1}}\Bigr) \propto -\frac{1}{T}.
+		\label{eq:ang-vert}
+	\end{align}
+	指数 $\beta_{\mathrm{IV}} = 3/2$ および $1$ は特定の二次元材料に依存せず、
+	電流経路の幾何学を反映する。
+	
+	本付録では、指数 $\beta_{\mathrm{IV}}$ が独立した数ではなく、
+	輸送を制御する調整ネットワークの実効フラクタル次元 $d_f$ によって
+	決定されることを示す。実験値 $\beta_{\mathrm{IV}}$ から $d_f$ を抽出し、
+	$d_f$ から調整誤差指数 $\beta_{\mathrm{err}} = 2/d_f$ を予測する。
+	横方向コンタクトでは $\beta_{\mathrm{err}} = 2/3$ となり、これはまさに
+	YUCT 普遍値である。この予測から導かれる変動スケーリングは、理論の
+	反証可能なテストを構成する。
+	
+	\section{ショットキーバリアのための YPSDC 辞書}
+	YPSDC（同期分散調整のヤクシェフプロトコル）の言語では、横方向ショットキー
+	ヘテロ構造は以下の構成要素を持つ調整システムである：
+	\begin{itemize}
+		\item \textbf{辞書 $\mathcal{D}$:} 二次元平面内の一電子状態の集合で、
+		エネルギー $\epsilon > \Phi_B$ かつ波動ベクトル $\mathbf{k}$ が
+		面内分散 (\ref{eq:dispersion}) を満たすもの。
+		\item \textbf{インデックス $\kappa$:} 電子を辞書に励起する熱エネルギー $k_B T$。
+		\item \textbf{共鳴 $R$:} 障壁透過中の接線方向運動量 $k_y$ の保存。
+	\end{itemize}
+	調整されたアクションは、エネルギー条件 $\epsilon > \Phi_B$ と
+	運動量条件 $k_x > 0$（障壁に向かう方向）を同時に満たす電子の
+	熱電子放出である。この調整の効率が逆方向飽和電流を決定する。
+	
+	\section{電流の実験的スケーリングと調整効率}
+	
+	一般的な等方性二次元分散
+	\begin{equation}
+		\epsilon(\mathbf{k}) = \sum_n c_n |\mathbf{k}|^n,
+		\label{eq:dispersion}
+	\end{equation}
+	に対して、Ang らは活性チャネル数（電流に寄与できるもの）が
+	普遍的に
+	\begin{equation}
+		N_{\mathrm{ch}} \propto T^{1/2}.
+		\label{eq:Nch}
+	\end{equation}
+	とスケールすることを示した。障壁より上の熱的にアクセス可能な全状態数は
+	$T$ に比例する（ボルツマン尾部から）。したがって、首尾よく調整された
+	状態の割合
+	\begin{equation}
+		\Keff(T) = \frac{N_{\mathrm{ch}}}{N_{\mathrm{tot}}} \propto T^{-1/2},
+		\label{eq:keff-T}
+	\end{equation}
+	がこのプロセスの調整効率として機能する。測定される電流は次の形式をとる：
+	\begin{equation}
+		\mathcal{I} = \mathcal{I}_0 \, \Keff(T)^{-3} \, e^{-\Phi_B/k_B T},
+		\label{eq:I-via-keff}
+	\end{equation}
+	これは実験法則 (\ref{eq:ang-lat}) を再現する。
+	
+	ノイズ測定に適した $\Keff$ の操作的定義は
+	\begin{equation}
+		\Keff = \frac{I}{I_0},
+		\label{eq:keff-operational}
+	\end{equation}
+	ここで $I$ は測定電流、$I_0$ は調整制限が存在しなければ流れるであろう
+	参照電流である。$I_0$ は、縦方向コンタクトの高温挙動（$\Keff(T) \propto T^{-0}$ 漸近的）
+	を測定温度に外挿するか、同じ障壁高さを持つ三次元ショットキーダイオードを
+	用いた独立した較正から得ることができる。この操作的定義により、$\Keff$ は
+	理論的スケーリング (\ref{eq:keff-T}) に依存せず、電流-電圧特性から
+	直接決定できる。
+	
+	\section{調整ネットワークのフラクタル次元}
+	
+	YUCT（付録~L）の中心的な結果は、誤差スケーリング指数が調整ネットワークの
+	フラクタル次元 $d_f$ によって決定されることである：
+	\begin{equation}
+		\beta_{\mathrm{err}} = \frac{2}{d_f}.
+		\label{eq:beta-df}
+	\end{equation}
+	熱的ウィンドウ内の活性調整チャネルの密度は、ネットワークの幾何学的特徴を
+	担う。等方的な $d_f$ 次元空間では、温度 $T$ でアクセス可能な状態密度は
+	$T^{d_f/2 - 1}$ とスケールする。横方向ショットキーバリアでは、
+	運動量保存（$\cos\theta$ 因子）という追加の運動学的制約が実効指数を
+	1 だけ減少させるため、運動指数は
+	\begin{equation}
+		\beta_{\mathrm{IV}} = \frac{d_f}{2}.
+		\label{eq:bIV-df}
+	\end{equation}
+	\textbf{式 (\ref{eq:bIV-df}) は、電流経路とフラクタル次元 $d_f$ の
+		調整ネットワークとの間の幾何学的類似性に動機づけられた仮説である。
+		YUCT 作用からの厳密な導出はまだ行われていない；したがって、この関係は
+		検証可能な予測（第~\ref{sec:predictions} 節）を導き、将来の理論的研究を
+		促す推測と見なされるべきである。}
+	
+	式 (\ref{eq:beta-df}) と (\ref{eq:bIV-df}) を組み合わせて基本関係を得る：
+	\begin{equation}
+		\boxed{\beta_{\mathrm{IV}} \cdot \beta_{\mathrm{err}} = 1}.
+		\label{eq:relation}
+	\end{equation}
+	
+	実験値 $\beta_{\mathrm{IV}} = 3/2$ から次を得る：
+	\begin{equation}
+		d_f = 2\beta_{\mathrm{IV}} = 3, \qquad
+		\beta_{\mathrm{err}} = \frac{2}{d_f} = \frac{2}{3} \approx 0.67.
+	\end{equation}
+	したがって、測定された電流スケーリングは実効フラクタル次元 $d_f = 3$ の
+	調整ネットワークを決定し、それは今度は任意の調整誤差の尺度（例えば相対電流変動）が
+	YUCT のべき乗則に指数 $2/3$ で従うべきことを意味する。これは \textbf{予測} であり、
+	事後予測ではない。なぜなら、これらのシステムでは変動測定がまだ行われていないからである。
+	
+	$k_\parallel$ が非保存の縦方向コンタクトでは、角度制限が消失し、
+	$\beta_{\mathrm{IV}} = 1$、したがって $d_f = 2$、$\beta_{\mathrm{err}} = 1$ となる。
+	YUCT は、そのようなコンタクトでの電流変動が $\Keff^{-1}$ としてスケールし、
+	$2/3$ 則とは区別されると予測する。
+	
+	\section{電流変動の予測}
+	\label{sec:predictions}
+	調整効率 (\ref{eq:keff-T}) に適用された YUCT 誤差法則 (\ref{eq:yuct-law}) は、
+	横方向ショットキーダイオードにおける低周波電流ノイズパワー $S_I$ に対する
+	定量的予測を与える：
+	\begin{equation}
+		\frac{S_I}{I^2} \propto \Keff^{-2/3} \propto T^{1/3}.
+		\label{eq:noise-pred}
+	\end{equation}
+	式 (\ref{eq:keff-operational}) の操作的定義 $\Keff = I/I_0$ を用いると、
+	ノイズスケーリングは次のように書き換えられる：
+	\begin{equation}
+		\frac{S_I}{I^2} = C \, \left(\frac{I}{I_0}\right)^{-2/3} + \text{const},
+		\label{eq:noise-operational}
+	\end{equation}
+	ここで $C$ は材料固有の定数で 1 程度、加算定数は既約熱雑音を考慮する。
+	この形式は標準的なノイズ分光実験で直接アクセス可能である：
+	$I$ と $I_0$ は $I$--$V$ 特性から測定され、$S_I$ は一定温度でバイアスの
+	関数として記録される。予測は、$S_I/I^2$ を $(I/I_0)^{-2/3}$ に対して
+	プロットしたときに線形になり、その傾きは温度に依存しないというものである。
+	これは、指数のフィッティングを一切必要としない厳格な反証可能なテストである。
+	
+	\section{考察：スケーリング指数の統一}
+	
+	$3/2$ 指数の出現はショットキーダイオードに特有ではなく、より深い組織原理を
+	示している。それは、Kardar–Parisi–Zhang (KPZ) 表面成長の普遍性クラスに
+	独立に現れることからも明らかである~\cite{KPZ}。KPZ では、動的指数 $z = 3/2$ が
+	成長界面のフラクタル粗さを支配する。YUCT はこれらの現象に対して統一解釈を提供する。
+	\textbf{成長フロントは $d_f = 3$ 次元の調整ネットワークとして概念化でき、
+		そこから運動指数 $\beta_{\mathrm{IV}} = d_f/2 = 3/2$ が我々の推測関係 (\ref{eq:bIV-df})
+		から自然に現れる。} したがって、KPZ 指数とショットキー指数は単に類似している
+	だけでなく、完全に異なる物理的実現における同じ YUCT 誤差法則
+	$\varepsilon \propto \Keff^{-2/3}$ の二つの運動学的署名である。
+	\textbf{この接続は現在のところ仮説であり、YUCT ラグランジアンを KPZ 方程式に
+		直接結びつけるさらなる理論的作業を必要とする。}
+	
+	KPZ 予測をより具体的にするために、$\Keff$ を成長界面における飽和相関モードの
+	割合と明示的に同一視できる。横サイズ $L$ の KPZ 界面の飽和領域では、
+	幅 $W(L,t)$ は定常値 $W_{\text{sat}}(L) \simeq \sqrt{\langle h^2 \rangle} \propto L^{\alpha}$
+	（$\alpha = 1/2$）に近づく。変動振幅 $\delta W = W(t) - W_{\text{sat}}$ は
+	活性（非飽和）モードの数によって制御される。我々は $\Keff$ を
+	$1 - \nu_{\text{unsat}}/\nu_{\text{tot}}$、すなわち相関した定常相に
+	入ったモードの割合と同一視することを提案する。すると YUCT は
+	\begin{equation}
+		\frac{\delta W}{W_{\text{sat}}} \propto \Keff^{-2/3},
+		\label{eq:kpz-prediction}
+	\end{equation}
+	を予測する。ここで $\Keff$ は幅の時間減衰から $\Keff \approx 1 - (dW/dt)_{\text{norm}}$
+	として推定できる。この予測は数値シミュレーションおよび動的粗さの高分解能実験
+	（例えば電析、分子線エピタキシー）で検証可能である。
+	
+	この統一は図~\ref{fig:hierarchy} に示される普遍性の階層を示唆する：
+	\begin{itemize}
+		\item \textbf{第1次（YUCT）:} 基本調整誤差法則
+		$\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-2/3}$ は最も深いレベルで
+		作用し、特定の基板に依存しない。
+		\item \textbf{第2次（輸送）:} 二次元ショットキーヘテロ構造における電子輸送では、
+		運動指数 $\beta_{\mathrm{IV}}$ はフラクタル次元 $d_f$ から
+		$\beta_{\mathrm{IV}} = d_f/2$（仮説）として現れる。
+		\item \textbf{第3次（成長）:} KPZ クラスに属する表面成長現象では、
+		同じ運動指数が動的臨界指数 $z = 3/2$ として現れ、成長界面の $d_f = 3$ の
+		性質を反映する（解釈）。
+	\end{itemize}
+	したがって、$3/2$ 指数は材料固有の偶然ではなく、$d_f = 3$ の調整プロセスの
+	幾何学的特徴である。
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[
+			node distance=1.8cm,
+			box/.style={rectangle, draw=blue!60, fill=blue!10, rounded corners, 
+				text width=3.5cm, align=center, font=\small},
+			arrow/.style={->, >=stealth, thick}
+			]
+			\node[box, fill=red!15, draw=red!50!black] (yuct) 
+			{\textbf{第1次（YUCT）}\\[2pt]
+				$\varepsilon = \kappa_c\alpha K_{\mathrm{eff}}^{-2/3}$\\
+				（基本誤差法則）};
+			\node[box, right=of yuct] (transport) 
+			{\textbf{第2次（輸送）}\\[2pt]
+				$\beta_{\mathrm{IV}} = d_f/2$\\
+				（ショットキーヘテロ構造）};
+			\node[box, right=of transport] (growth) 
+			{\textbf{第3次（成長）}\\[2pt]
+				$z = 3/2$\\
+				（KPZ 表面粗さ）};
+			\draw[arrow] (yuct) -- (transport);
+			\draw[arrow] (transport) -- (growth);
+		\end{tikzpicture}
+		\caption{普遍性の階層。YUCT 調整誤差法則（第1次）は実効フラクタル次元 $d_f$ と、
+			電子輸送（第2次）および表面成長（第3次）で観測される運動指数を決定する。
+			点線の矢印は仮説を示す。}
+		\label{fig:hierarchy}
+	\end{figure}
+	
+	この見解は、ショットキー界面のフラクタル次元がデバイス特性に直接影響を与えるという
+	増えつつある実験的証拠によってさらに支持される~\cite{FractalSchottky}。これらの研究では、
+	フラクタル次元は外部から課された幾何学的性質（粗さ）である。YUCT では、理想的な
+	横方向コンタクトに対する $d_f = 3$ の次元は \emph{創発的} である——それは幾何学的粗さが
+	ゼロに近づいても調整ネットワーク自体のダイナミクスから生じる。したがって、外部から
+	課された $d_f$ は既存の内部座標ネットワークを変調し、調整ベースのデバイス設計への
+	有望な道筋を提供する。
+	
+	\section{50 桁にわたる普遍性}
+	表~\ref{tab:universal-beta} は、様々な YUCT 付録から、誤差スケーリング指数が
+	$\beta = 2/3$ であると経験的に決定されたか予測されたシステムを収集する。
+	横方向ショットキーヘテロ構造と KPZ 成長界面は、抽出されたフラクタル次元
+	$d_f = 3$ に基づいて同じ指数が予測されるシステムとして追加される。
+	この表は関連するエネルギー（または長さ）スケールで 50 桁以上をカバーする。
+	
+	\begin{table}[H]
+		\centering
+		\caption{普遍的な YUCT 誤差指数 $\beta = 2/3$ ($0.67$) を示すか予測されるシステム。}
+		\label{tab:universal-beta}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{システム} & \textbf{観測量} & \textbf{ステータス} & \textbf{参照}\\
+			\midrule
+			化学結合 (873)      & $E \propto r^{-0.67}$               & 確認済み  & 付録 C \\
+			DNA 複製誤差    & $\varepsilon \propto \Keff^{-0.67}$ & 確認済み  & 付録 E \\
+			代謝スケーリング（単純）& $B \propto M^{0.67}$               & 確認済み  & 付録 D, E.7 \\
+			GDP 変動対太陽活動   & $\sigma_{\mathrm{GDP}} \propto W^{-0.67}$ & 確認済み & 付録 F \\
+			CMB 温度変動    & $\delta T/T \propto \Keff^{-0.67}$ & 確認済み  & 付録 M \\
+			重力波       & $\delta\tau/\tau \propto M^{-0.67}$& 確認済み  & 付録 G, V \\
+			\textbf{横方向ショットキー} & $S_I/I^2 \propto T^{1/3}$          & \textbf{予測} & 本付録 \\
+			\textbf{KPZ 界面}\textsuperscript{*} & 幅変動 $\propto \Keff^{-2/3}$& \textbf{予測} & 本付録, \cite{KPZ}\\
+			\bottomrule
+		\end{tabular}
+		
+		\vspace{0.3cm}
+		{\footnotesize \textsuperscript{*}KPZ 成長界面に対する $K_{\mathrm{eff}}$ の定義は、輸送の場合との類推で構築されなければならない。例えば相関体積内の相関自由度の割合として。この予測はそのような構築を仮定しており、テストされるのを待っている。}
+	\end{table}
+	
+	\section{結論}
+	Ang らによって報告された電流-温度スケーリング指数 $\beta_{\mathrm{IV}} = 3/2$ および $1$ は、
+	二次元ヘテロ構造における熱電子輸送を支配する調整ネットワークの実効フラクタル次元の
+	運動学的現れである。YUCT 関係 $\beta_{\mathrm{IV}} = d_f/2$（仮説）と
+	$\beta_{\mathrm{err}} = 2/d_f$ を通じて、実験データは横方向コンタクトに対して
+	$d_f = 3$ を与え、これは調整誤差指数 $\beta_{\mathrm{err}} = 2/3$（$\approx 0.67$）を
+	予測する。電流ノイズ分光法で検証可能なこの予測は、YUCT 普遍スケーリング則の
+	到達範囲を固体ナノエレクトロニクスの領域に拡張する。同じフラクタル次元と指数は
+	KPZ 表面成長に自然に現れ、非平衡現象にわたる深い幾何学的統一を示唆する。
+	YUCT はこの統一の根底にある理論的根拠を提供するが、理論とショットキー運動関係
+	および KPZ 方程式の両方との間のリンクはまだ仮説のままであり、さらなる調査が
+	正当化される。両方の文脈における $\Keff$ の操作的定義は、実験的テストを容易に
+	するために提供された。
+	
+	\begin{thebibliography}{99}
+		\bibitem{Ang2018} Y.~S.~Ang, H.~Y.~Yang, and L.~K.~Ang,
+		Phys. Rev. Lett. \textbf{121}, 056802 (2018).
+		\bibitem{KPZ} M.~Kardar, G.~Parisi, Y.-C.~Zhang,
+		Phys. Rev. Lett. \textbf{56}, 889 (1986).
+		\bibitem{FractalSchottky} S.~Zeybek, M.~Biber, A.~Türüt,
+		Appl. Surf. Sci. \textbf{253}, 3881 (2007). [ショットキーダイオードにおけるフラクタル次元効果に関する代表的研究]
+		\bibitem{Yakushev2026} A.~V.~Yakushev, \emph{Yakushev Unified
+			Coordination Theory (YUCT)}, Zenodo (2026).
+		\bibitem{AppendixL} A.~V.~Yakushev, ``Appendix L: Fractal
+		Coordination Error Scaling'', in \emph{YUCT} (2026).
+		\bibitem{AppendixM} A.~V.~Yakushev, ``Appendix M: YUCT
+		Cosmology'', in \emph{YUCT} (2026).
+		\bibitem{AppendixE} A.~V.~Yakushev, ``Appendix E: Coordination
+		Genetics'', in \emph{YUCT} (2026).
+		\bibitem{AppendixF} A.~V.~Yakushev, ``Appendix F: Application of
+		YUCT to Economics'', in \emph{YUCT} (2026).
+		\bibitem{AppendixG} A.~V.~Yakushev, ``Appendix G: Resolution of
+		the Quantum Gravity Problem'', in \emph{YUCT} (2026).
+		\bibitem{AppendixV} A.~V.~Yakushev, ``Appendix V: Time as
+		Coordination Entropy'', in \emph{YUCT} (2026).
+	\end{thebibliography}
+	
+\end{document}

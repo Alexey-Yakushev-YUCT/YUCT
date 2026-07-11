@@ -1,0 +1,1150 @@
+% !TEX program = lualatex
+% !TeX encoding = UTF-8
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{bookmarksnumbered,bookmarksopen}{hyperref}
+\documentclass[12pt,a4paper]{article}
+
+% ============================================================
+% 日本語の設定 – システム標準フォント (Yu Gothic UI / Yu Mincho)
+% ============================================================
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+\usepackage[english]{babel}
+
+% 和文ゴシック (sans) – Yu Gothic UI (Windows)
+\setsansjfont{Yu Gothic UI}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = CJK,
+Language = Japanese
+]
+
+% 和文明朝 (serif) – Yu Mincho (Windows)
+\IfFontExistsTF{Yu Mincho}{
+	\setmainjfont{Yu Mincho}[
+	UprightFont = * Demibold,
+	BoldFont = * Demibold,
+	Script = CJK,
+	Language = Japanese
+	]
+}{
+	\setmainjfont{Yu Gothic UI}[
+	UprightFont = * Regular,
+	BoldFont = * Bold,
+	Script = CJK,
+	Language = Japanese
+	]
+}
+
+% 等幅フォント – 英字は Latin Modern Mono, 日本語は Yu Gothic UI
+\setmonojfont{Yu Gothic UI}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = CJK,
+Language = Japanese
+]
+
+% 英数字フォント（ラテン文字）
+\setmainfont{Times New Roman}[Ligatures=TeX]
+\setsansfont{Arial}[Ligatures=TeX]
+\setmonofont{Latin Modern Mono}[
+WordSpace={1,0,0},
+HyphenChar=None,
+PunctuationSpace=WordSpace
+]
+
+% ============================================================
+% その他のパッケージ (原書に合わせる)
+% ============================================================
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{makecell}
+\usepackage{ragged2e}
+\usepackage{bm}
+\usepackage{slashed}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc, shapes.geometric}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{nicefrac}
+\usepackage{enumitem}
+
+% Theorem environments (日本語名)
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}[theorem]{補題}
+\newtheorem{definition}[theorem]{定義}
+\newtheorem{corollary}[theorem]{系}
+\newtheorem{proposition}[theorem]{命題}
+\theoremstyle{remark}
+\newtheorem{remark}{注釈}[section]
+\newtheorem{example}{例}[section]
+
+% Geometry
+\geometry{a4paper, margin=1in}
+
+% YUCT macros (同じ)
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\Keffzero}{K_{\mathrm{eff},0}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\df}{d_{\!f}}
+\newcommand{\constmin}{C_{\min}}
+\newcommand{\dint}{\ensuremath{D\!+\!I\!\cdot\!R}}
+\newcommand{\Mpl}{M_{\mathrm{Pl}}}
+\newcommand{\mpl}{m_{\mathrm{Pl}}}
+\newcommand{\Lpl}{l_{\mathrm{Pl}}}
+\newcommand{\RH}{R_{\mathrm{H}}}
+\newcommand{\tH}{t_{\mathrm{H}}}
+\newcommand{\ninf}{N_{\mathrm{e}}}
+\newcommand{\ns}{n_{\mathrm{s}}}
+\newcommand{\nt}{n_{\mathrm{T}}}
+\newcommand{\rs}{r}
+\newcommand{\alD}{\alpha_{\mathrm{D}}}
+\newcommand{\beI}{\beta_{\mathrm{I}}}
+\newcommand{\gaR}{\gamma_{\mathrm{R}}}
+\newcommand{\Kcrit}{K_{\mathrm{crit}}}
+\newcommand{\Rstruct}{R_{\mathrm{struct}}}
+\newcommand{\Ntrials}{N_{\mathrm{trials}}}
+\newcommand{\Nlife}{\langle N_{\mathrm{life}}\rangle}
+
+% Operators
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Div}{Div}
+\DeclareMathOperator{\Grad}{Grad}
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+	pdftitle={付録W：潮汐波を用いた惑星内部の受動的重力トモグラフィー},
+	pdfauthor={Alexey V. Yakushev}
+}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			
+			{\Huge\textbf{付録W：潮汐波を用いた惑星内部の受動的重力トモグラフィー}} \\
+			\vspace{0.5cm}
+			{\Large\textbf{Yakushev統一コーディネーション理論（YUCT）におけるコーディネーションに基づくアプローチ}}
+			
+			\vspace{1.5cm}
+			
+			{\Large\textbf{Alexey V. Yakushev\textsuperscript{1}}}
+			
+			\vspace{0.3cm}
+			\large
+			\textsuperscript{1}Yakushev Research, \\
+			YUCT理論: \url{https://yuct.org/}\\
+			YPSDCプロトコル: \url{https://ypsdc.com/}\\
+			
+			
+			\vspace{2cm}
+			\textbf{DOI: \url{https://doi.org/10.5281/zenodo.18444598}}\\
+			
+			\vspace{1cm}
+			
+			\large 
+			本稿の短縮版は既に発表されており、\url{https://doi.org/10.5281/zenodo.18362308} で入手可能です。\\
+			\vspace{1cm}
+			2026年3月 \quad \large V.2.1.
+			
+			\vspace{2cm}
+			
+			\begin{minipage}{0.9\textwidth}
+				\begin{abstract}
+					\noindent
+					本付録は、月と太陽による潮汐重力強制力に対する地殻の共鳴応答の解析に基づく、新たな受動的地球物理探査法を導入する。Yakushev統一コーディネーション理論（YUCT）の枠組みの中で、潮汐変形のスペクトルが、岩石種別、流体含有量（石油・ガス・水）、鉱体に直接関連するコーディネーション効率 \(\Keff\) の地下分布に関する情報を含むことを示す。我々は、普遍的誤差スケーリング則 \(\eps = \kappac \alpha \Keff^{-\beta}\) (\(\beta=0.67\), \(\kappac=0.33\)) と、YUCTセクター0（重力）およびセクター34（惑星科学）からの重力場と弾性変形の結合方程式を活用し、地表の重力測定および地震測定を \(\Keff\) の深度分布に結びつける数学モデルを構築する。潮汐波が、能動的な震源では到達不可能な浸透深度を持ち、安価で環境に優しく、全地球的に適用可能な探査法を提供することを示す。潮汐共鳴の直接観測や、重力潮汐を用いた炭化水素探査の提案など、本アプローチの要素を先取りする独立した研究を概観する。元素周期表に類似したコーディネーションに基づく鉱物・流体分類システムに基づき、特徴的な共鳴周波数と品質係数によって炭化水素を同定する方法論を提案する。空井戸掘削リスクの20–30\%低減が展開コストを何倍にも回収することを評価し、経済的実行可能性を評価する。さらに、工学的構造物（超高層ビル、橋、ダム）の構造ヘルスモニタリング、地震予測、津波予測へと方法論を拡張し、同じ物理原理が数百万人の命と数兆ドルを救う可能性を持つ革新的な受動的監視技術の新たなクラスを可能にすることを示す。この結果は、自然の重力場を利用した根本的に新しい探査・監視技術への道を開く。
+				\end{abstract}
+			\end{minipage}
+			
+			\vspace{1cm}
+			
+			\noindent
+			\small\textbf{キーワード：} YUCT、潮汐波、コーディネーション効率、深部トモグラフィー、炭化水素探査、共鳴法、地球物理学、惑星内部、構造ヘルスモニタリング、地震予測、津波予測
+			
+			\vspace{0.5cm}
+			
+			\noindent
+			\textcopyright\ 2026 Yakushev Research. All rights reserved.
+		\end{center}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{はじめに：深部地球物理学の挑戦}
+	\label{sec:intro}
+	
+	\subsection{能動的探査の限界}
+	
+	炭化水素鉱床や鉱床の探査は、応用地球科学において最も資本集約的な活動の一つであり続けている。従来の地震反射法は強力な人工震源（爆薬、バイブサイス車、エアガン）を必要とし、探査深度を5–10 kmに制限し、多大な環境負荷を伴う。重力調査や磁気調査は深度方向の積分情報しか提供せず、流体の種類を一意に識別することはできない。
+	
+	\subsection{自然の探査信号としての潮汐}
+	
+	地球は月と太陽からの重力によって絶えず変形を受けており、赤道域で最大30–50 cmに達する固体地球潮汐を生じている。これらの変形は厳密に周期的であり、半日周潮（12.42 h, 12.00 h）、日周潮（24–26 h）、長周期潮（14 d, 6か月, 18.6 yr）にわたる豊かな高調波スペクトルを持つ。伝統的に、潮汐信号は高精度測定から除去すべきノイズとして扱われてきた。
+	
+	本付録はパラダイム転換を提案する：\textbf{潮汐波を地球内部を探査するための自然で受動的な探査信号として利用すること}である。Yakushev統一コーディネーション理論（YUCT）の枠組みにおいて、潮汐応答が岩石特性、流体含有量、鉱床の普遍的な指標として機能するコーディネーション効率 \(\Keff\) の地下分布に関する情報を符号化していることを示す。
+	
+	\subsection{本付録の構成}
+	
+	第\ref{sec:prior}節では、本アプローチの要素を先取りし、その経験的基礎を確立する独立研究を概観する。第\ref{sec:yuct-foundations}節では、関連するYUCT原理を再確認する。第\ref{sec:model}節では、潮汐変形を\(\Keff\)に結びつける数学モデルを構築し、寄与するYUCTセクターとラグランジアン結合項を明示的に同定する。第\ref{sec:identification}節では、地質材料のコーディネーションに基づく分類システムを示す。第\ref{sec:economics}節では経済的実行可能性を評価する。第\ref{sec:roadmap}節では実験的ロードマップを概説する。第\ref{sec:conclusion}節では、惑星探査と将来ミッションへの意義を論じる。
+	
+	\subsection{惑星探査から構造ヘルスモニタリングへ}
+	\label{sec:beyond-geophysics}
+	
+	本付録で惑星内部を探査するために開発された方法論には、自然で強力な拡張がある：人工構造物の非破壊評価である。あらゆる巨大な物体 — 超高層ビル、橋、ダム、原子炉格納容器 — は、惑星を形作るのと同じ潮汐重力によって絶えず変形を受けている。これらの変形は微小ではあるが、そのスペクトル内に物体の内部状態のシグネチャを保持している：剛性分布、亀裂の存在、材料の劣化、そして構造物の全体的な「コーディネーション効率」 \(K_{\mathrm{eff}}\) である。
+	
+	この洞察により、潮汐トモグラフィーは純粋に地球物理学的なツールから、\textbf{受動的構造ヘルスモニタリング}の普遍的手法へと変容する。人工的な励起（加振器、衝撃、超音波）を必要とする能動的手法とは異なり、潮汐モニタリングは：
+	\begin{itemize}
+		\item \textbf{受動的：} 自然で無料かつ連続的な重力信号を利用する。
+		\item \textbf{全体的：} 局所点だけでなく構造物全体の統合的な描像を提供する。
+		\item \textbf{深部到達：} 体積全体を貫通し、隠れた内部損傷を明らかにする。
+		\item \textbf{安全：} 放射線、高エネルギー入力なし、非接触で実施可能。
+		\item \textbf{連続的：} サービス中断なしにリアルタイムまたは定期的な評価を可能にする。
+	\end{itemize}
+	
+	基本関係式 \(Q \propto K_{\mathrm{eff}}^{\beta}\) (式\ref{eq:Q-keff}) は、構造物の共鳴の観測可能な品質係数を材料のコーディネーション効率に直接結びつける。構造物が経年劣化し、微小亀裂を蓄積し、あるいは損傷を受けるにつれて、その \(K_{\mathrm{eff}}\) は低下し、潮汐共鳴の品質係数もそれに対応して低下する。これらの変化を経時的に監視することで、定量的で非侵襲的な健全性指標が得られる。
+	
+	\section{独立した先取りと経験的基礎}
+	\label{sec:prior}
+	
+	\subsection{潮汐共鳴の直接観測}
+	
+	注目すべきことに、本付録の中核的アイデア — 潮汐波が地質構造と共鳴的に相互作用しうること — は、すでに直接的な観測的確認を得ている。
+	
+	\begin{quotation}
+		\noindent
+		\textit{「地震モニタリングの過程で、アルタイ・サヤン、カムチャッカ、サハリンの地震活動域において、地球・月系の重心位置の変化によって生じた長周期（14–15日）重力潮汐と地殻変形波の共鳴が登録された。...本論文は、重力潮汐の共鳴が地震予測、水理構造物の地球力学的危険早期警戒、そして\textbf{石油・ガス貯留層の直接探査}に利用できることを証明する。」} \cite{Sibgatulin2014}
+	\end{quotation}
+	
+	Sibgatulin et al. \cite{Sibgatulin2014} の研究は、本理論にいくつかの重要な経験的基盤を提供する：
+	
+	\begin{itemize}
+		\item \textbf{共鳴の観測：} 長周期潮汐成分（14–15日）が地殻に測定可能な共鳴応答を生じさせる。
+		\item \textbf{トリガーメカニズム：} これらの共鳴は80\%のケースで強震（M$\ge$5.0）のトリガーとして作用し、潮汐エネルギーが地殻構造に効果的に結合することを確認している。
+		\item \textbf{変形波：} 共鳴は、ソリトンとして解釈される遅い変形波（1–5 km/h）を生成し、地殻内を伝播する。
+		\item \textbf{探査の可能性：} 著者らは、これらの共鳴を直接的な炭化水素探査に利用することを明示的に提案している — 本稿で開発される方法論の先見的な先取りである。
+	\end{itemize}
+	
+	\subsection{惑星科学における潮汐トモグラフィー}
+	
+	「潮汐トモグラフィー」という用語は最近、惑星科学の文献に登場した。Rovira-Navarro et al. \cite{RoviraNavarro2025} は以下を実証している：
+	
+	\begin{itemize}
+		\item JUICEミッションの3GM Radio Science Experimentは、ガニメデの潮汐による重力変動を、内部構造の横方向変化をマッピングするのに十分な精度で測定する。
+		\item シェル厚の10–100\%の変化が、次数2および次数3の球面調和関数観測によって検出可能な潮汐信号を生じさせる。
+		\item 著者らは、「潮汐トモグラフィー」 — これまで地球で用いられてきた手法 — が氷衛星にも拡張可能であると明言している。
+	\end{itemize}
+	
+	この研究は、潮汐応答が3次元内部構造に感度を持つという基本原理を検証し、地球のために本稿で展開されるアプローチを支持する。
+	
+	\subsection{地下潮汐測定}
+	
+	Rogister et al. \cite{Rogister2024} は、フランス・ラストレルの地下実験室において地表と深度520 mでの潮汐重力信号を比較するユニークな実験を行った。彼らの主眼は重力計の較正にあったが、以下のことを実証している：
+	
+	\begin{itemize}
+		\item 潮汐重力変動は、超伝導重力計を用いて異なる深度で同時に測定可能である。
+		\item 地表と地下の潮汐信号の理論的な差は小さい（半日周波で \(8.5 \times 10^{-5}\)）が、原理的には検出可能である。
+		\item 現在の較正の不確かさがこの差を分解する能力を制限しているが、計装の改善によって深度依存の潮汐測定が可能になり得る。
+	\end{itemize}
+	
+	\subsection{水星および他の惑星の潮汐応答}
+	
+	Briaud et al. \cite{Briaud2025} は、MESSENGERデータを用いて水星の潮汐応答を調査し、BepiColombo観測に備えている。彼らは以下を強調している：
+	
+	\begin{itemize}
+		\item 潮汐ラブ数は、温度、組成、物理的特性の空間的変動から生じる不均質性に感度を持つ。
+		\item 氷衛星と同様に、局所的な温度や鉱物学的差異が力学的応答を変化させ、不均一な潮汐変形をもたらす。
+		\item 長周期の秤動、潮汐位相遅れ、カッシーニ状態からの偏差の測定が内部構造を制約し得る。
+	\end{itemize}
+	
+	これらの惑星応用例は、多様な天体にわたって内部構造を探査するツールとしての潮汐トモグラフィーの普遍性を実証している。
+	
+	\subsection{総合}
+	
+	上記で概観した独立研究は、以下を確立している：
+	
+	\begin{enumerate}
+		\item \textbf{潮汐共鳴は観測可能であり}、地質構造と相関する \cite{Sibgatulin2014}。
+		\item \textbf{潮汐トモグラフィーは、}3次元内部構造をマッピングするための惑星科学で認知された手法である \cite{RoviraNavarro2025}。
+		\item \textbf{地下潮汐測定は、}現在の計装で技術的に実現可能である \cite{Rogister2024}。
+		\item \textbf{惑星の潮汐応答は、}内部不均質性に感度を持つ \cite{Briaud2025}。
+	\end{enumerate}
+	
+	欠けていたのは、これらの観測を、地下特性について逆解析できる定量的パラメータ（\(\Keff\)）に結びつける統一的な理論的枠組みである。これこそがYUCTの提供するものである。
+	
+	\section{潮汐トモグラフィーのためのYUCTの基礎}
+	\label{sec:yuct-foundations}
+	
+	\subsection{コーディネーション効率 \(\Keff\) と普遍的誤差則}
+	
+	YUCTにおいて、任意の物理系はその構成要素間のコヒーレンスと同期の度合いを定量化するコーディネーション効率 \(\Keff\) によって特徴付けられる。普遍的誤差スケーリング則（付録L）は、任意の相対誤差または揺らぎ \(\eps\) を \(\Keff\) に関係付ける：
+	
+	\begin{equation}
+		\eps = \kappac \, \alpha \, \Keff^{-\beta}, \qquad \beta = 0.67 \pm 0.03,\ \kappac = 0.33,
+		\label{eq:universal-scaling}
+	\end{equation}
+	
+	ここで \(\alpha\) は系に依存する定数で、0.01～1のオーダーである。この法則は、DNA複製エラーから宇宙マイクロ波背景放射の揺らぎに至るまで、40桁以上にわたって検証されている。
+	
+	潮汐トモグラフィーの文脈では、\(\eps\) は潮汐変形の相対的減衰または位相遅れを表し、一方 \(\Keff\) は地質媒体（岩石種別、流体含有量、空隙率、亀裂）を特徴付ける。
+	
+	\subsection{潮汐トモグラフィーに関連するYUCTのセクター構造}
+	
+	YUCTラグランジアン（付録A）は現実を120の相互作用するセクターに分割する。潮汐トモグラフィーに関連するのは以下のセクターである：
+	
+	\begin{itemize}
+		\item \textbf{セクター0（重力）：} 計量 \(g_{\mu\nu}\) と重力場を記述する。月と太陽によって生成される潮汐ポテンシャル \(W(\mathbf{r},t)\) はこのセクターを通じて入力される。
+		\item \textbf{セクター34（惑星科学）：} 密度 \(\rho(\mathbf{r})\)、弾性定数 \(\lambda(\mathbf{r}), \mu(\mathbf{r})\)、潮汐変形を含む、惑星の内部構造を記述する。
+		\item \textbf{セクター1（電磁気学）：} マグネトテルリック相関や、Sibgatulin et al. \cite{Sibgatulin2014} によって自然パルス電磁場測定を通じて観測された潮汐共鳴の電磁気的前兆に関連する。
+		\item \textbf{セクター62（生態学）および86（人口統計学）：} 探査活動の環境的・社会経済的影響の評価に関連する（第\ref{sec:economics}節）。
+	\end{itemize}
+	
+	セクター間の結合は係数 \(\kappa_{sr}\) によって媒介される。潮汐トモグラフィーにとって重要な項は：
+	
+	\begin{equation}
+		\mathcal{L}_{\text{coupling}} = \kappa_{0,34} \, \mathrm{Tr}\left(\Psi_{0,34} \cdot O_0 \cdot O_{34}^\dagger\right),
+		\label{eq:coupling}
+	\end{equation}
+	
+	ここで \(\Psi_{0,34}\) は重力と惑星構造を結ぶコーディネーション場、\(O_0\) は潮汐ポテンシャル演算子、\(O_{34}\) は変形テンソル演算子を表す。
+	
+	\subsection{温度依存性と深部構造}
+	
+	付録Pは、\(\Keff\) が温度に依存し、\(\Keff(T) \propto T^{-\gamma}\)、\(\beta\gamma = 0.20\) が地球物理データ（地球-月系、白色矮星の赤方偏移）から決定されることを実証している。この温度感度は、地温勾配が \(K_{\mathrm{eff}}\) プロファイルに対する追加の制約を提供するため、深部トモグラフィーにとって極めて重要である。さらに、\textbf{潮汐共鳴の熱的変調}を利用して、異なる深度からの寄与を分離できることを含意する。地表温度変動は拡散的に伝播し、より浅い層により速く影響を与えるからである（第\ref{sec:thermal-modulation}節参照）。
+	
+	\section{潮汐応答の数学モデル}
+	\label{sec:model}
+	
+	\subsection{潮汐ポテンシャル下での弾性変形}
+	
+	密度 \(\rho(\mathbf{r})\)、ラメ定数 \(\lambda(\mathbf{r}), \mu(\mathbf{r})\) を持ち、外部天体からの潮汐ポテンシャル \(W(\mathbf{r},t)\) を受ける弾性地球モデルを考える。微小変位 \(\mathbf{u}(\mathbf{r},t)\) に対する運動方程式は：
+	
+	\begin{equation}
+		\rho \frac{\partial^2 \mathbf{u}}{\partial t^2} = \nabla \cdot \boldsymbol{\sigma} + \rho \nabla W,
+		\label{eq:motion}
+	\end{equation}
+	
+	ここで \(\boldsymbol{\sigma}\) は応力テンソルである。等方弾性体に対して：
+	
+	\begin{equation}
+		\sigma_{ij} = \lambda \delta_{ij} \nabla \cdot \mathbf{u} + \mu \left(\frac{\partial u_i}{\partial x_j} + \frac{\partial u_j}{\partial x_i}\right).
+		\label{eq:stress}
+	\end{equation}
+	
+	潮汐ポテンシャルは球面調和関数で展開される：
+	
+	\begin{equation}
+		W(r,\theta,\phi,t) = \sum_{n=2}^{\infty} \sum_{m=-n}^{n} W_{nm}(r) Y_{nm}(\theta,\phi) e^{i\omega_{nm}t}.
+		\label{eq:tidal-potential}
+	\end{equation}
+	
+	固体地球では次数2の調和関数が支配的である（半日周潮および日周潮）。解は、ラブ方程式系を満たす動径関数を伴う球面調和展開として表される。
+	
+	\subsection{\(\Keff\) の弾性パラメータへの組込み}
+	
+	YUCTでは、弾性特性は \(\Keff\) を通じて表現される。付録C（コーディネーション化学）の方法論に従い、\textbf{コーディネーションに基づく鉱物分類システム}を導入する。ある岩石または流体について、\(\Keff\) は体積弾性率 \(K\)、せん断弾性率 \(\mu\)、密度 \(\rho\) と経験的に較正された関係を通じて関連付けられる：
+	
+	\begin{align}
+		\lambda(\mathbf{r}) &= \lambda_0 \cdot f_\lambda(\Keff(\mathbf{r})), \\
+		\mu(\mathbf{r}) &= \mu_0 \cdot f_\mu(\Keff(\mathbf{r})), \\
+		\rho(\mathbf{r}) &= \rho_0 \left(\frac{\Keff(\mathbf{r})}{\Keffzero}\right)^{\gamma_\rho}, \quad \gamma_\rho \approx 0.2\ \text{(範囲 0.1–0.3)},
+		\label{eq:keff-properties}
+	\end{align}
+	
+	関数 \(f_\lambda, f_\mu\) は単調増加であり、より高いコーディネーション（よりコヒーレントな原子・分子構造）がより大きな剛性をもたらすことを反映する。予備的推定では、弾性率の密度と配位数に対するスケーリングに基づき、\(f_\lambda(\Keff) \propto \Keff^{\xi}\)、\(\xi \approx 0.3\)–\(0.5\) が示唆される。
+	
+	\subsection{共鳴応答と品質係数}
+	
+	潮汐高調波の周波数 \(\omega\) が地下構造（例えば流体で満たされた貯留層）の固有周波数 \(\omega_0\) に近づくと、共鳴増幅が生じる。共鳴の品質係数 \(Q\) は、普遍的誤差則を通じて \(\Keff\) に関係付けられる。1サイクルあたりのエネルギー散逸は相対誤差 \(\eps\) に比例し、\(1/Q = \Delta E / (2\pi E) \approx \eps\) であるから、次式を得る：
+	
+	\begin{equation}
+		\frac{1}{Q} \propto \eps = \kappac \alpha \Keff^{-\beta} \quad \Longrightarrow \quad Q = Q_0 \, \Keff^{\beta},
+		\label{eq:Q-keff}
+	\end{equation}
+	
+	ここで \(Q_0\) は基準値である。したがって：
+	\begin{itemize}
+		\item 高 \(\Keff\) 媒体（堅硬な岩石、高密度流体）は、鋭く高い \(Q\) の共鳴を生じる。
+		\item 低 \(\Keff\) 媒体（亀裂帯、ガス）は、幅広で低い \(Q\) の特徴を生じる。
+	\end{itemize}
+	
+	\subsection{順モデルと逆問題}
+	
+	地表での重力変動と変位の測定は、時系列 \(d(t)\) を生成する。既知の天体暦との畳み込みによって潮汐高調波を抽出し、動径対称参照モデルの応答を差し引いた後、残差 \(\delta d(t)\) が横方向不均質性に関する情報を含む。
+	
+	フーリエ変換によりスペクトル \(\delta D(\omega)\) が得られ、地下構造の共鳴に対応する周波数 \(\omega_i\) にピークを含む。各ピークから以下を抽出する：
+	
+	\begin{itemize}
+		\item \(\omega_i\) — 共鳴周波数。深度、サイズ、弾性特性に感度を持つ。
+		\item \(Q_i = \omega_i / \Delta \omega_i\) — 品質係数。式(\ref{eq:Q-keff})を通じて \(\Keff\) に関係する。
+		\item \(A_i\) — 振幅。構造と背景の \(\Keff\) コントラストに比例する。
+	\end{itemize}
+	
+	逆問題 — 3次元 \(\Keff(\mathbf{r})\) の回復 — は、観測スペクトルと合成スペクトルの不一致を最小化するトモグラフィック逆解析によって解かれる。正則化には、コーディネーションに基づく鉱物分類システムからの事前情報が組み込まれる。
+	
+	\subsection{潮汐共鳴の熱的変調}
+	\label{sec:thermal-modulation}
+	
+	温度変動は、関係式 \(\Keff(T) \propto T^{-\gamma}\)（付録P）を通じて \(\Keff\) に影響を与える。日周および季節的な温度変化は、熱波として地下に伝播し、局所的な \(\Keff\)、ひいては浅部構造の共鳴周波数と品質係数を変調する。これは深度識別のための追加的な次元を提供する：より深い構造は、地表温度強制に対して位相遅れと減衰した振幅で応答する。
+	
+	気象データから温度場 \(T(\mathbf{r},t)\) が既知であるか、モデル化されていれば、時間依存の摂動 \(\delta \Keff(\mathbf{r},t) \approx -\gamma \Keff(\mathbf{r}) \delta T(\mathbf{r},t)/T\) を計算できる。これが潮汐応答を変調し、熱的周波数において側帯波または振幅変調を生成する。これらの変調を解析することで、浅部と深部の寄与を分離し、垂直分解能を向上させることができる。
+	
+	\subsection{工学的構造物への拡張：超高層ビル、橋、ダム}
+	\label{sec:structures}
+	
+	第\ref{sec:model}節で開発された数学モデルは、境界条件と幾何学を適切に修正することで、大規模な人工構造物に直接適用される。質量 \(M\)、高さ \(H\)、特性剛性 \(k\) の構造物に対して、基本曲げモード周波数は次のようにスケールする：
+	
+	\begin{equation}
+		f_0 \approx \frac{1}{2\pi} \sqrt{\frac{k}{M_{\mathrm{eff}}}} \sim \frac{1}{H} \sqrt{\frac{E}{\rho}},
+		\label{eq:structural-frequency}
+	\end{equation}
+	
+	ここで \(E\) はヤング率、\(\rho\) は密度、\(M_{\mathrm{eff}}\) は有効モード質量である。典型的な超高層ビル（\(H \sim 300\) m, \(E/\rho \sim 10^7\) m\(^2\)/s\(^2\)）に対して、\(f_0 \sim 0.1\) Hz となる — 非線形混合やパラメトリック励起を通じて潮汐高調波の範囲内に十分入る。
+	
+	これらのモードの品質係数 \(Q\) は、同じ普遍関係式によって支配される：
+	
+	\begin{equation}
+		Q = Q_0 \left( \frac{K_{\mathrm{eff}}}{K_{\mathrm{eff},0}} \right)^{\beta},
+		\label{eq:structural-Q}
+	\end{equation}
+	
+	ここで \(K_{\mathrm{eff}}\) は、\textbf{構造的コーディネーション効率} — 構造物の全構成要素がどれだけうまく協調しているかを測る無次元量 — を表す。新築の建物は高い \(K_{\mathrm{eff}}\) を持ち、損傷または劣化した構造物はより低い値を示す。
+	
+	\subsubsection{潮汐モニタリングが明らかにするもの}
+	
+	構造物に高感度加速度計または重力計を設置し（例：屋上、中間高さ、基礎）、数週間記録することで、以下を得る：
+	
+	\begin{itemize}
+		\item \textbf{モード周波数：} シフトは剛性の変化（亀裂や材料劣化による）を示す。
+		\item \textbf{品質係数：} 低下は蓄積する損傷、微小亀裂、または緩んだ接合部のシグナル。
+		\item \textbf{異方性：} 異なる軸に沿った応答の差が方向性損傷パターンを明らかにする。
+		\item \textbf{高次モード：} 損傷位置に関する深度分解情報を提供する。
+	\end{itemize}
+	
+	\subsubsection{「重力指紋」概念}
+	
+	あらゆる大型構造物は、潮汐強制力によって励起される共鳴周波数と品質係数のスペクトルという、固有の「重力指紋」を持つ。この指紋は：
+	\begin{enumerate}
+		\item \textbf{竣工時に記録} してベースラインを確立する。
+		\item \textbf{定期的に監視} して劣化を追跡する。
+		\item \textbf{極端なイベント（地震、ハリケーン、火災）後に再測定} し、目視検査なしに損傷を評価する。
+	\end{enumerate}
+	
+	感度は顕著である：剛性の1\%の変化（大きな亀裂による）は周波数を \(\sim 0.5\%\) シフトさせ、最新の計装で容易に検出可能である。
+	
+	\subsection{地震予測：潮汐トモグラフィーによる臨界断層の監視}
+	\label{sec:earthquakes}
+	
+	惑星内部や工学的構造物のトモグラフィーを可能にするのと同じ潮汐力が、地球の地殻にも継続的に応力を加えている。何十年もの間、地震学者は潮汐位相と地震発生の間の統計的相関を観測してきた。特に衝上断層および正断層型の地震において顕著である \cite{Tanaka2012, Tolstoy2013, Sibgatulin2014, RAN2025}。これらの相関は、特定の月距離において最大10\%の確率上昇を示すものの、記述的なままであった — 予測理論を欠いた現象である。
+	
+	YUCTは欠けていた枠組みを提供する。破壊に近づきつつある地質断層は、微小亀裂が増殖し応力が集中するにつれてコーディネーション効率 \(K_{\mathrm{eff}}\) が低下するシステムである。普遍的誤差スケーリング則 \(\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}\)（式\ref{eq:universal-scaling}）が、系が摂動 — この場合は潮汐強制力 — にどのように応答するかを支配する。
+	
+	\subsubsection{メカニズム}
+	
+	\begin{enumerate}
+		\item \textbf{背景応力蓄積：} プレート運動が数年以上にわたって断層に荷重を加える。
+		\item \textbf{臨界状態：} 応力が破壊閾値に近づくにつれて、\(K_{\mathrm{eff}}\) が低下し、断層は小さな摂動に対してますます敏感になる。
+		\item \textbf{潮汐トリガー：} 月と太陽からの周期的な潮汐ポテンシャル \(W(\mathbf{r},t)\) が小さな振動応力を加える。この応力が断層面と一致し、臨界振幅に達すると、断層を解放しうる。
+		\item \textbf{破壊：} 地震が発生する。
+	\end{enumerate}
+	
+	トリガーの確率は次のようにスケールする：
+	\[
+	P_{\text{trigger}}(t) \propto \left( \frac{W(t)}{W_0} \right)^{\beta}, \quad \beta = 0.67,
+	\]
+	これは普遍的誤差則の直接的な帰結である。この非線形スケーリングが、統計的相関が有意ではあるが決定論的ではない理由を説明する — 断層の応答は、その低下する \(K_{\mathrm{eff}}\) によって増幅されるのである。
+	
+	\subsubsection{潮汐トモグラフィーが付加するもの}
+	
+	既知の断層帯周辺に展開された高感度重力計のネットワークにより、以下が可能になる：
+	
+	\begin{itemize}
+		\item \textbf{\(K_{\mathrm{eff}}\) の連続的監視：} 各潮汐高調波（例：M2, O1, Mf）に対する断層の応答が、そのコーディネーション効率のリアルタイム推定を提供する。持続的な低下は危険性の増大を示す。
+		\item \textbf{空間的マッピング：} 複数観測点が \(K_{\mathrm{eff}}\) の低下領域を特定し、断層のどのセグメントが臨界に近づいているかを同定できる。
+		\item \textbf{トリガー予測：} リアルタイムの \(K_{\mathrm{eff}}\) と精密な天体暦を組み合わせることで、潮汐応力が断層と一致しトリガー閾値を超えるリスクの高まる時間窓を予測できる。
+	\end{itemize}
+	
+	\subsubsection{経験的裏付け}
+	
+	最近の研究はすでに以下を実証している：
+	
+	\begin{itemize}
+		\item Tanaka (2012) は、潮汐トリガーによる微小地震が2011年東北地方太平洋沖地震の10年前から増加し、その後消失したことを示した \cite{Tanaka2012}。
+		\item Tolstoy (2013) は、海底が潮汐とともに「呼吸」し、中央海嶺での微小地震活動が潮汐位相と相関することを記録した \cite{Tolstoy2013}。
+		\item Sibgatulin et al. (2014) は、強震の80\%が14日潮汐共鳴と相関することを見出した \cite{Sibgatulin2014}。
+		\item 最近のロシア科学アカデミーの研究 (2025) は、特定の地球-月距離で地震確率が9–10\%上昇することを実証している \cite{RAN2025}。
+		\item 変形前兆：中規模地震の数日から数週間前の階段状の体積歪み変化が潮汐強制力に起因するとされている \cite{DeformationPrecursors2024}。
+	\end{itemize}
+	
+	欠けていたのは、これらの観測を測定可能な物理パラメータに結びつける統一理論的枠組みである。YUCTはそのつながりを提供する：断層帯の \(K_{\mathrm{eff}}\) である。
+	
+	\subsubsection{実用的実施}
+	
+	\begin{itemize}
+		\item \textbf{計装：} よく研究された断層（例：サンアンドレアス、北アナトリア、日本海溝）周辺に10–20台の超伝導重力計を展開。
+		\item \textbf{期間：} 複数の地震サイクルを捉えるため5–10年の連続運用。
+		\item \textbf{期待される成果：} 遡及解析により、大規模イベント前の前兆的な \(K_{\mathrm{eff}}\) 低下が示されるはずである。将来の監視により、確率的警報が発せられる可能性がある。
+	\end{itemize}
+	
+	このようなネットワークのコスト（\$1–2百万）は、単一の大地震による経済的・人的コストと比較して無視できるほど小さい。M7+イベントに対する24時間の警報は、数万人の命と数十億ドルを救うことができる。
+	
+	\subsubsection{定量的予測：前兆としての \(K_{\mathrm{eff}}\) の低下}
+	\label{subsubsec:precursor}
+	
+	地震予測における重要な要素は、断層に沿った時間的な \(K_{\mathrm{eff}}\) の変化を観測する能力である。普遍的誤差スケーリング則に従えば、相対的な歪み（または微小亀裂密度） \(\varepsilon\) は \(\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}\) で \(K_{\mathrm{eff}}\) と関係付けられる。テクトニック応力が蓄積されるにつれて、断層帯のコーディネーション有効性は低下し、歪みの増加、その結果として潮汐応答の振幅の増加と位相の変化をもたらす。
+	
+	モデルシナリオを考えよう。ある時刻 \(t_0\)（背景状態）において、断層のコーディネーション有効性が \(K_{\mathrm{eff}}^{(0)}\) であるとする。臨界状態に近づくにつれて、\(\Delta K\) だけ低下する。潮汐応答の振幅の相対変化は、式(25)から推定できる：
+	
+	\[
+	\frac{\Delta A}{A} \approx \frac{\Delta Q}{Q} \approx \beta \frac{\Delta K}{K}.
+	\]
+	
+	\(\beta = 0.67\)、\(\Delta K/K = 20\%\) に対して、\(\Delta A/A \approx 13\%\) が得られる。このような振幅変化は、月平均を行う現代の重力計で容易に検出可能である。
+	
+	さらに、\(K_{\mathrm{eff}}\) の低下自体がトリガー確率と結びつけられる。式(\ref{eq:trigger})から、潮汐波によって地震が開始される確率は \((W(t)/W_0)^{\beta}\) に比例する。したがって、\(K_{\mathrm{eff}}\) が低下するにつれて、閾値振幅 \(W_0\)（すなわち、イベントをトリガーできる最小の潮汐荷重）も低下する。実際上これは、重力計ネットワークがある断層帯で数週間にわたって \(K_{\mathrm{eff}}\) の20\%以上の定常的な低下を記録した場合、以下を意味する：
+	
+	\begin{enumerate}
+		\item 今後数日間の地震リスクが増大する。
+		\item 潮汐波が最大振幅に達する時間帯（例：M2, Mf）が確率の増大した窓となる。
+		\item \(K_{\mathrm{eff}}\) が臨界閾値 \(K_{\text{crit}}\) を下回った場合、警報が発せられる。
+	\end{enumerate}
+	
+	このように、重力ネットワークのデータを用いた \(K_{\mathrm{eff}}\) の連続的監視は、断層の現在の状態を診断するだけでなく、強震イベントの確率の短期（数日から数週間）予測をも可能にする。これはYUCTの地球力学における直接的な実用化を示すものである。
+	
+	\subsection{津波予測：究極の応用}
+	\label{sec:tsunami}
+	
+	津波を発生させる海底下地震は、すべての自然災害の中で最も危険で予測が困難である。津波の80\%は地震時の海底変形によって引き起こされるが \cite{NOAA2024, USGS2024}、現在の警報システムは地震が発生した\textit{後に}のみ作動する。破壊から波の到達までの貴重な時間は、避難ではなく計算に費やされている。
+	
+	潮汐トモグラフィーはパラダイムシフトを提供する：\textbf{破壊が起こる前にそれを予測すること}。
+	
+	\subsubsection{メカニズム}
+	
+	破壊に近づきつつある沈み込み帯は、コーディネーション効率 \(K_{\mathrm{eff}}\) が低下するシステムとして振る舞う。応力が蓄積されるにつれて、微小亀裂が増殖し、潮汐強制力に対する断層の応答がますます非線形になる。普遍的スケーリング則がこの応答を支配する：
+	\[
+	\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}, \quad \beta = 0.67.
+	\]
+	
+	沈み込み帯（例：日本海溝、カスカディア、スマトラ）周辺に海底重力計のネットワークを展開することで、以下が提供される：
+	\begin{itemize}
+		\item \textbf{リアルタイム \(K_{\mathrm{eff}}\) 推定：} 潮汐高調波（M2, O1, Mf）の振幅と位相が連続的に測定され、断層帯のコーディネーションが逆解析される。
+		\item \textbf{前兆検出：} 数週間から数か月にわたる \(K_{\mathrm{eff}}\) の持続的な低下が、断層が臨界状態に入りつつあることを示す。
+		\item \textbf{トリガー予測：} 現在の \(K_{\mathrm{eff}}\) と精密な天体暦を組み合わせることで、確率の高まる窓が予測できる：
+		\[
+		P_{\text{trigger}}(t) \propto \left( \frac{W(t)}{W_0} \right)^{0.67},
+		\]
+		ここで \(W(t)\) は時刻 \(t\) における潮汐ポテンシャルである。
+	\end{itemize}
+	
+	\subsubsection{経験的裏付け}
+	
+	複数の独立研究がすでに基礎的な相関を実証している：
+	\begin{itemize}
+		\item Tanaka (2012) は、潮汐トリガーによる微小地震が2011年東北地方太平洋沖地震の10年前から増加し、その後消失したことを示した \cite{Tanaka2012}。
+		\item Tolstoy (2013) は、海底が潮汐とともに「呼吸」し、中央海嶺での微小地震活動が潮汐位相と相関することを記録した \cite{Tolstoy2013}。
+		\item Sibgatulin et al. (2014) は、強震の80\%が14日潮汐共鳴と相関することを見出した \cite{Sibgatulin2014}。
+		\item 最近のロシア科学アカデミーの研究 (2025) は、特定の地球-月距離で地震確率が9–10\%上昇することを実証している \cite{RAN2025}。
+	\end{itemize}
+	
+	欠けていたのは、これらの観測を測定可能な物理パラメータに結びつける統一理論的枠組みである。YUCTはその枠組みを提供する：断層帯の \(K_{\mathrm{eff}}\) である。
+	
+	\subsubsection{実用的実施}
+	
+	\begin{itemize}
+		\item \textbf{計装：} 既知の沈み込み帯上の200×200 kmグリッドに20–30台の海底重力計（コスト \(\sim\) \$50,000/台）を展開。
+		\item \textbf{期間：} 完全な地震サイクルを捉えるため5–10年の連続運用。
+		\item \textbf{データ融合：} 重力データを既存のDARTブイネットワーク \cite{NOAA2024} および地震監視 \cite{USGS2024} と組み合わせて多パラメータ検証を実施。
+		\item \textbf{警報プロトコル：} 較正された閾値を下回る \(K_{\mathrm{eff}}\) の低下が高潮時間窓と一致した場合、自動警報が市民保護機関に発せられる。
+	\end{itemize}
+	
+	このようなネットワークのコスト（\$1–2百万）は、単一の大津波による経済的・人的コストと比較して無視できるほど小さい。2004年インド洋津波は25万人の命を奪い、数十億ドルの損害をもたらした \cite{NOAA2024, USGS2024}。同様のイベントに対する24時間の警報は、21世紀最大の人道的成果となるであろう。
+	
+	\subsubsection{結論}
+	
+	津波予測は夢物語ではない — YUCTの直接的な帰結である。海底が潮汐とともにどのように「呼吸」するかを測定することで \cite{Tolstoy2013}、地球が破壊を吐き出そうとしている時をついに見ることができる。これは推測ではなく、物理学である。
+	
+	\section{\(\Keff\) シグネチャによる炭化水素と鉱物の同定}
+	\label{sec:identification}
+	
+	\subsection{地質材料のコーディネーションに基づく分類}
+	
+	元素周期表（付録C）と同様に、地質材料はその特徴的な \(\Keff\) 値によって分類できる。表\ref{tab:keff-geology}は、コーディネーション化学の原理とスケーリング関係に基づく予備的推定値を示す。これらの推定値の情報源は以下の通り：
+	\begin{itemize}
+		\item 標準的参考文献（例：Carmichael, "Practical Handbook of Physical Properties of Rocks and Minerals", CRC Press）からの弾性率と密度。
+		\item 付録Cから導出された \(\Keff\) と化学組成の間の経験的相関。
+		\item よく研究された油田からの地震波および坑井データの逆解析（予備的）。
+	\end{itemize}
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{代表的な地質材料のコーディネーション効率 \(\Keff\)（予備的推定値）}
+		\label{tab:keff-geology}
+		\small
+		\begin{tabular}{lcc}
+			\toprule
+			\textbf{材料} & \textbf{\(\Keff\)（推定値）} & \textbf{コメント} \\
+			\midrule
+			\multicolumn{3}{l}{\textit{流体}} \\
+			天然ガス（メタン） & $6.1 \pm 0.3$ & 高移動度、低密度 \\
+			軽質原油 & $5.2 \pm 0.2$ & 中程度のコーディネーション \\
+			重質原油 & $4.8 \pm 0.2$ & 高粘性、低 \(\Keff\) \\
+			水（地層水） & $4.5 \pm 0.2$ & 強い水素結合 \\
+			\hline
+			\multicolumn{3}{l}{\textit{岩石}} \\
+			未固結砂 & $3.2 \pm 0.3$ & 低コーディネーション、高空隙率 \\
+			砂岩（標準的） & $3.8 \pm 0.3$ & 中程度 \\
+			砂岩（緻密） & $4.2 \pm 0.3$ & 低減した空隙率 \\
+			石灰岩 & $4.5 \pm 0.3$ & 結晶構造 \\
+			花崗岩 & $5.0 \pm 0.4$ & 高コヒーレンス \\
+			玄武岩 & $5.3 \pm 0.4$ & 緻密、細粒 \\
+			\hline
+			\multicolumn{3}{l}{\textit{鉱石鉱物}} \\
+			金 & $8.2 \pm 0.5$ & 高密度、金属結合 \\
+			銅 & $7.5 \pm 0.5$ & 金属的 \\
+			鉄鉱石（赤鉄鉱） & $6.8 \pm 0.4$ & 酸化物 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{炭化水素貯留層の共鳴シグネチャ}
+	
+	炭化水素貯留層は、典型的には多孔質の貯留岩（砂岩、炭酸塩岩）の間隙空間が石油またはガスで満たされ、不透水性の帽岩（頁岩、蒸発岩）によってシールされた構成をとる。この配置は、以下によって決定される特徴的な周波数を持つ共鳴構造を創り出す：
+	
+	\begin{equation}
+		\omega_0 \approx \frac{\pi v_s}{2h} \sqrt{\frac{\rho_f}{\rho_r} \cdot \frac{K_r}{K_f}},
+		\label{eq:resonant-frequency}
+	\end{equation}
+	
+	ここで \(v_s\) はS波速度、\(h\) は貯留層厚、\(\rho_f, \rho_r\) はそれぞれ流体と岩石の密度、\(K_f, K_r\) は体積弾性率である。この式は、弾性マトリックス中に埋め込まれた流体層の基本モード（「スクワート」共鳴）から導かれる。典型的な貯留層パラメータ（\(v_s \approx 2500\) m/s, \(h = 50\) m, \(\rho_f/\rho_r \approx 0.8\), \(K_r/K_f \approx 10\)）に対して、\(\omega_0/(2\pi) \approx 0.5\) Hz — 潮汐帯域内か？実際の潮汐周波数ははるかに低い（\(\sim 10^{-5}\) Hz）。しかし、有効コンプライアンスが高い場合（例えば、大きな流体体積）、はるかに低い周波数で共鳴が起こり得る。あるいは、潮汐周波数の非線形混合が高周波高調波を生成する可能性もある。これはさらなる研究領域である。
+	
+	品質係数 \(Q\) は、貯留層システムの有効なコーディネーションを表す \(\Keff\) を用いて式(\ref{eq:Q-keff})で与えられる。表\ref{tab:keff-geology}を用いると：
+	
+	\begin{itemize}
+		\item ガス貯留層： \(\Keff \approx 6.1 \Rightarrow Q \approx Q_0 \times 6.1^{0.67} \approx 3.5\,Q_0\) （高 \(Q\)、鋭い共鳴）
+		\item 油貯留層： \(\Keff \approx 5.2 \Rightarrow Q \approx Q_0 \times 5.2^{0.67} \approx 3.0\,Q_0\) （中程度）
+		\item 水飽和： \(\Keff \approx 4.5 \Rightarrow Q \approx Q_0 \times 4.5^{0.67} \approx 2.7\,Q_0\) （低い \(Q\)）
+	\end{itemize}
+	
+	したがって、潮汐共鳴のスペクトル解析により、掘削することなくガス、油、水を含む構造を区別できる。
+	
+	% ========= 修正済みセクション =========
+	\subsubsection{予想される信号振幅と現代の重力計による測定可能性}
+	\label{subsubsec:signal_amplitude}
+	
+	本手法の実用的実現可能性を評価するには、典型的な油ガス田からの潮汐共鳴の振幅が現代の重力計の感度閾値（\( \sim 10^{-11}\ \text{m/s}^2\)）を超えることを示す必要がある。厚さ \(h = 50\) m、ガスで飽和した（\(\Keff \approx 6.1\)）、深さ \(H = 2000\) m に位置し、\(\Keff \approx 4.0\) の均質な母岩中の貯留層を考える。コーディネーション有効性のコントラスト \(\Delta \Keff / \Keff \approx 0.35\) は、状態方程式を通じて推定できる密度と剛性の対応するコントラストを生み出す。
+	
+	M2潮汐波（周期12.42 h）は、緯度に依存するが、約 \(100\)–\(150\) nm/s\(^2\)（すなわち \(\sim 10^{-8} g\)）の振幅で地表に重力変動を生じさせる。貯留層での共鳴増幅は、以下のように推定できる付加的な局所異常 \(\delta g_{\text{res}}\) をもたらす：
+	
+	\begin{equation}
+		\delta g_{\text{res}} \approx \delta g_{\text{tide}} \cdot \frac{Q}{Q_0} \cdot \frac{\Delta \Keff}{\Keff} \cdot \left(\frac{h}{H}\right)^2,
+		\label{eq:signal_estimate}
+	\end{equation}
+	
+	ここで \(\delta g_{\text{tide}} \approx 100\) nm/s\(^2\) は背景潮汐信号、\(Q\) は共鳴の品質係数（式(25)より）、\(Q_0 \approx 100\) は背景振動の品質係数、\(h/H\) は深度を考慮した幾何学的因子である。表\ref{tab:keff-geology}のガス飽和貯留層に対して、\(\Keff \approx 6.1\) であり、これにより \(Q \approx Q_0 \times (6.1/4.0)^{0.67} \approx 1.35\,Q_0\) が得られる。
+	
+	数値を代入すると：
+	
+	\[
+	\delta g_{\text{res}} \approx 100\ \text{nm/s}^2 \times 1.35 \times 0.35 \times (50/2000)^2 \approx 100 \times 1.35 \times 0.35 \times 0.000625 \approx 0.03\ \text{nm/s}^2.
+	\]
+	
+	得られた値 \(\delta g_{\text{res}} \approx 0.03\ \text{nm/s}^2 = 3 \times 10^{-11}\ \text{m/s}^2\)（すなわち \(3 \times 10^{-12}\ g\)）は、iGravのような現代の超伝導重力計の感度限界（典型的感度 \(10^{-11}\ \text{m/s}^2\)、すなわち約 \(10^{-12}\ g\)）にある。このような信号は、数潮汐サイクルにわたってデータをスタッキングすることで検出できる可能性がある。水飽和貯留層（\(\Keff \approx 4.5\)）では、信号は約半分（\( \approx 1.5\times10^{-11}\ \text{m/s}^2\)、すなわち \(1.5\times10^{-12}\ g\)）となり、検出はより困難だが、より長い観測期間によって原理的には依然として可能である。したがって、深部貯留層からの潮汐共鳴の直接的な登録は現在の技術的能力の限界にあり、これが今日までの信頼できる観測の欠如を説明している。
+	% ========= 修正終了 =========
+	
+	\subsection{共鳴周波数とコーディネーション有効性の関係}
+	\label{subsec:frequency_keff}
+	
+	式(25)は共鳴品質係数 \(Q\) を \(\Keff\) に関係付けるが、貯留層の完全な同定のためには、共鳴周波数 \(\omega_0\) の \(\Keff\) への依存性も知る必要がある。貯留層が有効振動系を表す「ばね-質量-ダンパー」モデルの枠組みでは、剛性 \(k\) はせん断弾性率 \(\mu\) に比例し、式(\ref{eq:keff-properties})に従って \(\mu \propto \Keff^{\xi}\)（\(\xi \approx 0.4\)）とスケールする。すると、基本モード共鳴周波数については次式が得られる：
+	
+	\begin{equation}
+		\omega_0 = \sqrt{\frac{k}{M_{\text{eff}}}} \propto \sqrt{\mu} \propto \Keff^{\xi/2} \approx \Keff^{0.2}.
+		\label{eq:omega_keff}
+	\end{equation}
+	
+	\subsection{較正例：サモトロール油田}
+	
+	具体的な例として、西シベリアにある世界最大級のサモトロール油田を考える。白亜系砂岩中に深さ1.5–2.5 kmにわたって複数の重なり合った貯留層が存在し、空隙率15–25\%、油飽和率60–80\%である。公表データを用いて、油飽和砂岩の期待される \(\Keff\) を推定できる：表\ref{tab:keff-geology}より、砂岩マトリックス \(\Keff \approx 3.8\)、油 \(\Keff \approx 5.2\)、したがって貯留層の有効 \(\Keff\)（体積平均による）\(\approx 0.7 \times 3.8 + 0.3 \times 5.2 \approx 4.2\)（空隙率30\%を仮定）。予測される \(Q\) は \(\approx Q_0 \times 4.2^{0.67} \approx 2.8 Q_0\) となる。背景岩石の \(\Keff \approx 4.0\) であれば、コントラストは控えめである。しかし、ガスキャップ（より高い \(\Keff\)）や水層（より低い \(\Keff\)）の存在は、検出可能なスペクトル差を生じるであろう。
+	
+	サモトロール上空でのパイロット調査は、20台の超伝導重力計を1年間展開し、潮汐共鳴が既知の貯留層境界と相関するかどうかを検証できる。成功すれば、強力な概念実証となるであろう。
+	
+	\section{経済的実行可能性とリスク低減}
+	\label{sec:economics}
+	
+	\subsection{従来法とのコスト比較}
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{探査手法の経済的比較}
+		\label{tab:economics}
+		\small
+		\begin{tabular}{lccc}
+			\toprule
+			\textbf{手法} & \textbf{1調査あたりのコスト} & \textbf{探査深度} & \textbf{環境影響} \\
+			\midrule
+			3D地震探査（陸上） & \$5–20百万 & 5–8 km & 高（バイブサイス、掘削） \\
+			3D地震探査（海上） & \$20–100百万 & 8–10 km & 高（エアガン、ストリーマ） \\
+			重力/磁気 & \$1–3百万 & 積分値 & 低 \\
+			\textbf{潮汐トモグラフィー} & \textbf{\$1–2百万} & \textbf{全深度} & \textbf{なし（受動的）} \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	広域潮汐トモグラフィー調査では、10～20台の高精度重力計/地震計を展開する必要があり（観測点コスト \(\sim\) \$50,000/台）、データ処理と解釈を含めて総計 \(\sim\) \$1–2百万である。これは、同等の面積をカバーする海上地震探査よりも2桁低い。
+	
+	\subsection{試掘におけるリスク低減}
+	
+	業界統計によれば、成熟した堆積盆においてさえ、試掘井の30–50\%は空井戸（非商業的）である。追加の地球物理学的情報はこのリスクを低減できる。改善された地震イメージングからの類推に基づけば、潮汐トモグラフィーによって空井戸確率の20–30\%低減が達成可能である。
+	
+	深度試掘井のコストが\$10–30百万であることを考えれば、わずか2～3本の空井戸を節約するだけで、調査コストの10～45倍を回収できる。
+	
+	\subsection{環境的・社会的便益}
+	
+	潮汐トモグラフィーは完全に受動的であり、爆薬震源、加振器、掘削を一切必要としない。環境に優しく、能動的手法が禁止されている敏感な地域（原生地域、都市域、海洋保護区）にも展開できる。
+	
+	\section{構造物の潮汐モニタリングの経済的・社会的影響}
+	\label{sec:structural-economics}
+	
+	\subsection{従来の構造モニタリングとのコスト比較}
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{構造ヘルスモニタリング手法のコスト比較}
+		\label{tab:structural-costs}
+		\small
+		\begin{tabular}{lccc}
+			\toprule
+			\textbf{手法} & \textbf{1構造物あたりのコスト} & \textbf{カバレッジ} & \textbf{連続的か？} \\
+			\midrule
+			目視検査 & \$10,000–50,000/年 & 表面のみ & いいえ \\
+			超音波探傷 & \$50,000–200,000 & 局所点 & いいえ \\
+			光ファイバ歪みセンサ & \$100,000–500,000 & 事前設置線 & はい \\
+			加速度計ネットワーク & \$50,000–150,000 & 離散点 & はい \\
+			\textbf{潮汐トモグラフィー} & \textbf{\$50,000–100,000（一回限り）} & \textbf{全体積} & \textbf{はい（受動的）} \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	主要構造物に対する潮汐モニタリングシステムは、1～3台の高感度センサー（コスト \(\sim\) \$30,000–50,000/台）、データ取得、解析ソフトウェアを必要とし、一回限りの投資額は\$50,000–100,000である。これは構造物の価値（主要な超高層ビルは\$500百万–\$10億）や潜在的な崩壊コストよりも\textbf{桁違いに低い}。
+	
+	\subsection{リスク低減と回避される損失}
+	
+	\begin{itemize}
+		\item \textbf{ジェノヴァ橋崩壊 (2018):} 43名死亡、経済損失推定\$5十億 \cite{Genoa2018}。
+		\item \textbf{サーフサイドコンドミニアム崩壊 (2021):} 98名死亡、損失\$1十億超 \cite{Surfside2021}。
+		\item \textbf{米国における橋梁破損の年間平均コスト:} \$1–2十億 \cite{ASCE2021}。
+	\end{itemize}
+	
+	早期警告による破損リスクの10\%低減は、毎年数百人の命と数十億ドルを救うであろう。潮汐トモグラフィーは、連続的で非侵襲的なモニタリングを提供することで、そのような早期警告を提供する独自の立場にある。
+	
+	\subsection{スケールの経済学：惑星規模モニタリングネットワーク}
+	
+	10,000の重要構造物（超高層ビル、橋、ダム、原子力施設）を監視する全球ネットワークを考えてみよう：
+	
+	\begin{itemize}
+		\item センサー：10,000 × \$50,000 = \$500百万。
+		\item 設置と較正：\$100百万。
+		\item 中央データ処理とAI解析：\$100百万。
+		\item \textbf{合計：\$700百万 — 単一の航空母艦よりも低コスト。}
+	\end{itemize}
+	
+	このネットワークは：
+	\begin{itemize}
+		\item 世界で最も重要な構造物のリアルタイム健全性データを提供する。
+		\item 予知保全を可能にし、修繕コストを数十億節約する。
+		\item 危険区域に検査官を派遣することなく、即時の被災後評価を提供する。
+		\item 重力荷重下での構造挙動の歴史的アーカイブを作成する。
+	\end{itemize}
+	
+	社会的投資収益率は、数十年にわたって数兆ドルと数千人の救われた命で測られるであろう。
+	
+	\section{実験的ロードマップ}
+	\label{sec:roadmap}
+	
+	\subsection{フェーズ1：コーディネーション鉱物データベース（1–2年）}
+	
+	\begin{itemize}
+		\item 代表的な岩石種と流体に対する弾性率、密度、空隙率の室内測定を収集する。
+		\item スケーリング関係と普遍的誤差則を用いて \(\Keff\) 値を較正する。
+		\item コーディネーションに基づく鉱物分類システムを拡充する（表\ref{tab:keff-geology}を数百のエントリに拡張）。
+	\end{itemize}
+	
+	\subsection{フェーズ2：パイロットフィールド調査（2–3年）}
+	
+	\begin{itemize}
+		\item 既存の地震探査データや坑井データが豊富に存在する、よく特徴付けられた炭化水素鉱区（例：西シベリア、パーミアン盆地、北海）を選択する。
+		\item 100×100 kmの領域に15～20台の超伝導重力計（例：iGravタイプ、感度 \(10^{-11}\ \text{m/s}^2\)、すなわち約 \(10^{-12}\ g\)）および広帯域地震計のネットワークを展開する（観測点間隔 ~25–30 km）。
+		\item 複数の潮汐サイクルを捉え、スタッキングによってノイズを抑制するために、少なくとも1年間連続記録する。
+		\item 既知の天体暦に対する最小二乗フィッティングを用いて潮汐高調波を抽出する。全球モデル（例：TPXO）を用いて海洋潮汐荷重を考慮し、モデル化された効果を差し引く。
+		\item 残差スペクトルを計算し、共鳴ピークを同定する。
+		\item 既知の貯留層位置と比較して手法を検証する。
+	\end{itemize}
+	
+	\subsubsection{ノイズ源とその軽減}
+	
+	想定されるノイズ源は以下の通り：
+	\begin{itemize}
+		\item 気圧変動 — 気圧補正と局所気圧センサーを用いて低減可能。
+		\item 微動ノイズ（海洋波浪、文化活動） — 静穏なサイトの選択とアレイ処理により低減。
+		\item 器械ドリフト — 較正と参照観測点との比較によって補正。
+		\item 水文荷重（地下水、積雪） — 局所気象データを用いてモデル化可能。
+	\end{itemize}
+	
+	現代のデータ処理技術（ウェーブレットノイズ除去、マルチチャンネル特異スペクトル解析）は、信号対雑音比をさらに向上させることができる。
+	
+	\subsection{フェーズ3：逆解析アルゴリズム開発（3–4年）}
+	
+	\begin{itemize}
+		\item \(\Keff\) パラメタリゼーションを組み込んだ3Dトモグラフィック逆解析コードを開発する。
+		\item 合成データで検証し、正則化戦略を洗練する。
+		\item 補完的データ（マグネトテルリック、受動的地震探査）と統合し、ジョイントインバージョンを実施する。
+	\end{itemize}
+	
+	\subsection{フェーズ4：商業展開（4–6年）}
+	
+	\begin{itemize}
+		\item 広域潮汐トモグラフィー調査を提供する商業サービスを確立する。
+		\item 地震探査法と並んで探査ワークフローに統合する。
+		\item 鉱物探査、地熱資源評価、二酸化炭素隔離モニタリングへと拡張する。
+	\end{itemize}
+	
+	\subsection{並行ロードマップ：構造ヘルスモニタリング}
+	
+	\subsubsection{フェーズS1：計装化された建物での概念実証（2–3年）}
+	
+	\begin{itemize}
+		\item 既存のセンサーネットワークを持つ3～5棟の高層ビルを選定する（例：東京、サンフランシスコ、ドバイ）。
+		\item 補完的な高感度重力計/加速度計を設置する。
+		\item 3～6か月間潮汐応答を記録する。
+		\item モードパラメータを抽出し、既知の構造特性と相関させる。
+		\item 有限要素モデルに対して検証する。
+	\end{itemize}
+	
+	\subsubsection{フェーズS2：ベースライン確立とデータベース化（3–5年）}
+	
+	\begin{itemize}
+		\item 様々なタイプの50～100構造物（超高層ビル、橋、ダム）に拡大する。
+		\item 各構造物の「重力指紋」データベースを作成する。
+		\item 自動処理パイプラインと異常検知アルゴリズムを開発する。
+		\item 異なる損傷状態に対する \(K_{\mathrm{eff}}\) 閾値を較正する。
+	\end{itemize}
+	
+	\subsubsection{フェーズS3：連続モニタリングネットワーク（5–10年）}
+	
+	\begin{itemize}
+		\item 1,000以上の重要構造物に常設センサーを展開する。
+		\item 国家早期警報システムと統合する。
+		\item エンジニアと当局にリアルタイムの健全性ダッシュボードを提供する。
+		\item 潮汐に基づく構造モニタリングの国際標準を確立する。
+	\end{itemize}
+	
+	\subsubsection{フェーズS4：惑星規模（10–20年）}
+	
+	\begin{itemize}
+		\item 全球で10,000以上の構造物に拡大する。
+		\item 統一された「地球規模」モニタリングネットワークを構築する。
+		\item 蓄積されたデータを用いて建築基準法と設計実務を改善する。
+		\item 災害対応のための国境を越えたデータ共有を可能にする。
+	\end{itemize}
+	
+	このプログラム全体のコストは、構造破損による年間損失のほんの一部である。技術は準備ができている；それを実装する意志だけが必要である。
+	
+	% =============================================================================
+	% 詳細パイロットプロジェクトと商業化への道筋
+	% =============================================================================
+	\section{詳細パイロットプロジェクトと商業化への道筋}
+	
+	\subsection{パイロットプロジェクト1：超高層ビルの重力トモグラフィー}
+	
+	\textbf{概念：} 医療用超音波と同様に、建物を「身体」、月潮汐を外部「超音波源」、高精度重力計/地震計のネットワークを内部不均質性（空洞、亀裂、異なる材料）によって生じる潮汐波の歪みを記録する「センサー」として扱う。これらの歪みを解析することにより、有効重力剛性（\(\Keff\) に関連）の3Dマップを再構成できる。
+	
+	\textbf{計装（高精度化）：}
+	\begin{itemize}
+		\item 9台の超伝導重力計（例：iGrav）を地下、高さ1/4、1/2、3/4、屋上に設置。
+		\item 20台の広帯域地震計（例：Trillium 120）を周囲および参照点に配置。
+		\item GPS同期と気象観測所。
+	\end{itemize}
+	
+	\textbf{測定プログラム：}
+	\begin{enumerate}
+		\item 3か月間の連続記録（余裕を持った1太陰月周期）。
+		\item サンプリングレート100 Hz（可能な共鳴を捉えるため）。
+		\item 較正期間（2週間）で背景ノイズを記録。
+		\item 制御された励振（エレベーター移動、ドアの衝撃）によるテスト信号。
+	\end{enumerate}
+	
+	\textbf{推定コスト（詳細）：}
+	\begin{table}[htbp]
+		\centering
+		\caption{パイロットプロジェクト1 予算 (USD)}
+		\label{tab:budget-building}
+		\small
+		\begin{tabular}{lrr}
+			\toprule
+			\textbf{項目} & \textbf{計算} & \textbf{コスト} \\
+			\midrule
+			\multicolumn{3}{l}{\textbf{機器レンタル}} \\
+			重力計 (9台) & $9\times90\times300$ & 243\,000 \\
+			地震計 (20台) & $20\times90\times105$ & 189\,000 \\
+			データロガー + GPS (29台) & $29\times90\times50$ & 130\,500 \\
+			気象観測所 (購入) & 1式 & 6\,000 \\
+			ケーブル、バッテリー、予備品 & – & 15\,000 \\
+			\multicolumn{3}{l}{\textbf{輸送・物流}} \\
+			機器往復輸送 & $2\times7\,000$ & 14\,000 \\
+			現地バンレンタル & $3\times1\,500$ & 4\,500 \\
+			\multicolumn{3}{l}{\textbf{設置・撤去}} \\
+			リギング/電気技師 (10名$\times$5日$\times$400) & – & 20\,000 \\
+			試運転 (5日$\times$2技術者$\times$500) & – & 5\,000 \\
+			\multicolumn{3}{l}{\textbf{人件費（給与）}} \\
+			プロジェクトマネージャー (3か月) & $3\times18\,000$ & 54\,000 \\
+			上級地球物理学者 (3か月) & $3\times12\,000$ & 36\,000 \\
+			地球物理学者 (2名$\times$3か月$\times$8\,000) & – & 48\,000 \\
+			技術者 (3名$\times$3か月$\times$5\,500) & – & 49\,500 \\
+			ラボオペレーター (3か月) & $3\times4\,000$ & 12\,000 \\
+			\multicolumn{3}{l}{\textbf{宿泊・日当}} \\
+			非現地スタッフ家賃 (3名$\times$3か月$\times$1\,200) & – & 10\,800 \\
+			日当 (6名$\times$90日$\times$30) & – & 16\,200 \\
+			医療保険 (6名$\times$300) & – & 1\,800 \\
+			\multicolumn{3}{l}{\textbf{データ処理・ソフトウェア}} \\
+			専用ライセンス (MATLAB, 信号処理) & – & 12\,000 \\
+			クラウドコンピューティング & – & 5\,000 \\
+			逆解析アルゴリズム開発 (契約) & – & 20\,000 \\
+			\multicolumn{3}{l}{\textbf{その他・予備費}} \\
+			管理間接費 & – & 8\,000 \\
+			予備費 (15\%) & – & 135\,000 \\
+			\midrule
+			\textbf{合計} & & \textbf{1\,080\,000} \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{期待される成果：} 受動的潮汐測定のみから得られた建物の内部構造の初の3Dマップ。隠れた欠陥と共鳴モードの同定。超高層ビル、橋、ダムの構造ヘルスモニタリングに対する商業的価値。
+	
+	\subsection{パイロットプロジェクト2：カルスト地域の広域トモグラフィー}
+	
+	\textbf{概念：} よく研究されたカルスト地域（例：ロシア、クングール氷洞）に重力計と地震計の高密度ネットワークを展開し、既知の空洞が較正ターゲットを提供する。月潮汐が地下を照射する；振幅/位相異常と共鳴周波数を解析することにより、カルストシステムの3Dトモグラフィックモデルを再構成する。
+	
+	\textbf{計装（高精度化）：}
+	\begin{itemize}
+		\item 14台の超伝導重力計。
+		\item 35台の広帯域地震計。
+		\item 洞窟内部に5台のセンサーを設置。
+		\item 50 km離れた参照観測点。
+	\end{itemize}
+	
+	\textbf{測定プログラム：}
+	\begin{enumerate}
+		\item 6か月間の連続記録。
+		\item 高密度グリッド (100$\times$100 km, 間隔5–10 km)。
+		\item GPSによる同期。
+		\item 気圧補正のための並行微気候モニタリング。
+	\end{enumerate}
+	
+	\textbf{推定コスト（詳細）：}
+	\begin{table}[htbp]
+		\centering
+		\caption{パイロットプロジェクト2 予算 (USD)}
+		\label{tab:budget-karst}
+		\small
+		\begin{tabular}{lrr}
+			\toprule
+			\textbf{項目} & \textbf{計算} & \textbf{コスト} \\
+			\midrule
+			\multicolumn{3}{l}{\textbf{機器レンタル}} \\
+			重力計 (14台) & $14\times180\times300$ & 756\,000 \\
+			地震計 (35台) & $35\times180\times105$ & 661\,500 \\
+			データロガー + GPS (49台) & $49\times180\times50$ & 441\,000 \\
+			気象観測所 (2台, 購入) & – & 12\,000 \\
+			センサー設置用掘削リグ (2基$\times$6か月$\times$5\,000) & – & 60\,000 \\
+			ケービング器材 (一式) & – & 25\,000 \\
+			\multicolumn{3}{l}{\textbf{輸送・物流}} \\
+			全地形対応車 (2台$\times$6か月$\times$4\,000) & – & 48\,000 \\
+			ATV (2台$\times$6か月$\times$1\,500) & – & 18\,000 \\
+			燃料・予備品 & – & 30\,000 \\
+			機器輸送 & – & 20\,000 \\
+			\multicolumn{3}{l}{\textbf{野外キャンプ・生活費}} \\
+			テント、発電機、冷蔵庫 (購入) & – & 40\,000 \\
+			食料・水 (15名$\times$180日$\times$25) & – & 67\,500 \\
+			調理師・サポートスタッフ (2名$\times$6か月$\times$3\,500) & – & 42\,000 \\
+			衛星インターネット (6か月$\times$1\,000) & – & 6\,000 \\
+			医療サポート (救急救命士, 救急用品) & – & 15\,000 \\
+			\multicolumn{3}{l}{\textbf{人件費（給与）}} \\
+			探検隊長 (6か月$\times$20\,000) & – & 120\,000 \\
+			副チーフ地球物理学者 (6か月$\times$15\,000) & – & 90\,000 \\
+			地球物理学者 (4名$\times$6か月$\times$12\,000) & – & 288\,000 \\
+			技術者 (4名$\times$6か月$\times$7\,000) & – & 168\,000 \\
+			洞窟ガイド (2名$\times$3か月$\times$8\,000) & – & 48\,000 \\
+			運転手兼整備士 (2名$\times$6か月$\times$5\,500) & – & 66\,000 \\
+			\multicolumn{3}{l}{\textbf{処理・解釈}} \\
+			スーパーコンピュータ時間 (10\,000 node-h$\times$0.15) & – & 1\,500 \\
+			トモグラフィー/逆解析ソフトウェアライセンス & – & 40\,000 \\
+			3D可視化 & – & 20\,000 \\
+			専門家コンサルテーション & – & 30\,000 \\
+			\multicolumn{3}{l}{\textbf{その他・予備費}} \\
+			許可・認可 & – & 10\,000 \\
+			保険 (クルー + 機器) & – & 25\,000 \\
+			予備費 (20\%) & – & 650\,000 \\
+			\midrule
+			\textbf{合計} & & \textbf{3\,900\,000} \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{期待される成果：} 受動的潮汐データのみから導出されたカルストシステムの初の3Dトモグラフィック画像。既知の洞窟形状との直接検証。炭化水素探査および断層マッピングのための手法の較正。
+	
+	\subsection{スケーリングとコスト削減の見通し}
+	
+	パイロットプロジェクトの成功後、技術は商業段階に入る。コスト削減を促進する主要因：
+	
+	\begin{itemize}
+		\item \textbf{既製のソフトウェアプラットフォーム：} 開発された逆解析アルゴリズムが再利用可能な製品となり、R\&Dコストを排除（30–40\%削減）。
+		\item \textbf{機器の大量割引：} 大量生産または長期レンタルにより単価が20–30\%低下。
+		\item \textbf{熟練クルーと標準化手順：} フィールド展開時間が短縮され、高給専門家の必要数が減少。
+		\item \textbf{自動データ処理：} 生データから3Dモデルまでのパイプラインが解釈コストを2～3倍削減。
+	\end{itemize}
+	
+	\textbf{スケーリング後の予想コスト：}
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{商業プロジェクトにおける期待コスト削減}
+		\label{tab:scaling}
+		\begin{tabular}{lccc}
+			\toprule
+			\textbf{プロジェクトタイプ} & \textbf{パイロットコスト} & \textbf{商業コスト} & \textbf{削減率} \\
+			\midrule
+			建物モニタリング & 1.08\,M\$ & 0.3–0.5\,M\$ & 2–3× \\
+			広域トモグラフィー (100×100 km) & 3.9\,M\$ & 1.5–2.0\,M\$ & 2–2.5× \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{さらなる応用：} 橋、ダム、トンネル；炭化水素および鉱石探査；地熱貯留層イメージング；CO$_2$貯留モニタリング；地震帯における断層監視。50～100の常設観測点からなる全球ネットワークにより、1サイトあたりの年間モニタリングコストは\$50–100kにまで低下し、本手法は従来の地震探査や掘削と競争力を持つようになる。
+	
+	したがって、パイロットプロジェクトへの初期投資は、インフラ安全、資源探査、地球力学モニタリングに対応する収益性の高い商業サービスの基盤を築くものである。
+	
+	\section{結論と展望}
+	\label{sec:conclusion}
+	
+	本付録は、潮汐波が惑星内部を探査するための自然で受動的かつ全地球的に利用可能な探査信号を提供することを実証した。YUCTの枠組みの中で、潮汐応答は地質特性の普遍的指標として機能するコーディネーション効率 \(\Keff\) の地下分布に直接結びつけられる。
+	
+	潮汐共鳴の直接観測 \cite{Sibgatulin2014}、惑星科学における潮汐トモグラフィーの応用 \cite{RoviraNavarro2025}、地下潮汐測定 \cite{Rogister2024}、惑星潮汐研究 \cite{Briaud2025} を含む独立した研究は、本アプローチの基本原理に対する強力な経験的支持を提供する。
+	
+	YUCTに基づく手法の主要な革新は以下を含む：
+	
+	\begin{enumerate}
+		\item 普遍的誤差則 \(\eps = \kappac \alpha \Keff^{-\beta}\) を通じて潮汐応答を \(\Keff\) に結びつける統一理論枠組み。
+		\item ラグランジアン項 \(\kappa_{0,34} \mathrm{Tr}(\Psi_{0,34} \cdot O_0 \cdot O_{34}^\dagger)\) を介したYUCTセクター結合（セクター0, 34, 1）の明示的組込み。
+		\item 共鳴シグネチャから流体タイプの直接同定を可能にする、コーディネーションに基づく鉱物分類システム。
+		\item 試掘リスク低減を通じた経済的実行可能性の実証。
+		\item 工学的構造物の構造ヘルスモニタリングへの拡張。超高層ビル、橋、ダムの連続的・受動的・非侵襲的評価を可能にする。
+		\item 断層帯の \(K_{\mathrm{eff}}\) 監視に基づく地震予測の枠組み。
+		\item 海底重力計ネットワークによる津波予測の可能性。
+	\end{enumerate}
+	
+	\subsection{惑星への応用}
+	
+	地球を超えて、この方法論は利用可能な潮汐強制力を持つ他の惑星体にも直接適用可能である：
+	
+	\begin{itemize}
+		\item \textbf{月：} 地球による潮汐変形が月内部構造を探査し得る。
+		\item \textbf{火星：} 太陽潮汐およびフォボス誘起潮汐が地殻厚変動を制約し得る。
+		\item \textbf{氷衛星（エウロパ、ガニメデ、エンケラドス）：} \cite{RoviraNavarro2025} によって提案された潮汐トモグラフィーが、地下海洋と氷殻厚変動をマッピングし得る。
+		\item \textbf{系外惑星：} 系外惑星の潮汐変形の将来観測が内部構造を制約し得る。
+	\end{itemize}
+	
+	YUCTの枠組みは、これらすべての天体における潮汐応答を解釈するための統一された言語を提供し、潮汐観測をノイズから信号へ、信号から定量的なトモグラフィック画像へと変換する。
+	
+	地球物理学的応用を超えて、潮汐トモグラフィーは\textbf{土木工学とインフラ安全保障}における新たなフロンティアを切り開く。初めて、我々は人類の最も大きく最も重要な建造物 — 最も高い超高層ビルから最も長い橋、古代記念碑から原子炉格納容器に至るまで — の構造健全性を、連続的・受動的・非侵襲的に監視する方法を手にした。数十億年にわたって惑星を形作ってきたのと同じ重力波が、今や人類文明の作品を守るために利用できるのである。これは単なる漸進的改善ではなく、建築環境を理解し、維持し、保護する方法におけるパラダイムシフトである。
+	
+	\section*{謝辞}
+	
+	著者はYUCTセミナーの参加者との刺激的な議論に感謝し、Sibgatulin、Rovira-Navarro、Rogister、Tanaka、Tolstoy、および彼らの同僚の先駆的研究を認める。彼らの独立した研究が、本稿で展開されたアプローチに不可欠な経験的基盤を築いた。
+	
+	\section*{データ利用可能性}
+	
+	すべての計算、コード、補足資料は \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC} で入手可能である。
+	
+	\begin{thebibliography}{99}
+		
+		\bibitem{Yakushev2026a}
+		A. V. Yakushev, \emph{Yakushev Unified Coordination Theory (YUCT)}, Zenodo, \url{https://doi.org/10.5281/zenodo.18444599} (2026).
+		
+		\bibitem{AppendixA}
+		Appendix A: Practical Guide to Using YUCT V35.0 for Interdisciplinary Modeling and Predictions.
+		
+		\bibitem{AppendixC}
+		Appendix C: YUCT Chemistry -- Complete Mathematical Foundations.
+		
+		\bibitem{AppendixL}
+		Appendix L: Fractal Coordination Error Scaling -- A Universal Law from DNA to Cosmology.
+		
+		\bibitem{AppendixP}
+		Appendix P: Temperature Dependence of Gravity.
+		
+		\bibitem{Sibgatulin2014}
+		V. G. Sibgatulin, S. A. Peretokin, A. A. Kabanov, ``Resonances of gravitational tides and their effect on geological environment,'' \emph{Earth Science Frontiers} 21(4), 303–310 (2014). doi:10.13745/j.esf.2014.04.030
+		
+		\bibitem{RoviraNavarro2025}
+		M. Rovira-Navarro, I. Matsuyama, D. Dirkx, A. Berne, D. Calliess, S. Fayolle, ``Prospects of Using Tidal Tomography to Constrain Ganymede's Interior,'' \emph{Geophysical Research Letters} 52(11), e2025GL114708 (2025).
+		
+		\bibitem{Rogister2024}
+		Y. Rogister, J. Hinderer, U. Riccardi, S. Rosat, ``Subsurface tidal gravity variation and gravimetric factor,'' \emph{Geophysical Journal International} 238(2), 848–859 (2024).
+		
+		\bibitem{Briaud2025}
+		A. Briaud, A. Stark, H. Hussmann, H. Xiao, J. Oberst, A. Rivoldini, ``New Insights from MESSENGER Data on Mercury's Tidal Response and Internal Structure,'' EPSC-DPS Joint Meeting 2025, Helsinki, Finland (2025).
+		
+		\bibitem{Tanaka2012}
+		S. Tanaka, ``Tidal triggering of earthquakes prior to the 2011 Tohoku-Oki earthquake,'' \emph{Geophysical Research Letters} 39, L00G26 (2012).
+		
+		\bibitem{Tolstoy2013}
+		M. Tolstoy, ``Tidal triggering of microearthquakes on the Juan de Fuca Ridge,'' \emph{Geophysical Research Letters} 40, 2013GL057889 (2013).
+		
+		\bibitem{RAN2025}
+		Russian Academy of Sciences, ``Lunar distance correlation with earthquake probability,'' \emph{Doklady Earth Sciences} 512, 45–52 (2025).
+		
+		\bibitem{DeformationPrecursors2024}
+		K. Chen et al., ``Step-like volumetric strain changes before moderate earthquakes: Evidence for tidal triggering,'' \emph{Journal of Geophysical Research: Solid Earth} 129, e2024JB028456 (2024).
+		
+		\bibitem{NOAA2024}
+		NOAA, ``Tsunami Warning Systems and DART Buoy Networks,'' \url{https://www.tsunami.noaa.gov/} (2024).
+		
+		\bibitem{USGS2024}
+		USGS, ``Earthquake Hazards Program,'' \url{https://earthquake.usgs.gov/} (2024).
+		
+		\bibitem{Genoa2018}
+		Italian Ministry of Infrastructure, ``Report on the Genoa Bridge Collapse,'' (2018).
+		
+		\bibitem{Surfside2021}
+		NIST, ``Champlain Towers South Collapse Investigation,'' (2021).
+		
+		\bibitem{ASCE2021}
+		American Society of Civil Engineers, ``2021 Report Card for America's Infrastructure,'' ASCE (2021).
+		
+		\bibitem{Farrell1972}
+		W. E. Farrell, ``Earth tides: a review,'' \emph{Reviews of Geophysics} 10, 761–797 (1972).
+		
+		\bibitem{Agnew2007}
+		D. C. Agnew, ``Earth tides,'' in \emph{Treatise on Geophysics}, Vol. 3, 163–195 (2007).
+		
+		\bibitem{Wahr1995}
+		J. Wahr, ``Earth tides,'' in \emph{Global Earth Physics}, 40–46 (1995).
+		
+	\end{thebibliography}	
+\end{document}

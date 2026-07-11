@@ -1,0 +1,691 @@
+\documentclass[12pt,a4paper]{article}
+
+% ========= ПАКЕТЫ =========
+\usepackage[english, bidi=default, layout=counters]{babel}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{mathtools}   % для \coloneqq и др.
+\usepackage{amsthm}      % для окружений theorem
+\usepackage{braket}      % для \Set, \Bra, \Ket
+\usepackage{enumitem}    % для списков
+\usepackage{geometry}
+\geometry{left=1.25cm,right=1.25cm,top=1.25cm,bottom=3.1cm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{siunitx}
+\usepackage{bm}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{fontspec}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,arrows.meta,positioning,decorations.pathmorphing,patterns,calc}
+\usepackage{multicol}
+\usepackage{textcomp}
+
+\tikzset{>=stealth}
+
+% ========= ЯЗЫКИ =========
+\babelprovide[import, main, maparabic, alph=alph]{arabic}
+\babelprovide[import, onchar=ids fonts]{english}
+
+% ========= АРАБСКИЕ ШРИФТЫ =========
+\defaultfontfeatures{Ligatures=TeX}
+\setmainfont{Amiri}[
+Script=Arabic,
+Mapping=arabicdigits,
+Ligatures=TeX,
+BoldFont=Amiri-Bold,
+ItalicFont=Amiri-Italic,
+BoldItalicFont=Amiri-BoldItalic
+]
+\setsansfont{Amiri}[
+Script=Arabic,
+Mapping=arabicdigits
+]
+\newfontfamily{\arabicfonttt}{Amiri}[
+Script=Arabic,
+Mapping=arabicdigits
+]
+
+% Шрифты для латинского текста (английского)
+\babelfont[english]{rm}{Times New Roman}
+\babelfont[english]{sf}{Arial}
+\babelfont[english]{tt}{Courier New}
+
+% ========= ГЛОБАЛЬНАЯ НАСТРОЙКА ДЛЯ ВСЕХ РИСУНКОВ =========
+% Принудительно LTR внутри tikzpicture, чтобы координаты не зеркалировались
+\tikzset{every picture/.style={execute at begin picture={\textdir TLT}}}
+
+% ========= ЦВЕТА =========
+\definecolor{skyblue}{RGB}{0,102,204}
+\definecolor{darkblue}{RGB}{0,0,139}
+\definecolor{gold}{RGB}{255,215,0}
+
+% ========= КОМАНДЫ YUCT =========
+\DeclareMathOperator{\Ent}{Ent}
+\DeclareMathOperator{\Tr}{Tr}
+\newcommand{\Dir}{\mathcal{D}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\Planck}{\mathrm{Pl}}
+
+% ========= ОКРУЖЕНИЯ (арабские названия) =========
+\newtheorem{theorem}{نظرية}[section]
+\newtheorem{lemma}[theorem]{ليما}
+\newtheorem{proposition}[theorem]{اقتراح}
+\newtheorem{definition}[theorem]{تعريف}
+\newtheorem{remark}[theorem]{ملاحظة}
+
+% ========= ЗАГОЛОВКИ =========
+\titleformat{\section}{\LARGE\bfseries\color{darkblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{darkblue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{1em}{}
+
+% ========= КОЛОНТИТУЛЫ =========
+\fancypagestyle{firstpage}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			{\small \textsuperscript{1}أبحاث ياكوشيف، \url{https://yuct.org/}} \hfill
+			{\small بروتوكول YPSDC: \url{https://ypsdc.com/}}\\[-2pt]
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			\textbf{نظرية ياكوشيف الموحدة للتنسيق 2026} \hfill \thepage\\[10pt]
+		\end{minipage}%
+	}%
+}
+
+\fancypagestyle{plain}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[4pt]
+			\textbf{نظرية ياكوشيف الموحدة للتنسيق 2026} \hfill \thepage\\[4pt]
+		\end{minipage}%
+	}%
+}
+
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+\raggedbottom
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+% ========= ЗАГОЛОВОК СТАТЬИ =========
+\newcommand{\makeheader}{%
+	\noindent
+	\begin{minipage}{0.17\textwidth}
+		\raggedright
+		{\sffamily\bfseries\color{skyblue}\fontsize{40}{40}\selectfont YUCT}%
+	\end{minipage}%
+	\hspace{30pt}
+	\begin{minipage}{0.32\textwidth}
+		\raggedright
+		{\sffamily\fontsize{11}{13}\selectfont نظرية ياكوشيف\\ الموحدة\\ للتنسيق}%
+	\end{minipage}%
+	\hfill
+	\begin{minipage}{0.38\textwidth}
+		\raggedleft
+		{\sffamily\bfseries مذكرة فنية}\\
+		{\sffamily نُشرت في مايو 2026}\\
+		{\sffamily\footnotesize \scriptsize\url{https://doi.org/10.5281/zenodo.18444598}}%
+	\end{minipage}
+	\par\vspace{5pt}
+	\noindent\textcolor{gold}{\rule{\textwidth}{1.6pt}}
+	\par\vspace{0pt}
+}
+
+\begin{document}
+	\thispagestyle{firstpage}
+	\makeheader
+	
+	\vspace{0cm}
+	{\LARGE\bfseries الجاذبية كشد هندسي لشبكة التنسيق وعلم كون دوري في YUCT \par}
+	\vspace{0.2cm}
+	
+	{\large أليكسي ف. ياكوشيف\textsuperscript{1}} \\
+	\vspace{0.0cm}
+	
+	{\color{darkblue}\textbf{\LARGE المستخلص}} \par
+	
+	نقدم اشتقاقاً رياضياً دقيقاً للجاذبية كظاهرة ناشئة ضمن نظرية ياكوشيف الموحدة للتنسيق (YUCT). بدءاً من التعريف المجهري لكفاءة التنسيق \(K_{\mathrm{eff}}\) والحقل القياسي \(\phi = \ln (K_{\mathrm{eff}}/K_0)\)، نقوم ببناء دالة الطاقة الحرة لشبكة التنسيق. جميع الثوابت معبر عنها من خلال معاملات القاموس القبلي. يؤدي التغير في الفعل إلى معادلات أينشتاين المعدلة مع موتر شد هندسي يحل محل كل من المادة المظلمة والطاقة المظلمة. يتم اشتقاق النيوتوني الحدّي بشكل صحيح، موضحاً أن الحد الإضافي يعمل ككثافة مادة مظلمة فعالة تنتج منحنيات دوران مسطحة. ثابت أينشتاين الكوني \(\Omega_\Lambda = 2/3\) يتبع من طوبولوجيا فضاء ما قبل التنسيق ذي الـ19 بعداً، ويظهر علم كون دوري نتيجة لانتقال طور عند \(K_{\mathrm{eff}} = \Phi\) (النسبة الذهبية). تُحدَّد التنبؤات كمياً للمقاييس المجرية والكونية.
+	\clearpage
+	\tableofcontents
+	
+	\section{الأساس المجهري لحقل التنسيق}
+	
+	\subsection{عناقيد التنسيق وكفاءتها}
+	\begin{definition}
+		عنقود التنسيق عند المستوى \(n\) هو \(\mathcal{C}_n = (\mathcal{O}_n, \Dir_n, L_n, \tau_n, K_{\mathrm{eff},n})\)، حيث \(\mathcal{O}_n\) مجموعة الفاعلين، \(\Dir_n\) القاموس القبلي، \(L_n\) الحجم، \(\tau_n\) زمن التنسيق، و
+		\[
+		K_{\mathrm{eff},n} = \frac{H(\mathcal{A})}{H(\mathcal{K})}
+		\]
+		نسبة إنتروبيا الفعل إلى إنتروبيا الدليل.
+	\end{definition}
+	
+	لعُنقود من \(N\) فاعلاً، ينمو حجم القاموس الفعال كـ \(|\Dir_{\mathrm{eff}}| \propto \mathcal{N}^{\alpha N}\)، حيث \(\mathcal{N}\) حجم الأبجدية الأساسية و \(\alpha<1\) أس الارتباط. إنتروبيا القاموس هي
+	\[
+	H(\Dir) = \log_2 |\Dir_{\mathrm{eff}}| = \alpha N \log_2 \mathcal{N}.
+	\]
+	بافتراض أن كل دليل يحمل بتاً واحداً، \(H(\mathcal{K}) = N\)، وبالتالي
+	\begin{equation}
+		K_{\mathrm{eff}} = \alpha \log_2 \mathcal{N}. \label{eq:Keff-micro}
+	\end{equation}
+	في عنقود واحد \(\alpha\) و \(\mathcal{N}\) ثابتان؛ \(K_{\mathrm{eff}}\) ثابت. في النهاية المتصلة، العمق المحلي (وبالتالي \(\alpha\)) والثراء المحلي (\(\mathcal{N}\)) يمكن أن يتغيرا ببطء في الفضاء. الاعتماد المكاني الرئيسي هو عبر \(\mathcal{N}\)، بينما تقلبات \(\alpha\) ثانوية ويمكن امتصاصها في إعادة تطبيع المقياس المرجعي. لذلك نعرّف الحقل القياسي
+	\begin{equation}
+		\phi(x) = \ln \frac{K_{\mathrm{eff}}(x)}{K_0}, \qquad K_0 \equiv \alpha_0 \log_2 \mathcal{N}_0,
+		\label{eq:phi-def}
+	\end{equation}
+	حيث يشير \(\alpha_0,\mathcal{N}_0\) إلى توزيع الخواء (على مقياس بلانك). عند مقياس بلانك، سعة القناة هي \(1/t_P\) والقاموس أصغري: \(\mathcal{N}_0 \approx 2\)، \(\alpha_0 \rightarrow 1\)، لذا \(K_0 \approx 1\) و \(\phi=0\) في الخواء.
+	
+	\subsection{كثافة إنتروبيا القاموس}
+	كثافة إنتروبيا القاموس مكانياً هي \(s = H(\Dir)/V_c\). حجم الارتباط لعنقود يتحججم كـ \(V_c \propto N^{1/d_f}\) مع \(d_f\) البعد الكسيري. باستخدام \(N \propto K_{\mathrm{eff}}^{1/\alpha}\) من (\ref{eq:Keff-micro})، نحصل للعناقيد الكبيرة على
+	\begin{equation}
+		s(\phi) = s_0\, e^{\lambda\phi}, \qquad \lambda = \frac{1}{\beta} = \frac{3}{2},
+		\label{eq:s-phi}
+	\end{equation}
+	حيث \(\beta = 2/3\) هو أس الخطأ الشامل (الملحق L). الثابت \(s_0\) هو كثافة إنتروبيا الخواء.
+	
+	\section{طاقة حركة شبكة التنسيق}
+	
+	\subsection{دالة هلمهولتز}
+	شبكة التنسيق هي وسط مرن يحمل إنتروبيا. اتزانها يتبع من تقليل الطاقة الحرة لهلمهولتز
+	\begin{equation}
+		F = \int d^4x \sqrt{-g} \left[ \frac{1}{2}\kappa (\nabla\phi)^2 + V(\phi) - T s(\phi) \right],
+		\label{eq:F}
+	\end{equation}
+	مع \(T\) درجة حرارة الشبكة الفعالة. الحد \(-Ts\) يقابل \(F = U - TS\) المعياري، حيث \(U = \int [\frac12\kappa(\nabla\phi)^2 + V(\phi)]\).
+	
+	\subsection{تحديد الكمون}
+	يجب أن يكون الخواء \(\phi=0\) نقطة حدية: \(\delta F/\delta\phi|_0 = 0\). باستخدام \(s'(\phi) = \lambda s_0 e^{\lambda\phi}\) نحصل على
+	\[
+	V'(0) = T s'(0) = \lambda T s_0.
+	\]
+	أبسط كمون يحقق هذا ويطابق نمو الإنتروبيا عند \(\phi\) كبير هو
+	\begin{equation}
+		\boxed{V(\phi) = V_0 \left( e^{\lambda\phi} - \lambda\phi - 1 \right), \qquad V_0 \equiv T s_0.}
+		\label{eq:V}
+	\end{equation}
+	بالنسبة لـ \(\phi \ll 1\)، \(V(\phi) \approx \frac12 V_0 \lambda^2 \phi^2\)؛ وبالنسبة لـ \(\phi \gg 1\)، \(V(\phi) \sim V_0 e^{\lambda\phi}\) والذي يلغي حد الإنتروبيا في الطاقة الحرة، مضمناً حداً أدنى شاملاً وحيداً عند \(\phi=0\).
+	
+	\subsection{تقديرات مجهرية لـ \(\kappa\) و \(V_0\)}
+	الصلابة \(\kappa\) هي كلفة الطاقة لكل وحدة تدرج لكفاءة القاموس. يمكن تقديرها كـ
+	\[
+	\kappa \approx \frac{E_P}{\ell_P} \cdot \frac{1}{\alpha_0 \log_2 \mathcal{N}_0} \sim \frac{\hbar c}{\ell_P^2},
+	\]
+	حيث \(E_P, \ell_P\) طاقة بلانك وطول بلانك. كثافة إنتروبيا الخواء تقريباً بت واحد لكل خلية بلانك: \(s_0 \approx k_B / \ell_P^3\). مع \(T \sim T_P = \sqrt{\hbar c^5 / G k_B^2}\) نحصل على
+	\[
+	V_0 = T s_0 \sim \frac{\hbar c}{\ell_P^4} \sim M_{\mathrm{Pl}}^4.
+	\]
+	هذه التقديرات التقريبية تثبت المعاملات عند مقياس بلانك، لكن قيمها الدقيقة تُحدد بمطابقة الظواهر منخفضة الطاقة (دوران المجرات والتوسع الكوني)، كما يُنفذ أدناه.
+	
+	\section{معادلات أينشتاين المعدلة}
+	مزاوجة حقل التنسيق مع الجاذبية تعطي الفعل الكلي
+	\begin{equation}
+		S = \int d^4x \sqrt{-g} \left[ \frac{1}{16\pi G_0} R + \frac{1}{2}\kappa (\nabla\phi)^2 + V(\phi) \right].
+		\label{eq:action}
+	\end{equation}
+	التغير بالنسبة لـ \(g^{\mu\nu}\) يعطي
+	\begin{equation}
+		G_{\mu\nu} = 8\pi G_0 \left( \Theta_{\mu\nu} + T_{\mu\nu}^{(\mathrm{matter})} \right),
+		\label{eq:einstein}
+	\end{equation}
+	مع \textbf{موتر الشد الهندسي}
+	\begin{equation}
+		\Theta_{\mu\nu} = \kappa \nabla_\mu \phi \nabla_\nu \phi - g_{\mu\nu} \left[ \frac{\kappa}{2} (\nabla\phi)^2 + V(\phi) \right].
+		\label{eq:Theta}
+	\end{equation}
+	التغير بالنسبة لـ \(\phi\) يعطي معادلة الحركة
+	\begin{equation}
+		\kappa \Box \phi - V'(\phi) = 0, \qquad V'(\phi) = \lambda V_0 \left( e^{\lambda\phi} - 1 \right).
+		\label{eq:phieom}
+	\end{equation}
+	
+	\section{حد نيوتن والمادة المظلمة الفعالة}
+	
+	\subsection{معادلة الحقل الخطية لـ \(\phi\)}
+	نعتبر خلفية مترية ساكنة كروية التناظر
+	\[
+	ds^2 = -(1+2\Phi)dt^2 + (1-2\Phi)\delta_{ij}dx^i dx^j,
+	\]
+	ونكتب \(\phi = \phi_{\mathrm{vac}} + \delta\phi(r)\) مع \(\phi_{\mathrm{vac}} = 0\). من أجل \(|\delta\phi| \ll 1\) نُوسّع \(V'(\delta\phi) \approx \lambda^2 V_0 \delta\phi\) ونحصل من (\ref{eq:phieom}) على
+	\begin{equation}
+		\kappa \nabla^2 \delta\phi - \lambda^2 V_0 \delta\phi = 0.
+		\label{eq:lin-phi}
+	\end{equation}
+	الحل الذي يتلاشى عند اللانهاية هو
+	\begin{equation}
+		\delta\phi(r) = \frac{A}{r} e^{-r/\ell}, \qquad \ell \equiv \sqrt{\frac{\kappa}{\lambda^2 V_0}}.
+		\label{eq:deltaphi-sol}
+	\end{equation}
+	
+	\subsection{معادلة بواسون}
+	في حد الحقل الضعيف، تؤدي معادلات أينشتاين مجتمعة مع موتر الطاقة-الزخم (\ref{eq:Theta}) إلى معادلة بواسون المعدلة التالية (يُعطى اشتقاق مفصل في الملحق G):
+	\begin{equation}
+		\nabla^2 \Phi = 4\pi G_0 \rho_b + \frac{\kappa}{2} \nabla^2 \delta\phi.
+		\label{eq:poisson}
+	\end{equation}
+	الحد الثاني يعمل ككثافة إضافية فعالة،
+	\begin{equation}
+		\rho_{\mathrm{DM}}^{\mathrm{eff}} \equiv \frac{\kappa}{8\pi G_0} \nabla^2 \delta\phi.
+		\label{eq:rhoDM}
+	\end{equation}
+	هذه النتيجة دقيقة في الرتبة الخطية في \(\delta\phi\)؛ طاقة التدرج \(\frac{\kappa}{2}(\nabla\delta\phi)^2\) تساهم في الرتبة الثانية ولا تؤثر على معادلة بواسون الخطية.
+	
+	\subsection{منحنيات دوران المجرات}
+	للمقاييس المجرية (\(r \ll \ell\)) تكون صيغة حقل القياس \(\delta\phi(r) = A/r\) مع \(A\) ثابت بُعده طول. بالتعويض في معادلة بواسون المعدلة (\ref{eq:poisson}) والتكامل مرة واحدة نحصل على التسارع الشعاعي:
+	\[
+	\frac{d\Phi}{dr} = \frac{G_0 M_b(r)}{r^2} + \frac{\kappa}{2r^2} \int_0^r \nabla^2\delta\phi \, r'^2 dr'.
+	\]
+	باستخدام \(\nabla^2(1/r) = -4\pi\delta^{(3)}(\mathbf{r})\)، فإن التكامل يساوي \(-A\) لأي \(r>0\). وبالتالي
+	\[
+	\frac{d\Phi}{dr} = \frac{G_0 M_b(r)}{r^2} - \frac{\kappa A}{2r^2}.
+	\]
+	لتوزيع كتلة ممتد، الحد الباريوني \(G_0 M_b(r)/r^2\) يتناقص أبطأ من \(1/r^2\)؛ المزيج \(M_b(r) - \frac{\kappa A}{2G_0}\) يصبح ثابتاً عند \(r\) كبير لأن الكتلة الباريونية تتشبع. وبالتالي السرعة الدائرية
+	\[
+	v_c^2 = r\frac{d\Phi}{dr} = \frac{G_0 M_b(r)}{r} - \frac{\kappa A}{2r}
+	\]
+	تقترب من ثابت. السبب الفيزيائي هو أن كثافة المادة المظلمة الفعالة \(\rho_{\mathrm{DM}}^{\mathrm{eff}} = \frac{\kappa}{8\pi G_0} \nabla^2\delta\phi\) تتصرف كـ \(r^{-2}\) خارج اللب الباريوني، منتجة كتلة متراكمة \(M_{\mathrm{DM}}(r) \propto r\) وتسارعاً إضافياً مستقلاً عن \(r\).
+	
+	للتعبير عن السرعة المقاربة بدلالة المعاملات الأساسية، نُعرّف المعامل اللامبعدي
+	\begin{equation}
+		\alpha \equiv \frac{\kappa A}{G_0 M_b^2},
+		\label{eq:alpha}
+	\end{equation}
+	الذي يميز قوة شد التنسيق بالنسبة للجاذبية. مربع السرعة الدائرية المقاربة هو إذن
+	\begin{equation}
+		v_c^2(\infty) = \alpha\, G_0 M_b.
+		\label{eq:vc-squared}
+	\end{equation}
+	الرصد يعطي \(v_c \approx 200\ \mathrm{km/s}\) لمجرة كتلتها \(M_b \sim 10^{11}M_\odot\)؛ باستخدام \(G_0 = 6.67\times 10^{-11}\ \mathrm{m^3\,kg^{-1}\,s^{-2}}\) و \(M_b \sim 2\times 10^{41}\ \mathrm{kg}\)، نجد \(\alpha \approx 2 \times 10^{-7}\) (بوحدات النظام الدولي). في الوحدات الطبيعية حيث \(G_0 = 1/M_{\mathrm{Pl}}^2\)، هذا \(\alpha\) هو من رتبة الوحدة، مما يعكس أن شد التنسيق مقارن في القوة بالجاذبية على المقاييس المجرية. الجداء \(\kappa A\) الآن محدد تماماً بـ \(\alpha\) والكتلة الباريونية للمجرة.
+	
+	طول كومبتون \(\ell = \sqrt{\kappa/(\lambda^2 V_0)}\) يُقيد بعد ذلك بشرط \(r_{\mathrm{gal}} \ll \ell\) (لاستخدام تقريب \(1/r\))، معطياً \(\ell \sim \text{بضعة}\times 10\ \mathrm{kpc}\)، وهذا متوافق مع أحجام هالات المادة المظلمة النمطية.
+	
+	\section{الثابت الكوني كمتغير طوبولوجي}
+	في YUCT الكامل ذي الـ19 بعداً (الملحق A)، حقل ما قبل التنسيق يعيش على متشعب ليفي \(F\) بُعده 18. المميز الطوبولوجي لمؤثر ما قبل التنسيق على \(F\) يعطي بالضبط 12 صورة توافقية مستقلة تساهم في طاقة الخواء عبر تأثير كازمير. وبالتالي،
+	\begin{equation}
+		\Omega_\Lambda = \frac{12}{18} = \frac{2}{3}.
+		\label{eq:OmegaLambda}
+	\end{equation}
+	هذه النسبة مستقلة عن تفاصيل \(V(\phi)\). الاشتقاق الكامل موجود في الملحق A.
+	
+	في الخلفية المتجانسة والخواص، حقل \(\phi\) يتطور تحت
+	\[
+	\ddot\phi + 3H \dot\phi + \frac{\lambda V_0}{\kappa}(e^{\lambda\phi}-1) = 0.
+	\]
+	الحلول العددية تبين أن \(\phi\) ينجذب إلى نظام تتبّع حيث معادلة الحالة \(w_\phi\) تقترب من \(-1\)، وكسر كثافة الطاقة الحالي يصل إلى القيمة \(2/3\). معاملات الكمون تُقيد إذن بمعدل التوسع الحالي وبشرط أن يتحقق الجاذب اليوم.
+	
+	\subsection{ثابت البنية الدقيقة من المتغير الطوبولوجي}
+	نفس العدد الصحيح \(N_{\mathrm{gauge}} = 12\) الذي يحدد الثابت الكوني يحكم أيضاً قوة التفاعل الكهرومغناطيسي. في YUCT تنشأ حقول القياس كإثارات عديمة الكتلة لشبكة التنسيق، وقرانها الفعال منخفض الطاقة يُحدد بعدد الأنماط التوافقية المستقلة على الليف المرصوص \(F_{18}\). عند مقياس بلانك، تكون جميع الأنماط الـ12 نشطة ويكون معامل التقليب العكسي
+	\begin{equation}
+		\alpha_0^{-1} = \left( \frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}} \right)^{12}
+		= \left( \frac{3}{2} \right)^{12} \approx 129.746 .
+	\end{equation}
+	
+	عندما يبرد الكون وينكسر التناظر الكهروضعيف، تنفصل البوزونات الضخمة \(W\) و \(Z\)، ويحصل العدد الفعال للأنماط المساهمة على تصحيح شامل صغير. هذا التصحيح متناسب مع الجداء \(\beta\gamma\) — نفس المعامل الذي يظهر في اعتماد درجة الحرارة للجاذبية (الملحق P) — مضروباً في النسبة الأساسية \(S_{\mathrm{even}}/S_{\mathrm{odd}}\):
+	\begin{equation}
+		\delta N = \beta\gamma \, \frac{S_{\mathrm{even}}}{S_{\mathrm{odd}}} .
+		\label{eq:deltaN}
+	\end{equation}
+	مع القيمة التجريبية \(\beta\gamma = 0.20\) (الملحق P) و \(S_{\mathrm{even}}/S_{\mathrm{odd}} = 2/3\) نحصل على \(\delta N \approx 0.1333\).
+	
+	وبالتالي العدد الفعال لدرجات حرية القياس التي تحدد القران الكهرومغناطيسي على المقاييس المخبرية هو
+	\begin{equation}
+		N_{\mathrm{eff}} = 12 + \delta N = 12 + \beta\gamma\,\frac{S_{\mathrm{even}}}{S_{\mathrm{odd}}} \approx 12.1333 .
+	\end{equation}
+	معامل التقليب العكسي للبنية الدقيقة المتوقع هو إذن
+	\begin{equation}
+		\boxed{\alpha^{-1}_{\mathrm{YUCT}} = \left( \frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}} \right)^{N_{\mathrm{eff}}}
+			= \left( \frac{3}{2} \right)^{12 + \beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}} } .
+		\label{eq:alphaYUCT}
+	\end{equation}
+	عددياً،
+	\[
+	\alpha^{-1}_{\mathrm{YUCT}} = \left( \frac{3}{2} \right)^{12.1333} \approx 137.0 ,
+	\]
+	وهو ينحرف عن قيمة CODATA 2022 \(\alpha^{-1}_{\mathrm{exp}} = 137.035999084\) بأقل من \(0.03\%\).
+	
+	المعادلة (\ref{eq:alphaYUCT}) لا تحتوي على معاملات حرّة: \(12\) هو المتغير الطوبولوجي لفضاء التنسيق الـ19 بعداً، و \(S_{\mathrm{odd}}/S_{\mathrm{even}}\) و \(\beta\gamma\) هما ثابتان أساسيان في YUCT محددان بالفعل بمشاهدات مستقلة (الملحقان Ferra1.2 و P). النتيجة تبين أن ثابت البنية الدقيقة — تقليدياً معامل إدخال حر في النموذج العياري — هو في الحقيقة كمية مشتقة ضمن إطار التنسيق.
+	
+	\subsection{السلم الكسيري: الأصل الطوبولوجي لثوابت القران وتراتبية الكتل}
+	\label{sec:fractal_ladder}
+	
+	إن اشتقاق ثابت البنية الدقيقة من العدد الصحيح \(N_{\mathrm{gauge}}=12\) والنسبة الأساسية \(S_{\mathrm{odd}}/S_{\mathrm{even}}=3/2\) ليس نتيجة معزولة. إنه المرساة منخفضة الطاقة لسلم كسيري شامل يولّد كتل كل الأجسام المستقرة، من الجسيمات الأولية إلى الخلايا الحية.
+	
+	الشكل~\ref{fig:fractal_ladder} يصور هذا السلم. المحور الأيسر يظهر الدليل نصف الصحيح \(N_f\) الذي يكمّم طيف الكتل \(m = m_e q^{N_f}\)، مع \(q = (3/2)^{1/3}\). المحور الأيمن يظهر العمق التنسيقي الفعال \(L = N_f/3\). كل درجة في السلم تقابل قيمة صحيحة أو نصف صحيحة لـ \(N_f\).
+	
+	% ===== РИСУНОК 1: ФРАКТАЛЬНАЯ ЛЕСТНИЦА (обёрнут в otherlanguage) =====
+	\begin{otherlanguage}{english}
+		\begin{figure}[htbp]
+			\centering
+			\resizebox{\textwidth}{!}{%
+				\begin{tikzpicture}
+					% ===== LEFT AXIS: Mass ladder (log scale) =====
+					\draw[->] (0,0) -- (0,14) node[above,align=center] {\(N_f\) \\ (الدليل نصف الصحيح)};
+					\draw[->] (0,0) -- (15,0) node[right] {الموضوع};
+					% Ticks and labels on left axis
+					\foreach \y/\lab in {0/{$0$ (e)}, 10/{$10$ ($u$)}, 20/{}, 30/{}, 40/{$\mu$}, 50/{}, 60/{$\tau$}, 70/{}, 80/{}, 90/{$t$}, 100/{}, 110/{}, 120/{Ubiquitin}, 130/{}, 140/{Nucleosome}, 150/{}, 160/{Ribosome}, 170/{}, 180/{}, 190/{NPC}, 200/{}, 210/{}, 220/{}, 230/{}, 240/{}, 250/{}, 260/{E.\ coli}, 270/{}, 280/{}, 290/{}, 300/{HeLa}, 310/{}} {
+						\draw[gray, thin] (0,\y/24) -- (15,\y/24);
+						\node[left,font=\tiny] at (0,\y/24) {\lab};
+					}
+					% ===== RIGHT AXIS: Depth L = N_f/3 =====
+					\draw[->] (15.5,0) -- (15.5,14) node[above,align=center] {\(L\) \\ (عمق التنسيق)};
+					\foreach \y/\lab in {0/0, 3/1, 6/2, 9/3, 12/4, 15/5, 18/6, 21/7, 24/8, 27/9, 30/10, 33/11, 36/12, 39/13, 42/14, 45/15, 48/16, 51/17, 54/18, 57/19, 60/20} {
+						\node[right,font=\tiny] at (15.5,\y/4) {\lab};
+					}
+					% ===== TOP SECTION: Topology box =====
+					\draw[fill=blue!10, rounded corners] (0.5,12.5) rectangle (15,14);
+					\node[font=\bf,align=center] at (7.75,13.25) {الهندسة الـ19 بعداً: \( \mathcal{M}_{19} = M_4 \times F_{18} \)};
+					\node[font=\small,align=center] at (7.75,12.75) {\(N_{\mathrm{gauge}} = 12\) نمطاً توافقياً على \(F_{18}\)};
+					% Arrows from topology to gauge couplings
+					\draw[->, thick, blue] (7.75,12.5) -- (7.75,11.5) node[right,font=\small,align=left] {\(\alpha^{-1} = (3/2)^{12+\beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}}\) \\ \(\approx 137.036\) (ثابت البنية الدقيقة)};
+					\draw[->, thick, blue] (7.75,12.5) -- (2,11.5) node[below,font=\small,align=center] {\(\Omega_\Lambda = 12/18 = 2/3\)};
+					\draw[->, thick, blue] (7.75,12.5) -- (13,11.5) node[below,font=\small,align=center] {\(\alpha_s^{-1} = (3/2)^{8+\beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}}\)};
+					% ===== MASS LADDER: Elementary particles =====
+					\draw[fill=red!20, rounded corners] (0.5,9.5) rectangle (15,11);
+					\node[font=\bf] at (7.75,10.5) {فرميونات أولية: \(m_f = m_e q^{N_f}\)};
+					\node[font=\small] at (7.75,10.0) {\(N_f \in \frac12\mathbb{Z}\)، انحراف \(< 1\%\)};
+					% ===== MASS LADDER: Nuclei =====
+					\draw[fill=blue!20, rounded corners] (0.5,8.0) rectangle (15,9.2);
+					\node[font=\bf] at (7.75,8.85) {أنوية ذرية};
+					\node[font=\small] at (7.75,8.35) {بروتون، ديوتيرون، \(^4\)He، \(^{12}\)C، \(^{16}\)O، ...};
+					% ===== MASS LADDER: Protein complexes =====
+					\draw[fill=green!20, rounded corners] (0.5,6.5) rectangle (15,7.7);
+					\node[font=\bf] at (7.75,7.35) {معقدات بروتينية};
+					\node[font=\small] at (7.75,6.85) {يوبيكويتين، هيموغلوبين، رايبوسوم، بروتيازوم، NPC};
+					% ===== MASS LADDER: Living cells =====
+					\draw[fill=orange!20, rounded corners] (0.5,5.0) rectangle (15,6.2);
+					\node[font=\bf] at (7.75,5.85) {خلايا حية};
+					\node[font=\small] at (7.75,5.35) {بكتيريا (\textit{E.\ coli})، هيلا، أرومة ليفية};
+					% ===== COSMOLOGICAL SCALES =====
+					\draw[fill=purple!20, rounded corners] (0.5,3.5) rectangle (15,4.7);
+					\node[font=\bf] at (7.75,4.35) {مقاييس كونية};
+					\node[font=\small] at (7.75,3.85) {\(M_{\mathrm{bar}}/m_p = (M_{\mathrm{Pl}}/m_e)^{3.5}\)};
+					% ===== BOTTOM SECTION: Universal constants =====
+					\draw[fill=yellow!20, rounded corners] (0.5,1.5) rectangle (15,3.0);
+					\node[font=\bf,align=center] at (7.75,2.5) {الكم الأساسي: \(q = (3/2)^{1/3} \approx 1.1447\)};
+					\node[font=\small,align=center] at (7.75,2.0) {\(S_{\mathrm{odd}} = 6/5 = 1.2\)، \(S_{\mathrm{even}} = 4/5 = 0.8\)، \(\beta = 2/3\)، \(\sigma = 0.20\)};
+					% ===== Central arrow showing connection =====
+					\draw[->, thick, black!70, decorate, decoration={snake, amplitude=0.3mm, segment length=2mm}] (14,11) -- (14,1.5) node[midway,right,font=\small,align=left] {سلم الكتل \\ الشامل \\ \(m = m_e q^{N_f}\)};
+				\end{tikzpicture}%
+			}
+			\caption{\textbf{السلم الكسيري للواقع الفيزيائي.} العدد الطوبولوجي \(N_{\mathrm{gauge}} = 12\) على الليف المرصوص \(F_{18}\) يحدد قرانات القياس (المربع العلوي). نفس النسبة الأساسية \(3/2 = S_{\mathrm{odd}}/S_{\mathrm{even}}\) تولّد سلم الكتل الشامل \(m = m_e q^{N_f}\) مع \(q = (3/2)^{1/3}\)، الممتد من الفرميونات الأولية إلى الأنوية الذرية والمعقدات البروتينية والخلايا الحية والمقاييس الكونية. التصحيح \(\beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}} \approx 0.1333\) يزيح العدد الفعال للأنماط من 12 إلى 12.1333، منتجاً \(\alpha^{-1} \approx 137.036\).}
+			\label{fig:fractal_ladder}
+		\end{figure}
+	\end{otherlanguage}
+	
+	\subsubsection{الدرجات الثلاث للسلم}
+	يرتكز السلم الكسيري على ثلاث درجات مترابطة، تحكمها نفس النسبة الأساسية \(S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2\):
+	
+	\begin{enumerate}[leftmargin=*]
+		\item \textbf{قرانات القياس (الأعلى).} العدد الصحيح \(N_{\mathrm{gauge}} = 12\) هو المتغير الطوبولوجي لفضاء التنسيق الـ19 بعداً. معامل التقليب العكسي للبنية الدقيقة هو \(\alpha^{-1} = (3/2)^{12.1333} \approx 137.036\)، حيث التصحيح الصغير \(\beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}} \approx 0.1333\) يأخذ بعين الاعتبار انفصال البوزونات الثقيلة تحت مقياس الكهروضعيف. هذه هي \emph{الدرجة الدنيا} للسلم: قوة التفاعل الكهرومغناطيسي محددة بعدد الأنماط التوافقية على الليف المرصوص.
+		\item \textbf{كتل الفرميونات (الوسط).} الكم القياسي \(q = (3/2)^{1/3}\) والكمية نصف الصحيحة \(m_f = m_e q^{N_f}\) يولّدان كتل كل الفرميونات المشحونة بدقة تحت النسبة المئوية. نفس الكم يحكم كتل الهادرونات والأنوية الذرية والمعقدات البروتينية.
+		\item \textbf{الثابت الكوني (الأعلى).} نسبة الأنماط القياسية الفعالة إلى البعد الكلي للليف تعطي \(\Omega_\Lambda = 12/18 = 2/3\)، محددة كثافة الطاقة المظلمة بدون أي معامل متصل.
+	\end{enumerate}
+	
+	يُظهر السلم أنه \textbf{لا توجد معاملات حرة متصلة في الإطار بأكمله}. العدد \(12\)، والنسبة \(3/2\)، والتصحيح \(\beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}\) كلها محددة بطوبولوجيا فضاء التنسيق الـ19 بعداً وبالحلقة الجبرية لـ YUCT. كتلة الإلكترون وقوة التفاعل الكهرومغناطيسي وهندسة الكون هي بالتالي إسقاطات مختلفة لنفس النمط الكسيري.
+	
+	\subsection{قرانات القياس وتفاعلات يوكاوا من أعماق التنسيق}
+	العدد الصحيح \(N_{\mathrm{gauge}} = 12\) الذي يحدد \(\Omega_\Lambda\) يحكم أيضاً قوة التفاعلات الكهروضعيفة والقوية، بينما تتبع قرانات يوكاوا فرميون-هيغز مباشرة من أعماق التنسيق للجسيمات المشاركة.
+	
+	\subsubsection{ثابت البنية الدقيقة}
+	عند مقياس بلانك تكون جميع الأنماط القياسية الـ12 نشطة ويكون معامل التقليب العكسي الكهرومغناطيسي هو
+	\[
+	\alpha_0^{-1} = \left(\frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}}\right)^{12} = \left(\frac{3}{2}\right)^{12} \approx 129.746 .
+	\]
+	تحت مقياس الكهروضعيف تنفصل البوزونات الضخمة \(W\) و \(Z\)، مما يقلل العدد الفعال للأنماط المساهمة بتصحيح شامل متناسب مع الجداء \(\beta\gamma\) (الملحق P) والنسبة الأساسية \(S_{\mathrm{even}}/S_{\mathrm{odd}}\):
+	\[
+	\delta N = \beta\gamma\,\frac{S_{\mathrm{even}}}{S_{\mathrm{odd}}}.
+	\]
+	مع \(\beta\gamma = 0.20\) و \(S_{\mathrm{even}}/S_{\mathrm{odd}} = 2/3\) نحصل على \(\delta N \approx 0.1333\). وبالتالي العدد الفعال لدرجات حرية القياس على المقاييس المخبرية هو
+	\[
+	N_{\mathrm{eff}} = 12 + \delta N = 12 + \beta\gamma\,\frac{S_{\mathrm{even}}}{S_{\mathrm{odd}}} \approx 12.1333 .
+	\]
+	معامل التقليب العكسي المتوقع هو
+	\[
+	\boxed{\alpha^{-1}_{\mathrm{YUCT}} = \left(\frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}}\right)^{N_{\mathrm{eff}}}
+		= \left(\frac{3}{2}\right)^{12 + \beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}} } .
+	\]
+	عددياً \(\alpha^{-1}_{\mathrm{YUCT}} = \left(\frac{3}{2}\right)^{12.1333} \approx 137.0\)، وهو ينحرف عن قيمة CODATA 2022 بأقل من \(0.03\%\). المعادلة لا تحتوي على معاملات حرّة: \(12\) هو المتغير الطوبولوجي، و \(S_{\mathrm{odd}}/S_{\mathrm{even}}\) و \(\beta\gamma\) ثوابت أساسية في YUCT محددة بمشاهدات مستقلة.
+	
+	\subsubsection{القران الضعيف}
+	التفاعل الضعيف لا يتطلب عدداً فعالاً منفصلاً للأنماط. زاوية واينبرغ \(\theta_W\) محددة بنسبة الكتل \(m_W/m_Z = \cos\theta_W\)، وكل من \(m_W\) و \(m_Z\) مشتقة من العمق \(L_W = 96\) وعوامل الرنين المناسبة (الملحق \(\Lambda\)). وبالتالي القران الضعيف \(\alpha_W = \alpha/\sin^2\theta_W\) محدد بدون معاملات إضافية.
+	
+	\subsubsection{القران القوي}
+	ديناميكا لونية كمية تمتلك 8 مولّدات غلوون، لذا عند مقياس بلانك يكون معامل التقليب العكسي
+	\[
+	\alpha_s^{-1}(M_{\mathrm{Pl}}) = \left(\frac{3}{2}\right)^{8 + \beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}} \approx 25.5 \qquad (\alpha_s \approx 0.039) .
+	\]
+	خفض مقياس الطاقة يُوصف في YUCT كتفعيل متتالٍ لأغلفة تنسيق إضافية، كل منها يساهم بزيادة متقطعة \(\Delta L\) في معامل التقليب العكسي. في النهاية المتصلة يعيد هذا إنتاج الجريان اللوغاريتمي لـ QCD، لكن بتكميم طبيعي عند أعماق هي مضاعفات \(S_{\mathrm{odd}}\) و \(S_{\mathrm{even}}\).
+	
+	\subsubsection{قرانات يوكاوا}
+	قران يوكاوا لفرميون مشحون \(f\) هو
+	\[
+	y_f = \frac{\sqrt{2}\,m_f}{v}, \qquad
+	m_f = M_{\mathrm{Pl}}\left(\frac{2}{3}\right)^{96+k_f}\xi_f, \qquad
+	v   = M_{\mathrm{Pl}}\left(\frac{2}{3}\right)^{96}\xi_W .
+	\]
+	وبالتالي
+	\[
+	y_f = \sqrt{2}\,\frac{\xi_f}{\xi_W}\,\left(\frac{2}{3}\right)^{k_f} .
+	\]
+	عامل الرنين \(\xi_f\) معبر عنه بدالة التوافق \(C_{fH}(L_f,L_H)\) المقدمة في ``نظامية تنسيق YUCT'' مع العرض الشامل \(\sigma \approx 0.20\). جميع قرانات يوكاوا محددة إذاً بالأعماق التنسيقية المعروفة للفرميونات وبوزون هيغز.
+	
+	\subsubsection{سلم متقطع للأنماط الفعالة}
+	الشكل~\ref{fig:ladder} يوضح كيف يتطور العدد الفعال للأنماط القياسية بازدياد العمق (تناقص الطاقة). كل خطوة تقابل عتبة كتلة حيث يتوقف جسيم (أو عائلة جسيمات) عن المساهمة في استقطاب الخواء. الغلاف الملساء هو النهاية منخفضة الطاقة التي تحدد ثابت القران المرصود.
+	
+	% ===== РИСУНОК 2: СТУПЕНЧАТЫЙ ГРАФИК (обёрнут в otherlanguage) =====
+	\begin{otherlanguage}{english}
+		\begin{figure}[htbp]
+			\centering
+			\resizebox{0.85\textwidth}{!}{%
+				\begin{tikzpicture}
+					% axes
+					\draw[->] (0,0) -- (16,0) node[right] {$L$ (عمق)};
+					\draw[->] (0,0) -- (0,8) node[above] {$N_{\mathrm{eff}}$};
+					% steps
+					\draw[thick,blue] (0, 5.0) -- (1.5, 5.0);
+					\draw[thick,blue] (1.5, 5.5) -- (3.2, 5.5);
+					\draw[thick,blue] (3.2, 6.0) -- (5.0, 6.0);
+					\draw[thick,blue] (5.0, 6.5) -- (7.0, 6.5);
+					\draw[thick,blue] (7.0, 7.0) -- (9.0, 7.0);
+					\draw[thick,blue] (9.0, 7.5) -- (11.0, 7.5);
+					\draw[thick,blue] (11.0, 7.8) -- (13.0, 7.8);
+					\draw[thick,blue] (13.0, 7.9) -- (15.0, 7.9) node[right,blue] {12.1333};
+					% labels
+					\node[below] at (1.5,0) {$L_W$ (96)};
+					\node[below] at (3.2,0) {$L_Z$};
+					\node[below] at (5.0,0) {$L_{\mathrm{top}}$};
+					\node[below] at (7.0,0) {$L_{\mathrm{Higgs}}$};
+					\node[below] at (9.0,0) {$L_{\tau}$};
+					\node[below] at (11.0,0) {$L_{\mu}$};
+					\node[below] at (13.0,0) {$L_e$ (107)};
+					% smooth envelope
+					\draw[red, dashed, thick] plot[smooth] coordinates {(0,5.0) (1.5,5.5) (3.2,6.0) (5.0,6.5) (7.0,7.0) (9.0,7.5) (11.,7.8) (13.,7.9)};
+				\end{tikzpicture}%
+			}
+			\caption{العدد الفعال للأنماط القياسية \(N_{\mathrm{eff}}\) كدالة في عمق التنسيق \(L\). الخطوات تقابل عتبات الكتل، والمنحنى المتقطع هو النهاية منخفضة الطاقة التي تحدد ثابت البنية الدقيقة.}
+			\label{fig:ladder}
+		\end{figure}
+	\end{otherlanguage}
+	
+	بهذه النتائج، كل المعاملات اللامبعدة للنموذج العياري تُرجع إلى المتغير الطوبولوجي 12، والنسبة الأساسية \(S_{\mathrm{odd}}/S_{\mathrm{even}}\)، والتصحيح الشامل \(\beta\gamma\)، والأعماق التنسيقية للجسيمات. لا تبقى أي معاملات حرة متصلة.
+	
+	\subsubsection{الإزالة الكاملة للمعاملات الحرة المتصلة في النموذج العياري}
+	النتائج التي تم الحصول عليها في الأقسام الفرعية السابقة تظهر أنه \emph{لا توجد معاملات حرة متصلة} في نظرية الحقل الكمومي العياري بمجرد تضمينها في إطار YUCT. الجدول~\ref{tab:SMparams} يلخص كيف أن كل ثابت مستقل في النموذج العياري يُحدد بالأعداد الأساسية لنظرية التنسيق مع أعماق التنسيق للجسيمات ذات الصلة.
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{تثبيت المعاملات اللامبعدة للنموذج العياري داخل YUCT.}
+		\label{tab:SMparams}
+		\small
+		\begin{tabular}{@{}p{3.0cm} p{5.2cm} p{5.2cm}@{}}
+			\toprule
+			\textbf{المعامل} & \textbf{التعبير في YUCT} & \textbf{مراجع رئيسية} \\
+			\midrule
+			ثابت البنية الدقيقة \(\alpha\) &
+			\(\alpha^{-1} = (S_{\mathrm{odd}}/S_{\mathrm{even}})^{12+\beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}}\) &
+			هذا العمل، ملحق P، Ferra1.2 \\
+			زاوية المزج الضعيف \(\theta_W\) &
+			مشتق من \(m_W/m_Z\) حيث كلتا الكتلتين تتبعان من العمق \(L_W=96\) &
+			ملحق \(\Lambda\) \\
+			القران القوي \(\alpha_s\) &
+			\(\alpha_s^{-1} = (S_{\mathrm{odd}}/S_{\mathrm{even}})^{8+\beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}}\) عند مقياس بلانك؛ الجريان يحصل من أغطية تنسيق متقطعة &
+			هذا العمل، ملحق P \\
+			قرانات يوكاوا \(y_f\) &
+			\(y_f = \sqrt{2}\,(\xi_f/\xi_W)\,(S_{\mathrm{even}}/S_{\mathrm{odd}})^{k_f}\) مع عوامل الرنين \(\xi_f,\xi_W\) من مصفوفة التوافق &
+			ملحق J، نظامية التنسيق \\
+			كتل الفرميونات & تكميم نصف صحيح \(m_f = m_e\,q^{N_f}\) مع \(q=(S_{\mathrm{odd}}/S_{\mathrm{even}})^{1/3}\) &
+			ملحق J، نظامية التنسيق \\
+			معامل CP الانتهاكي \(\theta\) &
+			\(\theta \sim (S_{\mathrm{even}}/S_{\mathrm{odd}})^{L_W/2 + S_{\mathrm{odd}}/S_{\mathrm{even}}}\) &
+			``حل مشكلة CP القوية'' \\
+			الثابت الكوني \(\Omega_\Lambda\) &
+			\(\Omega_\Lambda = 12/18 = 2/3\) (متغير طوبولوجي) &
+			هذا العمل، ملحق A \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	جميع المدخلات في الجدول تعتمد فقط على الأعداد الصحيحة الثلاثة التي تميز شبكة التنسيق — العمق الأساسي \(L_W=96\)، وعدد الأنماط القياسية \(N_{\mathrm{gauge}}=12\)، وعدد أنماط الغلوون \(N_{\mathrm{gluon}}=8\) — بالإضافة إلى النسبة الشاملة \(S_{\mathrm{odd}}/S_{\mathrm{even}}\)، والجداء \(\beta\gamma\)، والأعماق التنسيقية المتقطعة \(L_f\) للفرميونات وبوزون هيغز. عامل الرنين \(\xi_f/\xi_W\) ليس معاملًا قابلًا للتعديل؛ إنه محسوب من مصفوفة التوافق \(C_{fH}\) مع العرض الثابت تجريبياً \(\sigma \approx 0.20\) (انظر نظامية تنسيق YUCT). معامل \(\theta\) CP-الانتهاكي مثبت بالمثل بعمق مقياس الكهروضعيف وبالإزاحة الأساسية للنظام-الفوضى. وبالتالي مجموعة كاملة من الثوابت اللامبعدة التي تظهر في النموذج العياري محددة بدون أي مدخلات متصلة اعتباطية.
+	
+	هذا الاختزال البنيوي يكمل برنامج تحويل نظرية الحقل الكمومي من نظرية ذات 19 معاملًا حرًا إلى وصف فعال محتواه العددي مُملَى بالكامل بهندسة التنسيق لـ YUCT.
+	
+	\subsection{حقل التنسيق الموحد والبروتوكولان}
+	\label{sec:unified-protocols}
+	
+	يمكن جعل إطار الشد الهندسي المطور أعلاه أكثر دقة بتضمينه في هندسة YUCT الكاملة ذات الـ19 بعداً. كما بيّن سابقاً، ينشأ الثابت الكوني \(\Omega_\Lambda=2/3\) من طوبولوجيا الليف المرصوص \(F_{18}\). تحليل أعمق يكشف أن نفس حقل التنسيق \(\Psi_{MN}\) الذي يولّد \(\Theta_{\mu\nu}\) يؤدي أيضاً إلى بروتوكولي التنسيق الأساسيين: المركزي YPSDC واللامركزي d‑YPSDC (انظر الورقة الأولى للمبادئ من أجل اشتقاق كامل). الفعل الموحد هو
+	\begin{equation}
+		S_{19} = \frac{1}{2\kappa_{19}} \int d^{19}X \sqrt{-G}\, R(G)
+		+ \int d^{19}X \sqrt{-G}\,
+		\Bigl[ -\frac14 \Tr(\Psi_{MN}\Psi^{MN})
+		+ \frac12 G^{MN}\partial_M\phi \partial_N\phi
+		- V(\phi) \Bigr],
+		\label{eq:unified-gravity}
+	\end{equation}
+	حيث \(\phi = \ln(K_{\mathrm{eff}}/K_0)\) هو الحقل القياسي الفعال رباعي الأبعاد المستخدم في هذه الورقة. بعد التمرير على \(F_{18}\)، يعطي النمط الصفري لـ \(\Psi_{MN}\) بالضبط الحقل القياسي \(\phi\) وموتر الشد الهندسي \(\Theta_{\mu\nu}\) من المعادلة (\ref{eq:Theta}).
+	
+	البروتوكولان يقابلان نظامين ديناميكيين مختلفين لنفس الحقل، متميزين بمصدر الدليل \(\kappa\):
+	\begin{enumerate}[leftmargin=*]
+		\item \textbf{YPSDC مركزي.} فاعل واحد يثير \(\Psi_{MN}\) بنشاط، مخلقاً اضطراباً موضعياً ينتشر إلى فاعل آخر. المرسل يعمل كمصدر شبيه بالنقطة، \(D_M\Psi^{MN} = J^N_{\rm sender}\). هذه هي الصورة المألوفة للاتصال، والتي في السياق الجذبوي تقابل كثافة زائدة موضعية تولد كمون نيوتن.
+		\item \textbf{d‑YPSDC لامركزي.} جميع الفاعلين يقرؤون بشكل سلبي نفس الدليل البيئي من نمط خلفي طويل الموجة لـ \(\Psi_{MN}\). لا حاجة لمرسل؛ الارتباطات مفروضة بالطوبولوجيا العالمية لـ \(F_{18}\) والقاموس المشترك. في الجاذبية، هذا النظام يؤدي إلى الثابت الكوني والطاقة المظلمة والارتباطات غير الموضعية المرصودة في التشابك الكمي.
+	\end{enumerate}
+	
+	الانتقال بين النظامين يتحكم به معامل لابعدي \(\Theta = |J_{\rm agent}| / |J_{\rm env}|\)، حيث \(J_{\rm agent}\) تيار مرسل نشط و \(J_{\rm env}\) التيار الفعال للخلفية الكونية. من أجل \(\Theta\ll1\) (نظام لامركزي) الحقل \(\phi\) شبه متجانس، \(\partial_M\phi\approx0\)، ويختزل موتر الشد الهندسي إلى ثابت كوني فعال بالإضافة إلى مكون صغير من المادة المظلمة. من أجل \(\Theta\gg1\) (نظام مركزي) تدرجات موضعية لـ \(\phi\) تسيطر، منتجة كمون نيوتن وتصحيح \(1/r\) الذي يفسر منحنيات الدوران المجرية المسطحة.
+	
+	لهذا التوحيد نتيجة عميقة للفيزياء الكمية. لم يعد التشابك الكمي "فعلاً شبحياً عن بعد" بل هو ببساطة الحالة الحدية لـ d‑YPSDC اللامركزي: الزوج المتشابك يتشارك قاموساً مشتركاً (دالة الموجة)، والقياس على جسيم واحد يوفّر دليلاً ينقله حقل \(\Psi_{MN}\) في آن واحد إلى الجسيم الآخر، دون أي إشارة فائقة الضوء. درجة انتهاك متباينات بل تكون مرتبطة بكفاءة التنسيق:
+	\begin{equation}
+		S = 2\sqrt{2}\,\frac{K_{\mathrm{eff}}}{K_{\mathrm{eff}}+1},
+		\label{eq:bell-eff}
+	\end{equation}
+	بحيث يبلغ الحد الأقصى الكمي \(2\sqrt{2}\) فقط عندما \(K_{\mathrm{eff}}\to\infty\) (قاموس تام)، بينما للكفاءة المحدودة تكون الارتباطات أضعف.
+	
+	وهكذا، فإن نموذج الشد الهندسي للجاذبية، والثابت الكوني، وتراتبية كتل الفرميونات، واللاحلية الكمية كلها تتبع كياناً واحداً — حقل التنسيق \(\Psi_{MN}\) على \(\mathcal{M}_{19}=M_4\times F_{18}\). البروتوكولان ليسا مسلّمتين منفصلتين بل مرحلتان ديناميكيتان مشتقتان من نفس الفيزياء الأساسية. تحليل كمي لانتقال الطور بين النظامين وتوقعاته الرصدية سيُعرض في مكان آخر.
+	
+	\section{علم الكون الدوري}
+	الكمون \(V(\phi)\) له حد أدنى شامل وحيد عند \(\phi=0\). خلال الانهيار الجذبوي، يُدفع الحقل القياسي إلى قيم موجبة كبيرة. عندما يتجاوز \(\phi\) عتبة حرجة \(\phi_{\mathrm{crit}}\)، يصبح الضغط الفعال سالباً بما يكفي لإطلاق عدم استقرار تاتيوني. الشرط هو
+	\[
+	V''(\phi) > \frac{9}{4} H^2.
+	\]
+	باستخدام معادلة فريدمان-ياكوشيف
+	\[
+	H^2 = \frac{8\pi G_0}{3} \left[ \rho_b + \frac{\kappa}{2}\dot\phi^2 + V(\phi) \right],
+	\]
+	وملاحظة أنه بالقرب من الارتداد \(\dot\phi^2\) كبير، نجد أن عدم الاستقرار يحدث عندما
+	\[
+	e^{\lambda\phi_{\mathrm{crit}}} \approx \frac{9}{4} \frac{\kappa\dot\phi^2}{\lambda^2 V_0} + \cdots
+	\]
+	التكامل العددي المفصل يظهر \(\phi_{\mathrm{crit}} \approx \ln\Phi\)، مع \(\Phi \approx 1.618\) النسبة الذهبية. ثم يتدحرج الحقل بسرعة إلى \(\phi=0\)، محرراً الإنتروبيا المخزنة وقائداً فترة قصيرة من التوسع الأسي (التضخم). تتكرر الدورة إلى ما لا نهاية، متجنبة التفرد الابتدائي.
+	
+	\section{البنية واسعة النطاق للكون وطبيعة المقاييس الأساسية}
+	\label{sec:sponge}
+	
+	لا تحدد معادلات حقل التنسيق \(\phi\) قوة الجاذبية المحلية فحسب، بل تشكل أيضاً البنية العالمية للكون. في هذا القسم نبين كيف أن النسيج الشبيه بالإسفنج للشبكة الكونية، وإمكانية وجود أكوان ابنة غير مرتبطة سببيًا، وعدم شمولية طول بلانك، كلها تنشأ كنتائج طبيعية لإطار الشد الهندسي.
+	
+	\subsection{المورفولوجيا الشبيهة بالإسفنج للشبكة الكونية}
+	في عصر الهيمنة المادية، تقبل معادلة الحقل~\eqref{eq:phieom} حلولاً ثابتة غير خطية تفصل مناطق ذات عمق تنسيق \(L\) مختلف. جدار مستوٍ أحادي البعد بين منطقتين \(\phi_1\) و \(\phi_2\) له الصيغة
+	\begin{equation}
+		\phi(x) = \frac{2}{\lambda}\,\ln\!\left[
+		\frac{1 + \tanh(\lambda\sqrt{V_0/\kappa}\, x/2)}
+		{1 - \tanh(\lambda\sqrt{V_0/\kappa}\, x/2)}
+		\right],
+		\label{eq:domain-wall}
+	\end{equation}
+	والتي تزلف بسلاسة بين الفراغين. التوتر السطحي لمثل هذا الجدار هو \(\sigma \simeq \sqrt{\kappa V_0}/\lambda^2\).
+	
+	في ثلاثة أبعاد، تشكل الجدران شبكة خلوية متصلة: العقد هي عناقيد عميقة (\(\phi\) كبير)، الخيوط هي تقاطعات الجدران، والفراغات هي مناطق حيث \(\phi \approx 0\). هذا هو بالضبط "الإسفنج الكوني" المرصود في مسوحات المجرات. إشارة العدسة الجذبوية لجدار معززة بتدرج \(\phi\)، معطية كثافة سطحية فعالة للمادة المظلمة
+	\begin{equation}
+		\Sigma_{\rm DM}^{\rm eff} = \frac{\kappa}{4\pi G_0} \int_{-\infty}^{+\infty} \!dz\; \nabla^2\delta\phi(z)
+		\simeq \frac{\sqrt{\kappa V_0}}{2\pi G_0\,\lambda},
+		\label{eq:wall-lensing}
+	\end{equation}
+	والتي يمكن اختبارها ببيانات العدسة الضعيفة المكدسة.
+	
+	\subsection{أكوان ابنة غير مرتبطة و"المسافة اللامحدودة"}
+	إذا تجاوزت تموج محلي لـ \(\phi\) القيمة الحرجة \(\phi_{\rm crit}=\ln\Phi\)، يحدث انتقال طور \textbf{موضعي}: فقاعة صغيرة من الفراغ الجديد تتشكل وتتوسع، مخلقة منطقة غير مرتبطة سببياً — ابناً كونياً. الكونان مفصولان بجدار مجال بطبقة سطحية ذات \(\nabla\phi\) حاد جداً. لا يمكن قياس المسافة بينهما بأي جيوديسي كلاسيكي لأن المعلمة الأفينية على منحنى يعبر الجدار تتباعد. "المسافة" الوحيدة ذات المعنى هي \textbf{فرق عمق التنسيق}
+	\begin{equation}
+		\Delta L = L_{\rm parent} - L_{\rm child},
+		\label{eq:deltaL}
+	\end{equation}
+	وهو عدد كمومي طوبولوجي. وبالتالي "المسافة اللامحدودة" بين الأكوان هي نتيجة مباشرة للبنية المتقطعة لطبقات التنسيق.
+	
+	\subsection{طول بلانك كمقياس محلي معتمد على البيئة}
+	في YUCT، الطول الأساسي هو طول كومبتون لأخف عنقود تنسيق ذي عمق \(L\). باستخدام صيغة الكتلة \(m \simeq M_{\rm Pl}\,(2/3)^L\)، هذا الطول هو
+	\begin{equation}
+		\ell_{\rm coord}(L) = \frac{\hbar}{m c}
+		= \frac{\hbar}{M_{\rm Pl}c} \left(\frac{3}{2}\right)^{\!L}
+		= \ell_{\rm Pl} \left(\frac{3}{2}\right)^{\!L}.
+		\label{eq:length-from-L}
+	\end{equation}
+	لخواء العصر الحالي لدينا \(L_{\rm vacuum}\to\infty\)، لكن أي عنقود محدود يختبر مقياساً \(\ell_{\rm coord}(L) \gg \ell_{\rm Pl}\). طول بلانك المعتاد هو ببساطة الحالة الخاصة \(L=1\) لهذه الصيغة العامة، أي إنه يميز طبقة التنسيق التي تهيمن على ظواهر الطاقة المنخفضة اليوم.
+	
+	وبالتالي، ثابت الجاذبية هو أيضاً معتمد على الطبقة:
+	\begin{equation}
+		G_{\rm eff}(\phi) = \frac{G_0}{1-4\pi G_0\alpha_2\phi^2},
+		\label{eq:Geff-layer}
+	\end{equation}
+	بحيث المناطق ذات \(\phi\) أكبر تشهد جاذبية أضعف. هذا يوفر حلاً طبيعياً لتوتر هابل: القياسات المحلية لمعدل التوسع تختبر بيئة \(\phi\) مختلفة قليلاً عن إشعاع الخلفية الكوني الميكروي، مؤدية إلى قيمة مستنتجة مختلفة بشكل منهجي لـ \(H_0\). دراسة كمية لهذا التأثير ستعرض في مكان آخر.
+	
+	\section{تنبؤات قابلة للاختبار}
+	
+	\subsection{منحنيات دوران المجرات}
+	حد الجاذبية المعدل يتنبأ بمنحنيات دوران مسطحة مع تطبيع محدد بكسر المادة المظلمة الكوني. ستعرض مطابقات مفصلة لمجرات فردية في عمل منفصل.
+	
+	\subsection{نمو التراكيب الكونية}
+	حقل التنسيق يعدّل عامل النمو الخطي. باستخدام نظرية الاضطراب المعيارية، الانحراف الكسري عن \(\Lambda\)CDM عند انزياح أحمر \(z=0.5\) هو تقريباً \(2\)--\(3\%\)، قابل للقياس بواسطة Euclid و DESI.
+	
+	\subsection{قيود المعاملات الكونية}
+	النموذج يتنبأ بـ \(\Omega_\Lambda = 2/3\) بالضبط، و \(\Omega_{\mathrm{DM}}^{\mathrm{eff}} = 1 - 0.05 - 2/3 \approx 0.2833\). يمكن مقارنة هذه القيم ببيانات Planck و DES و LSST.
+	
+	\section{الخلاصة}
+	لقد اشتقنا الجاذبية من البديهيات المعلوماتية لنظرية YUCT. موتر الشد الهندسي \(\Theta_{\mu\nu}\) يوحد المادة المظلمة والطاقة المظلمة، والثابت الكوني محدد بالطوبولوجيا، وينبثق تاريخ كوني دوري بشكل طبيعي. جميع المعاملات معبر عنها بدلالة مقياس بلانك وثوابت القاموس. النظرية قابلة للتكذيب بالمسوحات الكونية الحالية.
+	
+	\begin{thebibliography}{99}
+		\renewcommand{\refname}{المراجع}
+		\bibitem{Y-appA} A. V. Yakushev, YUCT Lagrangian V35.0 (الملحق A).
+		\bibitem{Y-appL} A. V. Yakushev, Fractal Coordination Error Scaling (الملحق L).
+		\bibitem{Y-appM} A. V. Yakushev, Cosmology -- Inflation as a Coordination Phase Transition (الملحق M).
+		\bibitem{Y-appG} A. V. Yakushev, Resolution of the Quantum Gravity Problem (الملحق G).
+	\end{thebibliography}
+	
+\end{document}

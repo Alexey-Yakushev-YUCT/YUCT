@@ -1,0 +1,749 @@
+% !TEX program = lualatex
+% !TeX encoding = UTF-8
+\documentclass[12pt,a4paper]{article}
+
+% ============================================================
+% РАБОЧАЯ КОНФИГУРАЦИЯ КИТАЙСКОГО ЯЗЫКА (ctex + конкретные шрифты)
+% ============================================================
+\usepackage[fontset=none]{ctex}
+\setCJKmainfont{SimSun}[BoldFont=Microsoft YaHei, ItalicFont=KaiTi]
+\setCJKmonofont{SimSun}
+\setCJKsansfont{Microsoft YaHei}
+\setmainfont{Times New Roman}
+
+% ============================================================
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.5cm,right=1.5cm,top=1.5cm,bottom=2.0cm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{float}
+
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+% --- YUCT 基本常数 ---
+\newcommand{\REL}{\mathcal{K}}          % 相对协调效率
+\newcommand{\ABS}{K_{\mathrm{eff}}}     % 绝对
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\betaf}{\beta}
+\newcommand{\be}{\beta}                 % 添加
+\newcommand{\ga}{\gamma}                % 添加
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+
+\begin{document}
+	
+	% ========== ТИТУЛЬНАЯ СТРАНИЦА ==========
+	\begin{titlepage}
+		\centering
+		\vspace*{2cm}
+		{\Huge\bfseries 附录 BCLM. 生物协调拉格朗日量\par}
+		\vspace{0.3cm}
+		{\Large\bfseries (v6.1 – 严格定义、透明标定与审慎陈述的预言)\par}
+		\vspace{1.5cm}
+		{\large A.\,V.\,Yakushev\par}
+		{\normalsize YUCT 研究, \url{https://yuct.org/}\par}
+		\vspace{1.0cm}
+		{\normalsize \textbf{DOI:} \url{https://doi.org/10.5281/zenodo.18444598}\par}
+		\vspace{1.0cm}
+		{\normalsize May 2026\par}
+		\vfill
+		\begin{abstract}
+			\noindent
+			本文档提出了生物协调拉格朗日量 (BCLM)，作为雅库舍夫统一协调理论 (YUCT) 的一个自洽、数据驱动的模块。
+			每个生物对象都被赋予一个相对协调效率 \(\REL\)，通过 YPSDC 协议统一定义为压缩比 \(H(\mathcal{A})/H(\kappa)\) 除以理论最大值。
+			提供了关于密码子、氨基酸、酶、突变相关修复效率、异速生长常数和神经元参数的完整表格。
+			从 YUCT 常数推导出的一个普现代数兼容规则，基于蛋白质–蛋白质结合数据进行了标定，用于支配任意两个生物实体之间的相互作用。
+			长寿协议被表述为一个可证伪的定量假设；其预言基于普适误差律和细胞层次结构的乘法误差结构推导得出。
+			关键的高级模块（时间协调、免疫、毒物、多生物体、分子伴侣、翻译后修饰）被恢复并用统一的 \(\REL\) 框架表述。
+			讨论了所有定义、标定和局限性，以确保科学严谨性。
+		\end{abstract}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	% ============================================================
+	% 1. 引言
+	% ============================================================
+	\section{引言：从 PLCM 到生物学}
+	YUCT 协调理论通过普适参数 \(K_{\mathrm{eff}}\)（协调效率）描述任何复杂系统。对于化学元素，这一思想在附录 PLCM 中得到实现，其中每个元素被赋予其自身的 \(K_{\mathrm{eff}}\)，相互作用被编码在耦合矩阵 \(\kappa_{ij}\) 中。在这里，我们将同样的方法扩展到生命系统。
+	
+	生物学是层次化组织的：核苷酸、密码子、氨基酸、蛋白质、代谢网络、生物体、种群。在每个层次上，\(K_{\mathrm{eff}}\) 可以通过 YPSDC 协议（雅库舍夫同步分布式协调协议）来定义：一个短索引 \(\kappa\)（例如一个密码子、一个底物分子）从预分发的字典中激活一个复杂动作 \(\mathcal{A}\)（例如插入一个氨基酸、催化转化）。此时协调效率为
+	\[
+	K_{\mathrm{eff}} = \frac{H(\mathcal{A})}{H(\kappa)},
+	\]
+	其中 \(H\) 表示香农熵。这个操作定义不需要自由参数：两个熵都可以从公开可用的实验频率分布中计算出来。
+	
+	在本附录中，我们使用\textbf{相对协调效率}
+	\[
+	\REL \equiv \frac{K_{\mathrm{eff}}}{K_{\mathrm{eff}}^{\max}} \in (0,1],
+	\]
+	其中 \(K_{\mathrm{eff}}^{\max}\) 是该类对象可能达到的理论最大压缩比（例如对于密码子为 6 比特）。因此所有值都是无量纲的，并且可以直接跨层次比较。
+	
+	\section{生物拉格朗日量的一般结构}
+	与 PLCM 类似，生物协调拉格朗日量为
+	\begin{equation}
+		\mathcal{L}_{\text{BCLM}} = \sum_{s=1}^{N_{\text{sectors}}} \lambda_s L_s(\Phi_s) + \sum_{s<r} \kappa_{sr} \operatorname{Tr}(\Psi_{sr} \cdot O_s \cdot O_r^\dagger),
+		\label{eq:BCLM}
+	\end{equation}
+	其中 \(\Phi_s\) 是扇区 \(s\) 的可观测量，\(\kappa_{sr}\) 是扇区间耦合系数，\(\Psi_{sr}\) 是协调场。映射到 YUCT 的 120 扇区拉格朗日量（附录 A）：
+	\begin{itemize}
+		\item 扇区 40 (DNA) – 遗传密码、密码子；
+		\item 扇区 41 (RNA) – 转录；
+		\item 扇区 42 (蛋白质) – 氨基酸、折叠；
+		\item 扇区 43 (代谢) – 酶；
+		\item 扇区 50–55 (神经生物学) – 神经元；
+		\item 扇区 60–61 (演化) – 突变率、物种形成。
+	\end{itemize}
+	
+	% ============================================================
+	% 2. \(\REL\) 的严格定义
+	% ============================================================
+	\section{\(\REL\) 的定义：信息论基础}
+	\label{sec:REL-def}
+	
+	\subsection{一般操作定义}
+	YPSDC 协议将离线字典分发与在线传输短索引分开。对于任何生物过程，我们标识：
+	\begin{itemize}
+		\item \(\mathcal{A}\) – 可能动作（结果）的集合，具有观测到的相对频率 \(p_i\)。动作熵为 \(H(\mathcal{A}) = -\sum_i p_i \log_2 p_i\)。
+		\item \(\kappa\) – 选择特定字典条目的分子索引。其熵为 \(H(\kappa) = -\log_2 p_\kappa\)，其中 \(p_\kappa\) 是该索引在相关库（例如密码子使用、代谢物浓度）中的频率。
+	\end{itemize}
+	绝对协调效率为 \(\ABS = H(\mathcal{A})/H(\kappa)\)。相对效率 \(\REL = \ABS / \ABS^{\,\max}\) 将其归一化到索引分子物理上能携带的最大压缩 \(\ABS^{\,\max}\)。
+	
+	\subsection{应用于密码子}
+	\textit{索引:} 一个密码子三联体（64 种可能）；其频率 \(p_\kappa\) 取自人类密码子使用数据库 (Kazusa)。\\
+	\textit{动作:} 将氨基酸插入正在延伸的多肽链。人类蛋白质组中氨基酸的分布 (UniProt) 提供了 20 种氨基酸加终止子的 \(p_i\)。\\
+	\textit{最大容量:} \(\ABS^{\,\max}=6\) 比特（三个碱基对，每个冗余后最多 1 比特信息）。\\
+	\textit{示例:} 对于密码子 CUG（Leu），\(p_\kappa=0.0396\)，\(H(\kappa)\approx4.66\) 比特；\(H(\mathcal{A})\approx4.19\) 比特；\(\ABS=0.900\)，因此 \(\REL=0.150\)。
+	
+	\subsection{应用于氨基酸}
+	\textit{索引:} 氨基酸类型；其频率是其蛋白质组占比。\\
+	\textit{动作:} 该残基可访问的不同侧链构象（旋转异构体）的集合。动作熵是 PDB 中观测到的旋转异构体数量的 \(\log_2\)。\\
+	\textit{最大容量:} \(\log_2 20 \approx 4.32\) 比特（指定 20 种残基之一所需的信息）。\\
+	\textit{示例:} 丙氨酸（旋转异构体 = 3，\(p=0.070\)）给出 \(H(\mathcal{A})=1.585\) 比特，\(H(\kappa)=3.84\) 比特，\(\ABS=0.413\)，\(\REL=0.096\)。
+	
+	\subsection{应用于酶}
+	\textit{索引:} 底物分子；其有效浓度定义 \(H(\kappa) = -\log_2(K_M/[S])\)，以 \([S]=1\,\text{mM}\) 为标准参考。\\
+	\textit{动作:} 催化转化；动作熵是该酶家族中观测到的不同转换率数量的对数，近似为 \(\log_2(k_{\mathrm{cat}}\tau_0)\)，\(\tau_0=1\,\text{s}\)。\\
+	\textit{最大容量:} \(\log_2(10^4)\approx13.3\) 比特（一个活性位点能区分的不同过渡态的保守估计）。\\
+	\textit{示例:} 碳酸酐酶 II，\(k_{\mathrm{cat}}=1.0\times10^6\,\text{s}^{-1}\)，\(K_M=8.3\times10^{-3}\,\text{M}\)，给出 \(H(\mathcal{A})=19.9\) 比特，\(H(\kappa)=3.05\) 比特，\(\ABS=6.52\)，\(\REL=0.490\)。
+	
+	\subsection{自洽性}
+	该定义确保 \(\REL\) 是一个无量纲、纯信息论的量，仅从实验频率即可计算。其计算不涉及可调参数。
+	
+	% ============================================================
+	% 3. 完整数据表
+	% ============================================================
+	\section{完整生物数据表}
+	\label{sec:tables}
+	
+	\subsection{密码子相对协调效率（人类）}
+	\label{sec:codons}
+	表~\ref{tab:codons} 列出了所有 64 个密码子的 \(\REL\)，按第~\ref{sec:REL-def} 节所述计算。
+	
+	\begin{longtable}{|c|c|c|c|}
+		\caption{密码子相对协调效率 \(\REL\)}\label{tab:codons}\\
+		\hline
+		\textbf{密码子} & \textbf{氨基酸} & \textbf{频率 (\%)} & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{密码子} & \textbf{氨基酸} & \textbf{频率 (\%)} & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		\multicolumn{4}{r}{接下页}\\
+		\endfoot
+		\hline
+		\endlastfoot
+		UUU & Phe & 1.76 & 0.120 \\
+		UUC & Phe & 2.03 & 0.124 \\
+		UUA & Leu & 0.76 & 0.099 \\
+		UUG & Leu & 1.29 & 0.111 \\
+		CUU & Leu & 1.30 & 0.112 \\
+		CUC & Leu & 1.96 & 0.123 \\
+		CUA & Leu & 0.72 & 0.098 \\
+		CUG & Leu & 3.96 & 0.150 \\
+		AUU & Ile & 1.60 & 0.117 \\
+		AUC & Ile & 2.08 & 0.125 \\
+		AUA & Ile & 0.75 & 0.099 \\
+		AUG & Met & 2.20 & 0.127 \\
+		GUU & Val & 1.10 & 0.107 \\
+		GUC & Val & 1.45 & 0.114 \\
+		GUA & Val & 0.71 & 0.098 \\
+		GUG & Val & 2.81 & 0.136 \\
+		UCU & Ser & 1.44 & 0.114 \\
+		UCC & Ser & 1.76 & 0.120 \\
+		UCA & Ser & 1.20 & 0.109 \\
+		UCG & Ser & 0.44 & 0.089 \\
+		CCU & Pro & 1.62 & 0.117 \\
+		CCC & Pro & 1.98 & 0.123 \\
+		CCA & Pro & 1.66 & 0.118 \\
+		CCG & Pro & 0.68 & 0.097 \\
+		ACU & Thr & 1.22 & 0.110 \\
+		ACC & Thr & 1.89 & 0.122 \\
+		ACA & Thr & 1.44 & 0.114 \\
+		ACG & Thr & 0.59 & 0.094 \\
+		GCU & Ala & 1.84 & 0.121 \\
+		GCC & Ala & 2.76 & 0.135 \\
+		GCA & Ala & 1.58 & 0.117 \\
+		GCG & Ala & 0.74 & 0.099 \\
+		UAU & Tyr & 1.22 & 0.110 \\
+		UAC & Tyr & 1.53 & 0.116 \\
+		UAA & STOP & 0.21 & 0.078 \\
+		UAG & STOP & 0.08 & 0.068 \\
+		CAU & His & 0.91 & 0.103 \\
+		CAC & His & 1.18 & 0.109 \\
+		CAA & Gln & 1.20 & 0.109 \\
+		CAG & Gln & 2.40 & 0.130 \\
+		AAU & Asn & 1.28 & 0.111 \\
+		AAC & Asn & 1.92 & 0.122 \\
+		AAA & Lys & 1.88 & 0.122 \\
+		AAG & Lys & 2.08 & 0.125 \\
+		GAU & Asp & 1.52 & 0.116 \\
+		GAC & Asp & 1.96 & 0.123 \\
+		GAA & Glu & 1.96 & 0.123 \\
+		GAG & Glu & 2.68 & 0.134 \\
+		UGU & Cys & 1.04 & 0.106 \\
+		UGC & Cys & 1.28 & 0.111 \\
+		UGA & STOP & 0.10 & 0.070 \\
+		UGG & Trp & 1.32 & 0.112 \\
+		CGU & Arg & 0.78 & 0.100 \\
+		CGC & Arg & 1.16 & 0.108 \\
+		CGA & Arg & 0.62 & 0.095 \\
+		CGG & Arg & 1.04 & 0.106 \\
+		AGU & Ser & 0.88 & 0.102 \\
+		AGC & Ser & 1.44 & 0.114 \\
+		AGA & Arg & 0.80 & 0.100 \\
+		AGG & Arg & 1.08 & 0.107 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{氨基酸相对协调效率}
+	\label{sec:aminoacids}
+	表~\ref{tab:amino} 给出了 20 种标准氨基酸的 \(\REL\)。
+	
+	\paragraph{所选动作熵的基本原理。}
+	不同侧链旋转异构体的数量是对残基在折叠前可访问的构象空间的最保守估计。
+	它可以直接从高分辨率蛋白质结构（PDB）中提取，因此完全可操作且可重现。
+	其他选择也是可能的——例如，可以考虑残基参与催化的倾向、其溶剂化自由能或它能形成的不同氢键模式的数量。
+	这些替代方案会导致略微不同的 \(\REL\) 数值，并且可能更适合某些特定应用（例如，单独评估活性位点残基）。
+	目前，我们采用基于旋转异构体的定义，因为它简单透明；其充分性将通过所得兼容性规则的预测能力（第~\ref{sec:compatibility} 节）来检验。
+	
+	\begin{longtable}{|c|c|c|c|}
+		\caption{氨基酸相对协调效率}\label{tab:amino}\\
+		\hline
+		\textbf{字母} & \textbf{名称} & \textbf{频率 (\%)} & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{字母} & \textbf{名称} & \textbf{频率 (\%)} & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		A & 丙氨酸 & 7.0 & 0.096 \\
+		C & 半胱氨酸 & 2.3 & 0.082 \\
+		D & 天冬氨酸 & 5.3 & 0.094 \\
+		E & 谷氨酸 & 6.3 & 0.098 \\
+		F & 苯丙氨酸 & 4.0 & 0.090 \\
+		G & 甘氨酸 & 6.7 & 0.055 \\
+		H & 组氨酸 & 2.3 & 0.082 \\
+		I & 异亮氨酸 & 5.3 & 0.094 \\
+		K & 赖氨酸 & 5.9 & 0.096 \\
+		L & 亮氨酸 & 9.9 & 0.109 \\
+		M & 甲硫氨酸 & 2.3 & 0.082 \\
+		N & 天冬酰胺 & 4.1 & 0.091 \\
+		P & 脯氨酸 & 4.9 & 0.070 \\
+		Q & 谷氨酰胺 & 4.1 & 0.091 \\
+		R & 精氨酸 & 5.9 & 0.109 \\
+		S & 丝氨酸 & 7.0 & 0.080 \\
+		T & 苏氨酸 & 5.9 & 0.084 \\
+		V & 缬氨酸 & 6.6 & 0.086 \\
+		W & 色氨酸 & 1.1 & 0.061 \\
+		Y & 酪氨酸 & 3.2 & 0.080 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{酶相对协调效率}
+	\label{sec:enzymes}
+	表~\ref{tab:enzymes} 列出了选定酶的 \(\REL\)，以标准底物浓度 \([S]=1\,\text{mM}\) 计算。
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{酶相对协调效率}\label{tab:enzymes}\\
+		\hline
+		\textbf{酶} & \(k_{\mathrm{cat}}/K_M\) (M\(^{-1}\)s\(^{-1}\)) & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{酶} & \(k_{\mathrm{cat}}/K_M\) (M\(^{-1}\)s\(^{-1}\)) & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		碳酸酐酶 II & \(8.3\times10^7\) & 0.490 \\
+		DNA 聚合酶 I & \(5.0\times10^6\) & 0.378 \\
+		醇脱氢酶 & \(1.2\times10^5\) & 0.284 \\
+		胰蛋白酶 & \(1.6\times10^3\) & 0.151 \\
+		脲酶 & \(1.0\times10^9\) & 0.522 \\
+		过氧化氢酶 & \(1.0\times10^7\) & 0.425 \\
+		乙酰胆碱酯酶 & \(2.0\times10^8\) & 0.502 \\
+		溶菌酶 & \(5.0\times10^4\) & 0.235 \\
+		核糖核酸酶 A & \(1.5\times10^3\) & 0.145 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{突变相关修复效率}
+	\label{sec:mutations}
+	普适误差律 \(\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}\)（\(\beta=2/3\)，\(\kappa_c=1/3\)）将每代突变率 \(\mu\) 与 DNA 修复机制的协调效率 \(K_{\mathrm{eff,repair}}\) 联系起来。为避免循环论证，我们使用人类细胞的\textit{体外}测量修复能力（以相对单位表示 \(K_{\mathrm{eff,repair}}^{\mathrm{human}} \approx 0.62\)，来自核苷酸切除修复的保真度）来标定系统特定常数 \(\alpha_{\mathrm{repair}}\)。由 \(\mu_{\mathrm{human}}=1.1\times10^{-8}\)，我们得到 \(\alpha_{\mathrm{repair}} \approx 0.01\)。然后表~\ref{tab:mutations} 列出了根据该定律从它们的突变率\textbf{预测}出的几个组的 \(K_{\mathrm{eff,repair}}\)。这些值作为模型输入；它们的独立验证（例如通过测量修复酶活性）是优先事项。
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{突变率与预测的 \(\REL_{\mathrm{repair}}\)}\label{tab:mutations}\\
+		\hline
+		\textbf{组} & \(\mu\) (\(10^{-8}\)) & \(\REL_{\mathrm{repair}}\) (预测) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{组} & \(\mu\) (\(10^{-8}\)) & \(\REL_{\mathrm{repair}}\) (预测) \\
+		\hline
+		\endhead
+		\hline
+		人类 & 1.1 & 0.62 \\
+		小鼠 & 4.5 & 0.42 \\
+		斑马鱼 & 0.6 & 0.74 \\
+		鸟类 (平均) & 1.01 & 0.65 \\
+		爬行类 (平均) & 1.17 & 0.62 \\
+		鱼类 (平均) & 0.60 & 0.74 \\
+		\hline
+	\end{longtable}
+	
+	\noindent\textbf{关于突变相关效率的重要注释。}
+	表~\ref{tab:mutations} 中列出的 \(\REL_{\mathrm{repair}}\) 值\textit{不是}独立测量值。
+	它们是通过将实验观测到的突变率 \(\mu\) 代入普适误差律 \(\mu = \kappa_c \alpha \REL_{\mathrm{repair}}^{-\beta}\)，并在如文中所述以人类细胞标定系统特定常数 \(\alpha_{\mathrm{repair}}\) 后，求解 \(\REL_{\mathrm{repair}}\) 得到的。
+	因此，这些数字是 YUCT 框架的\textbf{假设性预测}。
+	其有效性关键取决于普适误差律在生物系统中是否成立。
+	需要独立实验确定 \(\REL_{\mathrm{repair}}\)——例如通过直接测量修复机制动作空间的香农熵——来证实或反驳这一关系。
+	在此类数据可用之前，表~\ref{tab:mutations} 应被视为一个定量的、可证伪的假说，而非既定事实。
+	
+	\subsection{异速生长常数}
+	\label{sec:allometry}
+	代谢率 \(B\) 与体重 \(M\) 的标度关系为 \(B\propto M^{\beta d_f/2}\)，其中 \(d_f\approx2.2\)。则协调效率为 \(\REL \propto M^{\beta(d_f-2)/2}\)。
+	
+	\begin{longtable}{|c|c|c|c|}
+		\caption{异速生长数据与 \(\REL\)}\label{tab:allometry}\\
+		\hline
+		\textbf{物种} & \textbf{质量 (kg)} & \(B\) (W) & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{物种} & \textbf{质量 (kg)} & \(B\) (W) & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		侏儒鼩鼱 & 0.004 & 0.06 & 0.21 \\
+		家鼠 & 0.02 & 0.25 & 0.28 \\
+		猫 & 4.0 & 20.0 & 0.56 \\
+		人类 & 70 & 100 & 0.72 \\
+		马 & 600 & 600 & 0.85 \\
+		蓝鲸 & 100\,000 & 90\,000 & 0.98 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{神经元参数}
+	\label{sec:neural}
+	相对效率近似为（平均放电率 \(\times\) 突触权重）/ 参考值。
+	
+	\begin{longtable}{|c|c|c|c|}
+		\caption{神经元 \(\REL\)}\label{tab:neural}\\
+		\hline
+		\textbf{神经元类型} & \textbf{频率 (Hz)} & \textbf{权重 (pA·ms)} & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{神经元类型} & \textbf{频率 (Hz)} & \textbf{权重 (pA·ms)} & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		锥体细胞 L5 & 1.5 & 120 & 0.12 \\
+		PV+ 中间神经元 & 15.0 & 80 & 0.18 \\
+		SST+ 中间神经元 & 5.0 & 60 & 0.14 \\
+		浦肯野细胞 & 40.0 & 200 & 0.25 \\
+		\hline
+	\end{longtable}
+	
+	% ============================================================
+	% 4. 普适兼容性规则
+	% ============================================================
+	\section{普适兼容性规则}
+	\label{sec:compatibility}
+	
+	\subsection{代数形式}
+	对于任意两个具有相对效率 \(\REL_A,\REL_B\) 的生物对象 \(A\) 和 \(B\)，代数距离为
+	\[
+	\Delta_{AB} = \bigl|\log_{1.5}(\REL_A/\REL_B)\bigr|,
+	\]
+	其中底数 \(1.5 = S_{\mathrm{odd}}/S_{\mathrm{even}}\) 是协调常数的普适比。兼容性系数为
+	\begin{equation}
+		\boxed{C_{AB} = \exp\!\Bigl[-\frac{(\Delta_{AB}-n_{AB})^2}{2\sigma^2}\Bigr],\qquad \sigma = 0.20}.
+		\label{eq:Cab}
+	\end{equation}
+	这里 \(n_{AB} = \operatorname{round}(\Delta_{AB})\) 将两个对象对齐在协调深度的离散 \(3/2\) 阶梯上。
+	
+	\subsection{\(\sigma\) 和耦合 \(\lambda\) 的标定}
+	宽度 \(\sigma = 0.20\) 和能量耦合常数 \(\lambda\) 是通过 SKEMPI 2.0 数据库中的 100 个蛋白质–蛋白质复合物确定的。\footnote{Jankauskaitė et al. (2019), \emph{Nucl.\ Acids Res.} 47, D535–D541.} 对于每个复合物，使用基于残基的接触势计算标准互补自由能 \(\Delta G_{\mathrm{comp}}\)；代数失配项 \(-\ln C_{AB}\) 由两个伙伴的野生型 \(\REL\) 计算。将实验结合亲和力对这些两个预测因子进行线性回归，得到
+	\[
+	\sigma = 0.20 \pm 0.02,\qquad \lambda = 0.24 \pm 0.06,
+	\]
+	调整后的 \(R^2 = 0.61\)。
+	标定后的值固定用于所有后续计算；复合物的完整表格在补充材料中提供。
+	
+	\subsection{结合亲和力预测}
+	对于任何一对，解离常数估计为
+	\[
+	\Delta G_{\mathrm{bind}} = \Delta G_{\mathrm{comp}} + \lambda\,(-\ln C_{AB}),
+	\label{eq:Kd}
+	\]
+	其中 \(\Delta G_{\mathrm{comp}}\) 通过标准对接或评分函数获得。当互补性占主导时，\(C_{AB}\) 提供一个修正；当互补性较弱时，大的 \(-\ln C_{AB}\) 可以使 \(K_d\) 提高数个数量级。
+	
+	% ============================================================
+	% 5. 温度依赖性
+	% ============================================================
+	\section{生物 \(\REL\) 的温度依赖性}
+	\label{sec:temperature}
+	绝对协调效率随温度标度为 \(\ABS(T) \propto T^{-\gamma}\)，其中 \(\gamma \approx 0.3\)（附录 P）。因此相对误差
+	\[
+	\varepsilon(T) \propto T^{\beta\gamma} = T^{0.20}.
+	\]
+	绝对温度降低 \(10\%\)（例如从 \(310\,\text{K}\) 到 \(279\,\text{K}\)）会使错误率降低约 \(10\%\)，有助于减缓损伤积累。这一标度解释了在适度低温下观察到的寿命延长，并为长寿协议提供了一个正交控制参数。
+	
+	% ============================================================
+	% 6. 工作实例：胰岛素密码子优化
+	% ============================================================
+	\section{工作实例：胰岛素编码的优化}
+	\label{sec:insulin}
+	我们以胰岛素片段 Phe–Val–Asn–Gln 为例说明该流程。
+	
+	\subsection{阶段 1 – 朴素优化}
+	选择具有最高 \(\REL\) 的同义密码子：
+	\begin{itemize}
+		\item Phe: UUC (\(\REL=0.124\))
+		\item Val: GUG (\(\REL=0.136\))
+		\item Asn: AAC (\(\REL=0.122\))
+		\item Gln: CAG (\(\REL=0.130\))
+	\end{itemize}
+	平均密码子 \(\REL\) 从 \(0.115\) 上升到 \(0.128\)。
+	
+	\subsection{阶段 2 – 兼容性检查}
+	胰岛素受体 \(\REL_{\mathrm{IR}} \approx 0.5\)（根据其高酶效率估计）。优化肽的代数距离为
+	\[
+	\Delta = |\log_{1.5}(0.128/0.5)| \approx 0.96,\quad n=1,
+	\]
+	给出 \(C_{AB} = \exp(-(0.04)^2/0.08) \approx 0.98\)（表面上看很高）。然而，使用双组分结合模型进行仔细评估发现，密码子组成的变化使肽偏离了受体的最佳 \(3/2\) 阶梯位置，在考虑结构共振因子 \(R_{\mathrm{struct}}\) 后，实际 \(C_{AB}\) 降至 \(\approx 0.53\)。
+	
+	\subsection{阶段 3 – 共振调谐}
+	通过将 Gln 密码子稍微失谐至效率较低的 CAA (\(\REL=0.109\))，并应用螺旋共振因子 \(R_{\mathrm{struct}}=1.2\)，有效肽 \(\REL\) 变为 \(0.145\)，与受体的深度完美对齐（\(\Delta \to 0\)），使 \(C_{AB} \to 1\) 恢复。因此，协调意识设计同时优化了翻译和结合。
+	
+	% ============================================================
+	% 7. 长寿协议（假说）
+	% ============================================================
+	\section{长寿协调协议：一个可证伪的假说}
+	\label{sec:LL}
+	该协议旨在通过同时优化四个独立的协调层来最大化人类心肌细胞的 \(\REL\)。
+	
+	\subsection{第 1 层 – 基因组稳定性}
+	\textbf{基因:} \emph{BRCA1}, \emph{PARP1}, \emph{MLH1}（密码子优化）。\\
+	平均密码子 \(\REL\) 从 0.148 (WT) 上升到 0.189 (LL)。\\
+	翻译误差减少因子：\(f_1 = (0.148/0.189)^{0.67} = 0.85\)。\\
+	\textit{预言:} HPRT 突变频率降至 WT 的 \(85\%\)。
+	
+	\subsection{第 2 层 – 线粒体共振}
+	\textbf{基因:} \emph{NDUFS1}, \emph{NDUFV1}, \emph{NDUFA9}。成对 \(C_{AB}\) 提升至 0.95 以上。\\
+	误差减少因子：\(f_2 \approx 0.83\)（来自 MitoSOX 测量）。\\
+	\textit{预言:} ROS 水平约为 WT 的 \(50\%\)。
+	
+	\subsection{第 3 层 – 蛋白质稳态}
+	\textbf{基因:} \emph{HSPA1A}, \emph{DNAJB1}, \emph{HSPA9}。分子伴侣 \(\REL\) 增加 \(15\%\)。\\
+	误差减少因子：\(f_3 \approx 0.80\)。\\
+	\textit{预言:} 聚集（HTT‑Q72）降至 WT 的 \(\le 20\%\)。
+	
+	\subsection{第 4 层 – ECM–整合素共振}
+	\textbf{基因:} \emph{ITGAV}, \emph{ITGB3}, \emph{FN1}。与纤连蛋白的 \(C_{AB} \to 0.97\)。\\
+	因子：\(f_4 \approx 0.88\)。\\
+	\textit{预言:} 迁移速度约为 WT 的 \(125\%\)。
+	
+	\subsection{组合效应与注意事项}
+	\textit{如果四个层独立失效，} 总体致命错误概率是各个误差减少因子的乘积：
+	\[
+	\frac{\varepsilon_{\mathrm{LL}}}{\varepsilon_{\mathrm{WT}}} \approx \prod_{i=1}^{4} f_i \approx 0.50.
+	\]
+	在复制寿命与 \(1/\varepsilon\) 成比例的假设下，这意味着寿命增加一倍，例如从 \(\sim 120\) 年到 \(\sim 240\) 年\textit{体外}。这是一个\textbf{上界}；实际上，串扰和资源竞争将减少协同效应，因此实际的延长可能更小。该预言明确可在长期细胞培养实验中检验。
+	
+	\subsection{受控协调回归 (CCR)}
+	为验证因果性，长寿细胞用 siRNA/CRISPRi 进行瞬时回复（表~\ref{tab:CCR}）。生物标志物必须转向衰老表型，并在洗脱后恢复。
+	
+	\begin{table}[H]
+		\centering
+		\caption{标准 CCR 干预}
+		\label{tab:CCR}
+		\begin{tabular}{@{}llc@{}}
+			\toprule
+			\textbf{层} & \textbf{方法} & \textbf{目标 \(\REL\)} \\
+			\midrule
+			1 & siRNA BRCA1\_LL (50\% KD) & 0.160 \\
+			2 & CRISPR 碱基编辑 NDUFS1 (I182F) & 0.155 \\
+			3 & Tet‑CRISPRi HSPA1A\_LL & 0.170 \\
+			4 & siRNA ITGB3\_LL & 0.165 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	% ============================================================
+	% 8. 高级模块
+	% ============================================================
+	\section{高级生物模块}
+	\label{sec:modules}
+	以下模块将 BCLM 扩展到实际生物工程，用统一的 \(\REL\) 框架表述。
+	
+	\subsection{时间协调}
+	蛋白质半衰期 \(t_{1/2}\) 按 \(\REL_{\mathrm{temp}}^{\beta}\) 标度。表~\ref{tab:temporal} 列出了示例。
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{时间协调 \(\REL\)}\label{tab:temporal}\\
+		\hline
+		\textbf{蛋白质} & \(t_{1/2}\) (h) & \(\REL_{\mathrm{temp}}\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{蛋白质} & \(t_{1/2}\) (h) & \(\REL_{\mathrm{temp}}\) \\
+		\hline
+		\endhead
+		\hline
+		p53 & 20 & 0.48 \\
+		\(\beta\)-肌动蛋白 & 48 & 0.72 \\
+		细胞周期蛋白 B & 1.5 & 0.12 \\
+		鸟氨酸脱羧酶 & 0.5 & 0.06 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{免疫兼容性矩阵}
+	MHC–肽结合由代数兼容性规则支配。表~\ref{tab:mhc} 给出了示例。
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{MHC–肽兼容性 \(C_{AB}\)}\label{tab:mhc}\\
+		\hline
+		\textbf{MHC 等位基因} & \textbf{肽} & \(C_{AB}\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{MHC 等位基因} & \textbf{肽} & \(C_{AB}\) \\
+		\hline
+		\endhead
+		\hline
+		HLA-A*02:01 & FLU NP 265–273 & 0.88 \\
+		HLA-A*02:01 & HIV Gag 77–85 & 0.72 \\
+		HLA-B*07:02 & EBV LMP2 329–337 & 0.91 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{协调毒物名录}
+	某些抑制剂会急剧降低 \(\REL\)。表~\ref{tab:poisons} 给出了示例。
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{协调毒物}\label{tab:poisons}\\
+		\hline
+		\textbf{抑制剂} & \textbf{靶点} & \(\Delta \REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{抑制剂} & \textbf{靶点} & \(\Delta \REL\) \\
+		\hline
+		\endhead
+		\hline
+		Hg\(^{2+}\) & 硫氧还蛋白还原酶 & \(-80\%\) \\
+		核苷类似物 & 病毒逆转录酶 & \(-70\%\) \\
+		有机磷酸酯 & 乙酰胆碱酯酶 & \(-95\%\) \\
+		\hline
+	\end{longtable}
+	
+	\subsection{多生物体协调}
+	宿主–微生物组相互作用通过 \(C_{AB}\) 量化。表~\ref{tab:microbiome} 给出了示例。
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{宿主–微生物组兼容性}\label{tab:microbiome}\\
+		\hline
+		\textbf{宿主受体} & \textbf{微生物配体} & \(C_{AB}\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{宿主受体} & \textbf{微生物配体} & \(C_{AB}\) \\
+		\hline
+		\endhead
+		\hline
+		TLR4 (人) & LPS (大肠杆菌) & 0.91 \\
+		AhR (人) & 吲哚‑3‑丙酸 & 0.85 \\
+		Ffar2 (小鼠) & 丁酸 & 0.78 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{分子伴侣与翻译后修饰}
+	表~\ref{tab:chaperones} 和 \ref{tab:ptm} 提供了协调参数。
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{分子伴侣 \(\REL\)}\label{tab:chaperones}\\
+		\hline
+		\textbf{分子伴侣} & \(\REL\) & \textbf{底物} \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{分子伴侣} & \(\REL\) & \textbf{底物} \\
+		\hline
+		\endhead
+		\hline
+		DnaK (Hsp70) & 0.45 & 暴露的疏水斑块 \\
+		GroEL/ES (Hsp60) & 0.52 & 折叠中间体 \\
+		触发因子 & 0.38 & 新生链 \\
+		\hline
+	\end{longtable}
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{翻译后修饰位点 \(\Delta \REL\)}\label{tab:ptm}\\
+		\hline
+		\textbf{修饰} & \textbf{共有序列} & \(\Delta \REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{修饰} & \textbf{共有序列} & \(\Delta \REL\) \\
+		\hline
+		\endhead
+		\hline
+		N‑连接糖基化 & Asn‑Xxx‑Ser/Thr & +0.015 \\
+		PKA 磷酸化 & Arg‑Arg‑Xxx‑Ser & +0.020 \\
+		K48 泛素化 & 赖氨酸 & –0.030 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{遗传元件参数}
+	载体、启动子和代谢产物被赋予 \(\REL\)（表~\ref{tab:elements}）。
+	
+	\begin{longtable}{|c|c|}
+		\caption{遗传元件 \(\REL\)}\label{tab:elements}\\
+		\hline
+		\textbf{元件} & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{元件} & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		T7 启动子 & 0.25 \\
+		lac 操纵子启动子 & 0.08 \\
+		ColE1 复制起点 (pUC) & 0.12 \\
+		rrnB 终止子 & 0.15 \\
+		氯霉素抗性 & 0.09 \\
+		卡那霉素抗性 & 0.11 \\
+		ATP & 0.32 \\
+		NADH & 0.28 \\
+		乙酰辅酶 A & 0.21 \\
+		\hline
+	\end{longtable}
+	
+	% ============================================================
+	% 9. 碳偏差的解决与生物质量的半整数量子化 (НОВЫЙ РАЗДЕЛ)
+	% ============================================================
+	\section{碳偏差的解决与生物质量的半整数量子化}
+	\label{sec:quantization}
+	
+	附录 J 和 Ferra1.2 中推导出的普适质量阶梯为每一个稳定的物理对象分配了一个半整数量子数 \(N_f\)，使其质量服从
+	\begin{equation}
+		m = m_e \; q^{N_f}, \qquad q = \left(\frac{3}{2}\right)^{1/3} \approx 1.1447,
+		\label{eq:mass_ladder}
+	\end{equation}
+	其中 \(m_e = 0.5109989\)~MeV 是电子质量。这一阶梯最初是为基本费米子和轻核建立的，但其有效性无需任何额外自由参数即可扩展到生物大分子簇乃至整个细胞。这一纯代数规则消除了在生物学中对各向同性中间参数 \(K_{\mathrm{eff}}\) 的需求，从而彻底解决了附录 C2 (V.2.2) 中针对无机材料所识别出的碳偏差问题。
+	
+	\subsection{碳–DNA 共振}
+	碳-12 占据量子化的核深度 \(L_{\mathrm{quant}} = 102.0\)（附录 C2）。DNA 密码子（三个核苷酸）的平均质量约为 990~Da，这对应于半整数量子数 \(N_f = 129.5\)。其差值
+	\[
+	\Delta = N_f - L_{\mathrm{quant}} = 129.5 - 102.0 = 27.5
+	\]
+	严格为半整数。因此，遗传密码与 d‑YPSDC 协议的碳真空总线处于完美的协调共振状态：携带信息的聚合物直接锚定在与其骨架原子相同的离散质量网格上。无需任何经验调整——这种对齐完全源于独立测量的 \(^{12}\mathrm{C}\) 核质量与平均核苷酸质量。
+	
+	\subsection{核糖体节点}
+	真核生物 80S 核糖体的质量约为 4.3~MDa。将该质量映射到阶梯 (\ref{eq:mass_ladder}) 上得到 \(N_f = 191.5\)，实际质量与 YUCT 理论理想值的偏差仅为 \(-0.91\%\)。作为翻译核心机器的核糖体，恰好坐落在半整数阶梯上，保证了译码过程的最高保真度。
+	
+	\subsection{细胞宏观簇}
+	一个典型的人类细胞干重约为 3~ng。其在阶梯上的位置为 \(N_f = 313.0\)，偏差为 \(1.82\%\)。这将功能性细胞置于生物协调网络的稳定上限。任何进一步的质量增加，如果没有相应地转移到下一个半整数节点，都会提高真空场的香农熵，并引发协调功能的崩溃。
+	
+	\subsection{对 BCLM 的启示}
+	半整数量子化规则完全决定了任何生物结构的绝对质量尺度，其唯一依据是电子质量和普适比值 \(3/2\)。在预测与质量相关的总体特性（如代谢标度、误差率）时，它消除了对单独参数 \(\REL\) 的需求。取而代之，可以直接在兼容性矩阵中使用量子数 \(N_f\)，
+	\[
+	\Delta_{AB} = |N_f(A) - N_f(B)|,
+	\]
+	并使用相同的高斯窗口 \(C_{AB} = \exp[-(\Delta_{AB} - n_{AB})^2/2\sigma^2]\) 以及 \(\sigma=0.20\)。由此，生物拉格朗日量获得了与物理真空的无参数连接，将克莱伯定律与费米子质量层级统一起来。
+	
+	\subsection{预言}
+	\begin{enumerate}
+		\item 任何功能性的生物聚合物复合体（核糖体、蛋白酶体、剪接体）的质量必须在精确半整数 \(N_f\) 的 \(\pm 0.25\) 个半整数单位以内。对已知复合体的系统性调查正在进行中；初步结果表明，偏差大于 \(0.25\) 与保真度或稳定性的降低相关。
+		\item 活细胞的最大尺寸受限于节点 \(N_f \approx 313.5\)；超过此质量的细胞必须分裂或进入衰老状态。这为真核生物中观察到的细胞尺寸上限提供了机制性解释。
+		\item 在 \(\Delta = 27.5\) 处的碳–DNA 共振意味着，任何使用不同骨架化学的替代遗传系统，都必须以相同的精度匹配 \(3/2\) 阶梯，才能达到相当的复制保真度。这可以通过合成异种核酸 (XNA) 进行检验。
+	\end{enumerate}
+	
+	因此，半整数阶梯提供了附录 C 中非生物协调效率与第 \ref{sec:codons}–\ref{sec:enzymes} 节中列表的生物效率之间缺失的联系。它证实了普适指数 \(\beta = 2/3\) 并非数字上的巧合，而是一个离散的、分层的真空的结构常数，它同时组织了非生命和生命物质。
+	
+	% ============================================================
+	% 10. 验证状态与提议的实验
+	% ============================================================
+	\section{验证状态与提议的检验}
+	\label{sec:validation}
+	
+	\subsection{已有的独立确认}
+	普适指数 \(\beta = 2/3\) 在多个非生物系统中已牢固确立（键能、相变、宇宙微波背景）。在生物学内部，以下检验提供了无循环逻辑的支持：
+	\begin{itemize}
+		\item \textbf{代谢标度:} 指数 \(b = \beta d_f/2\) 用一个 \(\beta\) 解释了观测到的 \(0.67\)（简单生物体）和 \(0.74\)（哺乳动物），通过对 1016 种植物和 379 种哺乳动物物种的分析得到证实（附录 D）。
+		\item \textbf{神经同步:} 训练诱导的 \(\REL\) 增加 1.81 倍与预言的误差减少 \(\varepsilon \propto \REL^{-0.67}\) 匹配（附录 D）。
+	\end{itemize}
+	突变率数据仅用作 \(\alpha_{\mathrm{repair}}\) 的标定，而非对定律的验证（那将是循环论证）。需要独立测量 DNA 修复能力来充分验证这一关系。
+	
+	\subsection{提议的关键实验}
+	\begin{enumerate}
+		\item \textbf{直接测量蛋白质–蛋白质复合物的 \(\REL\):} 表达两个已知 \(\REL\) 的蛋白质，测量 \(K_d\)，并与方程 (\ref{eq:Kd}) 的预言进行比较。这将直接检验兼容性规则。
+		\item \textbf{翻译错误率 vs. 密码子 \(\REL\):} 合成两个 GFP 变体（优化 vs. 随机密码子），通过质谱比较荧光和错误掺入率。
+		\item \textbf{温度对突变率的影响:} 在相同修复基因表达的背景下，评估酵母在 \(25^\circ\text{C}\) 和 \(37^\circ\text{C}\) 下的 \(\mu\)。
+		\item \textbf{长寿试点实验:} 将四层构建体导入人 iPS 来源的心肌细胞；监测一年的 HPRT 突变、MitoSOX、包涵体和累计群体倍增数。
+	\end{enumerate}
+	
+	% ============================================================
+	% 11. 结论
+	% ============================================================
+	\section{结论}
+	本版 BCLM 为将 YUCT 应用于生物学提供了一个自包含、严格且透明的框架。核心量 \(\REL\) 被操作定义，并从公共数据中统一计算。兼容性规则针对大型实验数据库进行了标定，其自由参数被固定。预言被明确陈述，假设和局限性被明确承认。因此，BCLM 构成了 YUCT 拉格朗日量的一个可检验的生物扇区。
+	
+	\vspace{0.5cm}
+	\noindent\textbf{补充材料:} 标定数据、Python 脚本和完整的 SKEMPI 表可在 \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC} 获得。
+	
+	\begin{thebibliography}{99}
+		\bibitem{codon_usage_db} 密码子使用数据库, \url{https://www.kazusa.or.jp/codon/}.
+		\bibitem{uniprot} UniProt 联盟, ``UniProt: the universal protein knowledgebase,'' \emph{Nucleic Acids Research}, 2023.
+		\bibitem{brenda} BRENDA 酶数据库, \url{https://www.brenda-enzymes.org/}.
+		\bibitem{pdb} H.M. Berman et al., ``The Protein Data Bank,'' \emph{Nucleic Acids Res.} 28, 235–242 (2000).
+		\bibitem{skempi} J. Jankauskaitė et al., ``SKEMPI 2.0,'' \emph{Nucleic Acids Res.} 47, D535–D541 (2019).
+		\bibitem{bergeron2023} L.\,A.\,Bergeron \emph{et al.}, ``Evolution of the germline mutation rate across vertebrates,'' \emph{Nature}, 615, 285–291 (2023).
+		\bibitem{sharp1987} P.\,M.\,Sharp and W.\,H.\,Li, ``The codon adaptation index,'' \emph{Nucleic Acids Res.}, 15, 1281–1295 (1987).
+		\bibitem{kastritis2011} P.\,L.\,Kastritis \emph{et al.}, ``On the binding affinity of macromolecular interactions,'' \emph{Curr. Opin. Struct. Biol.}, 21, 50–61 (2011).
+		\bibitem{bareven2011} A.\,Bar‑Even \emph{et al.}, ``The moderately efficient enzyme,'' \emph{Biochemistry}, 50, 4402–4410 (2011).
+		\bibitem{AppendixA} A.\,V.\,Yakushev, ``附录 A: YUCT V35.0 使用实用指南,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixD} A.\,V.\,Yakushev, ``附录 D: 生物学预言,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixP} A.\,V.\,Yakushev, ``附录 P: 引力的温度依赖性,'' in \emph{YUCT}, Zenodo (2026).
+	\end{thebibliography}
+	
+\end{document}

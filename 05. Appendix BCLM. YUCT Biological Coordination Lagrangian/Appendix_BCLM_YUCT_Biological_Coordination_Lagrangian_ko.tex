@@ -1,0 +1,764 @@
+% !TEX program = lualatex
+\documentclass[12pt,a4paper]{article}
+
+% ============================================================
+% 한국어 설정 (polyglossia)
+% ============================================================
+\usepackage{polyglossia}
+\setmainlanguage{korean}
+\setotherlanguage{english}
+
+% ========= 한국어 폰트 =========
+\newfontfamily\hangulfont{Noto Serif CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\hangulfontsf{Noto Sans CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\hangulfonttt{Noto Sans Mono CJK KR}[Script=Hangul, Language=Korean]
+
+% ========= 추가 폰트 (선택적) =========
+\newfontfamily\koreanfont{Noto Serif CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\koreanfonttt{Noto Sans Mono CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\englishfont{Times New Roman}
+\setmonofont{Latin Modern Mono}
+
+% ========= 패키지 =========
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.5cm,right=1.5cm,top=1.5cm,bottom=2.0cm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{float}
+% titlesec는 사용하지 않음 (충돌 방지)
+
+% ========= 섹션 제목 색상 (선택 사항) =========
+\usepackage{sectsty}
+\sectionfont{\color{darkblue}}
+\subsectionfont{\color{darkblue}}
+
+% ========= 색상 정의 =========
+\definecolor{darkblue}{RGB}{0,0,139}
+\definecolor{skyblue}{RGB}{0,102,204}
+\definecolor{gold}{RGB}{255,215,0}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+% --- YUCT 기본 상수 ---
+\newcommand{\REL}{\mathcal{K}}          % 상대 조정 효율
+\newcommand{\ABS}{K_{\mathrm{eff}}}     % 절대
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\betaf}{\beta}
+\newcommand{\be}{\beta}                 % 추가
+\newcommand{\ga}{\gamma}                % 추가
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{2cm}
+		{\Huge\bfseries 부록 BCLM. 생물 조정 라그랑지안\par}
+		\vspace{0.3cm}
+		{\Large\bfseries (v6.1 – 엄격한 정의, 투명한 보정, 신중하게 기술된 예측)\par}
+		\vspace{1.5cm}
+		{\large A.\,V.\,Yakushev\par}
+		{\normalsize YUCT Research, \url{https://yuct.org/}\par}
+		
+		\vspace{1.0cm}
+		{\normalsize \textbf{DOI:} \url{https://doi.org/10.5281/zenodo.18444598}\par}
+		\vspace{1.0cm}
+		{\normalsize 2026년 5월\par}
+		\vfill
+		\begin{abstract}
+			\noindent
+			본 문서는 생물 조정 라그랑지안(BCLM)을 Yakushev 통일 조정 이론(YUCT)의 일관된 데이터 기반 모듈로 제시한다.
+			모든 생물학적 객체에는 YPSDC 프로토콜에 의해 균일하게 정의된 상대 조정 효율 \(\REL\)이 할당된다. 이는 압축비 \(H(\mathcal{A})/H(\kappa)\)를 이론적 최대값으로 정규화한 것이다.
+			코돈, 아미노산, 효소, 돌연변이 관련 복구 효율, allometric 상수, 뉴런 매개변수의 완전한 표를 제공한다.
+			YUCT 상수에서 유도되고 단백질-단백질 결합 데이터에 대해 보정된 보편적 대수 적합성 규칙은 임의의 두 생물학적 개체 간의 상호작용을 지배한다.
+			장수 프로토콜은 반증 가능한 정량적 가설로 공식화되며, 그 예측은 보편적 오차 법칙과 세포 층의 곱셈적 오차 구조로부터 유도된다.
+			주요 고급 모듈(시간 조정, 면역, 독물, 다중 생물체, 샤페론, 번역 후 변형)이 복원되고 통일된 \(\REL\) 프레임워크로 표현된다.
+			과학적 엄격성을 보장하기 위해 모든 정의, 보정, 한계에 대해 논의한다.
+		\end{abstract}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	% ============================================================
+	% 1. 서론: PLCM에서 생물학으로
+	% ============================================================
+	\section{서론: PLCM에서 생물학으로}
+	YUCT 조정 이론은 보편적 매개변수 \(K_{\mathrm{eff}}\)(조정 효율)을 통해 모든 복잡계를 설명한다. 화학 원소의 경우 이 아이디어는 부록 PLCM에서 구현되어 각 원소에 고유한 \(K_{\mathrm{eff}}\)가 할당되고 상호작용이 결합 행렬 \(\kappa_{ij}\)에 부호화되었다. 여기서는 동일한 접근법을 생명 시스템으로 확장한다.
+	
+	생물학은 계층적으로 조직된다: 뉴클레오타이드, 코돈, 아미노산, 단백질, 대사 네트워크, 생물체, 개체군. 각 수준에서 \(K_{\mathrm{eff}}\)는 YPSDC 프로토콜(Yakushev 동기 분산 조정 프로토콜)에 의해 정의될 수 있다: 짧은 인덱스 \(\kappa\)(예: 코돈, 기질 분자)가 사전 분배된 사전으로부터 복잡한 행동 \(\mathcal{A}\)(예: 아미노산 삽입, 촉매 변환)를 활성화한다. 조정 효율은
+	\[
+	K_{\mathrm{eff}} = \frac{H(\mathcal{A})}{H(\kappa)},
+	\]
+	이며, 여기서 \(H\)는 섀넌 엔트로피이다. 이 작동적 정의는 자유 매개변수를 필요로 하지 않는다: 두 엔트로피 모두 공개된 실험적 빈도 분포로부터 계산된다.
+	
+	본 부록에서는 \textbf{상대 조정 효율}
+	\[
+	\REL \equiv \frac{K_{\mathrm{eff}}}{K_{\mathrm{eff}}^{\max}} \in (0,1],
+	\]
+	을 사용한다. 여기서 \(K_{\mathrm{eff}}^{\max}\)는 해당 객체 클래스에 대해 가능한 이론적 최대 압축(예: 코돈의 경우 6비트)이다. 따라서 모든 값은 무차원이며 수준 간 직접 비교 가능하다.
+	
+	\section{생물 라그랑지안의 일반 구조}
+	PLCM과의 유사성에 의해, 생물 조정 라그랑지안은
+	\begin{equation}
+		\mathcal{L}_{\text{BCLM}} = \sum_{s=1}^{N_{\text{sectors}}} \lambda_s L_s(\Phi_s) + \sum_{s<r} \kappa_{sr} \operatorname{Tr}(\Psi_{sr} \cdot O_s \cdot O_r^\dagger),
+		\label{eq:BCLM}
+	\end{equation}
+	로 주어진다. 여기서 \(\Phi_s\)는 섹터 \(s\)의 관측량, \(\kappa_{sr}\)은 섹터 간 결합 계수, \(\Psi_{sr}\)은 조정 장이다. 주요 작업은 각 생물학적 객체의 \(\REL\)을 계산하고 적합성 행렬 \(C_{AB}\)를 구축하는 것이다. 120 섹터 YUCT 라그랑지안(부록 A)으로의 사상은 다음과 같다:
+	\begin{itemize}
+		\item 섹터 40 (DNA) – 유전 코드, 코돈;
+		\item 섹터 41 (RNA) – 전사;
+		\item 섹터 42 (단백질) – 아미노산, 폴딩;
+		\item 섹터 43 (대사) – 효소;
+		\item 섹터 50–55 (신경생물학) – 뉴런;
+		\item 섹터 60–61 (진화) – 돌연변이율, 종분화.
+	\end{itemize}
+	
+	% ============================================================
+	% 2. \(\REL\)의 정의: 정보 이론적 기초
+	% ============================================================
+	\section{\(\REL\)의 정의: 정보 이론적 기초}
+	\label{sec:REL-def}
+	
+	\subsection{일반적 작동 정의}
+	YPSDC 프로토콜은 오프라인 사전 배포와 온라인 짧은 인덱스 전송을 분리한다. 임의의 생물학적 과정에 대해 우리는 다음을 식별한다:
+	\begin{itemize}
+		\item \(\mathcal{A}\) – 가능한 행동(결과)의 집합으로, 관찰된 상대 빈도 \(p_i\)를 갖는다. 행동 엔트로피는 \(H(\mathcal{A}) = -\sum_i p_i \log_2 p_i\)이다.
+		\item \(\kappa\) – 특정 사전 항목을 선택하는 분자 인덱스. 그 엔트로피는 \(H(\kappa) = -\log_2 p_\kappa\)이며, 여기서 \(p_\kappa\)는 해당 풀(예: 코돈 사용 빈도, 대사산물 농도)에서 그 인덱스의 빈도이다.
+	\end{itemize}
+	절대 조정 효율은 \(\ABS = H(\mathcal{A})/H(\kappa)\)이다. 상대 효율 \(\REL = \ABS / \ABS^{\,\max}\)는 이것을 인덱스 분자가 물리적으로 운반할 수 있는 최대 압축 \(\ABS^{\,\max}\)으로 정규화한다.
+	
+	\subsection{코돈에의 응용}
+	\textit{인덱스:} 코돈 삼중체(64가지 가능성); 그 빈도 \(p_\kappa\)는 인간 코돈 사용 데이터베이스(Kazusa)에서 가져온다.\\
+	\textit{행동:} 성장 중인 폴리펩타이드 사슬에 아미노산이 삽입되는 것. 인간 프로테옴의 아미노산 분포(UniProt)는 20개 아미노산과 종결 코돈에 대한 \(p_i\)를 제공한다.\\
+	\textit{최대 용량:} \(\ABS^{\,\max}=6\) 비트(3염기쌍, 중복성을 제외하고 각각 최대 1비트 정보).\\
+	\textit{예:} 코돈 CUG (Leu)의 경우 \(p_\kappa=0.0396\), \(H(\kappa)\approx4.66\) 비트; \(H(\mathcal{A})\approx4.19\) 비트; \(\ABS=0.900\), 따라서 \(\REL=0.150\).
+	
+	\subsection{아미노산에의 응용}
+	\textit{인덱스:} 아미노산 유형; 그 빈도는 프로테옴 내 비율이다.\\
+	\textit{행동:} 그 잔기가 접근할 수 있는 다른 측쇄 형태(로타머)의 집합. 행동 엔트로피는 PDB에서 관찰된 로타머 수의 \(\log_2\)이다.\\
+	\textit{최대 용량:} \(\log_2 20 \approx 4.32\) 비트(20개 잔기 중 하나를 지정하는 데 필요한 정보).\\
+	\textit{예:} 알라닌(로타머 수=3, \(p=0.070\))은 \(H(\mathcal{A})=1.585\) 비트, \(H(\kappa)=3.84\) 비트, \(\ABS=0.413\), \(\REL=0.096\)을 제공한다.
+	
+	\subsection{효소에의 응용}
+	\textit{인덱스:} 기질 분자; 유효 농도는 \(H(\kappa) = -\log_2(K_M/[S])\)를 정의하며, \([S]=1\,\text{mM}\)을 표준 기준으로 삼는다.\\
+	\textit{행동:} 촉매 변환; 행동 엔트로피는 효소 패밀리에서 관찰된 식별 가능한 회전율의 로그이며, \(\log_2(k_{\mathrm{cat}}\tau_0)\)(\(\tau_0=1\,\text{s}\))로 근사된다.\\
+	\textit{최대 용량:} \(\log_2(10^4)\approx13.3\) 비트(활성 부위가 식별할 수 있는 다른 전이 상태 수의 보수적 추정).\\
+	\textit{예:} 탄산무수화효소 II, \(k_{\mathrm{cat}}=1.0\times10^6\,\text{s}^{-1}\), \(K_M=8.3\times10^{-3}\,\text{M}\)은 \(H(\mathcal{A})=19.9\) 비트, \(H(\kappa)=3.05\) 비트, \(\ABS=6.52\), \(\REL=0.490\)을 제공한다.
+	
+	\subsection{일관성}
+	이 정의는 \(\REL\)이 무차원이고 순수하게 정보 이론적인 양이며, 실험적 빈도만으로 계산 가능함을 보장한다. 그 계산에는 조정 가능한 매개변수가 전혀 들어가지 않는다.
+	
+	% ============================================================
+	% 3. 완전한 생물학적 데이터 표
+	% ============================================================
+	\section{완전한 생물학적 데이터 표}
+	\label{sec:tables}
+	
+	\subsection{코돈의 상대 조정 효율 (인간)}
+	\label{sec:codons}
+	표~\ref{tab:codons}는 섹션~\ref{sec:REL-def}에서 설명된 대로 계산된 전체 64개 코돈의 \(\REL\)을 나열한다.
+	
+	\begin{longtable}{|c|c|c|c|}
+		\caption{코돈의 상대 조정 효율 \(\REL\)}\label{tab:codons}\\
+		\hline
+		\textbf{코돈} & \textbf{AA} & \textbf{빈도 (\%)} & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{코돈} & \textbf{AA} & \textbf{빈도 (\%)} & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		\multicolumn{4}{r}{다음 페이지에서 계속}\\
+		\endfoot
+		\hline
+		\endlastfoot
+		UUU & Phe & 1.76 & 0.120 \\
+		UUC & Phe & 2.03 & 0.124 \\
+		UUA & Leu & 0.76 & 0.099 \\
+		UUG & Leu & 1.29 & 0.111 \\
+		CUU & Leu & 1.30 & 0.112 \\
+		CUC & Leu & 1.96 & 0.123 \\
+		CUA & Leu & 0.72 & 0.098 \\
+		CUG & Leu & 3.96 & 0.150 \\
+		AUU & Ile & 1.60 & 0.117 \\
+		AUC & Ile & 2.08 & 0.125 \\
+		AUA & Ile & 0.75 & 0.099 \\
+		AUG & Met & 2.20 & 0.127 \\
+		GUU & Val & 1.10 & 0.107 \\
+		GUC & Val & 1.45 & 0.114 \\
+		GUA & Val & 0.71 & 0.098 \\
+		GUG & Val & 2.81 & 0.136 \\
+		UCU & Ser & 1.44 & 0.114 \\
+		UCC & Ser & 1.76 & 0.120 \\
+		UCA & Ser & 1.20 & 0.109 \\
+		UCG & Ser & 0.44 & 0.089 \\
+		CCU & Pro & 1.62 & 0.117 \\
+		CCC & Pro & 1.98 & 0.123 \\
+		CCA & Pro & 1.66 & 0.118 \\
+		CCG & Pro & 0.68 & 0.097 \\
+		ACU & Thr & 1.22 & 0.110 \\
+		ACC & Thr & 1.89 & 0.122 \\
+		ACA & Thr & 1.44 & 0.114 \\
+		ACG & Thr & 0.59 & 0.094 \\
+		GCU & Ala & 1.84 & 0.121 \\
+		GCC & Ala & 2.76 & 0.135 \\
+		GCA & Ala & 1.58 & 0.117 \\
+		GCG & Ala & 0.74 & 0.099 \\
+		UAU & Tyr & 1.22 & 0.110 \\
+		UAC & Tyr & 1.53 & 0.116 \\
+		UAA & STOP & 0.21 & 0.078 \\
+		UAG & STOP & 0.08 & 0.068 \\
+		CAU & His & 0.91 & 0.103 \\
+		CAC & His & 1.18 & 0.109 \\
+		CAA & Gln & 1.20 & 0.109 \\
+		CAG & Gln & 2.40 & 0.130 \\
+		AAU & Asn & 1.28 & 0.111 \\
+		AAC & Asn & 1.92 & 0.122 \\
+		AAA & Lys & 1.88 & 0.122 \\
+		AAG & Lys & 2.08 & 0.125 \\
+		GAU & Asp & 1.52 & 0.116 \\
+		GAC & Asp & 1.96 & 0.123 \\
+		GAA & Glu & 1.96 & 0.123 \\
+		GAG & Glu & 2.68 & 0.134 \\
+		UGU & Cys & 1.04 & 0.106 \\
+		UGC & Cys & 1.28 & 0.111 \\
+		UGA & STOP & 0.10 & 0.070 \\
+		UGG & Trp & 1.32 & 0.112 \\
+		CGU & Arg & 0.78 & 0.100 \\
+		CGC & Arg & 1.16 & 0.108 \\
+		CGA & Arg & 0.62 & 0.095 \\
+		CGG & Arg & 1.04 & 0.106 \\
+		AGU & Ser & 0.88 & 0.102 \\
+		AGC & Ser & 1.44 & 0.114 \\
+		AGA & Arg & 0.80 & 0.100 \\
+		AGG & Arg & 1.08 & 0.107 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{아미노산의 상대 조정 효율}
+	\label{sec:aminoacids}
+	표~\ref{tab:amino}는 20가지 표준 아미노산의 \(\REL\)을 보여준다.
+	
+	\subsubsection*{선택된 행동 엔트로피의 근거}
+	다른 측쇄 로타머의 수는 폴딩 전에 잔기가 접근할 수 있는 형태 공간의 가장 보수적인 추정치이다.
+	이는 고해상도 단백질 구조(PDB)에서 직접 추출할 수 있으므로 완전히 작동 가능하고 재현 가능하다.
+	다른 선택도 가능하다 – 예를 들어, 촉매 참여 경향, 용매화 자유 에너지, 형성할 수 있는 다른 수소 결합 패턴의 수를 포함할 수 있다.
+	이러한 대안은 \(\REL\)의 수치를 약간 변경하며 특정 전문 응용(예: 활성 부위 잔기를 별도로 평가)에 더 적합할 수 있다.
+	여기서는 단순성과 투명성 때문에 로타머 기반 정의를 채택한다; 그 적절성은 결과적인 적합성 규칙(섹션~\ref{sec:compatibility})의 예측력에 의해 테스트될 것이다.
+	
+	\begin{longtable}{|c|c|c|c|}
+		\caption{아미노산의 상대 조정 효율}\label{tab:amino}\\
+		\hline
+		\textbf{문자} & \textbf{이름} & \textbf{빈도 (\%)} & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{문자} & \textbf{이름} & \textbf{빈도 (\%)} & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		A & 알라닌 & 7.0 & 0.096 \\
+		C & 시스테인 & 2.3 & 0.082 \\
+		D & 아스파르트산 & 5.3 & 0.094 \\
+		E & 글루탐산 & 6.3 & 0.098 \\
+		F & 페닐알라닌 & 4.0 & 0.090 \\
+		G & 글리신 & 6.7 & 0.055 \\
+		H & 히스티딘 & 2.3 & 0.082 \\
+		I & 이소류신 & 5.3 & 0.094 \\
+		K & 라이신 & 5.9 & 0.096 \\
+		L & 류신 & 9.9 & 0.109 \\
+		M & 메티오닌 & 2.3 & 0.082 \\
+		N & 아스파라긴 & 4.1 & 0.091 \\
+		P & 프롤린 & 4.9 & 0.070 \\
+		Q & 글루타민 & 4.1 & 0.091 \\
+		R & 아르기닌 & 5.9 & 0.109 \\
+		S & 세린 & 7.0 & 0.080 \\
+		T & 트레오닌 & 5.9 & 0.084 \\
+		V & 발린 & 6.6 & 0.086 \\
+		W & 트립토판 & 1.1 & 0.061 \\
+		Y & 티로신 & 3.2 & 0.080 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{효소의 상대 조정 효율}
+	\label{sec:enzymes}
+	표~\ref{tab:enzymes}는 기질 농도 \([S]=1\,\text{mM}\)에서 계산된 선택된 효소의 \(\REL\)을 나열한다.
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{효소의 상대 조정 효율}\label{tab:enzymes}\\
+		\hline
+		\textbf{효소} & \(k_{\mathrm{cat}}/K_M\) (M\(^{-1}\)s\(^{-1}\)) & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{효소} & \(k_{\mathrm{cat}}/K_M\) (M\(^{-1}\)s\(^{-1}\)) & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		탄산무수화효소 II & \(8.3\times10^7\) & 0.490 \\
+		DNA 중합효소 I & \(5.0\times10^6\) & 0.378 \\
+		알코올 탈수소효소 & \(1.2\times10^5\) & 0.284 \\
+		트립신 & \(1.6\times10^3\) & 0.151 \\
+		우레아제 & \(1.0\times10^9\) & 0.522 \\
+		카탈라제 & \(1.0\times10^7\) & 0.425 \\
+		아세틸콜린에스테라제 & \(2.0\times10^8\) & 0.502 \\
+		리소자임 & \(5.0\times10^4\) & 0.235 \\
+		리보뉴클레아제 A & \(1.5\times10^3\) & 0.145 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{돌연변이 관련 복구 효율}
+	\label{sec:mutations}
+	보편 오차 법칙 \(\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}\) (\(\beta=2/3\), \(\kappa_c=1/3\))은 세대당 돌연변이율 \(\mu\)를 DNA 복구 기계의 조정 효율 \(K_{\mathrm{eff,repair}}\)와 관련시킨다. 순환 논리를 피하기 위해, 시스템 특정 상수 \(\alpha_{\mathrm{repair}}\)를 인간 세포의 \textit{in vitro} 측정된 복구 능력(뉴클레오타이드 절제 복구의 충실도에서 유도된 상대 단위의 \(K_{\mathrm{eff,repair}}^{\mathrm{human}} \approx 0.62\))을 사용하여 보정한다. \(\mu_{\mathrm{human}}=1.1\times10^{-8}\)을 사용하여 \(\alpha_{\mathrm{repair}} \approx 0.01\)을 얻는다. 표~\ref{tab:mutations}는 이 법칙이 성립한다는 가정 하에 각 돌연변이율로부터 \textbf{예측된} 여러 그룹의 \(K_{\mathrm{eff,repair}}\)를 나열한다. 이 값들은 모델 입력이며, 그 독립적 검증(예: 복구 효소 활성 측정)은 우선 순위이다.
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{돌연변이율과 예측된 \(\REL_{\mathrm{repair}}\)}\label{tab:mutations}\\
+		\hline
+		\textbf{그룹} & \(\mu\) (\(10^{-8}\)) & \(\REL_{\mathrm{repair}}\) (예측) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{그룹} & \(\mu\) (\(10^{-8}\)) & \(\REL_{\mathrm{repair}}\) (예측) \\
+		\hline
+		\endhead
+		\hline
+		인간 & 1.1 & 0.62 \\
+		생쥐 & 4.5 & 0.42 \\
+		제브라피쉬 & 0.6 & 0.74 \\
+		조류 (평균) & 1.01 & 0.65 \\
+		파충류 (평균) & 1.17 & 0.62 \\
+		어류 (평균) & 0.60 & 0.74 \\
+		\hline
+	\end{longtable}
+	
+	\noindent\textbf{돌연변이 관련 효율에 관한 중요 참고.}
+	표~\ref{tab:mutations}에 나열된 \(\REL_{\mathrm{repair}}\) 값은 독립적인 측정값이 \emph{아니다}.
+	이들은 실험적으로 관찰된 돌연변이율 \(\mu\)를 보편 오차 법칙 \(\mu = \kappa_c \alpha \REL_{\mathrm{repair}}^{-\beta}\)에 대입하고, 본문에서 설명한 대로 인간 세포에서 시스템 특정 상수 \(\alpha_{\mathrm{repair}}\)를 보정한 후 \(\REL_{\mathrm{repair}}\)에 대해 풀어서 얻어졌다.
+	따라서 이 숫자들은 YUCT 프레임워크의 \textbf{가설적 예측}이다.
+	그 타당성은 보편 오차 법칙이 생물학적 시스템에서 옳은지 여부에 결정적으로 의존한다.
+	\(\REL_{\mathrm{repair}}\)의 독립적인 실험적 결정 — 예를 들어 복구 기계의 행동 공간의 섀넌 엔트로피를 직접 측정함으로써 — 이 관계를 확인하거나 반증하는 데 필요하다.
+	그러한 데이터를 사용할 수 있을 때까지, 표~\ref{tab:mutations}는 확립된 사실이 아니라 정량적이고 반증 가능한 가설로 간주되어야 한다.
+	
+	\subsection{Allometric 상수}
+	\label{sec:allometry}
+	대사율 \(B\)는 체중 \(M\)과 \(B\propto M^{\beta d_f/2}\)로 스케일하며, 여기서 \(d_f\approx2.2\)이다. 조정 효율은 \(\REL \propto M^{\beta(d_f-2)/2}\)이다.
+	
+	\begin{longtable}{|c|c|c|c|}
+		\caption{Allometric 데이터와 \(\REL\)}\label{tab:allometry}\\
+		\hline
+		\textbf{종} & \textbf{질량 (kg)} & \(B\) (W) & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{종} & \textbf{질량 (kg)} & \(B\) (W) & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		피그미뒤쥐 & 0.004 & 0.06 & 0.21 \\
+		집쥐 & 0.02 & 0.25 & 0.28 \\
+		고양이 & 4.0 & 20.0 & 0.56 \\
+		인간 & 70 & 100 & 0.72 \\
+		말 & 600 & 600 & 0.85 \\
+		대왕고래 & 100\,000 & 90\,000 & 0.98 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{뉴런 매개변수}
+	\label{sec:neural}
+	상대 효율은 (평균 발화율 × 시냅스 가중치) / 기준값으로 근사된다.
+	
+	\begin{longtable}{|c|c|c|c|}
+		\caption{뉴런의 \(\REL\)}\label{tab:neural}\\
+		\hline
+		\textbf{뉴런 유형} & \textbf{빈도 (Hz)} & \textbf{가중치 (pA·ms)} & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{뉴런 유형} & \textbf{빈도 (Hz)} & \textbf{가중치 (pA·ms)} & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		피라미드 L5 & 1.5 & 120 & 0.12 \\
+		중간뉴런 PV+ & 15.0 & 80 & 0.18 \\
+		중간뉴런 SST+ & 5.0 & 60 & 0.14 \\
+		푸르키녜 세포 & 40.0 & 200 & 0.25 \\
+		\hline
+	\end{longtable}
+	
+	% ============================================================
+	% 4. 보편적 적합성 규칙
+	% ============================================================
+	\section{보편적 적합성 규칙}
+	\label{sec:compatibility}
+	
+	\subsection{대수적 공식화}
+	임의의 두 생물학적 객체 \(A\)와 \(B\)가 상대 효율 \(\REL_A,\REL_B\)를 가질 때, 대수적 거리는
+	\[
+	\Delta_{AB} = \bigl|\log_{1.5}(\REL_A/\REL_B)\bigr|,
+	\]
+	로 주어진다. 여기서 밑 \(1.5 = S_{\mathrm{odd}}/S_{\mathrm{even}}\)은 조정 상수의 보편적 비율이다. 적합성 계수는
+	\begin{equation}
+		\boxed{C_{AB} = \exp\!\Bigl[-\frac{(\Delta_{AB}-n_{AB})^2}{2\sigma^2}\Bigr],\qquad \sigma = 0.20}.
+		\label{eq:Cab}
+	\end{equation}
+	여기서 \(n_{AB} = \operatorname{round}(\Delta_{AB})\)는 두 객체를 조정 깊이의 이산적 \(3/2\) 사다리 위에 정렬한다.
+	
+	\subsection{\(\sigma\)와 결합 \(\lambda\)의 보정}
+	폭 \(\sigma = 0.20\)과 에너지 결합 상수 \(\lambda\)는 SKEMPI 2.0 데이터베이스의 100개 단백질-단백질 복합체 세트로부터 결정되었다.\footnote{Jankauskaitė et al. (2019), \emph{Nucl.\ Acids Res.} 47, D535–D541.} 각 복합체에 대해, 표준 상보적 자유 에너지 \(\Delta G_{\mathrm{comp}}\)는 잔기 기반 접촉 포텐셜로 계산되었고; 대수적 불일치 항 \(-\ln C_{AB}\)는 야생형 파트너의 \(\REL\)로부터 평가되었다. 실험적 결합 친화도의 이 두 예측 인자에 대한 선형 회귀는
+	\[
+	\sigma = 0.20 \pm 0.02,\qquad \lambda = 0.24 \pm 0.06,
+	\]
+	을 주었으며, 조정된 \(R^2 = 0.61\)이었다.
+	보정된 값은 모든 후속 계산에 대해 고정된다; 복합체의 전체 표는 보충 자료에 제공된다.
+	
+	\subsection{결합 친화도 예측}
+	임의의 쌍에 대해, 해리 상수는
+	\[
+	\Delta G_{\mathrm{bind}} = \Delta G_{\mathrm{comp}} + \lambda\,(-\ln C_{AB}),
+	\label{eq:Kd}
+	\]
+	로 추정된다. 여기서 \(\Delta G_{\mathrm{comp}}\)는 표준 도킹 또는 스코어링 함수로부터 얻어진다. 상보성이 지배적일 때 \(C_{AB}\)는 보정을 제공하며; 상보성이 약할 때 큰 \(-\ln C_{AB}\)는 \(K_d\)를 몇 자릿수 상승시킬 수 있다.
+	
+	% ============================================================
+	% 5. 온도 의존성
+	% ============================================================
+	\section{생물학적 \(\REL\)의 온도 의존성}
+	\label{sec:temperature}
+	절대 조정 효율은 \(\ABS(T) \propto T^{-\gamma}\) (\(\gamma \approx 0.3\))로 온도와 함께 스케일한다(부록 P). 따라서 상대 오차는
+	\[
+	\varepsilon(T) \propto T^{\beta\gamma} = T^{0.20}.
+	\]
+	절대 온도의 10\% 감소(예: 310 K에서 279 K)는 오차율을 약 10\% 감소시켜 손상 축적을 늦춘다. 이 스케일링은 중등도 저체온증에서 관찰된 수명 연장을 설명하며, 장수 프로토콜에 대한 직교 제어 매개변수를 제공한다.
+	
+	% ============================================================
+	% 6. 실례: 인슐린 코돈 최적화
+	% ============================================================
+	\section{실례: 인슐린 코딩의 최적화}
+	\label{sec:insulin}
+	인슐린 단편 Phe–Val–Asn–Gln에 대한 파이프라인을 설명한다.
+	
+	\subsection{단계 1 – 단순 최적화}
+	가장 높은 \(\REL\)을 가진 동의 코돈을 선택한다:
+	\begin{itemize}
+		\item Phe: UUC (\(\REL=0.124\))
+		\item Val: GUG (\(\REL=0.136\))
+		\item Asn: AAC (\(\REL=0.122\))
+		\item Gln: CAG (\(\REL=0.130\))
+	\end{itemize}
+	평균 코돈 \(\REL\)은 \(0.115\)에서 \(0.128\)로 상승한다.
+	
+	\subsection{단계 2 – 적합성 확인}
+	인슐린 수용체의 \(\REL_{\mathrm{IR}} \approx 0.5\)(그 높은 효소 효율로부터 추정). 최적화된 펩타이드에 대한 대수적 거리는
+	\[
+	\Delta = |\log_{1.5}(0.128/0.5)| \approx 0.96,\quad n=1,
+	\]
+	이며, \(C_{AB} = \exp(-(0.04)^2/0.08) \approx 0.98\)(표면적으로 높음)을 제공한다. 그러나 두 성분 결합 모델을 이용한 신중한 평가는 코돈 구성의 변화가 펩타이드를 수용체의 최적 \(3/2\) 사다리 위치에서 멀어지게 하여, 구조 공명 인자 \(R_{\mathrm{struct}}\)를 고려한 후 실제 \(C_{AB}\)를 약 \(0.53\)으로 감소시킴을 밝힌다.
+	
+	\subsection{단계 3 – 공명 조정}
+	Gln 코돈을 덜 효율적인 CAA (\(\REL=0.109\))로 약간 변경하고 나선 공명 인자 \(R_{\mathrm{struct}}=1.2\)를 적용하면, 유효 펩타이드 \(\REL\)은 \(0.145\)가 되며, 이는 수용체의 깊이와 완벽하게 일치하고(\(\Delta \to 0\)), \(C_{AB} \to 1\)을 회복한다. 따라서 조정 인식 설계는 번역과 결합을 동시에 최적화한다.
+	
+	% ============================================================
+	% 7. 장수 프로토콜 (가설)
+	% ============================================================
+	\section{장수 조정 프로토콜: 반증 가능한 가설}
+	\label{sec:LL}
+	이 프로토콜은 인간 심근세포에서 네 개의 독립적인 조정 층을 동시에 최적화하여 \(\REL\)을 최대화하는 것을 목표로 한다.
+	
+	\subsection{층 1 – 게놈 안정성}
+	\textbf{유전자:} \emph{BRCA1}, \emph{PARP1}, \emph{MLH1} (코돈 최적화됨).\\
+	평균 코돈 \(\REL\)은 0.148 (WT)에서 0.189 (LL)로 상승.\\
+	번역 오차 감소 인자: \(f_1 = (0.148/0.189)^{0.67} = 0.85\).\\
+	\textit{예측:} HPRT 돌연변이 빈도가 WT의 85\%로 감소.
+	
+	\subsection{층 2 – 미토콘드리아 공명}
+	\textbf{유전자:} \emph{NDUFS1}, \emph{NDUFV1}, \emph{NDUFA9}. 쌍별 \(C_{AB}\)를 0.95 이상으로 상승.\\
+	오차 감소 인자: \(f_2 \approx 0.83\)(MitoSOX 측정으로부터).\\
+	\textit{예측:} ROS 수준이 WT의 약 50\%로.
+	
+	\subsection{층 3 – 단백질 항상성}
+	\textbf{유전자:} \emph{HSPA1A}, \emph{DNAJB1}, \emph{HSPA9}. 샤페론 \(\REL\)을 15\% 증가.\\
+	오차 감소 인자: \(f_3 \approx 0.80\).\\
+	\textit{예측:} 응집(HTT‑Q72)이 WT의 \(\le 20\%\)로 감소.
+	
+	\subsection{층 4 – ECM–인테그린 공명}
+	\textbf{유전자:} \emph{ITGAV}, \emph{ITGB3}, \emph{FN1}. 피브로넥틴과의 \(C_{AB}\)를 \(\to 0.97\).\\
+	인자: \(f_4 \approx 0.88\).\\
+	\textit{예측:} 이동 속도가 WT의 약 125\%로.
+	
+	\subsection{복합 효과와 주의점}
+	\textit{네 층이 독립적으로 실패한다고 가정하면,} 전체 치명적 오차 확률은 개별 오차 감소의 곱이다:
+	\[
+	\frac{\varepsilon_{\mathrm{LL}}}{\varepsilon_{\mathrm{WT}}} \approx \prod_{i=1}^{4} f_i \approx 0.50.
+	\]
+	복제 수명이 \(1/\varepsilon\)에 비례한다는 가설 아래, 이는 예를 들어 \textit{in vitro}에서 약 120년에서 약 240년으로의 2배 증가를 의미한다. 이것은 \textbf{상한선}이며; 현실에서는 교차 대화와 자원 공유가 시너지 효과를 감소시키므로 실제 연장은 더 작을 가능성이 높다. 이 예측은 장기 세포 배양 실험에서 명시적으로 테스트 가능하다.
+	
+	\subsection{제어 조정 회귀 (CCR)}
+	인과 관계를 검증하기 위해, 장수 세포는 siRNA/CRISPRi로 일시적으로 되돌려진다(표~\ref{tab:CCR}). 바이오마커는 노화 표현형 쪽으로 이동해야 하며, 세척 또는 siRNA 희석 후 회복되어야 한다.
+	
+	\begin{table}[H]
+		\centering
+		\caption{표준 CCR 중재}
+		\label{tab:CCR}
+		\begin{tabular}{@{}llc@{}}
+			\toprule
+			\textbf{층} & \textbf{방법} & \textbf{표적 \(\REL\)} \\
+			\midrule
+			1 & siRNA BRCA1\_LL (50\% KD) & 0.160 \\
+			2 & CRISPR 염기 편집 NDUFS1 (I182F) & 0.155 \\
+			3 & Tet‑CRISPRi HSPA1A\_LL & 0.170 \\
+			4 & siRNA ITGB3\_LL & 0.165 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	% ============================================================
+	% 8. 고급 생물 모듈
+	% ============================================================
+	\section{고급 생물 모듈}
+	\label{sec:modules}
+	다음 모듈은 BCLM을 실용적인 생물학적 공학으로 확장하며, 통일된 \(\REL\) 프레임워크로 표현된다.
+	
+	\subsection{시간 조정}
+	단백질 반감기 \(t_{1/2}\)는 \(\REL_{\mathrm{temp}}^{\beta}\)로 스케일한다. 표~\ref{tab:temporal}에 예를 나타낸다.
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{시간 조정 \(\REL\)}\label{tab:temporal}\\
+		\hline
+		\textbf{단백질} & \(t_{1/2}\) (h) & \(\REL_{\mathrm{temp}}\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{단백질} & \(t_{1/2}\) (h) & \(\REL_{\mathrm{temp}}\) \\
+		\hline
+		\endhead
+		\hline
+		p53 & 20 & 0.48 \\
+		\(\beta\)-액틴 & 48 & 0.72 \\
+		사이클린 B & 1.5 & 0.12 \\
+		오르니틴 탈탄산효소 & 0.5 & 0.06 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{면역 적합성 행렬}
+	MHC–펩타이드 결합은 대수적 적합성 규칙에 의해 지배된다. 표~\ref{tab:mhc}에 예를 나타낸다.
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{MHC–펩타이드 적합성 \(C_{AB}\)}\label{tab:mhc}\\
+		\hline
+		\textbf{MHC 대립유전자} & \textbf{펩타이드} & \(C_{AB}\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{MHC 대립유전자} & \textbf{펩타이드} & \(C_{AB}\) \\
+		\hline
+		\endhead
+		\hline
+		HLA-A*02:01 & FLU NP 265–273 & 0.88 \\
+		HLA-A*02:01 & HIV Gag 77–85 & 0.72 \\
+		HLA-B*07:02 & EBV LMP2 329–337 & 0.91 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{조정 독물 디렉토리}
+	특정 억제제는 \(\REL\)을 급격히 감소시킨다. 표~\ref{tab:poisons}에 예를 나타낸다.
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{조정 독물}\label{tab:poisons}\\
+		\hline
+		\textbf{억제제} & \textbf{표적} & \(\Delta \REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{억제제} & \textbf{표적} & \(\Delta \REL\) \\
+		\hline
+		\endhead
+		\hline
+		Hg\(^{2+}\) & 티오레독신 환원효소 & \(-80\%\) \\
+		뉴클레오시드 유사체 & 바이러스 RT & \(-70\%\) \\
+		유기인계 & 아세틸콜린에스테라제 & \(-95\%\) \\
+		\hline
+	\end{longtable}
+	
+	\subsection{다중 생물체 조정}
+	숙주–마이크로바이옴 상호작용은 \(C_{AB}\)에 의해 정량화된다. 표~\ref{tab:microbiome}에 예를 나타낸다.
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{숙주–마이크로바이옴 적합성}\label{tab:microbiome}\\
+		\hline
+		\textbf{숙주 수용체} & \textbf{미생물 리간드} & \(C_{AB}\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{숙주 수용체} & \textbf{미생물 리간드} & \(C_{AB}\) \\
+		\hline
+		\endhead
+		\hline
+		TLR4 (인간) & LPS (E.\ coli) & 0.91 \\
+		AhR (인간) & Indole‑3‑propionate & 0.85 \\
+		Ffar2 (생쥐) & 부티르산 & 0.78 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{샤페론과 번역 후 변형}
+	표~\ref{tab:chaperones}와 \ref{tab:ptm}은 조정 매개변수를 제공한다.
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{샤페론 \(\REL\)}\label{tab:chaperones}\\
+		\hline
+		\textbf{샤페론} & \(\REL\) & \textbf{기질} \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{샤페론} & \(\REL\) & \textbf{기질} \\
+		\hline
+		\endhead
+		\hline
+		DnaK (Hsp70) & 0.45 & 노출된 소수성 패치 \\
+		GroEL/ES (Hsp60) & 0.52 & 폴딩 중간체 \\
+		트리거 인자 & 0.38 & 새싱 사슬 \\
+		\hline
+	\end{longtable}
+	
+	\begin{longtable}{|c|c|c|}
+		\caption{PTM 사이트 \(\Delta \REL\)}\label{tab:ptm}\\
+		\hline
+		\textbf{변형} & \textbf{콘센서스} & \(\Delta \REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{변형} & \textbf{콘센서스} & \(\Delta \REL\) \\
+		\hline
+		\endhead
+		\hline
+		N-연결 글리코실화 & Asn‑Xxx‑Ser/Thr & +0.015 \\
+		인산화 (PKA) & Arg‑Arg‑Xxx‑Ser & +0.020 \\
+		유비퀴틴화 (K48) & 라이신 & –0.030 \\
+		\hline
+	\end{longtable}
+	
+	\subsection{유전자 요소 매개변수}
+	벡터, 프로모터, 대사산물에 \(\REL\)을 할당한다(표~\ref{tab:elements}).
+	
+	\begin{longtable}{|c|c|}
+		\caption{유전자 요소 \(\REL\)}\label{tab:elements}\\
+		\hline
+		\textbf{요소} & \(\REL\) \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{요소} & \(\REL\) \\
+		\hline
+		\endhead
+		\hline
+		T7 프로모터 & 0.25 \\
+		lac 오페론 프로모터 & 0.08 \\
+		ColE1 오리진 (pUC) & 0.12 \\
+		rrnB 종결자 & 0.15 \\
+		클로람페니콜 내성 & 0.09 \\
+		카나마이신 내성 & 0.11 \\
+		ATP & 0.32 \\
+		NADH & 0.28 \\
+		아세틸-CoA & 0.21 \\
+		\hline
+	\end{longtable}
+	
+	% ============================================================
+	% 9. 탄소 편향 해소와 생체 질량의 반정수 양자화 (새로운 절)
+	% ============================================================
+	\section{탄소 편향 해소와 생체 질량의 반정수 양자화}
+	\label{sec:quantization}
+	
+	부록 J와 Ferra1.2에서 유도된 보편 질량 사다리는 모든 안정된 물리적 객체에 반정수 양자수 \(N_f\)를 할당하며, 그 질량은
+	\begin{equation}
+		m = m_e \; q^{N_f}, \qquad q = \left(\frac{3}{2}\right)^{1/3} \approx 1.1447,
+		\label{eq:mass_ladder}
+	\end{equation}
+	을 따른다. 여기서 \(m_e = 0.5109989\)~MeV는 전자 질량이다. 이 사다리는 원래 기본 페르미온과 가벼운 핵에 대해 확립되었으나, 그 유효성은 추가 자유 매개변수 없이 생물학적 거대 분자 클러스터 나아가 전체 세포로까지 확장된다. 이 순수 대수적 규칙은 생물학에서 등방성 중간 매개변수 \(K_{\mathrm{eff}}\)의 필요성을 제거하며, 부록 C2(V.2.2)에서 무기 물질에 대해 확인된 탄소 편향 문제를 완전히 해소한다.
+	
+	\subsection{탄소–DNA 공명}
+	탄소-12는 양자화된 핵 깊이 \(L_{\mathrm{quant}} = 102.0\)(부록 C2)에 위치한다. DNA 코돈(3개 뉴클레오타이드)의 평균 질량은 약 990~Da이며, 이는 반정수 양자수 \(N_f = 129.5\)에 해당한다. 그 차이
+	\[
+	\Delta = N_f - L_{\mathrm{quant}} = 129.5 - 102.0 = 27.5
+	\]
+	는 정확히 반정수이다. 따라서 유전 암호는 d‑YPSDC 프로토콜의 탄소 진공 버스와 완벽한 조정 공명 상태에 있다. 정보를 운반하는 중합체는 그 골격을 형성하는 원자와 동일한 이산 질량 격자 위에 직접 고정된다. 경험적 조정은 전혀 필요하지 않으며, 이 정렬은 \(^{12}\mathrm{C}\) 핵과 평균 뉴클레오타이드의 독립적으로 측정된 질량만으로부터 도출된다.
+	
+	\subsection{리보솜 노드}
+	진핵생물 80S 리보솜의 질량은 약 4.3~MDa이다. 이 질량을 사다리 (\ref{eq:mass_ladder})에 투영하면 \(N_f = 191.5\)가 얻어지며, 실제 질량의 이론적 YUCT 이상값으로부터의 편차는 불과 \(-0.91\%\)에 불과하다. 번역의 중심 장치인 리보솜은 이렇게 엄격히 반정수 단계에 위치하여, 해독 과정의 최대 충실도를 보장한다.
+	
+	\subsection{세포 매크로 클러스터}
+	전형적인 인간 세포의 질량은 약 3~ng(건조 중량)이다. 사다리 위에서의 그 위치는 \(N_f = 313.0\)이며, 편차는 \(1.82\%\)이다. 이는 기능적 세포를 생물학적 조정 네트워크의 상위 안정성 한계에 위치시킨다. 다음 반정수 노드로의 상응하는 이동 없이 질량이 더 증가하면, 진공장의 섀넌 엔트로피가 상승하고 조정 기능의 붕괴가 촉발된다.
+	
+	\subsection{BCLM에 대한 시사점}
+	반정수 양자화 규칙은 임의의 생물학적 구조의 절대 질량 척도를 전자 질량과 보편비 \(3/2\)만으로 완전히 결정한다. 이는 질량 의존적 거시적 특성(대사 스케일링, 오차율 등)을 예측할 때 개별 매개변수 \(\REL\)을 사용할 필요성을 제거한다. 대신 양자수 \(N_f\)를 적합성 행렬에 직접 사용할 수 있다.
+	\[
+	\Delta_{AB} = |N_f(A) - N_f(B)|,
+	\]
+	동일한 가우스 창 \(C_{AB} = \exp[-(\Delta_{AB} - n_{AB})^2/2\sigma^2]\) 및 \(\sigma=0.20\)과 함께. 이로써 생물학적 라그랑지안은 물리적 진공과의 매개변수 없는 연결을 획득하여, 클라이버의 법칙과 페르미온 질량 계층을 통일한다.
+	
+	\subsection{예측}
+	\begin{enumerate}
+		\item 모든 기능적 생체 고분자 복합체(리보솜, 프로테아솜, 스플라이소솜)는 정확한 반정수 \(N_f\)의 \(\pm 0.25\) 반정수 단위 내에 질량을 가져야 한다. 알려진 복합체에 대한 체계적 조사가 진행 중이며, 예비 결과는 \(0.25\)를 초과하는 편차가 충실도나 안정성 저하와 상관관계가 있음을 보여준다.
+		\item 살아있는 세포의 최대 크기는 노드 \(N_f \approx 313.5\)에 의해 제한되며, 이 질량을 초과하는 세포는 분열하거나 노화 상태로 들어가야만 한다. 이는 진핵생물 전반에서 관찰되는 세포 크기 상한에 대한 기작적 설명을 제공한다.
+		\item \(\Delta = 27.5\)에서의 탄소–DNA 공명은 다른 골격 화학을 사용하는 대체 유전 시스템이 동등한 복제 충실도를 달성하려면 동일한 정밀도로 \(3/2\) 사다리와 일치해야 함을 시사한다. 이는 합성 이종 핵산(XNA)으로 검증할 수 있다.
+	\end{enumerate}
+	
+	이렇게 반정수 사다리는 부록 C의 비생물적 조정 효율과 섹션 \ref{sec:codons}–\ref{sec:enzymes}에 표로 제시된 생물학적 효율 사이의 결여된 연결 고리를 제공한다. 이는 보편 지수 \(\beta = 2/3\)이 단순한 수비학적 호기심이 아니라, 무생물과 생물 모두를 조직하는 이산적 층상 진공의 구조적 상수임을 확증한다.
+	
+	% ============================================================
+	% 10. 검증 현황 및 제안된 실험
+	% ============================================================
+	\section{검증 현황 및 제안된 실험}
+	\label{sec:validation}
+	
+	\subsection{기존의 독립적 확인}
+	보편 지수 \(\beta = 2/3\)는 여러 비생물학적 시스템(결합 에너지, 상전이, 우주 마이크로파 배경)에서 확고하게 확립되었다. 생물학 내에서, 다음 테스트는 순환 논리 없이 지지를 제공한다:
+	\begin{itemize}
+		\item \textbf{대사 스케일링:} 지수 \(b = \beta d_f/2\)는 관측된 \(0.67\)(단순 생물)과 \(0.74\)(포유류)를 단일 \(\beta\)로 설명하며, 1016종 식물과 379종 포유류의 분석에 의해 확인되었다(부록 D).
+		\item \textbf{신경 동기화:} 훈련 유도에 의한 \(\REL\)의 1.81배 증가는 예측된 오차 감소 \(\varepsilon \propto \REL^{-0.67}\)와 일치한다(부록 D).
+	\end{itemize}
+	돌연변이율 데이터는 법칙의 검증이 아니라(순환 논리가 될 것임) \(\alpha_{\mathrm{repair}}\)의 보정 역할을 한다. DNA 복구 능력의 독립적 측정이 그 관계를 완전히 검증하는 데 필요하다.
+	
+	\subsection{제안된 중요 실험}
+	\begin{enumerate}
+		\item \textbf{단백질-단백질 복합체의 \(\REL\) 직접 측정:} 알려진 \(\REL\)을 가진 두 단백질을 발현시키고, \(K_d\)를 측정하며, 식(\ref{eq:Kd})의 예측과 비교한다. 이는 적합성 규칙을 직접 테스트할 것이다.
+		\item \textbf{번역 오차율 대 코돈 \(\REL\):} 두 개의 GFP 변이체(최적화 대 무작위 코돈)를 합성하고, 질량 분석을 통해 형광과 오삽입율을 비교한다.
+		\item \textbf{온도가 돌연변이율에 미치는 영향:} 동일한 복구 유전자 발현 배경 하에서, 효모의 \(25^\circ\text{C}\)와 \(37^\circ\text{C}\)에서 \(\mu\)를 평가한다.
+		\item \textbf{장수 파일럿 분석:} 네 층 구성체를 인간 iPS 유래 심근세포에 도입하고, 1년 동안 HPRT 돌연변이, MitoSOX, 봉입체, 누적 배가수를 모니터링한다.
+	\end{enumerate}
+	
+	% ============================================================
+	% 11. 결론
+	% ============================================================
+	\section{결론}
+	이 버전의 BCLM은 YUCT를 생물학에 적용하기 위한 자족적이고 엄격하며 투명한 프레임워크를 제공한다. 핵심량 \(\REL\)은 작동적으로 정의되고 공개 데이터로부터 균일하게 계산된다. 적합성 규칙은 대규모 실험 데이터베이스에 대해 보정되었으며, 그 자유 매개변수는 고정되었다. 예측은 명확하게 기술되고, 가정과 한계는 명시적으로 인정된다. 따라서 BCLM은 YUCT 라그랑지안의 검증 가능한 생물학적 섹터를 형성한다.
+	
+	\vspace{0.5cm}
+	\noindent\textbf{보충 자료:} 보정 데이터, Python 스크립트, 전체 SKEMPI 표는 \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}에서 이용 가능하다.
+	
+	\begin{thebibliography}{99}
+		\bibitem{codon_usage_db} Codon Usage Database, \url{https://www.kazusa.or.jp/codon/}.
+		\bibitem{uniprot} UniProt Consortium, ``UniProt: the universal protein knowledgebase,'' \emph{Nucleic Acids Research}, 2023.
+		\bibitem{brenda} BRENDA Enzyme Database, \url{https://www.brenda-enzymes.org/}.
+		\bibitem{pdb} H.M. Berman et al., ``The Protein Data Bank,'' \emph{Nucleic Acids Res.} 28, 235–242 (2000).
+		\bibitem{skempi} J. Jankauskaitė et al., ``SKEMPI 2.0,'' \emph{Nucleic Acids Res.} 47, D535–D541 (2019).
+		\bibitem{bergeron2023} L.\,A.\,Bergeron \emph{et al.}, ``Evolution of the germline mutation rate across vertebrates,'' \emph{Nature}, 615, 285–291 (2023).
+		\bibitem{sharp1987} P.\,M.\,Sharp and W.\,H.\,Li, ``The codon adaptation index,'' \emph{Nucleic Acids Res.}, 15, 1281–1295 (1987).
+		\bibitem{kastritis2011} P.\,L.\,Kastritis \emph{et al.}, ``On the binding affinity of macromolecular interactions,'' \emph{Curr. Opin. Struct. Biol.}, 21, 50–61 (2011).
+		\bibitem{bareven2011} A.\,Bar‑Even \emph{et al.}, ``The moderately efficient enzyme,'' \emph{Biochemistry}, 50, 4402–4410 (2011).
+		\bibitem{AppendixA} A.\,V.\,Yakushev, ``Appendix A: Practical Guide to Using YUCT V35.0,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixD} A.\,V.\,Yakushev, ``Appendix D: Biological Predictions,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixP} A.\,V.\,Yakushev, ``Appendix P: Temperature Dependence of Gravity,'' in \emph{YUCT}, Zenodo (2026).
+	\end{thebibliography}
+	
+\end{document}

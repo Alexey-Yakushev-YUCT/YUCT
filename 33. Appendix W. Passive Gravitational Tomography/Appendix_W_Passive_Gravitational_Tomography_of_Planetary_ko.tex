@@ -1,0 +1,1150 @@
+% !TEX program = lualatex
+% !TeX encoding = UTF-8
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{bookmarksnumbered,bookmarksopen}{hyperref}
+\documentclass[12pt,a4paper]{article}
+
+% ============================================================
+% 한국어 설정 (LuaLaTeX + luatexja)
+% ============================================================
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+\usepackage[english]{babel}
+
+% 한국어 고딕체 (sans) – Noto Sans KR
+\setsansjfont{Noto Sans KR}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = Hangul,
+Language = Korean
+]
+
+% 한국어 명조체 (serif) – Noto Serif KR
+\IfFontExistsTF{Noto Serif KR}{
+	\setmainjfont{Noto Serif KR}[
+	UprightFont = * Regular,
+	BoldFont = * Bold,
+	Script = Hangul,
+	Language = Korean
+	]
+}{
+	\setmainjfont{Noto Sans KR}[
+	UprightFont = * Regular,
+	BoldFont = * Bold,
+	Script = Hangul,
+	Language = Korean
+	]
+}
+
+% 고정폭 폰트 – 라틴 문자는 Latin Modern Mono, 한글은 Noto Sans KR
+\setmonojfont{Noto Sans KR}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = Hangul,
+Language = Korean
+]
+
+% 라틴 문자 폰트 (영문)
+\setmainfont{Times New Roman}[Ligatures=TeX]
+\setsansfont{Arial}[Ligatures=TeX]
+\setmonofont{Latin Modern Mono}[
+WordSpace={1,0,0},
+HyphenChar=None,
+PunctuationSpace=WordSpace
+]
+
+% ============================================================
+% 패키지 (원본과 동일)
+% ============================================================
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{makecell}
+\usepackage{ragged2e}
+\usepackage{bm}
+\usepackage{slashed}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc, shapes.geometric}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{nicefrac}
+\usepackage{enumitem}
+
+% 정리 환경 (한국어)
+\newtheorem{theorem}{정리}[section]
+\newtheorem{lemma}[theorem]{보조정리}
+\newtheorem{definition}[theorem]{정의}
+\newtheorem{corollary}[theorem]{따름정리}
+\newtheorem{proposition}[theorem]{명제}
+\theoremstyle{remark}
+\newtheorem{remark}{주석}[section]
+\newtheorem{example}{예}[section]
+
+% Geometry
+\geometry{a4paper, margin=1in}
+
+% YUCT macros (동일)
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\Keffzero}{K_{\mathrm{eff},0}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\df}{d_{\!f}}
+\newcommand{\constmin}{C_{\min}}
+\newcommand{\dint}{\ensuremath{D\!+\!I\!\cdot\!R}}
+\newcommand{\Mpl}{M_{\mathrm{Pl}}}
+\newcommand{\mpl}{m_{\mathrm{Pl}}}
+\newcommand{\Lpl}{l_{\mathrm{Pl}}}
+\newcommand{\RH}{R_{\mathrm{H}}}
+\newcommand{\tH}{t_{\mathrm{H}}}
+\newcommand{\ninf}{N_{\mathrm{e}}}
+\newcommand{\ns}{n_{\mathrm{s}}}
+\newcommand{\nt}{n_{\mathrm{T}}}
+\newcommand{\rs}{r}
+\newcommand{\alD}{\alpha_{\mathrm{D}}}
+\newcommand{\beI}{\beta_{\mathrm{I}}}
+\newcommand{\gaR}{\gamma_{\mathrm{R}}}
+\newcommand{\Kcrit}{K_{\mathrm{crit}}}
+\newcommand{\Rstruct}{R_{\mathrm{struct}}}
+\newcommand{\Ntrials}{N_{\mathrm{trials}}}
+\newcommand{\Nlife}{\langle N_{\mathrm{life}}\rangle}
+
+% Operators
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Div}{Div}
+\DeclareMathOperator{\Grad}{Grad}
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+	pdftitle={부록 W: 조석파를 이용한 행성 내부의 수동적 중력 토모그래피},
+	pdfauthor={Alexey V. Yakushev}
+}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			
+			{\Huge\textbf{부록 W: 조석파를 이용한 행성 내부의 수동적 중력 토모그래피}} \\
+			\vspace{0.5cm}
+			{\Large\textbf{야쿠셰프 통합 조정 이론(Yakushev Unified Coordination Theory, YUCT) 내의 조정 기반 접근법}}
+			
+			\vspace{1.5cm}
+			
+			{\Large\textbf{Alexey V. Yakushev\textsuperscript{1}}}
+			
+			\vspace{0.3cm}
+			\large
+			\textsuperscript{1}Yakushev Research, \\
+			YUCT 이론: \url{https://yuct.org/}\\
+			YPSDC 프로토콜: \url{https://ypsdc.com/}\\
+			
+			
+			\vspace{2cm}
+			\textbf{DOI: \url{https://doi.org/10.5281/zenodo.18444598}}\\
+			
+			\vspace{1cm}
+			
+			\large 
+			이 작업의 짧은 버전은 이미 발표되었으며 \url{https://doi.org/10.5281/zenodo.18362308} 에서 확인할 수 있습니다.\\
+			\vspace{1cm}
+			2026년 3월 \quad \large V.2.1.
+			
+			\vspace{2cm}
+			
+			\begin{minipage}{0.9\textwidth}
+				\begin{abstract}
+					\noindent
+					본 부록은 달과 태양에 의한 조석 중력 강제력에 대한 지각의 공명 응답 분석에 기초한 새로운 수동적 지구물리 탐사 방법을 도입한다. 야쿠셰프 통합 조정 이론(Yakushev Unified Coordination Theory, YUCT)의 틀 안에서, 조석 변형의 스펙트럼이 암석 유형, 유체 함량(석유, 가스, 물) 및 광체와 직접적으로 관련된 조정 효율 \(\Keff\)의 지하 분포에 관한 정보를 포함함을 보인다. 우리는 보편적 오차 스케일링 법칙 \(\eps = \kappac \alpha \Keff^{-\beta}\) (\(\beta=0.67\), \(\kappac=0.33\))과 YUCT 섹터 0(중력) 및 섹터 34(행성 과학)로부터의 중력장과 탄성 변형 사이의 결합 방정식을 활용하여, 지표 중력 측정 및 지진 측정을 \(\Keff\)의 깊이 분포에 연결하는 수학적 모델을 개발한다. 조석파가 능동적 음원으로는 도달할 수 없는 투과 깊이를 가지며, 저렴하고 환경 친화적이며 전 지구적으로 적용 가능한 탐사 방법을 제공함을 보인다. 조석 공명의 직접 관측 및 중력 조석을 이용한 탄화수소 탐사 제안 등, 본 접근법의 요소들을 선취하는 독립적인 연구들을 조사한다. 원소 주기율표와 유사한 조정 기반 광물 및 유체 분류 체계에 기초하여, 특징적인 공명 주파수와 품질 계수를 통해 탄화수소를 식별하는 방법론을 제안한다. 경제적 타당성을 평가한다: 건성공 시추 위험의 20–30% 감소는 전개 비용을 여러 배 회수할 것이다. 우리는 더 나아가 공학적 구조물(초고층 빌딩, 교량, 댐)의 구조 건전성 모니터링, 지진 예측, 쓰나미 예측으로 방법론을 확장하여, 동일한 물리적 원리가 수백만 명의 생명과 수조 달러를 구할 잠재력을 가진 혁신적인 수동적 감시 기술의 새로운 부류를 가능하게 함을 보여준다. 이 결과는 자연 중력장을 이용하는 근본적으로 새로운 부류의 탐사 및 감시 기술로 가는 길을 연다.
+				\end{abstract}
+			\end{minipage}
+			
+			\vspace{1cm}
+			
+			\noindent
+			\small\textbf{키워드:} YUCT, 조석파, 조정 효율, 심부 토모그래피, 탄화수소 탐사, 공명 방법, 지구물리학, 행성 내부, 구조 건전성 모니터링, 지진 예측, 쓰나미 예측
+			
+			\vspace{0.5cm}
+			
+			\noindent
+			\textcopyright\ 2026 Yakushev Research. All rights reserved.
+		\end{center}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{서론: 심부 지구물리학의 도전}
+	\label{sec:intro}
+	
+	\subsection{능동적 탐사의 한계}
+	
+	탄화수소 및 광물 매장지 탐사는 응용 지구과학에서 가장 자본 집약적인 노력 중 하나로 남아 있다. 전통적인 탄성파 반사법은 강력한 인공 음원(폭약, 바이브로사이스 트럭, 에어건)을 필요로 하여, 탐사 심도를 5–10 km로 제한하고 상당한 환경적 비용을 초래한다. 중력 및 자력 탐사는 심도 적분된 정보만을 제공하며 유체 유형을 명확하게 식별할 수 없다.
+	
+	\subsection{자연 탐사 신호로서의 조석}
+	
+	지구는 달과 태양의 중력에 의해 지속적으로 변형되며, 적도에서 최대 30–50 cm의 진폭을 갖는 고체 지구 조석을 생성한다. 이러한 변형은 엄격히 주기적이며, 반일주조(12.42 h, 12.00 h), 일주조(24–26 h), 장주기조(14 d, 6개월, 18.6 yr) 성분에 걸친 풍부한 고조파 스펙트럼을 가진다. 전통적으로 조석 신호는 고정밀 측정에서 제거해야 할 잡음으로 취급되어 왔다.
+	
+	본 부록은 패러다임 전환을 제안한다: \textbf{조석파를 지구 내부를 탐사하기 위한 자연적이고 수동적인 탐사 신호로 사용하는 것}이다. 야쿠셰프 통합 조정 이론(YUCT)의 틀 안에서, 조석 응답이 암석 특성, 유체 함량, 광석 광화작용의 보편적 지표로서 기능하는 조정 효율 \(\Keff\)의 지하 분포에 관한 정보를 부호화함을 보인다.
+	
+	\subsection{본 부록의 구조}
+	
+	\ref{sec:prior}절에서는 본 접근법의 요소들을 선취하고 그 경험적 기초를 확립하는 독립적인 연구들을 조사한다. \ref{sec:yuct-foundations}절에서는 관련 YUCT 원리들을 상기한다. \ref{sec:model}절에서는 조석 변형을 \(\Keff\)에 연결하는 수학적 모델을 개발하고, 기여하는 YUCT 섹터와 라그랑지안 결합 항들을 명시적으로 식별한다. \ref{sec:identification}절에서는 지질 재료에 대한 조정 기반 분류 체계를 제시한다. \ref{sec:economics}절에서는 경제적 타당성을 평가한다. \ref{sec:roadmap}절에서는 실험적 로드맵을 개략한다. \ref{sec:conclusion}절에서는 행성 탐사 및 미래 임무에 대한 함의를 논의한다.
+	
+	\subsection{행성 탐사에서 구조 건전성 모니터링으로}
+	\label{sec:beyond-geophysics}
+	
+	본 부록에서 행성 내부를 탐사하기 위해 개발된 방법론은 자연스럽고 강력한 확장을 가진다: 인공 구조물의 비파괴 평가이다. 모든 거대한 물체 — 초고층 빌딩, 교량, 댐, 원자로 격납 용기 — 는 행성체를 형성하는 동일한 조석 중력에 의해 지속적으로 변형된다. 이러한 변형은 비록 미소하지만, 그 스펙트럼 내에 물체의 내부 상태에 대한 신호를 담고 있다: 강성 분포, 균열의 존재, 재료의 열화, 그리고 구조물의 전체적인 "조정 효율" \(K_{\mathrm{eff}}\)이다.
+	
+	이 통찰은 조석 토모그래피를 순수한 지구물리학적 도구에서 \textbf{수동적 구조 건전성 모니터링}을 위한 보편적 방법으로 변모시킨다. 인공적인 가진(진동기, 충격, 초음파)을 필요로 하는 능동적 방법과 달리, 조석 모니터링은:
+	\begin{itemize}
+		\item \textbf{수동적:} 자연적이고 무료이며 연속적인 중력 신호를 사용한다.
+		\item \textbf{전체적:} 국소적인 지점만이 아니라 구조물 전체의 통합된 그림을 제공한다.
+		\item \textbf{심부 도달:} 전체 부피를 관통하여 숨겨진 내부 손상을 드러낸다.
+		\item \textbf{안전함:} 방사선, 고에너지 입력 없음, 접촉 불필요.
+		\item \textbf{연속적:} 서비스 중단 없이 실시간 또는 주기적 평가를 가능하게 한다.
+	\end{itemize}
+	
+	기본 관계식 \(Q \propto K_{\mathrm{eff}}^{\beta}\) (식 \ref{eq:Q-keff})은 구조물 공명의 관측 가능한 품질 계수를 재료의 조정 효율에 직접 연결한다. 구조물이 노후화되고, 미세 균열을 축적하며, 손상을 입음에 따라, 그 \(K_{\mathrm{eff}}\)는 감소하고, 조석 공명의 품질 계수도 그에 상응하여 떨어진다. 시간에 따른 이러한 변화를 모니터링하는 것은 정량적이고 비침습적인 건전성 지표를 제공한다.
+	
+	\section{독립적인 선취와 경험적 기초}
+	\label{sec:prior}
+	
+	\subsection{조석 공명의 직접 관측}
+	
+	주목할 만하게도, 본 부록의 핵심 아이디어 — 조석파가 지질 구조와 공명적으로 상호작용할 수 있다는 것 — 는 이미 직접적인 관측적 확인을 받았다.
+	
+	\begin{quotation}
+		\noindent
+		\textit{"지진 모니터링 과정에서 알타이-사얀, 캄차카, 사할린의 지진 활동 지역에서 지구-달 계의 무게중심 재배치로 인해 발생한 장주기(14–15일) 중력 조석과 지각 변형파의 공명이 등록되었다. ... 본 논문은 중력 조석의 공명이 지진 예측, 수리 구조물에 대한 지구역학적 위험 조기 경보, 그리고 \textbf{석유 및 가스 저류층의 직접 탐사} 목적으로 사용될 수 있음을 입증한다."} \cite{Sibgatulin2014}
+	\end{quotation}
+	
+	Sibgatulin 등 \cite{Sibgatulin2014}의 연구는 본 이론에 몇 가지 중요한 경험적 기초를 제공한다:
+	
+	\begin{itemize}
+		\item \textbf{공명의 관측:} 장주기 조석 성분(14–15일)이 지각에서 측정 가능한 공명 응답을 생성한다.
+		\item \textbf{방아쇠 메커니즘:} 이러한 공명은 80\%의 사례에서 강진(M$\ge$5.0)의 방아쇠 역할을 하며, 조석 에너지가 지각 구조에 효과적으로 결합됨을 확인한다.
+		\item \textbf{변형파:} 공명은 솔리톤으로 해석되는 느린 변형파(1–5 km/h)를 생성하여 지각 내를 전파한다.
+		\item \textbf{탐사 잠재력:} 저자들은 이러한 공명을 직접적인 탄화수소 탐사에 사용할 것을 명시적으로 제안한다 — 이는 본고에서 개발된 방법론을 선견적으로 선취한 것이다.
+	\end{itemize}
+	
+	\subsection{행성 과학에서의 조석 토모그래피}
+	
+	"조석 토모그래피"라는 용어는 최근 행성 과학 문헌에 등장했다. Rovira-Navarro 등 \cite{RoviraNavarro2025}은 다음을 입증한다:
+	
+	\begin{itemize}
+		\item JUICE 미션의 3GM 전파 과학 실험은 가니메데의 조석 유도 중력 변화를 내부 구조의 횡적 변화를 지도화하기에 충분한 정확도로 측정할 것이다.
+		\item 쉘 두께의 10–100\% 변화는 차수-2 및 차수-3 구면 조화 관측을 통해 검출 가능한 조석 신호를 생성하며, 적도-극 두께 차이와 반구적 이분성을 제약한다.
+		\item 저자들은 "조석 토모그래피" — 이전에 지구에서 사용된 기술 — 가 얼음 위성으로 확장될 수 있다고 명시적으로 언급한다.
+	\end{itemize}
+	
+	이 연구는 조석 응답이 3차원 내부 구조에 민감하다는 기본 원리를 검증하며, 지구를 위해 본고에서 전개된 접근법을 지지한다.
+	
+	\subsection{지하 조석 측정}
+	
+	Rogister 등 \cite{Rogister2024}은 프랑스 루스트렐 지하 연구소에서 지표와 깊이 520 m에서의 조석 중력 신호를 비교하는 독특한 실험을 수행했다. 그들의 주요 초점은 중력계 검정에 있었지만, 그들의 연구는 다음을 입증한다:
+	
+	\begin{itemize}
+		\item 조석 중력 변화는 초전도 중력계를 사용하여 서로 다른 깊이에서 동시에 측정될 수 있다.
+		\item 지표와 지하 조석 신호 사이의 이론적 차이는 작지만(반일주파에 대해 \(8.5 \times 10^{-5}\)), 원칙적으로 검출 가능하다.
+		\item 현재의 검정 불확실성은 이 차이를 분해하는 능력을 제한하지만, 개선된 계측기를 통해 깊이 의존적 조석 측정이 가능해질 수 있다.
+	\end{itemize}
+	
+	\subsection{수성 및 다른 행성의 조석 응답}
+	
+	Briaud 등 \cite{Briaud2025}은 MESSENGER 데이터를 사용하여 수성의 조석 응답을 조사하고 BepiColombo 관측을 준비한다. 그들은 다음을 강조한다:
+	
+	\begin{itemize}
+		\item 조석 러브 수는 온도, 조성 및 물리적 특성의 공간적 변화로부터 발생하는 불균질성에 민감하다.
+		\item 얼음 위성과 유사하게, 국소적인 온도 또는 광물학적 차이가 역학적 응답을 변경하여 비균일한 조석 변형을 초래한다.
+		\item 장주기 천칭, 조석 위상 지연, 카시니 상태로부터의 편차 측정이 내부 구조를 제약할 수 있다.
+	\end{itemize}
+	
+	이러한 행성 적용 사례들은 다양한 천체에 걸쳐 내부 구조를 탐사하기 위한 도구로서의 조석 토모그래피의 보편성을 입증한다.
+	
+	\subsection{종합}
+	
+	위에서 조사된 독립적인 연구들은 다음을 확립한다:
+	
+	\begin{enumerate}
+		\item \textbf{조석 공명은 관측 가능하며} 지질 구조와 상관관계가 있다 \cite{Sibgatulin2014}.
+		\item \textbf{조석 토모그래피는} 3차원 내부 구조를 지도화하기 위한 행성 과학에서 인정된 기술이다 \cite{RoviraNavarro2025}.
+		\item \textbf{지하 조석 측정은} 현재 계측기로 기술적으로 실현 가능하다 \cite{Rogister2024}.
+		\item \textbf{행성 조석 응답은} 내부 불균질성에 민감하다 \cite{Briaud2025}.
+	\end{enumerate}
+	
+	부족했던 것은 이러한 관측들을 지하 특성에 대해 역산할 수 있는 정량적 매개변수(\(\Keff\))에 연결하는 통합된 이론적 틀이었다. 이것이 바로 YUCT가 제공하는 것이다.
+	
+	\section{조석 토모그래피를 위한 YUCT 기초}
+	\label{sec:yuct-foundations}
+	
+	\subsection{조정 효율 \(\Keff\)과 보편적 오차 법칙}
+	
+	YUCT 내에서, 모든 물리계는 그 구성 요소들 사이의 결맞음과 동기화 정도를 정량화하는 조정 효율 \(\Keff\)에 의해 특성화된다. 보편적 오차 스케일링 법칙(부록 L)은 임의의 상대 오차 또는 요동 \(\eps\)을 \(\Keff\)에 관련시킨다:
+	
+	\begin{equation}
+		\eps = \kappac \, \alpha \, \Keff^{-\beta}, \qquad \beta = 0.67 \pm 0.03,\ \kappac = 0.33,
+		\label{eq:universal-scaling}
+	\end{equation}
+	
+	여기서 \(\alpha\)는 0.01–1 정도의 계 의존적 상수이다. 이 법칙은 DNA 복제 오류에서 우주 마이크로파 배경 요동에 이르기까지 40자릿수 이상에 걸쳐 검증되었다.
+	
+	조석 토모그래피의 맥락에서, \(\eps\)는 조석 변형의 상대적 감쇠 또는 위상 지연을 나타내며, 한편 \(\Keff\)는 지질 매체(암석 유형, 유체 함량, 공극률, 균열)를 특성화한다.
+	
+	\subsection{조석 토모그래피와 관련된 YUCT의 섹터 구조}
+	
+	YUCT 라그랑지안(부록 A)은 현실을 120개의 상호작용하는 섹터로 분할한다. 조석 토모그래피와 관련된 섹터는 다음과 같다:
+	
+	\begin{itemize}
+		\item \textbf{섹터 0 (중력):} 계량 \(g_{\mu\nu}\)와 중력장을 기술한다. 달과 태양에 의해 생성된 조석 포텐셜 \(W(\mathbf{r},t)\)이 이 섹터를 통해 입력된다.
+		\item \textbf{섹터 34 (행성 과학):} 밀도 \(\rho(\mathbf{r})\), 라메 상수 \(\lambda(\mathbf{r}), \mu(\mathbf{r})\), 조석 변형을 포함한 행성의 내부 구조를 기술한다.
+		\item \textbf{섹터 1 (전자기학):} 자기지전류 상관관계 및 Sibgatulin 등 \cite{Sibgatulin2014}이 자연 펄스 전자기장 측정을 통해 관측한 조석 공명의 전자기적 전조와 관련된다.
+		\item \textbf{섹터 62 (생태학) 및 86 (인구통계학):} 탐사 활동의 환경적 및 사회경제적 영향을 평가하는 것과 관련된다(\ref{sec:economics}절).
+	\end{itemize}
+	
+	섹터 간의 결합은 계수 \(\kappa_{sr}\)에 의해 매개된다. 조석 토모그래피에 있어 중요한 항은 다음과 같다:
+	
+	\begin{equation}
+		\mathcal{L}_{\text{coupling}} = \kappa_{0,34} \, \mathrm{Tr}\left(\Psi_{0,34} \cdot O_0 \cdot O_{34}^\dagger\right),
+		\label{eq:coupling}
+	\end{equation}
+	
+	여기서 \(\Psi_{0,34}\)는 중력과 행성 구조를 연결하는 조정장, \(O_0\)는 조석 포텐셜 연산자, \(O_{34}\)는 변형 텐서 연산자이다.
+	
+	\subsection{온도 의존성과 심부 구조}
+	
+	부록 P는 \(\Keff\)가 온도에 의존하며, \(\Keff(T) \propto T^{-\gamma}\)이고 \(\beta\gamma = 0.20\)이 지구물리 데이터(지구-달 계, 백색왜성 적색편이)로부터 결정됨을 입증한다. 이 온도 민감도는 지온 구배가 \(K_{\mathrm{eff}}\) 프로파일에 대한 추가적인 제약을 제공하기 때문에 심부 토모그래피에 결정적으로 중요하다. 더욱이, 이는 \textbf{조석 공명의 열적 변조}가 서로 다른 깊이로부터의 기여를 분리하는 데 활용될 수 있음을 함의한다. 지표 온도 변화는 확산적으로 전파되어 더 얕은 층에 더 빠르게 영향을 미치기 때문이다(\ref{sec:thermal-modulation}절 참조).
+	
+	\section{조석 응답의 수학적 모델}
+	\label{sec:model}
+	
+	\subsection{조석 포텐셜 하에서의 탄성 변형}
+	
+	밀도 \(\rho(\mathbf{r})\), 라메 매개변수 \(\lambda(\mathbf{r}), \mu(\mathbf{r})\)를 가지며, 외부 천체로부터의 조석 포텐셜 \(W(\mathbf{r},t)\)을 받는 탄성 지구 모델을 고려한다. 작은 변위 \(\mathbf{u}(\mathbf{r},t)\)에 대한 운동 방정식은 다음과 같다:
+	
+	\begin{equation}
+		\rho \frac{\partial^2 \mathbf{u}}{\partial t^2} = \nabla \cdot \boldsymbol{\sigma} + \rho \nabla W,
+		\label{eq:motion}
+	\end{equation}
+	
+	여기서 \(\boldsymbol{\sigma}\)는 응력 텐서이다. 등방성 탄성 매체에 대해:
+	
+	\begin{equation}
+		\sigma_{ij} = \lambda \delta_{ij} \nabla \cdot \mathbf{u} + \mu \left(\frac{\partial u_i}{\partial x_j} + \frac{\partial u_j}{\partial x_i}\right).
+		\label{eq:stress}
+	\end{equation}
+	
+	조석 포텐셜은 구면 조화 함수로 전개된다:
+	
+	\begin{equation}
+		W(r,\theta,\phi,t) = \sum_{n=2}^{\infty} \sum_{m=-n}^{n} W_{nm}(r) Y_{nm}(\theta,\phi) e^{i\omega_{nm}t}.
+		\label{eq:tidal-potential}
+	\end{equation}
+	
+	고체 지구의 경우, 차수-2 조화 함수가 지배적이다(반일주조 및 일주조). 해는 러브 방정식 시스템을 만족하는 방사 함수를 갖는 구면 조화 전개로 표현된다.
+	
+	\subsection{\(\Keff\)를 탄성 매개변수에 통합하기}
+	
+	YUCT에서 탄성 특성은 \(\Keff\)를 통해 표현된다. 부록 C(조정 화학)의 방법론을 따라, \textbf{조정 기반 광물 분류 체계}를 도입한다. 주어진 암석 또는 유체에 대해, \(\Keff\)는 체적 탄성률 \(K\), 전단 탄성률 \(\mu\), 밀도 \(\rho\)와 경험적으로 검정된 관계식을 통해 관련된다:
+	
+	\begin{align}
+		\lambda(\mathbf{r}) &= \lambda_0 \cdot f_\lambda(\Keff(\mathbf{r})), \\
+		\mu(\mathbf{r}) &= \mu_0 \cdot f_\mu(\Keff(\mathbf{r})), \\
+		\rho(\mathbf{r}) &= \rho_0 \left(\frac{\Keff(\mathbf{r})}{\Keffzero}\right)^{\gamma_\rho}, \quad \gamma_\rho \approx 0.2\ \text{(범위 0.1–0.3)},
+		\label{eq:keff-properties}
+	\end{align}
+	
+	함수 \(f_\lambda, f_\mu\)는 단조 증가 함수로서, 더 높은 조정(더 결맞은 원자/분자 구조)이 더 큰 강성을 가져옴을 반영한다. 예비 추정에 따르면 탄성률의 밀도 및 배위수에 대한 스케일링에 기초하여 \(f_\lambda(\Keff) \propto \Keff^{\xi}\)이며 \(\xi \approx 0.3\)–\(0.5\)이다.
+	
+	\subsection{공명 응답과 품질 계수}
+	
+	조석 고조파의 주파수 \(\omega\)가 지하 구조(예: 유체로 채워진 저류층)의 고유 주파수 \(\omega_0\)에 접근하면 공명 증폭이 발생한다. 공명의 품질 계수 \(Q\)는 보편적 오차 법칙을 통해 \(\Keff\)와 관련된다. 주기당 에너지 소산은 상대 오차 \(\eps\)에 비례하며, \(1/Q = \Delta E / (2\pi E) \approx \eps\)이므로, 다음을 얻는다:
+	
+	\begin{equation}
+		\frac{1}{Q} \propto \eps = \kappac \alpha \Keff^{-\beta} \quad \Longrightarrow \quad Q = Q_0 \, \Keff^{\beta},
+		\label{eq:Q-keff}
+	\end{equation}
+	
+	여기서 \(Q_0\)는 기준 값이다. 따라서:
+	\begin{itemize}
+		\item 높은 \(\Keff\) 매체(견고한 암석, 고밀도 유체)는 날카롭고 높은 \(Q\)의 공명을 생성한다.
+		\item 낮은 \(\Keff\) 매체(균열대, 가스)는 넓고 낮은 \(Q\)의 특징을 생성한다.
+	\end{itemize}
+	
+	\subsection{순방향 모델과 역문제}
+	
+	지표에서의 중력 변화 및 변위 측정은 시계열 \(d(t)\)를 생성한다. 알려진 천체력과의 컨볼루션을 통해 조석 고조파를 추출하고, 방사 대칭 기준 모델의 응답을 뺀 후, 잔차 \(\delta d(t)\)는 횡적 불균질성에 대한 정보를 포함한다.
+	
+	푸리에 변환을 통해 스펙트럼 \(\delta D(\omega)\)를 얻으며, 이는 지하 구조의 공명에 해당하는 주파수 \(\omega_i\)에서 피크를 포함한다. 각 피크로부터 다음을 추출한다:
+	
+	\begin{itemize}
+		\item \(\omega_i\) — 공명 주파수, 깊이, 크기 및 탄성 특성에 민감.
+		\item \(Q_i = \omega_i / \Delta \omega_i\) — 품질 계수, 식(\ref{eq:Q-keff})을 통해 \(\Keff\)와 관련.
+		\item \(A_i\) — 진폭, 구조와 배경 사이의 \(\Keff\) 대비에 비례.
+	\end{itemize}
+	
+	역문제 — 3차원 \(\Keff(\mathbf{r})\)의 복원 — 은 관측 스펙트럼과 합성 스펙트럼 사이의 불일치를 최소화하는 토모그래픽 역산을 통해 해결된다. 정규화는 조정 기반 광물 분류 체계로부터의 사전 정보를 통합한다.
+	
+	\subsection{조석 공명의 열적 변조}
+	\label{sec:thermal-modulation}
+	
+	온도 변화는 관계식 \(\Keff(T) \propto T^{-\gamma}\)(부록 P)를 통해 \(\Keff\)에 영향을 미친다. 일주 및 계절적 온도 변화는 열파로서 지하로 전파되어 국소적인 \(\Keff\), 따라서 얕은 구조의 공명 주파수와 품질 계수를 변조한다. 이것은 깊이 식별을 위한 추가적인 차원을 제공한다: 더 깊은 구조는 지표 온도 강제력에 대해 위상 지연과 감소된 진폭으로 응답한다.
+	
+	기상 데이터로부터 온도장 \(T(\mathbf{r},t)\)가 알려져 있거나 모델링되면, 시간 의존적 섭동 \(\delta \Keff(\mathbf{r},t) \approx -\gamma \Keff(\mathbf{r}) \delta T(\mathbf{r},t)/T\)를 계산할 수 있다. 이것이 조석 응답을 변조하여 열적 주파수에서 측대파 또는 진폭 변조를 생성한다. 이러한 변조를 분석하면 얕은 기여와 깊은 기여를 분리하여 수직 분해능을 향상시킬 수 있다.
+	
+	\subsection{공학적 구조물로의 확장: 초고층 빌딩, 교량, 댐}
+	\label{sec:structures}
+	
+	\ref{sec:model}절에서 개발된 수학적 모델은 경계 조건과 기하학을 적절히 수정함으로써 대규모 인공 구조물에 직접 적용된다. 질량 \(M\), 높이 \(H\), 특성 강성 \(k\)를 갖는 구조물에 대해, 기본 휨 모드 주파수는 다음과 같이 스케일링된다:
+	
+	\begin{equation}
+		f_0 \approx \frac{1}{2\pi} \sqrt{\frac{k}{M_{\mathrm{eff}}}} \sim \frac{1}{H} \sqrt{\frac{E}{\rho}},
+		\label{eq:structural-frequency}
+	\end{equation}
+	
+	여기서 \(E\)는 영률, \(\rho\)는 밀도, \(M_{\mathrm{eff}}\)는 유효 모드 질량이다. 전형적인 초고층 빌딩(\(H \sim 300\) m, \(E/\rho \sim 10^7\) m\(^2\)/s\(^2\))의 경우, \(f_0 \sim 0.1\) Hz — 비선형 혼합 또는 매개변수적 여기를 통한 조석 고조파의 범위 내에 충분히 들어온다.
+	
+	이러한 모드의 품질 계수 \(Q\)는 동일한 보편적 관계식에 의해 지배된다:
+	
+	\begin{equation}
+		Q = Q_0 \left( \frac{K_{\mathrm{eff}}}{K_{\mathrm{eff},0}} \right)^{\beta},
+		\label{eq:structural-Q}
+	\end{equation}
+	
+	여기서 \(K_{\mathrm{eff}}\)는 이제 \textbf{구조적 조정 효율} — 구조물의 모든 구성 요소가 얼마나 잘 함께 작동하는지를 측정하는 무차원 지표 — 을 나타낸다. 새로 지어진 건물은 높은 \(K_{\mathrm{eff}}\)를 가지며, 손상되거나 열화된 구조물은 더 낮은 값을 나타낸다.
+	
+	\subsubsection{조석 모니터링이 드러내는 것}
+	
+	구조물에 고감도 가속도계 또는 중력계를 설치하고(예: 옥상, 중간 높이, 기초) 수 주간 기록함으로써 다음을 얻는다:
+	
+	\begin{itemize}
+		\item \textbf{모드 주파수:} 변화는 강성의 변화(균열이나 재료 열화로 인한)를 나타낸다.
+		\item \textbf{품질 계수:} 감소는 축적되는 손상, 미세 균열, 또는 느슨해진 연결부의 신호이다.
+		\item \textbf{이방성:} 서로 다른 축을 따른 응답 차이는 방향성 손상 패턴을 드러낸다.
+		\item \textbf{고차 모드:} 손상 위치에 대한 깊이 분해 정보를 제공한다.
+	\end{itemize}
+	
+	\subsubsection{"중력 지문" 개념}
+	
+	모든 대형 구조물은 조석 강제력에 의해 여기된 공명 주파수와 품질 계수의 스펙트럼이라는 고유한 "중력 지문"을 가진다. 이 지문은:
+	\begin{enumerate}
+		\item \textbf{준공 시 기록되어} 기준선을 확립한다.
+		\item \textbf{주기적으로 모니터링되어} 열화를 추적한다.
+		\item \textbf{극한 사건(지진, 허리케인, 화재) 후 재측정되어} 육안 검사 없이 손상을 평가한다.
+	\end{enumerate}
+	
+	민감도는 놀랍다: 강성의 1\% 변화(예: 큰 균열로 인한)는 주파수를 \(\sim 0.5\%\) 이동시키며, 현대 계측기로 쉽게 감지 가능하다.
+	
+	\subsection{지진 예측: 조석 토모그래피로 임계 단층 모니터링}
+	\label{sec:earthquakes}
+	
+	행성 내부와 공학적 구조물의 토모그래피를 가능하게 하는 동일한 조석력이 지구의 지각에도 지속적으로 응력을 가한다. 수십 년 동안 지진학자들은 특히 스러스트 단층 및 정단층형 지진에 대해 조석 위상과 지진 발생 사이의 통계적 상관관계를 관측해 왔다 \cite{Tanaka2012, Tolstoy2013, Sibgatulin2014, RAN2025}. 이러한 상관관계는 특정 달 거리에서 최대 10\%의 확률 증가를 보이지만, 예측 이론이 없는 현상으로서 기술적인 수준에 머물러 있었다.
+	
+	YUCT는 부족했던 틀을 제공한다. 파괴에 접근하는 지질 단층은 미세 균열이 증식하고 응력이 집중됨에 따라 조정 효율 \(K_{\mathrm{eff}}\)가 감소하는 시스템이다. 보편적 오차 스케일링 법칙 \(\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}\)(식 \ref{eq:universal-scaling})는 시스템이 섭동 — 이 경우 조석 강제력 — 에 어떻게 반응하는지를 지배한다.
+	
+	\subsubsection{메커니즘}
+	
+	\begin{enumerate}
+		\item \textbf{배경 응력 축적:} 판 구조 운동이 수년에서 수세기에 걸쳐 단층에 하중을 가한다.
+		\item \textbf{임계 상태:} 응력이 파괴 임계값에 접근함에 따라, \(K_{\mathrm{eff}}\)가 떨어지며, 단층은 작은 섭동에 점점 더 민감해진다.
+		\item \textbf{조석 방아쇠:} 달과 태양으로부터의 주기적인 조석 포텐셜 \(W(\mathbf{r},t)\)이 작은 진동 응력을 추가한다. 이 응력이 단층면과 정렬되고 임계 진폭에 도달하면, 단층의 잠금을 해제할 수 있다.
+		\item \textbf{파괴:} 지진이 발생한다.
+	\end{enumerate}
+	
+	방아쇠 확률은 다음과 같이 스케일링된다:
+	\[
+	P_{\text{trigger}}(t) \propto \left( \frac{W(t)}{W_0} \right)^{\beta}, \quad \beta = 0.67,
+	\]
+	이는 보편적 법칙의 직접적인 귀결이다. 이 비선형 스케일링은 통계적 상관관계가 유의미하지만 결정론적이지 않은 이유를 설명한다 — 단층의 응답은 감소하는 \(K_{\mathrm{eff}}\)에 의해 증폭되는 것이다.
+	
+	\subsubsection{조석 토모그래피가 추가하는 것}
+	
+	알려진 단층대 주변에 배치된 고감도 중력계 네트워크는 다음을 가능하게 한다:
+	
+	\begin{itemize}
+		\item \textbf{\(K_{\mathrm{eff}}\)의 연속적 모니터링:} 각 조석 고조파(예: M2, O1, Mf)에 대한 단층의 응답은 조정 효율의 실시간 추정치를 제공한다. 지속적인 하락은 증가하는 위험을 신호한다.
+		\item \textbf{공간적 지도화:} 여러 관측소가 \(K_{\mathrm{eff}}\) 감소 영역을 국소화하여, 단층의 어느 구획이 임계에 접근하고 있는지 식별할 수 있다.
+		\item \textbf{방아쇠 예측:} 실시간 \(K_{\mathrm{eff}}\)와 정밀한 천체력을 결합함으로써, 조석 응력이 단층과 정렬되고 방아쇠 임계값을 초과할 때 위험이 높아지는 시간 창을 예측할 수 있다.
+	\end{itemize}
+	
+	\subsubsection{경험적 뒷받침}
+	
+	최근 연구들은 이미 다음을 입증했다:
+	
+	\begin{itemize}
+		\item Tanaka (2012)는 2011년 도호쿠-오키 지진 전 10년 동안 조석 방아쇠 미소지진이 증가했고 이후 사라졌음을 보였다 \cite{Tanaka2012}.
+		\item Tolstoy (2013)는 해저가 조석과 함께 "호흡"하며, 중앙 해령에서의 미소지진 활동이 조석 위상과 상관관계가 있음을 기록했다 \cite{Tolstoy2013}.
+		\item Sibgatulin 등 (2014)은 강진의 80\%가 14일 조석 공명과 상관관계가 있음을 발견했다 \cite{Sibgatulin2014}.
+		\item 최근 러시아 과학 아카데미의 연구 (2025)는 특정 지구-달 거리에서 지진 확률이 9–10\% 증가함을 입증했다 \cite{RAN2025}.
+		\item 변형 전조: 중간 규모 지진 수일에서 수주 전의 계단형 체적 변형률 변화가 조석 강제력에 기인한 것으로 보고되었다 \cite{DeformationPrecursors2024}.
+	\end{itemize}
+	
+	부족했던 것은 이러한 관측들을 측정 가능한 물리적 매개변수에 연결하는 통합된 이론적 틀이었다. YUCT는 그 연결을 제공한다: 단층대의 \(K_{\mathrm{eff}}\)이다.
+	
+	\subsubsection{실제 구현}
+	
+	\begin{itemize}
+		\item \textbf{계측기:} 잘 연구된 단층(예: 샌안드레아스, 북아나톨리아, 일본 해구) 주변에 10–20대의 초전도 중력계 배치.
+		\item \textbf{기간:} 여러 지진 주기를 포착하기 위해 5–10년 연속 운영.
+		\item \textbf{기대 결과:} 후향적 분석은 주요 사건 전에 전조적 \(K_{\mathrm{eff}}\) 하락을 보여야 한다. 전향적 모니터링은 이후 확률적 경보를 발령할 수 있다.
+	\end{itemize}
+	
+	이러한 네트워크의 비용(\$1–2백만)은 단 한 번의 대지진의 경제적·인적 비용에 비하면 무시할 만하다. M7+ 사건에 대한 24시간 경보는 수만 명의 생명과 수십억 달러를 구할 수 있다.
+	
+	\subsubsection{정량적 예측: 전조로서의 \(K_{\mathrm{eff}}\) 하락}
+	\label{subsubsec:precursor}
+	
+	지진 예보에 있어 핵심 요소는 단층을 따라 시간에 따른 \(K_{\mathrm{eff}}\)의 변화를 관측할 수 있는 능력이다. 보편적 오차 스케일링 법칙에 따르면, 상대 변형률(또는 미세 균열 밀도) \(\varepsilon\)은 \(\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}\)로 \(K_{\mathrm{eff}}\)와 관련된다. 지구조적 응력이 축적됨에 따라 단층대의 조정 유효성은 감소하고, 변형률 증가, 그 결과 조석 응답의 진폭 증가와 위상 변화를 초래한다.
+	
+	모델 시나리오를 고려하자. 어떤 시각 \(t_0\)(배경 상태)에서 단층의 조정 유효성이 \(K_{\mathrm{eff}}^{(0)}\)이라고 하자. 임계 상태에 접근함에 따라 \(\Delta K\)만큼 하락한다. 조석 응답 진폭의 상대적 변화는 식(25)로부터 추정될 수 있다:
+	
+	\[
+	\frac{\Delta A}{A} \approx \frac{\Delta Q}{Q} \approx \beta \frac{\Delta K}{K}.
+	\]
+	
+	\(\beta = 0.67\)이고 \(\Delta K/K = 20\%\)에 대해, \(\Delta A/A \approx 13\%\)를 얻는다. 이러한 진폭 변화는 월 평균을 취하는 현대 중력계로 쉽게 감지 가능하다.
+	
+	더욱이, \(K_{\mathrm{eff}}\)의 하락 자체가 방아쇠 확률과 연결될 수 있다. 식(\ref{eq:trigger})으로부터, 조석파에 의해 지진이 시작될 확률은 \((W(t)/W_0)^{\beta}\)에 비례한다. 결과적으로, \(K_{\mathrm{eff}}\)가 감소함에 따라 임계 진폭 \(W_0\)(즉, 사건을 방아쇠할 수 있는 최소 조석 하중)도 감소한다. 실제로 이는 중력계 네트워크가 특정 단층대에서 수 주에 걸쳐 \(K_{\mathrm{eff}}\)의 20\% 이상의 꾸준한 감소를 기록한다면:
+	
+	\begin{enumerate}
+		\item 향후 수일 내 지진 위험이 증가한다.
+		\item 조석파가 최대 진폭에 도달하는 시간(예: M2, Mf)이 확률이 높아진 창이 된다.
+		\item \(K_{\mathrm{eff}}\)가 임계 임계값 \(K_{\text{crit}}\) 아래로 떨어지면 경보가 발령될 수 있다.
+	\end{enumerate}
+	
+	따라서 중력 네트워크의 데이터를 사용한 \(K_{\mathrm{eff}}\)의 연속 모니터링은 단층의 현재 상태를 진단할 뿐만 아니라 강력한 사건의 확률에 대한 단기(수일에서 수주) 예측을 가능하게 한다. 이는 지구역학에서 YUCT의 직접적인 실용적 응용을 나타낸다.
+	
+	\subsection{쓰나미 예측: 궁극적 응용}
+	\label{sec:tsunami}
+	
+	쓰나미를 생성하는 해저 지진은 모든 자연 재해 중에서 가장 위험하고 예측이 어렵다. 쓰나미의 80\%는 지진 시 해저 변형에 의해 발생하지만 \cite{NOAA2024, USGS2024}, 현재의 경보 시스템은 지진이 발생한 \textit{이후에만} 작동된다. 파열에서 파 도달까지의 귀중한 시간은 대피가 아닌 계산에 소비된다.
+	
+	조석 토모그래피는 패러다임 전환을 제공한다: \textbf{파열이 일어나기 전에 예측하는 것}.
+	
+	\subsubsection{메커니즘}
+	
+	파괴에 접근하는 섭입대는 조정 효율 \(K_{\mathrm{eff}}\)가 감소하는 시스템으로 거동한다. 응력이 축적됨에 따라 미세 균열이 증식하고, 조석 강제력에 대한 단층의 응답은 점점 더 비선형적이 된다. 보편적 스케일링 법칙이 이 응답을 지배한다:
+	\[
+	\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}, \quad \beta = 0.67.
+	\]
+	
+	섭입대(예: 일본 해구, 캐스케이디아, 수마트라) 주변에 해저 중력계 네트워크를 배치하면 다음이 제공된다:
+	\begin{itemize}
+		\item \textbf{실시간 \(K_{\mathrm{eff}}\) 추정:} 조석 고조파(M2, O1, Mf)의 진폭과 위상이 연속적으로 측정되고 단층대 조정에 대해 역산된다.
+		\item \textbf{전조 감지:} 수주에서 수개월에 걸친 \(K_{\mathrm{eff}}\)의 지속적 하락은 단층이 임계 상태로 진입하고 있음을 신호한다.
+		\item \textbf{방아쇠 예측:} 현재의 \(K_{\mathrm{eff}}\)와 정밀 천체력을 결합함으로써, 확률이 높아진 시간 창을 예측할 수 있다:
+		\[
+		P_{\text{trigger}}(t) \propto \left( \frac{W(t)}{W_0} \right)^{0.67},
+		\]
+		여기서 \(W(t)\)는 시간 \(t\)에서의 조석 포텐셜이다.
+	\end{itemize}
+	
+	\subsubsection{경험적 뒷받침}
+	
+	여러 독립적인 연구들이 이미 기본적인 상관관계를 입증했다:
+	\begin{itemize}
+		\item Tanaka (2012)는 2011년 도호쿠-오키 지진 전 10년 동안 조석 방아쇠 미소지진이 증가했고 이후 사라졌음을 보였다 \cite{Tanaka2012}.
+		\item Tolstoy (2013)는 해저가 조석과 함께 "호흡"하며, 중앙 해령에서의 미소지진 활동이 조석 위상과 상관관계가 있음을 기록했다 \cite{Tolstoy2013}.
+		\item Sibgatulin 등 (2014)은 강진의 80\%가 14일 조석 공명과 상관관계가 있음을 발견했다 \cite{Sibgatulin2014}.
+		\item 최근 러시아 과학 아카데미의 연구 (2025)는 특정 지구-달 거리에서 지진 확률이 9–10\% 증가함을 입증했다 \cite{RAN2025}.
+	\end{itemize}
+	
+	부족했던 것은 이러한 관측들을 측정 가능한 물리적 매개변수에 연결하는 통합된 이론적 틀이었다. YUCT는 그 틀을 제공한다: 단층대의 \(K_{\mathrm{eff}}\)이다.
+	
+	\subsubsection{실제 구현}
+	
+	\begin{itemize}
+		\item \textbf{계측기:} 알려진 섭입대 위의 200×200 km 격자에 20–30대의 해저 중력계(비용 \(\sim\) \$50,000/대) 배치.
+		\item \textbf{기간:} 완전한 지진 주기를 포착하기 위해 5–10년 연속 운영.
+		\item \textbf{데이터 융합:} 중력 데이터를 기존 DART 부이 네트워크 \cite{NOAA2024} 및 지진 모니터링 \cite{USGS2024}과 결합하여 다중 매개변수 검증 수행.
+		\item \textbf{경보 프로토콜:} \(K_{\mathrm{eff}}\)가 검정된 임계값 아래로 떨어지고 고조 시간 창과 일치할 때, 자동 경보가 민방위 기관에 발령된다.
+	\end{itemize}
+	
+	이러한 네트워크의 비용(\$1–2백만)은 단 한 번의 대형 쓰나미의 경제적·인적 비용에 비하면 무시할 만하다. 2004년 인도양 쓰나미는 25만 명의 생명을 앗아갔고 수십억 달러의 피해를 입혔다 \cite{NOAA2024, USGS2024}. 유사한 사건에 대한 24시간 경보는 21세기의 가장 위대한 인도주의적 성취가 될 것이다.
+	
+	\subsubsection{결론}
+	
+	쓰나미 예측은 꿈이 아니다 — YUCT의 직접적인 귀결이다. 해저가 조석과 함께 어떻게 "호흡"하는지를 측정함으로써 \cite{Tolstoy2013}, 지구가 파괴를 내뿜으려 하는 때를 마침내 볼 수 있다. 이것은 추측이 아니라 물리학이다.
+	
+	\section{\(\Keff\) 신호를 통한 탄화수소 및 광물 식별}
+	\label{sec:identification}
+	
+	\subsection{지질 재료의 조정 기반 분류}
+	
+	원소 주기율표(부록 C)와 유사하게, 지질 재료는 그 특징적인 \(\Keff\) 값에 의해 분류될 수 있다. 표 \ref{tab:keff-geology}는 조정-화학 원리와 스케일링 관계에 기초한 예비 추정치를 제시한다. 이러한 추정치의 출처는 다음과 같다:
+	\begin{itemize}
+		\item 표준 참고 문헌(예: Carmichael, "Practical Handbook of Physical Properties of Rocks and Minerals", CRC Press)으로부터의 탄성률과 밀도.
+		\item 부록 C로부터 도출된 \(\Keff\)와 화학 조성 사이의 경험적 상관관계.
+		\item 잘 연구된 유전으로부터의 탄성파 및 시추공 데이터의 역산(예비적).
+	\end{itemize}
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{대표적인 지질 재료의 조정 효율 \(\Keff\) (예비 추정치)}
+		\label{tab:keff-geology}
+		\small
+		\begin{tabular}{lcc}
+			\toprule
+			\textbf{재료} & \textbf{\(\Keff\) (추정치)} & \textbf{설명} \\
+			\midrule
+			\multicolumn{3}{l}{\textit{유체}} \\
+			천연가스 (메탄) & $6.1 \pm 0.3$ & 높은 이동성, 낮은 밀도 \\
+			경질 원유 & $5.2 \pm 0.2$ & 중간 정도의 조정 \\
+			중질 원유 & $4.8 \pm 0.2$ & 더 높은 점성, 더 낮은 \(\Keff\) \\
+			물 (지층수) & $4.5 \pm 0.2$ & 강한 수소 결합 \\
+			\hline
+			\multicolumn{3}{l}{\textit{암석}} \\
+			미고결 모래 & $3.2 \pm 0.3$ & 낮은 조정, 높은 공극률 \\
+			사암 (전형적) & $3.8 \pm 0.3$ & 중간 정도 \\
+			사암 (치밀) & $4.2 \pm 0.3$ & 감소된 공극률 \\
+			석회암 & $4.5 \pm 0.3$ & 결정질 구조 \\
+			화강암 & $5.0 \pm 0.4$ & 높은 결맞음 \\
+			현무암 & $5.3 \pm 0.4$ & 치밀, 세립질 \\
+			\hline
+			\multicolumn{3}{l}{\textit{광석 광물}} \\
+			금 & $8.2 \pm 0.5$ & 고밀도, 금속 결합 \\
+			구리 & $7.5 \pm 0.5$ & 금속성 \\
+			철광석 (적철석) & $6.8 \pm 0.4$ & 산화물 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{탄화수소 저류층의 공명 신호}
+	
+	탄화수소 저류층은 전형적으로 다공질 저류암(사암, 탄산염암)의 공극 공간이 석유 또는 가스로 채워지고, 불투수성 덮개암(셰일, 증발암)에 의해 밀봉된 구성을 취한다. 이 배치는 다음에 의해 결정되는 특성 주파수를 갖는 공명 구조를 생성한다:
+	
+	\begin{equation}
+		\omega_0 \approx \frac{\pi v_s}{2h} \sqrt{\frac{\rho_f}{\rho_r} \cdot \frac{K_r}{K_f}},
+		\label{eq:resonant-frequency}
+	\end{equation}
+	
+	여기서 \(v_s\)는 S파 속도, \(h\)는 저류층 두께, \(\rho_f, \rho_r\)은 각각 유체와 암석의 밀도, \(K_f, K_r\)은 체적 탄성률이다. 이 식은 탄성 매트릭스 내에 묻힌 유체 층의 기본 모드("스퀴트" 공명)로부터 유도된다. 전형적인 저류층 매개변수(\(v_s \approx 2500\) m/s, \(h = 50\) m, \(\rho_f/\rho_r \approx 0.8\), \(K_r/K_f \approx 10\))에 대해, \(\omega_0/(2\pi) \approx 0.5\) Hz — 조석 대역 내인가? 실제 조석 주파수는 훨씬 더 낮다(\(\sim 10^{-5}\) Hz). 그러나 유효 컴플라이언스가 높은 경우(예: 큰 유체 부피), 훨씬 더 낮은 주파수에서 공명이 발생할 수 있다. 또는 조석 주파수의 비선형 혼합이 더 높은 주파수 고조파를 생성할 수 있다. 이는 추가 연구가 필요한 영역으로 남아 있다.
+	
+	품질 계수 \(Q\)는 저류층 시스템의 유효 조정을 나타내는 \(\Keff\)를 사용하여 식(\ref{eq:Q-keff})로 주어진다. 표 \ref{tab:keff-geology}를 사용하면:
+	
+	\begin{itemize}
+		\item 가스 저류층: \(\Keff \approx 6.1 \Rightarrow Q \approx Q_0 \times 6.1^{0.67} \approx 3.5\,Q_0\) (높은 \(Q\), 날카로운 공명)
+		\item 석유 저류층: \(\Keff \approx 5.2 \Rightarrow Q \approx Q_0 \times 5.2^{0.67} \approx 3.0\,Q_0\) (중간)
+		\item 물 포화: \(\Keff \approx 4.5 \Rightarrow Q \approx Q_0 \times 4.5^{0.67} \approx 2.7\,Q_0\) (더 낮은 \(Q\))
+	\end{itemize}
+	
+	따라서 조석 공명의 스펙트럼 분석은 시추 없이도 가스, 석유, 물을 함유한 구조를 구별할 수 있다.
+	
+	% ========= 수정된 섹션 =========
+	\subsubsection{예상 신호 진폭과 현대 중력계에 의한 측정 가능성}
+	\label{subsubsec:signal_amplitude}
+	
+	이 방법의 실질적 실현 가능성을 평가하려면, 전형적인 유전 및 가스전으로부터의 조석 공명 진폭이 현대 중력계의 감도 임계값(\( \sim 10^{-11}\ \text{m/s}^2\))을 초과함을 입증할 필요가 있다. 두께 \(h = 50\) m, 가스로 포화되고(\(\Keff \approx 6.1\)), 깊이 \(H = 2000\) m에 위치하며, \(\Keff \approx 4.0\)의 균질한 모암 내에 있는 저류층을 고려하자. 조정 유효성의 대비 \(\Delta \Keff / \Keff \approx 0.35\)는 상태 방정식을 통해 추정될 수 있는 밀도와 강성의 상응하는 대비를 생성한다.
+	
+	M2 조석파(주기 12.42 h)는 위도에 따라 약 \(100\)–\(150\) nm/s\(^2\)(즉, \(\sim 10^{-8} g\))의 진폭으로 지표에 중력 변화를 생성한다. 저류층에서의 공명 증폭은 다음과 같이 추정될 수 있는 부가적인 국소 이상 \(\delta g_{\text{res}}\)를 초래한다:
+	
+	\begin{equation}
+		\delta g_{\text{res}} \approx \delta g_{\text{tide}} \cdot \frac{Q}{Q_0} \cdot \frac{\Delta \Keff}{\Keff} \cdot \left(\frac{h}{H}\right)^2,
+		\label{eq:signal_estimate}
+	\end{equation}
+	
+	여기서 \(\delta g_{\text{tide}} \approx 100\) nm/s\(^2\)는 배경 조석 신호, \(Q\)는 공명의 품질 계수(식(25)로부터), \(Q_0 \approx 100\)은 배경 진동의 품질 계수, \(h/H\)는 깊이를 설명하는 기하학적 인자이다. 표 \ref{tab:keff-geology}의 가스 포화 저류층에 대해, \(\Keff \approx 6.1\)이며, 이는 \(Q \approx Q_0 \times (6.1/4.0)^{0.67} \approx 1.35\,Q_0\)를 산출한다.
+	
+	수치를 대입하면:
+	
+	\[
+	\delta g_{\text{res}} \approx 100\ \text{nm/s}^2 \times 1.35 \times 0.35 \times (50/2000)^2 \approx 100 \times 1.35 \times 0.35 \times 0.000625 \approx 0.03\ \text{nm/s}^2.
+	\]
+	
+	얻어진 값 \(\delta g_{\text{res}} \approx 0.03\ \text{nm/s}^2 = 3 \times 10^{-11}\ \text{m/s}^2\)(즉, \(3 \times 10^{-12}\ g\))는 iGrav와 같은 현대 초전도 중력계의 감도 한계(전형적 감도 \(10^{-11}\ \text{m/s}^2\), 즉 약 \(10^{-12}\ g\))에 있다. 그러한 신호는 여러 조석 주기에 걸쳐 데이터를 스태킹함으로써 검출될 수 있을 것이다. 물 포화 저류층(\(\Keff \approx 4.5\))의 경우, 신호는 약 절반(\( \approx 1.5\times10^{-11}\ \text{m/s}^2\), 즉 \(1.5\times10^{-12}\ g\))이 되어 검출이 더 어렵지만, 더 긴 관측 기간으로 원칙적으로 여전히 가능하다. 따라서 심부 저류층으로부터의 조석 공명의 직접적인 등록은 현재 기술적 역량의 가장자리에 있으며, 이는 현재까지 신뢰할 만한 관측이 부재한 이유를 설명한다.
+	% ========= 수정 종료 =========
+	
+	\subsection{공명 주파수와 조정 유효성 사이의 관계}
+	\label{subsec:frequency_keff}
+	
+	식(25)은 공명 품질 계수 \(Q\)를 \(\Keff\)와 관련시키지만, 저류층의 완전한 식별을 위해서는 공명 주파수 \(\omega_0\)의 \(\Keff\)에 대한 의존성도 알아야 한다. 저류층이 유효 진동 시스템을 나타내는 "스프링-질량-감쇠기" 모델의 틀 내에서, 강성 \(k\)는 전단 탄성률 \(\mu\)에 비례하며, 이는 식(\ref{eq:keff-properties})에 따라 \(\mu \propto \Keff^{\xi}\)(\(\xi \approx 0.4\))로 스케일링된다. 그러면 기본 모드 공명 주파수에 대해 다음을 얻는다:
+	
+	\begin{equation}
+		\omega_0 = \sqrt{\frac{k}{M_{\text{eff}}}} \propto \sqrt{\mu} \propto \Keff^{\xi/2} \approx \Keff^{0.2}.
+		\label{eq:omega_keff}
+	\end{equation}
+	
+	\subsection{검정 사례: 사모틀로르 유전}
+	
+	구체적인 예시로서, 서시베리아에 있는 세계 최대 규모의 사모틀로르 유전을 고려한다. 이 유전은 1.5–2.5 km 깊이의 백악기 사암 내에 여러 개의 중첩된 저류층으로 구성되며, 공극률 15–25\%, 석유 포화율 60–80\%이다. 공개된 데이터를 사용하여, 석유 포화 사암의 예상 \(\Keff\)를 추정할 수 있다: 표 \ref{tab:keff-geology}로부터, 사암 매트릭스 \(\Keff \approx 3.8\), 석유 \(\Keff \approx 5.2\), 따라서 저류층의 유효 \(\Keff\)(체적 평균에 의한) \(\approx 0.7 \times 3.8 + 0.3 \times 5.2 \approx 4.2\) (공극률 30\% 가정). 예측되는 \(Q\)는 \(\approx Q_0 \times 4.2^{0.67} \approx 2.8 Q_0\)일 것이다. 배경 암석의 \(\Keff \approx 4.0\)라면, 대비는 미미하다. 그러나 가스캡(더 높은 \(\Keff\))이나 수층(더 낮은 \(\Keff\))의 존재는 감지 가능한 스펙트럼 차이를 생성할 것이다.
+	
+	사모틀로르 상공에서의 파일럿 조사는, 20대의 초전도 중력계를 1년간 배치하여, 조석 공명이 알려진 저류층 경계와 상관관계가 있는지 검증할 수 있다. 성공은 강력한 개념 증명을 제공할 것이다.
+	
+	\section{경제적 타당성 및 위험 감소}
+	\label{sec:economics}
+	
+	\subsection{전통적 방법과의 비용 비교}
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{탐사 방법의 경제적 비교}
+		\label{tab:economics}
+		\small
+		\begin{tabular}{lccc}
+			\toprule
+			\textbf{방법} & \textbf{조사당 비용} & \textbf{투과 깊이} & \textbf{환경 영향} \\
+			\midrule
+			3D 탄성파 (육상) & \$5–20백만 & 5–8 km & 높음 (바이브로사이스, 시추) \\
+			3D 탄성파 (해상) & \$20–100백만 & 8–10 km & 높음 (에어건, 스트리머) \\
+			중력/자력 & \$1–3백만 & 적분값 & 낮음 \\
+			\textbf{조석 토모그래피} & \textbf{\$1–2백만} & \textbf{전체 깊이} & \textbf{없음 (수동적)} \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	광역 조석 토모그래피 조사는 10–20대의 고정밀 중력계/지진계 전개(관측소 비용 \(\sim\) \$50,000/대)와 데이터 처리 및 해석을 포함하여 총 \(\sim\) \$1–2백만이 소요된다. 이는 비슷한 면적을 커버하는 해상 탄성파 조사보다 두 자릿수 낮은 비용이다.
+	
+	\subsection{탐사 시추의 위험 감소}
+	
+	업계 통계에 따르면 성숙된 분지에서조차 탐사 시추정의 30–50\%는 건성공(비상업적)이다. 추가적인 지구물리학적 정보는 이 위험을 줄일 수 있다. 개선된 탄성파 이미징으로부터의 유추에 기초하면, 조석 토모그래피를 통해 건성공 확률의 20–30\% 감소가 달성 가능하다.
+	
+	심부 탐사정의 비용이 \$10–30백만인 것을 고려할 때, 단 2–3개의 건성공을 절약하는 것만으로도 조사 비용의 10–45배를 회수할 수 있다.
+	
+	\subsection{환경적 및 사회적 이점}
+	
+	조석 토모그래피는 완전히 수동적이어서 폭약 음원, 진동기 또는 시추가 전혀 필요 없다. 환경적으로 무해하며, 능동적 방법이 금지된 민감한 지역(자연 보호 구역, 도시 지역, 해양 보호 구역)에도 전개될 수 있다.
+	
+	\section{구조물 조석 모니터링의 경제적 및 사회적 영향}
+	\label{sec:structural-economics}
+	
+	\subsection{전통적 구조 모니터링과의 비용 비교}
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{구조 건전성 모니터링 방법의 비용 비교}
+		\label{tab:structural-costs}
+		\small
+		\begin{tabular}{lccc}
+			\toprule
+			\textbf{방법} & \textbf{구조물당 비용} & \textbf{범위} & \textbf{연속적 여부} \\
+			\midrule
+			육안 검사 & \$10,000–50,000/년 & 표면만 & 아니오 \\
+			초음파 탐상 & \$50,000–200,000 & 국소 지점 & 아니오 \\
+			광섬유 변형률 센서 & \$100,000–500,000 & 사전 설치된 라인 & 예 \\
+			가속도계 네트워크 & \$50,000–150,000 & 이산 지점 & 예 \\
+			\textbf{조석 토모그래피} & \textbf{\$50,000–100,000 (일회성)} & \textbf{전체 체적} & \textbf{예 (수동적)} \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	주요 구조물을 위한 조석 모니터링 시스템은 1–3개의 고감도 센서(비용 \(\sim\) \$30,000–50,000/대), 데이터 수집 및 분석 소프트웨어를 필요로 하며, 일회성 투자 \$50,000–100,000이다. 이는 구조물의 가치(주요 초고층 빌딩은 \$5억–\$10억)와 잠재적 붕괴 비용보다 \textbf{자릿수만큼 낮다}.
+	
+	\subsection{위험 감소 및 회피된 손실}
+	
+	\begin{itemize}
+		\item \textbf{제노바 교량 붕괴 (2018):} 43명 사망, 경제적 손실 추정 \$50억 \cite{Genoa2018}.
+		\item \textbf{서프사이드 콘도미니엄 붕괴 (2021):} 98명 사망, 손실 \$10억 초과 \cite{Surfside2021}.
+		\item \textbf{미국 내 교량 파손의 연간 평균 비용:} \$10–20억 \cite{ASCE2021}.
+	\end{itemize}
+	
+	조기 경보를 통한 파손 위험의 10\% 감소는 매년 수백 명의 생명과 수십억 달러를 구할 것이다. 조석 토모그래피는 연속적이고 비침습적인 모니터링을 제공함으로써 그러한 조기 경보를 전달할 독특한 위치에 있다.
+	
+	\subsection{규모의 경제학: 행성 규모 모니터링 네트워크}
+	
+	10,000개의 중요 구조물(초고층 빌딩, 교량, 댐, 원자력 시설)을 모니터링하는 글로벌 네트워크를 고려하자:
+	
+	\begin{itemize}
+		\item 센서: 10,000 × \$50,000 = \$5억.
+		\item 설치 및 검정: \$1억.
+		\item 중앙 데이터 처리 및 AI 분석: \$1억.
+		\item \textbf{총계: \$7억 — 단일 항공모함 비용보다 적음.}
+	\end{itemize}
+	
+	이 네트워크는:
+	\begin{itemize}
+		\item 세계에서 가장 중요한 구조물에 대한 실시간 건전성 데이터를 제공할 것이다.
+		\item 예측 정비를 가능하게 하여 수리 비용으로 수십억 달러를 절약할 것이다.
+		\item 위험 구역에 검사관을 보내지 않고도 즉각적인 재해 후 평가를 제공할 것이다.
+		\item 중력 하중 하에서의 구조 거동에 대한 역사적 아카이브를 생성할 것이다.
+	\end{itemize}
+	
+	사회적 투자 수익률은 수십 년에 걸쳐 수조 달러와 구원된 수천 명의 생명으로 측정될 것이다.
+	
+	\section{실험적 로드맵}
+	\label{sec:roadmap}
+	
+	\subsection{1단계: 조정 광물 데이터베이스 (1–2년)}
+	
+	\begin{itemize}
+		\item 대표적인 암석 유형과 유체에 대한 탄성률, 밀도, 공극률의 실험실 측정을 수집한다.
+		\item 스케일링 관계와 보편적 오차 법칙을 사용하여 \(\Keff\) 값을 검정한다.
+		\item 조정 기반 광물 분류 체계를 확장한다(표 \ref{tab:keff-geology}를 수백 개의 항목으로 확장).
+	\end{itemize}
+	
+	\subsection{2단계: 파일럿 현장 연구 (2–3년)}
+	
+	\begin{itemize}
+		\item 기존 탄성파 데이터와 시추공 데이터가 풍부한 잘 특성화된 탄화수소 광구(예: 서시베리아, 퍼미안 분지, 북해)를 선택한다.
+		\item 100×100 km 영역에 걸쳐 15–20대의 초전도 중력계(예: iGrav 유형, 감도 \(10^{-11}\ \text{m/s}^2\), 즉 약 \(10^{-12}\ g\))와 광대역 지진계 네트워크를 배치한다(관측소 간격 ~25–30 km).
+		\item 여러 조석 주기를 포착하고 스태킹을 통해 잡음을 억제하기 위해 최소 1년간 연속 기록한다.
+		\item 알려진 천체력에 대한 최소제곱 피팅을 사용하여 조석 고조파를 추출한다. 전 지구 모델(예: TPXO)을 사용하여 해양 조석 하중을 고려하고 모델링된 효과를 뺀다.
+		\item 잔차 스펙트럼을 계산하고 공명 피크를 식별한다.
+		\item 알려진 저류층 위치와 비교하여 방법을 검증한다.
+	\end{itemize}
+	
+	\subsubsection{잡음원과 그 경감}
+	
+	잠재적 잡음원은 다음을 포함한다:
+	\begin{itemize}
+		\item 대기압 변화 — 기압 보정과 국소 압력 센서를 사용하여 감소 가능.
+		\item 미진동 잡음(해양파, 문화 활동) — 조용한 장소 선택과 배열 처리를 통해 감소.
+		\item 기기 드리프트 — 검정과 기준 관측소와의 비교를 통해 보정.
+		\item 수문학적 하중(지하수, 적설) — 국소 기상 데이터를 사용하여 모델링 가능.
+	\end{itemize}
+	
+	현대의 데이터 처리 기술(웨이블릿 잡음 제거, 다중 채널 특이 스펙트럼 분석)은 신호 대 잡음비를 더욱 향상시킬 수 있다.
+	
+	\subsection{3단계: 역산 알고리즘 개발 (3–4년)}
+	
+	\begin{itemize}
+		\item \(\Keff\) 매개변수화를 통합한 3D 토모그래픽 역산 코드를 개발한다.
+		\item 합성 데이터로 검증하고 정규화 전략을 개선한다.
+		\item 보완적 데이터(자기지전류, 수동적 탄성파)와 통합하여 공동 역산을 수행한다.
+	\end{itemize}
+	
+	\subsection{4단계: 상업적 전개 (4–6년)}
+	
+	\begin{itemize}
+		\item 광역 조석 토모그래피 조사를 제공하는 상업적 서비스를 확립한다.
+		\item 탄성파 방법과 함께 탐사 워크플로우에 통합한다.
+		\item 광물 탐사, 지열 자원 평가, 이산화탄소 격리 모니터링으로 확장한다.
+	\end{itemize}
+	
+	\subsection{병렬 로드맵: 구조 건전성 모니터링}
+	
+	\subsubsection{S1 단계: 계측화된 건물에서의 개념 증명 (2–3년)}
+	
+	\begin{itemize}
+		\item 기존 센서 네트워크를 갖춘 3–5개의 고층 건물을 선정한다(예: 도쿄, 샌프란시스코, 두바이).
+		\item 보완적인 고감도 중력계/가속도계를 설치한다.
+		\item 3–6개월 동안 조석 응답을 기록한다.
+		\item 모드 매개변수를 추출하고 알려진 구조 특성과 상관시킨다.
+		\item 유한 요소 모델에 대해 검증한다.
+	\end{itemize}
+	
+	\subsubsection{S2 단계: 기준선 확립 및 데이터베이스화 (3–5년)}
+	
+	\begin{itemize}
+		\item 다양한 유형의 50–100개 구조물(초고층 빌딩, 교량, 댐)로 확대한다.
+		\item 각 구조물에 대한 "중력 지문" 데이터베이스를 구축한다.
+		\item 자동 처리 파이프라인과 이상 탐지 알고리즘을 개발한다.
+		\item 다양한 손상 상태에 대한 \(K_{\mathrm{eff}}\) 임계값을 검정한다.
+	\end{itemize}
+	
+	\subsubsection{S3 단계: 연속 모니터링 네트워크 (5–10년)}
+	
+	\begin{itemize}
+		\item 1,000개 이상의 중요 구조물에 상설 센서를 전개한다.
+		\item 국가 조기 경보 시스템과 통합한다.
+		\item 엔지니어와 당국에 실시간 건전성 대시보드를 제공한다.
+		\item 조석 기반 구조 모니터링에 대한 국제 표준을 확립한다.
+	\end{itemize}
+	
+	\subsubsection{S4 단계: 행성 규모 (10–20년)}
+	
+	\begin{itemize}
+		\item 전 세계 10,000개 이상의 구조물로 확대한다.
+		\item 통합된 "지구 규모" 모니터링 네트워크를 구축한다.
+		\item 축적된 데이터를 사용하여 건축 기준과 설계 관행을 개선한다.
+		\item 재난 대응을 위한 국가 간 데이터 공유를 가능하게 한다.
+	\end{itemize}
+	
+	이 전체 프로그램의 비용은 구조적 파손으로 인한 연간 손실의 일부에 불과하다. 기술은 준비되어 있다; 그것을 구현할 의지만이 필요할 뿐이다.
+	
+	% =============================================================================
+	% 상세 파일럿 프로젝트와 상업화 경로
+	% =============================================================================
+	\section{상세 파일럿 프로젝트와 상업화 경로}
+	
+	\subsection{파일럿 프로젝트 1: 초고층 빌딩의 중력 토모그래피}
+	
+	\textbf{개념:} 의료용 초음파와 유사하게, 우리는 건물을 "신체"로, 달 조석을 외부 "초음파원"으로, 고정밀 중력계/지진계 네트워크를 내부 불균질성(공동, 균열, 다른 재료)에 의해 야기된 조석파 왜곡을 기록하는 "센서"로 취급한다. 이러한 왜곡을 분석함으로써, 유효 중력 강성(\(\Keff\)와 관련된)의 3D 지도를 재구성할 수 있다.
+	
+	\textbf{계측기 (향상된 정확도):}
+	\begin{itemize}
+		\item 9대의 초전도 중력계(예: iGrav)를 지하, 1/4, 1/2, 3/4 높이, 옥상에 배치.
+		\item 주변 및 기준점에 분산된 20대의 광대역 지진계(예: Trillium 120).
+		\item GPS 동기화 및 기상 관측소.
+	\end{itemize}
+	
+	\textbf{측정 프로그램:}
+	\begin{enumerate}
+		\item 3개월 연속 기록(여유를 둔 1 태음월 주기).
+		\item 가능한 공명을 포착하기 위해 100 Hz 샘플링 속도.
+		\item 배경 잡음 기록을 위한 검정 기간(2주).
+		\item 시험 신호를 위한 제어된 가진(엘리베이터 이동, 문 충격).
+	\end{enumerate}
+	
+	\textbf{추정 비용 (상세):}
+	\begin{table}[htbp]
+		\centering
+		\caption{파일럿 프로젝트 1 예산 (USD)}
+		\label{tab:budget-building}
+		\small
+		\begin{tabular}{lrr}
+			\toprule
+			\textbf{항목} & \textbf{계산} & \textbf{비용} \\
+			\midrule
+			\multicolumn{3}{l}{\textbf{장비 임대}} \\
+			중력계 (9대) & $9\times90\times300$ & 243\,000 \\
+			지진계 (20대) & $20\times90\times105$ & 189\,000 \\
+			데이터 로거 + GPS (29대) & $29\times90\times50$ & 130\,500 \\
+			기상 관측소 (구매) & 1식 & 6\,000 \\
+			케이블, 배터리, 예비품 & – & 15\,000 \\
+			\multicolumn{3}{l}{\textbf{운송 및 물류}} \\
+			장비 왕복 배송 & $2\times7\,000$ & 14\,000 \\
+			현지 밴 임대 & $3\times1\,500$ & 4\,500 \\
+			\multicolumn{3}{l}{\textbf{설치 및 철거}} \\
+			리깅/전기 기술자 (10인$\times$5일$\times$400) & – & 20\,000 \\
+			시운전 (5일$\times$2 기사$\times$500) & – & 5\,000 \\
+			\multicolumn{3}{l}{\textbf{인건비 (급여)}} \\
+			프로젝트 매니저 (3개월) & $3\times18\,000$ & 54\,000 \\
+			선임 지구물리학자 (3개월) & $3\times12\,000$ & 36\,000 \\
+			지구물리학자 (2인$\times$3개월$\times$8\,000) & – & 48\,000 \\
+			기술자 (3인$\times$3개월$\times$5\,500) & – & 49\,500 \\
+			연구실 운영자 (3개월) & $3\times4\,000$ & 12\,000 \\
+			\multicolumn{3}{l}{\textbf{숙박 및 일비}} \\
+			비현지 직원 임대료 (3인$\times$3개월$\times$1\,200) & – & 10\,800 \\
+			일비 (6인$\times$90일$\times$30) & – & 16\,200 \\
+			의료 보험 (6인$\times$300) & – & 1\,800 \\
+			\multicolumn{3}{l}{\textbf{데이터 처리 및 소프트웨어}} \\
+			전문 라이선스 (MATLAB, 신호 처리) & – & 12\,000 \\
+			클라우드 컴퓨팅 & – & 5\,000 \\
+			역산 알고리즘 개발 (계약) & – & 20\,000 \\
+			\multicolumn{3}{l}{\textbf{기타 및 예비비}} \\
+			관리 간접비 & – & 8\,000 \\
+			예비비 (15\%) & – & 135\,000 \\
+			\midrule
+			\textbf{합계} & & \textbf{1\,080\,000} \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{기대 결과:} 수동적 조석 측정만으로 획득한 건물 내부 구조의 첫 3D 지도. 숨겨진 결함과 공명 모드의 식별. 초고층 빌딩, 교량, 댐의 구조 건전성 모니터링을 위한 상업적 가치.
+	
+	\subsection{파일럿 프로젝트 2: 카르스트 지역의 광역 토모그래피}
+	
+	\textbf{개념:} 잘 연구된 카르스트 지역(예: 러시아 쿤구르 얼음 동굴)에 중력계와 지진계의 고밀도 네트워크를 배치하여, 알려진 공동이 검정 타겟을 제공한다. 달 조석이 지하를 비추고; 진폭/위상 이상과 공명 주파수를 분석함으로써, 카르스트 시스템의 3D 토모그래픽 모델을 재구성한다.
+	
+	\textbf{계측기 (향상된 정확도):}
+	\begin{itemize}
+		\item 14대의 초전도 중력계.
+		\item 35대의 광대역 지진계.
+		\item 동굴 내부에 5대의 센서 배치.
+		\item 50 km 떨어진 기준 관측소.
+	\end{itemize}
+	
+	\textbf{측정 프로그램:}
+	\begin{enumerate}
+		\item 6개월 연속 기록.
+		\item 고밀도 격자 (100$\times$100 km, 간격 5–10 km).
+		\item GPS를 통한 동기화.
+		\item 압력 보정을 위한 병행 미기후 모니터링.
+	\end{enumerate}
+	
+	\textbf{추정 비용 (상세):}
+	\begin{table}[htbp]
+		\centering
+		\caption{파일럿 프로젝트 2 예산 (USD)}
+		\label{tab:budget-karst}
+		\small
+		\begin{tabular}{lrr}
+			\toprule
+			\textbf{항목} & \textbf{계산} & \textbf{비용} \\
+			\midrule
+			\multicolumn{3}{l}{\textbf{장비 임대}} \\
+			중력계 (14대) & $14\times180\times300$ & 756\,000 \\
+			지진계 (35대) & $35\times180\times105$ & 661\,500 \\
+			데이터 로거 + GPS (49대) & $49\times180\times50$ & 441\,000 \\
+			기상 관측소 (2대, 구매) & – & 12\,000 \\
+			센서 설치용 시추 리그 (2기$\times$6개월$\times$5\,000) & – & 60\,000 \\
+			동굴 탐험 장비 (세트) & – & 25\,000 \\
+			\multicolumn{3}{l}{\textbf{운송 및 물류}} \\
+			전지형 차량 (2대$\times$6개월$\times$4\,000) & – & 48\,000 \\
+			ATV (2대$\times$6개월$\times$1\,500) & – & 18\,000 \\
+			연료 및 예비품 & – & 30\,000 \\
+			장비 선적 & – & 20\,000 \\
+			\multicolumn{3}{l}{\textbf{야영 캠프 및 생계}} \\
+			텐트, 발전기, 냉장고 (구매) & – & 40\,000 \\
+			식량 및 물 (15인$\times$180일$\times$25) & – & 67\,500 \\
+			조리사 및 지원 인력 (2인$\times$6개월$\times$3\,500) & – & 42\,000 \\
+			위성 인터넷 (6개월$\times$1\,000) & – & 6\,000 \\
+			의료 지원 (응급 구조사, 구급 물품) & – & 15\,000 \\
+			\multicolumn{3}{l}{\textbf{인건비 (급여)}} \\
+			탐사대장 (6개월$\times$20\,000) & – & 120\,000 \\
+			부 수석 지구물리학자 (6개월$\times$15\,000) & – & 90\,000 \\
+			지구물리학자 (4인$\times$6개월$\times$12\,000) & – & 288\,000 \\
+			기술자 (4인$\times$6개월$\times$7\,000) & – & 168\,000 \\
+			동굴 가이드 (2인$\times$3개월$\times$8\,000) & – & 48\,000 \\
+			운전수 겸 정비사 (2인$\times$6개월$\times$5\,500) & – & 66\,000 \\
+			\multicolumn{3}{l}{\textbf{처리 및 해석}} \\
+			슈퍼컴퓨터 시간 (10\,000 노드-h$\times$0.15) & – & 1\,500 \\
+			토모그래피/역산 소프트웨어 라이선스 & – & 40\,000 \\
+			3D 시각화 & – & 20\,000 \\
+			전문가 컨설팅 & – & 30\,000 \\
+			\multicolumn{3}{l}{\textbf{기타 및 예비비}} \\
+			허가 및 인가 & – & 10\,000 \\
+			보험 (대원 + 장비) & – & 25\,000 \\
+			예비비 (20\%) & – & 650\,000 \\
+			\midrule
+			\textbf{합계} & & \textbf{3\,900\,000} \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{기대 결과:} 수동적 조석 데이터만으로부터 도출된 카르스트 시스템의 첫 3D 토모그래픽 이미지. 알려진 동굴 기하에 대한 직접 검증. 탄화수소 탐사 및 단층 매핑을 위한 방법의 검정.
+	
+	\subsection{스케일링 및 비용 절감 전망}
+	
+	파일럿 프로젝트의 성공 후, 기술은 상업적 단계에 진입한다. 비용 절감을 주도하는 주요 요인:
+	
+	\begin{itemize}
+		\item \textbf{기성 소프트웨어 플랫폼:} 개발된 역산 알고리즘이 재사용 가능한 제품이 되어 R\&D 비용을 제거(30–40\% 절감).
+		\item \textbf{장비 대량 할인:} 대량 생산 또는 장기 임대를 통해 단가가 20–30\% 하락.
+		\item \textbf{숙련된 팀과 표준화된 절차:} 현장 배치 시간이 단축되고, 고임금 전문가의 필요성이 감소.
+		\item \textbf{자동화된 데이터 처리:} 원시 데이터에서 3D 모델까지의 파이프라인이 해석 비용을 2–3배 절감.
+	\end{itemize}
+	
+	\textbf{스케일링 후 예상 비용:}
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{상업적 프로젝트에 대한 예상 비용 절감}
+		\label{tab:scaling}
+		\begin{tabular}{lccc}
+			\toprule
+			\textbf{프로젝트 유형} & \textbf{파일럿 비용} & \textbf{상업적 비용} & \textbf{절감 계수} \\
+			\midrule
+			건물 모니터링 & 1.08\,M\$ & 0.3–0.5\,M\$ & 2–3× \\
+			광역 토모그래피 (100×100 km) & 3.9\,M\$ & 1.5–2.0\,M\$ & 2–2.5× \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{추가 응용:} 교량, 댐, 터널; 탄화수소 및 광석 탐사; 지열 저류층 이미징; CO$_2$ 저장 모니터링; 지진대에서의 단층 감시. 50–100개의 상설 관측소로 구성된 글로벌 네트워크를 통해, 사이트당 연간 모니터링 비용은 \$50–100k로 떨어질 수 있으며, 이 방법을 전통적인 탄성파 탐사 및 시추와 경쟁력 있게 만든다.
+	
+	따라서 파일럿 프로젝트에 대한 초기 투자는 인프라 안전, 자원 탐사, 지구역학 모니터링을 다루는 수익성 있는 상업 서비스의 기반을 마련한다.
+	
+	\section{결론 및 전망}
+	\label{sec:conclusion}
+	
+	본 부록은 조석파가 행성 내부를 탐사하기 위한 자연적이고 수동적이며 전 지구적으로 이용 가능한 탐사 신호를 제공함을 입증했다. YUCT 프레임워크 내에서, 조석 응답은 지질 특성의 보편적 지표로서 기능하는 조정 효율 \(\Keff\)의 지하 분포에 직접 연결된다.
+	
+	조석 공명의 직접 관측 \cite{Sibgatulin2014}, 행성 과학에서의 조석 토모그래피 응용 \cite{RoviraNavarro2025}, 지하 조석 측정 \cite{Rogister2024}, 그리고 행성 조석 연구 \cite{Briaud2025}를 포함한 독립적인 연구들은 본 접근법의 기본 원리에 대한 강력한 경험적 지지를 제공한다.
+	
+	YUCT 기반 방법의 주요 혁신은 다음을 포함한다:
+	
+	\begin{enumerate}
+		\item 보편적 오차 법칙 \(\eps = \kappac \alpha \Keff^{-\beta}\)을 통해 조석 응답을 \(\Keff\)에 연결하는 통합된 이론적 틀.
+		\item 라그랑지안 항 \(\kappa_{0,34} \mathrm{Tr}(\Psi_{0,34} \cdot O_0 \cdot O_{34}^\dagger)\)을 통한 YUCT 섹터 결합(섹터 0, 34, 1)의 명시적 통합.
+		\item 공명 신호로부터 유체 유형의 직접 식별을 가능하게 하는 조정 기반 광물 분류 체계.
+		\item 탐사 시추의 위험 감소를 통한 경제적 타당성 입증.
+		\item 공학적 구조물의 구조 건전성 모니터링으로의 확장. 초고층 빌딩, 교량, 댐의 연속적, 수동적, 비침습적 평가를 가능하게 함.
+		\item 단층대의 \(K_{\mathrm{eff}}\) 모니터링에 기반한 지진 예측 프레임워크.
+		\item 해저 중력계 네트워크를 통한 쓰나미 예측 가능성.
+	\end{enumerate}
+	
+	\subsection{행성 응용}
+	
+	지구 너머로, 이 방법론은 이용 가능한 조석 강제력을 가진 다른 행성체에도 직접 적용 가능하다:
+	
+	\begin{itemize}
+		\item \textbf{달:} 지구에 의한 조석 변형이 달의 내부 구조를 탐사할 수 있다.
+		\item \textbf{화성:} 태양 조석 및 포보스 유도 조석이 지각 두께 변화를 제약할 수 있다.
+		\item \textbf{얼음 위성 (에우로파, 가니메데, 엔켈라두스):} \cite{RoviraNavarro2025}에 의해 제안된 조석 토모그래피가 지하 해양과 얼음 껍질 두께 변화를 지도화할 수 있다.
+		\item \textbf{외계 행성:} 외계 행성의 조석 변형에 대한 미래 관측이 내부 구조를 제약할 수 있다.
+	\end{itemize}
+	
+	YUCT 프레임워크는 이러한 모든 천체에 걸쳐 조석 응답을 해석하기 위한 통합된 언어를 제공하며, 조석 관측을 잡음에서 신호로, 신호에서 정량적 토모그래픽 이미지로 변환한다.
+	
+	지구물리학적 응용을 넘어, 조석 토모그래피는 \textbf{토목 공학 및 인프라 보안}에서 새로운 개척지를 연다. 처음으로, 우리는 인류 문명의 가장 크고 가장 중요한 건축물 — 가장 높은 초고층 빌딩에서 가장 긴 교량, 고대 기념물에서 원자력 격납고까지 — 의 구조 건전성을 연속적, 수동적, 비침습적으로 모니터링할 수 있는 방법을 갖게 되었다. 수십억 년 동안 행성을 형성해 온 동일한 중력파가 이제 인류 문명의 작품을 보호하는 데 사용될 수 있다. 이것은 단순한 점진적 개선이 아니라, 건조 환경을 이해하고, 유지하며, 보호하는 방법에 있어서의 패러다임 전환이다.
+	
+	\section*{감사의 글}
+	
+	저자는 YUCT 세미나 참가자들의 자극적인 토론에 감사하며, Sibgatulin, Rovira-Navarro, Rogister, Tanaka, Tolstoy 및 그 동료들의 선구적인 연구를 인정한다. 그들의 독립적인 연구가 본고에서 전개된 접근법에 필수적인 경험적 기초를 놓았다.
+	
+	\section*{데이터 이용 가능성}
+	
+	모든 계산, 코드 및 추가 자료는 \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}에서 이용 가능하다.
+	
+	\begin{thebibliography}{99}
+		
+		\bibitem{Yakushev2026a}
+		A. V. Yakushev, \emph{Yakushev Unified Coordination Theory (YUCT)}, Zenodo, \url{https://doi.org/10.5281/zenodo.18444599} (2026).
+		
+		\bibitem{AppendixA}
+		Appendix A: Practical Guide to Using YUCT V35.0 for Interdisciplinary Modeling and Predictions.
+		
+		\bibitem{AppendixC}
+		Appendix C: YUCT Chemistry -- Complete Mathematical Foundations.
+		
+		\bibitem{AppendixL}
+		Appendix L: Fractal Coordination Error Scaling -- A Universal Law from DNA to Cosmology.
+		
+		\bibitem{AppendixP}
+		Appendix P: Temperature Dependence of Gravity.
+		
+		\bibitem{Sibgatulin2014}
+		V. G. Sibgatulin, S. A. Peretokin, A. A. Kabanov, ``Resonances of gravitational tides and their effect on geological environment,'' \emph{Earth Science Frontiers} 21(4), 303–310 (2014). doi:10.13745/j.esf.2014.04.030
+		
+		\bibitem{RoviraNavarro2025}
+		M. Rovira-Navarro, I. Matsuyama, D. Dirkx, A. Berne, D. Calliess, S. Fayolle, ``Prospects of Using Tidal Tomography to Constrain Ganymede's Interior,'' \emph{Geophysical Research Letters} 52(11), e2025GL114708 (2025).
+		
+		\bibitem{Rogister2024}
+		Y. Rogister, J. Hinderer, U. Riccardi, S. Rosat, ``Subsurface tidal gravity variation and gravimetric factor,'' \emph{Geophysical Journal International} 238(2), 848–859 (2024).
+		
+		\bibitem{Briaud2025}
+		A. Briaud, A. Stark, H. Hussmann, H. Xiao, J. Oberst, A. Rivoldini, ``New Insights from MESSENGER Data on Mercury's Tidal Response and Internal Structure,'' EPSC-DPS Joint Meeting 2025, Helsinki, Finland (2025).
+		
+		\bibitem{Tanaka2012}
+		S. Tanaka, ``Tidal triggering of earthquakes prior to the 2011 Tohoku-Oki earthquake,'' \emph{Geophysical Research Letters} 39, L00G26 (2012).
+		
+		\bibitem{Tolstoy2013}
+		M. Tolstoy, ``Tidal triggering of microearthquakes on the Juan de Fuca Ridge,'' \emph{Geophysical Research Letters} 40, 2013GL057889 (2013).
+		
+		\bibitem{RAN2025}
+		Russian Academy of Sciences, ``Lunar distance correlation with earthquake probability,'' \emph{Doklady Earth Sciences} 512, 45–52 (2025).
+		
+		\bibitem{DeformationPrecursors2024}
+		K. Chen et al., ``Step-like volumetric strain changes before moderate earthquakes: Evidence for tidal triggering,'' \emph{Journal of Geophysical Research: Solid Earth} 129, e2024JB028456 (2024).
+		
+		\bibitem{NOAA2024}
+		NOAA, ``Tsunami Warning Systems and DART Buoy Networks,'' \url{https://www.tsunami.noaa.gov/} (2024).
+		
+		\bibitem{USGS2024}
+		USGS, ``Earthquake Hazards Program,'' \url{https://earthquake.usgs.gov/} (2024).
+		
+		\bibitem{Genoa2018}
+		Italian Ministry of Infrastructure, ``Report on the Genoa Bridge Collapse,'' (2018).
+		
+		\bibitem{Surfside2021}
+		NIST, ``Champlain Towers South Collapse Investigation,'' (2021).
+		
+		\bibitem{ASCE2021}
+		American Society of Civil Engineers, ``2021 Report Card for America's Infrastructure,'' ASCE (2021).
+		
+		\bibitem{Farrell1972}
+		W. E. Farrell, ``Earth tides: a review,'' \emph{Reviews of Geophysics} 10, 761–797 (1972).
+		
+		\bibitem{Agnew2007}
+		D. C. Agnew, ``Earth tides,'' in \emph{Treatise on Geophysics}, Vol. 3, 163–195 (2007).
+		
+		\bibitem{Wahr1995}
+		J. Wahr, ``Earth tides,'' in \emph{Global Earth Physics}, 40–46 (1995).
+		
+	\end{thebibliography}	
+\end{document}

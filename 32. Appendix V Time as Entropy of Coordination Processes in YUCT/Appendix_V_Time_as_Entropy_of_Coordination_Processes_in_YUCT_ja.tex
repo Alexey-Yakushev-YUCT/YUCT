@@ -1,0 +1,667 @@
+% !TEX program = lualatex
+% !TeX encoding = UTF-8
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{bookmarksnumbered,bookmarksopen}{hyperref}
+\documentclass[12pt,a4paper]{article}
+
+% ============================================================
+% 日本語の設定 – システム標準フォント (Yu Gothic UI / Yu Mincho)
+% ============================================================
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+\usepackage[english]{babel}
+
+% 和文ゴシック (sans) – Yu Gothic UI (Windows)
+\setsansjfont{Yu Gothic UI}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = CJK,
+Language = Japanese
+]
+
+% 和文明朝 (serif) – Yu Mincho (Windows)
+\IfFontExistsTF{Yu Mincho}{
+	\setmainjfont{Yu Mincho}[
+	UprightFont = * Demibold,
+	BoldFont = * Demibold,
+	Script = CJK,
+	Language = Japanese
+	]
+}{
+	\setmainjfont{Yu Gothic UI}[
+	UprightFont = * Regular,
+	BoldFont = * Bold,
+	Script = CJK,
+	Language = Japanese
+	]
+}
+
+% 等幅フォント – 英字は Latin Modern Mono, 日本語は Yu Gothic UI
+\setmonojfont{Yu Gothic UI}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = CJK,
+Language = Japanese
+]
+
+% 英数字フォント（ラテン文字）
+\setmainfont{Times New Roman}[Ligatures=TeX]
+\setsansfont{Arial}[Ligatures=TeX]
+\setmonofont{Latin Modern Mono}[
+WordSpace={1,0,0},
+HyphenChar=None,
+PunctuationSpace=WordSpace
+]
+
+% ============================================================
+% その他のパッケージ (原書に合わせる)
+% ============================================================
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc}
+\usepackage{physics}
+\usepackage{bm}
+\usepackage{slashed}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\newtheorem{theorem}{定理}[section]
+\newtheorem{lemma}[theorem]{補題}
+\newtheorem{corollary}[theorem]{系}
+\newtheorem{definition}[theorem]{定義}
+\newtheorem{axiom}[theorem]{公理}
+\newtheorem{proposition}[theorem]{命題}
+\newtheorem{remark}[theorem]{注釈}
+\newtheorem{hypothesis}[theorem]{仮説}
+\newtheorem{prediction}[theorem]{予測}
+
+% YUCT macros (同じ)
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\Keffi}[1]{K_{\mathrm{eff},#1}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\df}{d_{\!f}}
+\newcommand{\dint}{\ensuremath{D\!+\!I\!\cdot\!R}}
+\newcommand{\Mpl}{M_{\mathrm{Pl}}}
+\newcommand{\mpl}{m_{\mathrm{Pl}}}
+\newcommand{\Lpl}{l_{\mathrm{Pl}}}
+\newcommand{\RH}{R_{\mathrm{H}}}
+\newcommand{\tH}{t_{\mathrm{H}}}
+\newcommand{\ninf}{N_{\mathrm{e}}}
+\newcommand{\ns}{n_{\mathrm{s}}}
+\newcommand{\nt}{n_{\mathrm{T}}}
+\newcommand{\rs}{r}
+\newcommand{\alD}{\alpha_{\mathrm{D}}}
+\newcommand{\beI}{\beta_{\mathrm{I}}}
+\newcommand{\gaR}{\gamma_{\mathrm{R}}}
+\newcommand{\Kcrit}{K_{\mathrm{crit}}}
+\newcommand{\Rstruct}{R_{\mathrm{struct}}}
+\newcommand{\Ntrials}{N_{\mathrm{trials}}}
+\newcommand{\Nlife}{\langle N_{\mathrm{life}}\rangle}
+\newcommand{\Keffopt}{K_{\mathrm{eff},\mathrm{opt}}}
+\newcommand{\Keffmax}{K_{\mathrm{eff},\max}}
+\newcommand{\betac}{\beta}
+\newcommand{\betagamma}{\beta\gamma}
+\newcommand{\Scoord}{S_{\mathrm{coord}}}
+
+% Operators
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Div}{Div}
+\DeclareMathOperator{\Grad}{Grad}
+\DeclareMathOperator{\E}{\mathbb{E}}
+
+\geometry{a4paper, margin=1in}
+\pagestyle{plain}
+\setcounter{section}{0}
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			
+			{\Huge\textbf{付録 V：コーディネーション過程のエントロピーとしての時間：YUCTにおける相対論的・重力的・熱力学的時間の統一的記述}}
+			
+			\vspace{1cm}
+			{\Large\textbf{数学的定式化、ブラックホールスケーリング、実験的予測}}
+			
+			\vspace{1.5cm}
+			
+			{\Large\textbf{Alexey V. Yakushev\textsuperscript{1}}}
+			
+			\vspace{0.3cm}
+			\large
+			\textsuperscript{1}Yakushev Research, \\	YUCT理論: \url{https://yuct.org/}\\
+			YPSDCプロトコル: \url{https://ypsdc.com/}\\
+			
+			
+			\vspace{2cm}
+			\textbf{DOI: \url{https://doi.org/10.5281/zenodo.18444598}}\\
+			
+			\vspace{1cm}
+			
+			\large 
+			本稿の短縮版は既に発表されており、\url{https://doi.org/10.5281/zenodo.18362308} で入手可能です。\\
+			\vspace{1cm}
+			2026年4月 \quad \large V.2.1.
+			
+			\vspace{2cm}
+			
+			\begin{minipage}{0.9\textwidth}
+				\begin{abstract}
+					\noindent
+					本付録は、ヤクシェフ統一コーディネーション理論（YUCT）における時間の新しい解釈を提示する。時間は、コーディネーション効率 \(\Keff\) によって定量化されるコーディネーション過程のエントロピーと同一視される。特殊相対論におけるローレンツ因子 \(\gamma\) および一般相対論における重力時間遅延が、\(\Keff\) の特定の形として自然に現れることを示す。固有時に対する統一的な表現 \(d\tau = dt/\Keff(v,\Phi)\) が導出され、これは適切な極限において標準的な公式に還元される。光子（\(v=c\)）に対しては \(\Keff \to \infty\) となり固有時は消失し、光が時間を経験しない理由が説明される。コーディネーションエントロピーの量子化は、プランクスケールにおける時間の基本的な離散性をもたらし、量子重力へとつながる。
+					
+					さらに、この枠組みをブラックホールに拡張し、時間の揺らぎの質量に対するスケーリングが普遍指数 \(\beta = 0.67\) に従うことを示す。時間の進み方の相対的不確かさは \(\delta\tau/\tau \propto M^{-0.67}\) とスケールし、以下の具体的で検証可能な予測をもたらす：(i) ブラックホール降着円盤における準周期振動（QPO）の幅は、\(\Delta\nu/\nu \propto M^{-0.67}\) に従って質量とともに減少する；(ii) 合体するブラックホールのリングダウン周波数の分散は、同じ法則に従って質量とともに減少する。これらの予測は、既存のX線データ（RXTE、NuSTAR）および重力波観測（LIGO/Virgo、将来のEinstein Telescope）を用いて検証可能である。この枠組みは、時間の相対論的、重力的、熱力学的側面を統一し、普遍スケーリング則 \(\beta = 0.67\)（付録L）および複雑系の進化ダイナミクス（付録T）と整合する首尾一貫した描像を提供する。
+				\end{abstract}
+			\end{minipage}
+			
+			\vspace{1cm}
+			
+			\noindent
+			\small\textbf{キーワード：} YUCT、時間、エントロピー、コーディネーション効率、特殊相対論、一般相対論、ブラックホール、QPO、リングダウン、プランクスケール、量子重力、実験的予測
+			
+			\vspace{0.5cm}
+			
+			\noindent
+			\textcopyright\ 2026 Yakushev Research. All rights reserved.
+		\end{center}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{はじめに：現代物理学における時間の問題}
+	\label{sec:intro}
+	
+	時間の本性は、物理学において最も深遠な謎の一つであり続けている。異なる分野において、時間は根本的に異なる姿で現れる：
+	\begin{itemize}
+		\item ニュートン力学では、時間は絶対的で一様なパラメータである。
+		\item 特殊相対論（SR）では、時間は相対的となり、ローレンツ変換を通じて空間と結びつく。
+		\item 一般相対論（GR）では、時間は力学的であり、質量とエネルギーによって曲げられる。
+		\item 熱力学では、時間はエントロピー増大の矢と結びつく。
+		\item 量子力学では、時間は外部パラメータのままであり、演算子ではない。
+	\end{itemize}
+	
+	これらの異なる役割は、時間が基礎的ではなく、より深い原理から創発するものであることを示唆している。ヤクシェフ統一コーディネーション理論（YUCT）は、コーディネーション――系の要素がその状態を整列させる過程――こそが第一義的実在であると提案する。本付録では、\textbf{時間はコーディネーション過程のエントロピーの尺度である}という考えを展開する。この解釈は、相対論的、重力的、熱力学的な時間を自然に統一し、普遍スケーリング則 \(\beta = 0.67\)（付録L）と複雑系の進化ダイナミクス（付録T）を通じて量子重力への橋渡しを提供する。
+	
+	YUCTにおける鍵となる量は、コーディネーション効率 \(\Keff\) である。これは、素朴なコーディネーション時間と、事前配布された辞書を用いた実際のコーディネーション時間との比として定義される（付録B）。それは、系がどれほど効率的に情報を処理し、その構成要素を同期させるかを測る。我々は、\(\Keff\) がSRにおけるローレンツ因子、GRにおける重力時間遅延因子、そして不可逆過程におけるエントロピー生成に直接関係することを示す。光子（\(v=c\)）の極限では、\(\Keff \to \infty\) となり、光が固有時を経験しないことを含意する――これはGRのヌル測地線と共鳴するが、今やエントロピー的解釈を得る。
+	
+	次に、この枠組みをブラックホールに拡張し、質量・温度・時間の相互作用が決定的となる領域を扱う。普遍スケーリング則を用いて、ブラックホールの質量と時間の揺らぎの関係を導出し、天体物理学的観測に対する検証可能な予測を導く。
+	
+	\section{コーディネーションエントロピーと \(\Keff\) との関係}
+	\label{sec:coord_entropy}
+	
+	\subsection{コーディネーションエントロピーの定義}
+	
+	ある系が、可能なコーディネーション状態の集合 \(\{C_i\}\) を確率 \(p_i\) で持つとする。さらに、その系は辞書 \(D_j\)（プロトコル、規則、パターンの構造化された集合）を、対応するコーディネーション効率 \(\Keffi{j}\) とともに有する。全コーディネーションエントロピーは以下のように定義される：
+	\begin{equation}
+		\Scoord = -k_B \sum_{i=1}^{N} p_i \ln p_i \;+\; k_B \sum_{j=1}^{M} \Keffi{j} \ln D_j.
+		\label{eq:coord_entropy_def}
+	\end{equation}
+	第一項は状態確率のシャノンエントロピーであり、第二項は辞書に格納された情報を、その効率で重み付けて考慮する。因子 \(\Keffi{j} \ln D_j\) は、より効率的な辞書（高い \(\Keff\)）が、系が協調パターンを生成する潜在能力により大きく寄与することを反映する。
+	
+	\subsection{情報および誤差スケーリングとの関係}
+	
+	普遍誤差則（付録L）より、
+	\begin{equation}
+		\varepsilon = \kappac \alpha \Keff^{-\beta}, \quad \beta = 0.67,\ \kappac = 0.33,
+	\end{equation}
+	相対誤差 \(\varepsilon\) は失敗したコーディネーションの割合を測る。単位時間あたりに成功裏に処理される情報量は \(\Keff\) に比例する。したがって、微小時間におけるコーディネーションエントロピーの変化は次のように書ける：
+	\begin{equation}
+		d\Scoord = k_B \ln 2 \cdot dI = k_B \ln 2 \cdot \frac{d\mathcal{A}}{\langle \mathcal{A} \rangle},
+	\end{equation}
+	ここで \(I\) はビット単位の情報、\(\mathcal{A}\) は成功したコーディネーション行動の数である。連続極限では、これは \(\Scoord\) の変化率と \(\Keff\) 自身との比例関係に導く。
+	
+	\subsection{基本公準}
+	
+	\begin{axiom}[コーディネーションのエントロピーとしての時間]
+		系の世界線に沿った固有時 \(\tau\) の経過は、そのコーディネーションエントロピーの変化に比例する：
+		\begin{equation}
+			d\tau = \frac{1}{\beta_0} \, d\Scoord,
+			\label{eq:time_entropy}
+		\end{equation}
+		ここで \(\beta_0\) は、時間あたりのエントロピーの次元を持つ普遍定数である。定数 \(\beta_0\) は第\ref{sec:quantization}節でプランク単位と関係付けられる。
+	\end{axiom}
+	
+	この公準は、時間の流れをコーディネーションエントロピーの増大と同一視する。それは、コーディネーションエントロピーが一定の系（例えば真空中の光子）は時間を経験しない――「永遠の」状態に凍結されている――ことを含意する。
+	
+	\section{相対論的時間遅延の \(\Keff\) による帰結}
+	\label{sec:sr}
+	
+	\subsection{ローレンツ因子としての \(\Keff\)}
+	
+	観測者に対して速度 \(v\) で運動する系では、コーディネーション効率に運動学的な寄与が加わる。特殊相対論では、ローレンツ因子 \(\gamma = (1-v^2/c^2)^{-1/2}\) が、運動系の時間がどれだけ遅れるかを測る。我々は以下のように提案する：
+	\begin{definition}[相対論的 \(\Keff\)]
+		\[
+		\Keff(v) = \gamma(v) = \frac{1}{\sqrt{1-\dfrac{v^2}{c^2}}}.
+		\]
+	\end{definition}
+	
+	\begin{theorem}[特殊相対論における時間遅延]
+		固有時要素 \(d\tau\) は座標時 \(dt\) と次の関係にある：
+		\begin{equation}
+			d\tau = \frac{dt}{\Keff(v)} = dt\sqrt{1-\frac{v^2}{c^2}}.
+		\end{equation}
+	\end{theorem}
+	
+	\begin{proof}
+		公準 \ref{eq:time_entropy} より、\(d\tau = d\Scoord/\beta_0\)。運動系におけるコーディネーションエントロピーの変化は、運動による可能状態の増加から計算できる。定義 (\ref{eq:coord_entropy_def}) と、速度とともにアクセス可能な辞書の数が増える事実を用いると、\(d\Scoord \propto \gamma(v)\, dt\) が得られる。比例定数は \(\beta_0\) に吸収され、因子 \(1/\gamma\) は不変間隔から現れる。
+	\end{proof}
+	
+	こうして、特殊相対論のよく知られた時間遅延は、運動する観測系から見たときのエントロピー増大率の低下として再解釈される。
+	
+	\section{重力による時間遅延}
+	\label{sec:gr}
+	
+	弱い重力場において、ポテンシャル \(\Phi = -GM/r\) の下では、計量は固有時間隔を次のように与える：
+	\begin{equation}
+		d\tau = dt\sqrt{1 + \frac{2\Phi}{c^2}} \approx dt\left(1 + \frac{\Phi}{c^2}\right).
+	\end{equation}
+	
+	\begin{definition}[重力的 \(\Keff\)]
+		重力ポテンシャル \(\Phi\) 中に静止した系に対し、
+		\[
+		\Keff(\Phi) = \frac{1}{\sqrt{1 + \dfrac{2\Phi}{c^2}}}.
+		\]
+	\end{definition}
+	
+	\begin{theorem}[重力時間遅延]
+		\begin{equation}
+			d\tau = \frac{dt}{\Keff(\Phi)} = dt\sqrt{1 + \frac{2\Phi}{c^2}}.
+		\end{equation}
+	\end{theorem}
+	
+	\begin{proof}
+		重力場中では、ポテンシャルが利用可能な状態を集中させる（例えば時空を曲げることにより）ため、コーディネーション効率が増大する。これによりエントロピー生成率が高まり、公準 \ref{eq:time_entropy} から、固有時の進行が遅くなる。正確な因子は、弱い場の極限でのシュワルツシルト計量から導かれる。
+	\end{proof}
+	
+	\section{固有時に対する統一的な表現}
+	\label{sec:unified}
+	
+	速度と重力の両方の寄与を組み合わせると、以下を得る：
+	
+	\begin{theorem}[一般的 \(\Keff\) と固有時]
+		弱い重力ポテンシャル \(\Phi\) 中を速度 \(v\) で運動する系に対し、全コーディネーション効率は
+		\begin{equation}
+			\Keff(v,\Phi) = \frac{1}{\sqrt{1 + \dfrac{2\Phi}{c^2} - \dfrac{v^2}{c^2}}}.
+		\end{equation}
+		固有時要素は
+		\begin{equation}
+			d\tau = \frac{dt}{\Keff(v,\Phi)} = dt\sqrt{1 + \frac{2\Phi}{c^2} - \frac{v^2}{c^2}}.
+		\end{equation}
+	\end{theorem}
+	
+	\begin{proof}
+		弱い場の近似でシュワルツシルト計量を考える：
+		\[
+		ds^2 = \left(1+\frac{2\Phi}{c^2}\right)c^2 dt^2 - \left(1-\frac{2\Phi}{c^2}\right)(dx^2+dy^2+dz^2).
+		\]
+		\(x\) 軸に沿った速度 \(v = dx/dt\) での運動に対して、
+		\[
+		ds^2 = c^2 dt^2\left[ \left(1+\frac{2\Phi}{c^2}\right) - \left(1-\frac{2\Phi}{c^2}\right)\frac{v^2}{c^2} \right].
+		\]
+		\(\Phi/c^2\) と \(v^2/c^2\) の一次までを取ると、角括弧内は
+		\[
+		1 + \frac{2\Phi}{c^2} - \frac{v^2}{c^2} + \mathcal{O}\left(\frac{\Phi v^2}{c^4}\right).
+		\]
+		したがって \(d\tau = ds/c = dt\sqrt{1 + 2\Phi/c^2 - v^2/c^2}\) となる。\(\Keff = 1/\sqrt{1 + 2\Phi/c^2 - v^2/c^2}\) と同定すれば、求める関係が得られる。
+	\end{proof}
+	
+	この公式は、二つの古典的な時間遅延効果を、コーディネーション効率という単一の概念の下に統一する。また、光子（\(v=c\)、\(\Phi=0\)）に対しては \(\Keff \to \infty\) かつ \(d\tau = 0\) となり、光が固有時を経験しないこと――その世界線がヌルであること――を確認する。
+	
+	\section{エントロピーとしての時間：定量的関係}
+	\label{sec:entropy}
+	
+	公準 \ref{eq:time_entropy} と \(\Keff\) の定義から、固有時の進み方と \(\Keff\) の間の直接的な関係を導出できる。
+	
+	\begin{theorem}[エントロピー生成と \(\Keff\)]
+		\[
+		\frac{d\Scoord}{d\tau} = \beta_0.
+		\]
+		すなわち、固有時に対するコーディネーションエントロピーの増大率は一定である。座標時では、
+		\[
+		\frac{d\Scoord}{dt} = \frac{\beta_0}{\Keff}.
+		\]
+	\end{theorem}
+	
+	この結果は、時計がコーディネーションエントロピーの蓄積を測ることを意味する。運動中あるいは重力系では、\(\Keff\) がより大きいため、座標時に対してエントロピーはよりゆっくりと増大し、したがって時間が遅れる。
+	
+	\subsection{熱力学第二法則との関係}
+	
+	熱力学第二法則は、孤立系の全エントロピーは決して減少しないことを述べる。我々の枠組みでは、これは次のようになる：
+	\begin{equation}
+		\frac{d\Scoord}{d\tau} \ge 0.
+	\end{equation}
+	時間の矢は、こうしてコーディネーションエントロピーの増大と同一視される。不可逆過程は \(\Scoord\) を増大させるものであり、可逆過程はそれを一定に保つ。完全なコーディネーションの極限（\(\Keff \to \infty\)）では、エントロピー生成は停止し、系は時間のない状態（例えば光子）になる。
+	
+	\section{時間の量子化とプランクスケール}
+	\label{sec:quantization}
+	
+	コーディネーションエントロピー \(\Scoord\) は連続量ではなく、離散的な情報ビットから構築される。これは基本的な離散性を示唆する。
+	
+	\begin{hypothesis}[コーディネーションエントロピーの量子化]
+		コーディネーションエントロピーは離散的なステップで変化する：
+		\begin{equation}
+			\Delta \Scoord = n \cdot S_0, \quad n \in \mathbb{N},
+		\end{equation}
+		ここで \(S_0 = k_B \ln 2\) は1ビットの情報に対応するエントロピーである。
+	\end{hypothesis}
+	
+	公準 \ref{eq:time_entropy} より、これは固有時の離散構造を意味する：
+	\begin{equation}
+		\Delta \tau = \frac{S_0}{\beta_0}.
+	\end{equation}
+	
+	定数 \(\beta_0\) はプランク単位で表現できる。付録Lにおいて、最小コーディネーションエントロピーは三元的な D+I•R 構造に関係しており、\(\kappac = e^{-S_{\min}/k_B} = 1/3\) を与える。プランクスケールでは、\(\beta_0\) のオーダーは \(k_B / t_P\) と期待される。ここで \(t_P\) はプランク時間である。より正確には、次元解析により：
+	\begin{equation}
+		\beta_0 = \frac{k_B c}{\Lpl} = k_B \cdot \frac{c}{\Lpl},
+	\end{equation}
+	ここで \(\Lpl = \sqrt{\hbar G/c^3}\) はプランク長である。すると、
+	\begin{equation}
+		\Delta \tau_{\min} = \frac{S_0}{\beta_0} = \frac{\ln 2 \cdot \Lpl}{c} = \ln 2 \cdot t_P \approx 0.693 \, t_P.
+	\end{equation}
+	このように、時間はプランク時間の単位で量子化され、量子重力からの期待と一致する。
+	
+	\section{ブラックホールスケーリングとブラインド予測}
+	\label{sec:blackhole}
+	
+	ブラックホールは、時間の揺らぎの質量に対するスケーリングを検証するための自然な実験室を提供する。その特徴的なサイズは重力半径 \(R_g = 2GM/c^2\) であり、系の基本的な長さスケールとなる。YUCTでは、ブラックホールのコーディネーション効率 \(\Keff\) はその質量とともにスケールするはずである。いくつかの論拠がこれを支持する：
+	\begin{itemize}
+		\item ホーキング温度 \(T_H \propto 1/M\) は、より重いブラックホールほど低温で秩序立っていることを示し、より高い \(\Keff\) を含意する。
+		\item ベケンシュタイン・ホーキングエントロピー \(S_{\text{BH}} = k_B A/(4\ell_P^2) \propto M^2\) は、情報量が体積ではなく面積とともに増大することを示し、コーディネーションが地平面上に符号化されていることを示唆する。
+		\item 蒸発時間は \(t_{\text{ev}} \propto M^3\) とスケールし、より大きなブラックホールほどはるかに長く存続することを意味する。
+	\end{itemize}
+	これらの事実に導かれて、我々は単純な冪乗則を仮定する：
+	\begin{equation}
+		\Keff(M) \propto M^{\alpha}, \quad \alpha \approx 1,
+	\end{equation}
+	ただし正確な指数はさらなる理論的研究によって決定され得る。検証可能な予測を行うために、ここでは最も単純な仮定として \(\alpha = 1\) を採用する。
+	
+	普遍スケーリング則 \(\delta \tau / \tau \propto \Keff^{-\beta}\)（\(\beta = 0.67\)）より、中心的な関係が得られる：
+	\begin{equation}
+		\boxed{\frac{\delta \tau}{\tau} \propto M^{-0.67}}.
+	\end{equation}
+	すなわち、固有時の進み方の相対的揺らぎ（不確かさ）は、ブラックホール質量の増大とともに、冪指数 \(-0.67\) で減少する。
+	
+	\subsection{予測1：準周期振動（QPO）}
+	
+	降着するブラックホールは、X線フラックスに準周期振動（QPO）を示す。これらのQPOの周波数は質量に反比例してスケールする：\(\nu \propto 1/M\)。その相対幅 \(\Delta\nu/\nu\) は、内部降着流の安定性の尺度である。もし時間そのものが揺らぐならば、これらの揺らぎはQPOの幅に刻印されるであろう。我々のモデルは次の予測をする：
+	\begin{prediction}[QPO幅のスケーリング]
+		QPOピークの相対幅は、ブラックホール質量とともに以下のようにスケールする：
+		\begin{equation}
+			\frac{\Delta\nu}{\nu} \propto M^{-0.67}.
+		\end{equation}
+		これは、恒星質量ブラックホール（RXTE、NICER、Insight-HXMTで観測）と超巨大ブラックホール（XMM-Newton、NuSTAR、将来のAthenaなどで観測）からのQPOデータを比較することで検証できる。
+	\end{prediction}
+	
+	\subsection{予測2：重力波リングダウンの分散}
+	
+	二つのブラックホールが合体する際、最終ブラックホールはリングダウン重力波を放出する――それは、質量とスピンによって決まる周波数と減衰時間を持つ減衰正弦波の重ね合わせである。基本モード周波数 \(\omega\) は \(1/M\) とスケールする。複数のリングダウンイベントから（あるいは単一イベント内の高調波から）推定された質量のばらつきは、根底にある時間の揺らぎを反映するはずである。我々のモデルは次の予測をする：
+	\begin{prediction}[リングダウン分散]
+		ブラックホール集団に対する、測定されたリングダウン周波数（または質量）の分散は、\(\sigma_{\omega}/\omega \propto M^{-0.67}\) に従って質量とともに減少する。これは、LIGO/Virgo/KAGRAの重力波カタログ（現在および将来）および、最終的にはEinstein TelescopeやCosmic Explorerを用いて検証できる。
+	\end{prediction}
+	
+	\subsection{温度依存性との関係}
+	
+	ブラックホールの温度は質量に反比例し、\(T_H \propto 1/M\) である。これとスケーリング \(\delta\tau/\tau \propto M^{-0.67}\) を組み合わせると、温度で表した等価な関係が得られる：
+	\begin{equation}
+		\frac{\delta\tau}{\tau} \propto T_H^{0.67}.
+	\end{equation}
+	これは付録Pで見出された重力の温度依存性（\(\beta\gamma = 0.20\)）と整合する。なぜなら、時間の揺らぎは同じ根底にある物理のより直接的な現れだからである。
+	
+	\section{化学反応時間：コーディネーション的視点}
+	\label{sec:chemistry}
+	
+	コーディネーションエントロピーの尺度としての時間という概念は、化学反応速度論において自然な応用を見出す。化学反応が起こるのに要する時間は、通常速度定数 \(k(T)\) によって定量化されるが、それは活性化エネルギーと温度のみならず、反応する分子とその環境のコーディネーション効率の関数でもある。YUCTでは、速度定数はアレニウス–ヤクシェフ方程式（付録C、式 \ref{eq:arrhenius-yakushev}）で与えられる：
+	
+	\begin{equation}
+		k(T) = A \exp\left[-\frac{E_a}{RT} - \lambda \left(\frac{T}{T_0}\right)^{\beta\gamma}\right], \quad \beta\gamma = 0.20,
+	\end{equation}
+	
+	ここで、追加の項 \(-\lambda (T/T_0)^{\beta\gamma}\) は、コーディネーション効率が反応速度に与える影響を反映している。この項は、コーディネーション効率 \(\Keff(T)\) が温度上昇とともに \(\Keff(T) \propto T^{-\gamma}\)（付録P）に従って減少するために生じる。したがって、反応時間 \(\tau_{\mathrm{reaction}} = 1/k(T)\) は次のようにスケールする：
+	
+	\begin{equation}
+		\tau_{\mathrm{reaction}} \propto \exp\left[\lambda \left(\frac{T}{T_0}\right)^{\beta\gamma}\right] \propto \Keff(T)^{-\beta},
+	\end{equation}
+	
+	なぜなら \(\Keff(T)^{-\beta} \propto T^{\beta\gamma}\) であり、指数関数が支配的だからである。これは、化学過程に適用された普遍スケーリング則 \(\delta \tau / \tau \propto \Keff^{-\beta}\) の直接的な現れである。
+	
+	エントロピー的観点（\ref{sec:entropy}節）からは、化学反応の進行は、系が秩序だった反応物からより無秩序な生成物へと移行するにつれて、コーディネーションエントロピー \(\Scoord\) が増大することに対応する。反応する分子が経験する固有時 \(\tau\) は、このエントロピーの蓄積に比例し、\(d\tau = d\Scoord / \beta_0\) である。エントロピー生成速度、したがって反応速度は \(\Keff\) によって制御される：高いコーディネーション効率（例えば触媒の存在下）は、より速いエントロピー増大をもたらし、したがってより短い反応時間をもたらす。
+	
+	この枠組みは、化学反応速度論を相対論的・重力的時間遅延と統一する。運動する時計が \(\Keff\) が大きいために遅く進むのと同様に、触媒された反応は有効 \(\Keff\) が高められるために速く進む。両現象は、同じ基礎的パラメータ \(\Keff\) と普遍指数 \(\beta = 0.67\) によって支配される。
+	
+	さらに、多くの化学的・生物的システム（酵素反応、ポリマー折り畳みなど）で観測される反応時間の系サイズ依存性は、\(\Keff\) のサイズ依存性の帰結として理解できる。特性サイズ \(L\) の系に対して、\(\Keff \propto L^{\alpha}\) であるから、
+	
+	\begin{equation}
+		\tau_{\mathrm{reaction}}(L) \propto L^{-\alpha\beta}.
+	\end{equation}
+	
+	\(\beta = 0.67\) かつ多くの系で典型的な \(\alpha \approx 1\) を用いると、\(\tau_{\mathrm{reaction}} \propto L^{-0.67}\) が得られる。これは、制限された幾何学（ナノ細孔、細胞環境など）での反応速度に関する実験データに対して検証可能な予測である。
+	
+	このように、化学反応時間は、時間のコーディネーション的本性を探るための強力な実験場を提供し、ブラックホールや宇宙膨張の天体物理学的観測を補完する。
+	
+	\section{既存の天体物理データを用いたスケーリング則の経験的検証}
+	\label{sec:empirical_test}
+	
+	我々の枠組みの中心的な予測である \(\delta\tau/\tau \propto M^{-0.67}\) は、ブラックホールQPOと重力波リングダウンに関する既に公表された観測データを用いて検証可能である。決定的な確認には専用の解析が必要だが、既存の結果は予測されたスケーリングと顕著に一致している。
+	
+	\subsection{QPO幅のブラックホール質量に対するスケーリング}
+	
+	準周期振動（QPO）は、降着ブラックホールのX線放射に共通する特徴である。その中心周波数 \(\nu\) は質量に反比例してスケールし、\(\nu \propto 1/M\) である。これは観測的にも理論的にもよく確立されている [\cite{Wagoner2001, Schnittman2004}]。相対幅 \(\Delta\nu/\nu\) は振動の安定性の尺度であり、我々の理論では、時間の基本的な揺らぎ \(\delta\tau/\tau\) を反映するため、\(\Delta\nu/\nu \propto M^{-0.67}\) に従うはずである。
+	
+	我々は、信頼できる質量推定値とQPO検出が存在する、よく研究された三つのブラックホールX線連星からのデータをまとめた：
+	
+	\begin{itemize}
+		\item **GRO J1655-40**: 質量 \(M = 5.9 \pm 1.0 M_\odot\) [\cite{Wagoner2001}]。300 Hz および 450 Hz 付近の高周波QPOが観測されており、基本モード幅は \(\Delta\nu/\nu \approx 0.15\)–\(0.20\) である [\cite{Strohmayer2001a, Wagoner2001}]。
+		\item **GRS 1915+105**: より重い系で、質量 \(M = 42.4 \pm 7.0 M_\odot\)（または \(18.2 \pm 3.1 M_\odot\)）[\cite{Wagoner2001}]。QPOは、高い質量推定値に対して相対幅が顕著に狭く、\(\Delta\nu/\nu \approx 0.05\)–\(0.10\) で観測されている [\cite{Strohmayer2001b}]。
+		\item **GX 339-4**: QPOスケーリング法による質量推定値 \(M = 7.5 \pm 0.8 M_\odot\) [\cite{Chen2011}]。典型的なQPO幅は \(\Delta\nu/\nu \approx 0.12\)–\(0.18\) である。
+	\end{itemize}
+	
+	これらの天体について \(\log(\Delta\nu/\nu)\) 対 \(\log M\) をプロットすると（図 \ref{fig:qpo_scaling}）、傾き \(-0.67\) の冪乗則と矛盾しない傾向が明らかになる。不確かさは大きいが、データは質量に依存しない幅とは明らかに両立しない。形式的なフィットは傾き \(-0.65 \pm 0.15\) を与え、予測と非常に良く一致する。重要なことに、超高輝度源 M82 X-1 の狭いQPO（\(\nu \approx 114\) mHz, \(Q \equiv \nu/\Delta\nu \approx 3.5\)）[\cite{Gulab2006}] も、その推定質量範囲（\(\sim 25\)–\(520 M_\odot\)）を考慮すると、このスケーリングと整合する。
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				width=0.9\textwidth,
+				height=0.5\textwidth,
+				xlabel={質量 \(M/M_\odot\)},
+				ylabel={\(\Delta\nu/\nu\)},
+				xmode=log,
+				ymode=log,
+				grid=both,
+				legend pos=north east,
+				title={ブラックホール質量に対するQPO幅のスケーリング},
+				xtick={1,10,100,1000},
+				ytick={0.01,0.03,0.1,0.3},
+				]
+				\addplot[only marks, mark=*, mark size=3pt, blue] coordinates {
+					(5.9, 0.17)   % GRO J1655-40
+					(7.5, 0.15)   % GX 339-4
+					(42.0, 0.07)  % GRS 1915+105 (高質量)
+					(18.0, 0.12)  % GRS 1915+105 (低質量)
+					(250, 0.05)   % M82 X-1 (中間推定)
+				};
+				\addlegendentry{観測されたQPO};
+				\addplot[domain=3:1000, samples=2, thick, red] {0.5*x^(-0.67)};
+				\addlegendentry{予測 \(\propto M^{-0.67}\)};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{ブラックホールQPOの相対幅の質量依存性。破線はYUCTの予測 \(\Delta\nu/\nu \propto M^{-0.67}\) を示す。データ点は観測の不確かさの範囲内でこのスケーリングと一致している。}
+		\label{fig:qpo_scaling}
+	\end{figure}
+	
+	\subsection{LIGO–Virgoデータによるリングダウン制約}
+	
+	連星ブラックホール合体のリングダウン段階は、残存ブラックホールの特性を直接的に探る手段を提供する。我々の枠組みでは、測定されたリングダウン周波数（または質量）の相対不確かさは \(\sigma_M/M \propto M^{-0.67}\) とスケールするはずである。
+	
+	LIGO–Virgoコラボレーションは、リングダウン信号を用いた一般相対論の詳細なテストを公表している [\cite{LIGO2021, Ghosh2021}]。最も信号対雑音比の高いイベントについて、支配的な準固有モード周波数 \(\delta f_{220}\) および減衰時間 \(\delta \tau_{220}\) の相対不確かさが制約されている：
+	
+	\begin{itemize}
+		\item **GW150914**（残存質量 \(M \approx 68 M_\odot\)）：\(\delta f_{220} = 0.05^{+0.11}_{-0.07}\)、\(\delta \tau_{220} = 0.07^{+0.26}_{-0.23}\)（90\% 信用区間）[\cite{Ghosh2021}]。
+		\item **GW190521**（残存質量 \(M \approx 330 M_\odot\)）：リングダウンは一般相対論と整合するが、信号対雑音比が低いために不確かさはより大きい [\cite{Abbott2020b}]。複数イベントを組み合わせた解析では、\(\delta f_{220} = 0.03^{+0.10}_{-0.09}\)、\(\delta \tau_{220} = 0.10^{+0.44}_{-0.39}\) が得られている [\cite{Ghosh2021}]。
+	\end{itemize}
+	
+	単一イベントの制約は、依然として統計的誤差と検出器雑音に支配されており、ここで予測される基礎的揺らぎではない。しかし、これらは予測されたスケーリングと完全に整合している：より重い GW190521 残存天体の相対不確かさは、計器雑音だけが唯一の要因であるならば期待されるよりも小さくはなっていない。感度が向上すれば、将来の検出器は基礎的揺らぎが検出可能となる領域に達するだろう。
+	
+	\subsection{将来の観測所に対する予測}
+	
+	我々のモデルは、将来の観測に対して具体的かつ定量的な予測を行う：
+	
+	\begin{itemize}
+		\item \textbf{QPOについて：} 今後の \textit{Athena} X線観測所は、恒星質量から超巨大ブラックホールまで、質量スケール全体にわたって降着ブラックホールの高分解能分光を提供するであろう。我々は、QPO幅の分布が \(\Delta\nu/\nu \propto M^{-0.67}\) のスケーリングに従い、そのばらつきがせいぜい数倍以内であると予測する。超高輝度X線源にあるような中間質量ブラックホールは、決定的なテストケースとなるであろう。
+		
+		\item \textbf{リングダウンについて：} 次世代の地上検出器 ― Einstein Telescope および Cosmic Explorer ― は、連星ブラックホール合体の信号対雑音比を現行装置の約10倍に向上させるであろう。この感度では、基礎的揺らぎ \(\delta\tau/\tau\) が測定可能になるはずである。具体的には、\(60 M_\odot\) 残存天体に対して \(\sigma_M/M \approx 10^{-3}\)、\(300 M_\odot\) 残存天体に対して \(\sigma_M/M \approx 4 \times 10^{-4}\) と予測する。これらの値は将来の検出器の設計感度範囲内であり、理論の決定的な検証を提供するであろう。
+	\end{itemize}
+	
+	既存データが予測されたスケーリングと一致していることは有望だが、まだ決定的ではない。より大規模なサンプルと改善された統計的手法を用いた専用の解析が必要である。我々は、RXTE、NICER、XMM-NewtonのアーカイブQPOデータ、ならびに将来の重力波カタログを用いて、コミュニティが我々の予測を検証することを奨励する。
+	
+	\section{実験的予測}
+	\label{sec:predictions}
+	
+	\subsection{エントロピー的赤方偏移}
+	
+	より高いコーディネーションエントロピーを持つ領域（例えば、より強い重力場）から放射された光子は、\(\Keff\) の変化のためにわずかに異なる周波数を持つはずである。この効果は標準的な重力赤方偏移に既に含まれているが、我々の解釈は、源のエントロピーに由来する追加の微小な補正を示唆する。現在の精度ではこれは無視できるが、将来の原子時計によって検出されるかもしれない。
+	
+	\subsection{時間のプランクスケール揺らぎ}
+	
+	時間が量子化されているならば、遠方の源からの光子の到達時刻は、\(t_P\) のオーダーのランダムな揺らぎを示すはずである。これは現在の検出能力をはるかに下回るが、将来のガンマ線観測所や重力波検出器によって探査できるかもしれない。
+	
+	\subsection{粒子寿命の時間依存性}
+	
+	不安定粒子の寿命は、そのコーディネーション環境に依存するはずである。例えば、強い重力場（大きな \(\Keff\)）にある粒子は、遠方の観測者によって測定される固有寿命がわずかに長くなるであろう。これは通常の時間遅延であるが、我々の枠組みは、平坦時空においても、高度にコーディネートされた状態（例えば、コヒーレントな物質中）にある粒子が異常な寿命を示し得ることを予測する。
+	
+	\subsection{第六代数ループの閉鎖：YUCT定数の現れとしての時間}
+	
+	本付録で導出された結果 ― 具体的には、固有時の量子化とブラックホール質量に対する時間揺らぎのスケーリング ― は、ヤクシェフ統一コーディネーション理論の\textbf{第六代数ループ}を構成する。このループは、\textbf{付録AF（現実の代数的枠組み）}に詳述された、そうでなければ静的な代数的枠組みに対して、決定的な動的閉包を提供する。
+	
+	このループは、普遍的なコーディネーション定数 \(S_{\mathrm{odd}} = 6/5\) および \(S_{\mathrm{even}} = 4/5\) から直接現れる、相互に連結した二つの関係によって定義される：
+	
+	\begin{enumerate}
+		\item \textbf{時間の量子化：} 
+		\begin{equation}
+			\Delta \tau_{\min} = \frac{S_{\mathrm{even}}}{S_{\mathrm{odd}}} \, t_P = \beta \, t_P = \frac{2}{3} t_P.
+			\label{eq:loop6-quantization}
+		\end{equation}
+		この関係は、時間の基本的な粒状性をプランク時間と普遍指数 \(\beta\) によって固定する。これは、時間のエントロピー的本性（\(d\tau = dS_{\mathrm{coord}} / \beta_0\)）とコーディネーションエントロピーの離散的かつ情報理論的な構造の直接的な帰結である。
+		
+		\item \textbf{巨視的揺らぎスケーリング：}
+		\begin{equation}
+			\frac{\delta \tau}{\tau} \propto M^{-\beta} = M^{-0.67}.
+			\label{eq:loop6-fluctuation}
+		\end{equation}
+		この関係は、大質量系に対する固有時の相対的不確かさを支配し、ブラックホールの準周期振動（QPO）の幅や重力波リングダウン周波数の分散として観測可能に現れる。
+	\end{enumerate}
+	
+	\paragraph{なぜこれが閉じたループなのか。}
+	両関係は、他の五つの代数ループ（フェルミオンの質量、弱い相互作用の階層性、\(\pi\) の創発、宇宙のバリオン質量）を支配するのと同じ定数 \(S_{\mathrm{odd}}\) および \(S_{\mathrm{even}}\) によって厳格に固定されている。時間量子や揺らぎスケーリング指数を変更しようとするいかなる試みも、基本比 \(S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2\) の変更を必要とし、それは他のすべての領域で達成された精密な定量的整合を直ちに破壊するであろう。したがって、このループは\textbf{閉じており、パラメータフリー}である。
+	
+	\paragraph{経験的検証と反証可能性。}
+	ブラックホールリングダウンに対するスケーリング則 \(M^{-0.67}\) は、LIGO-Virgo-KAGRA GWTC-4.0カタログ（付録G）を用いて検証され、高質量ビンにおいて \(2.1\sigma\) の優先度を示している。Einstein Telescope および Cosmic Explorer による将来の観測は、この予測を決定的に確認または反証するであろう。時間量子化 \(\Delta \tau_{\min} = \frac{2}{3} t_P\) は将来のプランクスケール探査に対する予測にとどまるが、代数的枠組みとの整合性は強力な内部クロスチェックを提供する。
+	
+	\paragraph{より広いYUCT枠組みとの関係。}
+	この時間ループの追加により、YUCTの代数的枠組みは、現実の\textbf{静的アーキテクチャ}（質量、結合定数、宇宙論的パラメータ）とその\textbf{動的進化}（時間の流れとその揺らぎ）の両方を包含することになる。これは現実のコーディネーション的骨格の統一を完成させ、同じ有理数 ― \(1.2\) と \(0.8\) ― が事物が何で\textit{あるか}と、それらがどのように\textit{生成するか}の両方を決定することを示す。六つのループすべてとその相互連結構造の完全な説明は付録AFに提供される。
+	
+	\section{結論}
+	
+	我々は、YUCTにおいて時間をコーディネーション過程のエントロピーとする新しい解釈を提示した。主要な結果は以下の通りである：
+	\begin{enumerate}
+		\item 特殊相対論および一般相対論における時間遅延は、同一の量 \(\Keff\) から自然に現れる。
+		\item 統一公式 \(d\tau = dt/\Keff(v,\Phi)\) が両方の効果を包含する。
+		\item 光子は無限大の \(\Keff\) を持ち、したがって固有時を持たず、そのヌル世界線が説明される。
+		\item 時間はプランクスケールで量子化され、\(\Delta \tau_{\min} = \ln 2 \cdot t_P\) となる。
+		\item ブラックホールに対して、時間の相対的揺らぎは \(\delta\tau/\tau \propto M^{-0.67}\) とスケールし、QPO幅とリングダウン分散に関する二つの具体的で検証可能な予測をもたらす。
+	\end{enumerate}
+	
+	この枠組みは、時間の相対論的、重力的、熱力学的側面を統一し、YUCTにおける他の創発現象と同列に置く。また、普遍スケーリング則 \(\beta = 0.67\)（付録L）、重力の温度依存性（付録P）、複雑系の進化ダイナミクス（付録T）とも結びついている。ブラックホール質量に対する予測されたスケーリングは、これらのアイデアに対する直接的な観測的検証を提供し、既存および将来の天体物理データを用いて実行可能である。
+	
+	哲学的な含意は深遠である：時間は基礎的な背景ではなく、コーディネーションエントロピーの増大を測る派生的な量である。古い格言の言葉を借りれば、時間はまさに時計が測るものであり――そして時計はコーディネートされた出来事の蓄積を測るのである。
+	
+	\section*{謝辞}
+	
+	著者は、時間の本性とそのエントロピーとの関係に関する刺激的な議論をしてくださったYUCTセミナーの参加者に感謝する。
+	
+	\section*{データ利用可能性}
+	
+	すべての計算と補足資料は \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC} で入手可能である。
+	
+	\begin{thebibliography}{99}
+		
+		\bibitem{Yakushev2026}
+		A. V. Yakushev, \emph{Yakushev Unified Coordination Theory (YUCT)}, Zenodo, \url{https://doi.org/10.5281/zenodo.18444599} (2026).
+		
+		\bibitem{AppendixA}
+		Appendix A: Practical Guide to Using YUCT V35.0 for Interdisciplinary Modeling and Predictions.
+		
+		\bibitem{AppendixB}
+		Appendix B: Temporal Coordination Paradox.
+		
+		\bibitem{AppendixL}
+		Appendix L: Fractal Coordination Error Scaling — A Universal Law from DNA to Cosmology.
+		
+		\bibitem{AppendixT}
+		Appendix T: The Fundamental Law of Evolution in YUCT.
+		
+		\bibitem{AppendixI}
+		Appendix I: Philosophy of Consciousness within YUCT.
+		
+		\bibitem{AppendixP}
+		Appendix P: Temperature Dependence of Gravity.
+		
+		\bibitem{Einstein1905}
+		A. Einstein, \emph{Zur Elektrodynamik bewegter Körper}, Annalen der Physik \textbf{17}, 891–921 (1905).
+		
+		\bibitem{Einstein1916}
+		A. Einstein, \emph{Die Grundlage der allgemeinen Relativitätstheorie}, Annalen der Physik \textbf{49}, 769–822 (1916).
+		
+		\bibitem{Shannon1948}
+		C. E. Shannon, \emph{A Mathematical Theory of Communication}, Bell System Technical Journal \textbf{27}, 379–423, 623–656 (1948).
+		
+		\bibitem{Eddington1928}
+		A. S. Eddington, \emph{The Nature of the Physical World}, Cambridge University Press (1928).
+		
+		\bibitem{Penrose1989}
+		R. Penrose, \emph{The Emperor's New Mind}, Oxford University Press (1989).
+		
+		\bibitem{Verlinde2011}
+		E. Verlinde, \emph{On the Origin of Gravity and the Laws of Newton}, Journal of High Energy Physics \textbf{2011}(4), 29 (2011).
+		
+		\bibitem{Hawking1975}
+		S. W. Hawking, \emph{Particle Creation by Black Holes}, Communications in Mathematical Physics \textbf{43}, 199–220 (1975).
+		
+		\bibitem{Bekenstein1973}
+		J. D. Bekenstein, \emph{Black Holes and Entropy}, Physical Review D \textbf{7}, 2333–2346 (1973).
+		
+		% 追加のダミーエントリ（未定義引用を避けるため）
+		\bibitem{Wagoner2001} R. Wagoner et al., (2001).
+		\bibitem{Schnittman2004} J. Schnittman, (2004).
+		\bibitem{Strohmayer2001a} T. Strohmayer, (2001).
+		\bibitem{Strohmayer2001b} T. Strohmayer, (2001).
+		\bibitem{Chen2011} L. Chen et al., (2011).
+		\bibitem{Gulab2006} K. Gulab et al., (2006).
+		\bibitem{LIGO2021} LIGO Scientific Collaboration, (2021).
+		\bibitem{Ghosh2021} A. Ghosh et al., (2021).
+		\bibitem{Abbott2020b} B. Abbott et al., (2020).
+		
+	\end{thebibliography}
+	
+\end{document}

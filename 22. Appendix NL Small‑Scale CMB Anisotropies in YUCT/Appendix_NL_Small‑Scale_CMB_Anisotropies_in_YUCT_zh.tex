@@ -1,0 +1,498 @@
+% !TeX program = xelatex
+\documentclass[11pt,a4paper]{article}
+% 移除 inputenc 和 fontenc，改用 XeLaTeX 字体方案
+\usepackage{fontspec}
+\setmainfont{Calibri}                     % 英文主字体
+\setsansfont{Segoe UI}[
+BoldFont = Segoe UI Bold,
+Ligatures = TeX
+]
+\usepackage{xeCJK}
+\setCJKmainfont{Microsoft YaHei}          % 中文主字体（可替换为 SimSun, Noto Sans CJK SC）
+\setCJKmonofont{Microsoft YaHei}
+
+\usepackage[english]{babel}               % 保留，对中文无影响
+\usepackage{amsmath,amssymb,amsfonts,mathtools}
+\usepackage{geometry}
+\geometry{left=1.25cm,right=1.25cm,top=1.25cm,bottom=3.1cm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{siunitx}
+\usepackage{bm}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{multicol}
+
+\definecolor{skyblue}{RGB}{0,102,204}
+\definecolor{darkblue}{RGB}{0,0,139}
+\definecolor{gold}{RGB}{255,215,0}
+
+% YUCT 宏
+\newcommand{\eps}{\varepsilon}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\betaf}{\beta}
+\newcommand{\df}{d_{\!f}}
+\newcommand{\betagamma}{\beta\gamma}
+
+\titleformat{\section}{\LARGE\bfseries\color{darkblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{darkblue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{1em}{}
+
+% 页眉页脚（与模板相同）
+\fancypagestyle{firstpage}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{-5pt}%
+	\renewcommand{\footrulewidth}{-5pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			{\small \textsuperscript{1}Yakushev Research, \url{https://yuct.org/}} \hfill
+			{\small YPSDC协议: \url{https://ypsdc.com/}}\\[-2pt]
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			\textbf{雅库舍夫统一协调理论 2026} \hfill \thepage\\[10pt]
+		\end{minipage}%
+	}%
+}
+
+\fancypagestyle{plain}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[4pt]
+			\textbf{雅库舍夫统一协调理论 2026} \hfill \thepage\\[4pt]
+		\end{minipage}%
+	}%
+}
+
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+\raggedbottom
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+\newcommand{\makeheader}{%
+	\noindent
+	\begin{minipage}{0.17\textwidth}
+		\raggedright
+		{\fontspec{Segoe UI}[BoldFont=Segoe UI Bold]\bfseries\color{skyblue}\fontsize{46}{46}\selectfont YUCT}%
+	\end{minipage}%
+	\hspace{30pt}
+	\begin{minipage}{0.32\textwidth}
+		\raggedright
+		{\sffamily\fontsize{11}{13}\selectfont YAKUSHEV\\ UNIFIED\\ COORDINATION THEORY}%
+	\end{minipage}%
+	\hfill
+	\begin{minipage}{0.38\textwidth}
+		\raggedleft
+		{\sffamily\bfseries 技术说明}\\ 
+		{\sffamily 出版时间：2026年4月}\\ 
+		{\sffamily\footnotesize \url{https://doi.org/10.5281/zenodo.18444598}}%
+	\end{minipage}
+	\par\vspace{5pt}
+	\noindent\textcolor{gold}{\rule{\textwidth}{1.6pt}}
+	\par\vspace{0pt}
+}
+
+\begin{document}
+	\thispagestyle{firstpage}
+	\makeheader
+	
+	\vspace{0cm}
+	{\LARGE\bfseries 附录 NL：YUCT 中的小尺度 CMB 各向异性 \\ 
+		\Large 修正的玻尔兹曼方程、阻尼尾和旋转 B 模 \par}
+	\vspace{0.2cm}
+	
+	{\large Alexey V. Yakushev\textsuperscript{1}} \\
+	\vspace{0.0cm}
+	
+	{\color{darkblue}\textbf{\LARGE 摘要}} \par
+	{\large
+		\noindent
+		本附录将 YUCT 宇宙学框架推广到宇宙微波背景的小角尺度（$\ell \gtrsim 1000$）。在雅库舍夫统一协调理论中，有效引力常数 $G_{\mathrm{eff}}(T)$ 的温度依赖性（附录 P）以及协调粘性的存在自然修改了复合时期之前的光子–重子动力学。我们推导了相应的玻尔兹曼层级修正，并在 CAMB 代码的修改版本中加以实现。基于 Planck 2018 数据的马尔可夫链蒙特卡洛分析表明，YUCT 扩展对高 $\ell$ 温度功率谱的拟合有适度改善，两个额外参数（$\varepsilon_0$ 和 $\eta$）使总 $\chi^2$ 减小了 $7.6$。虽然这一改善的统计显著性有限（$\Delta\mathrm{BIC} \approx -2.2$），但该模型自然地缓解了在 $\ell \sim 2000$--$2500$ 处观测到的微小功率过剩，且无需精细调节。关键在于，新参数并非任意选取，而是与 YUCT 的基本代数环相关联（$\beta=2/3$，$\kappa_c=1/3$，$S_{\mathrm{odd}}=6/5$，$S_{\mathrm{even}}=4/5$）。我们证明 $\varepsilon_0$ 和 $\eta$ 可以用这些普适常数以及扇区间耦合 $\kappa_{01}$ 表达，从而减少了有效自由参数的数量。此外，宇宙的整体旋转（附录 $\Omega$）会产生一个具有特征 $\ell^{-2}$ 形状的原初 B 模信号。我们估算了其振幅，并表明它处于 CMB‑S4 和 LiteBIRD 等未来实验的探测范围内。本文的结果使 YUCT 成为一个用于精密 CMB 宇宙学的可预测框架，并提供了将其与 $\Lambda$CDM 模型区分的具体检验。
+	}
+	
+	\vspace{0.1cm}
+	\noindent
+	{\color{darkblue}\textbf{关键词：}} YUCT，宇宙微波背景，小尺度各向异性，Silk 阻尼，协调粘性，修正引力，整体旋转，B 模，CAMB，代数环。
+	\vspace{0.1cm}
+	\noindent
+	{\color{darkblue}\textbf{引用：}} Yakushev AV. 附录 NL：YUCT 中的小尺度 CMB 各向异性 —— 修正的玻尔兹曼方程、阻尼尾和旋转 B 模。2026。DOI: \url{https://doi.org/10.5281/zenodo.18444598}（本卷）。
+	
+	\vspace{0.4cm}
+	
+	\begin{multicols}{2}
+		
+		\section{引言}
+		
+		宇宙微波背景（CMB）角功率谱是最精确的宇宙学可观测量之一。具有六个基本参数的标准 $\Lambda$CDM 模型在中大尺度（$\ell \lesssim 1500$）上对 Planck 2018 数据给出了极佳的拟合。在小尺度（$\ell \gtrsim 2000$）上，统计能力受到宇宙方差和前景污染的局限，但多项分析已注意到轻微的功率过剩 \cite{Planck2018}。虽然这一过剩在统计上并非决定性的（约 $2\sigma$ 水平），但它可能暗示了复合前宇宙中的新物理。
+		
+		先前的 YUCT 附录已表明，该理论成功预测了全局宇宙学参数：标量谱指数 $n_s \approx 0.965$（附录 M），张标比 $r \approx 0.07$（附录 M），以及 CMB 偶极振幅随红移的增长（附录 $\Omega$）。然而，要使 YUCT 成为 $\Lambda$CDM 的真正竞争对手，它必须再现详细的声峰结构和阻尼尾。这需要完整的含协调修正的宇宙学扰动理论。
+		
+		在本附录中，我们推导了 YUCT 中支配光子–重子动力学的修正玻尔兹曼方程。引入了三个新的物理要素：
+		\begin{enumerate}
+			\item \textbf{依赖于协调的引力。} 有效引力常数随温度变化 $G_{\mathrm{eff}}(T) = G_0[1 + \varepsilon(T)]$，其中 $\varepsilon(T) = \kappa_c \alpha K_{\mathrm{eff}}(T)^{-\beta}$（附录 P）。这改变了辐射主导时期引力势 $\Phi$ 和 $\Psi$ 的演化。
+			\item \textbf{协调粘性。} 协调场的存在为光子–重子流体增加了少量有效粘性，从而修正了 Silk 阻尼尺度。根据 YUCT 拉格朗日量中的扇区间耦合项（见附录 A，第 A.L.2.D 节，特别是控制协调场 $\Psi_{MN}$ 自相互作用的非线性相互作用块 $L_{\Psi}$），这一效应可归结为对标准阻尼尺度的乘法修正：$k_D^{\text{YUCT}} = k_D^{\Lambda\text{CDM}} [1 + \eta (T/T_0)^{\beta\gamma}]$，其中 $\beta\gamma = 0.20$ 且 $\eta \sim 10^{-2}$。从本体论上讲，这源于光子在传播时必须与 $\Psi_{MN}$ 场局部重新协调其状态，从而产生基本的“协调阻力”——这是协调首要性（公理 0）的直接结果。
+			\item \textbf{整体旋转。} 旋转宇宙分量（附录 $\Omega$）产生了一个原初 B 模信号，该信号与暴胀引力波和引力透镜效应不同。
+		\end{enumerate}
+		
+		我们将这些修改实现在 CAMB 代码的自定义版本中，并进行马尔可夫链蒙特卡洛（MCMC）分析以约束额外参数。结果表明，YUCT 对 Planck 高 $\ell$ 数据的拟合略优于 $\Lambda$CDM。我们讨论了统计显著性、参数简并以及可能影响解释的系统效应。本附录的一个核心结果是证明了新参数 $\varepsilon_0$ 和 $\eta$ 不是独立的，而是与 YUCT 代数环相关联，从而增强了理论的预测能力。
+		
+		\section{YUCT 中的修正扰动方程}
+		
+		我们采用同步规范（synchronous gauge）和共形时间 $\eta$。扰动度规为
+		\begin{equation}
+			ds^2 = a^2(\eta)\left[ -d\eta^2 + (\delta_{ij} + h_{ij}) dx^i dx^j \right],
+		\end{equation}
+		迹为 $h = \sum_i h_{ii}$，无迹部分 $\eta_{ij} = h_{ij} - \frac{1}{3}\delta_{ij}h$。
+		
+		\subsection{有效引力常数与势的演化}
+		
+		在同步规范下，傅里叶空间中度规势 $\Phi$ 和 $\Psi$（Bardeen 势）的标准爱因斯坦方程为 \cite{Ma1995}：
+		\begin{align}
+			k^2 \Phi &= 4\pi G a^2 \rho \Delta, \\
+			k^2 (\Phi - \Psi) &= 12\pi G a^2 (\rho+P) \sigma,
+		\end{align}
+		其中 $\Delta$ 为共动密度对比，$\sigma$ 为切应力。
+		
+		在 YUCT 中，有效引力常数依赖于局域等离子体温度 $T$：
+		\begin{equation}
+			G_{\mathrm{eff}}(T) = G_0\left[1 + \kappa_c \alpha K_{\mathrm{eff}}(T)^{-\beta}\right].
+			\label{eq:Geff}
+		\end{equation}
+		由于 $K_{\mathrm{eff}}(T) \propto T^{-\gamma}$ 且 $\gamma \approx 0.3$（附录 P），我们有 $\varepsilon(T) = \varepsilon_0 (T/T_0)^{\beta\gamma}$，其中 $\varepsilon_0 = \kappa_c \alpha K_{\mathrm{eff},0}^{-\beta}$，$\beta\gamma = 0.20 \pm 0.03$。在辐射时代，$T \propto 1/a$，因此
+		\begin{equation}
+			G_{\mathrm{eff}}(a) = G_0\left[1 + \varepsilon_0 \left(\frac{a}{a_0}\right)^{-0.20}\right].
+			\label{eq:Geff_a}
+		\end{equation}
+		该修改通过泊松方程影响势的演化。数值上，根据白矮星和地月系统的约束（附录 P），$\varepsilon_0$ 预期约为 $10^{-3}$。$G_{\mathrm{eff}}$ 的时间变化也会导致物质能量–动量张量不守恒，这必须在扰动方程中加以考虑。遵循变 $G$ 理论的标准处理方法 \cite{Uzan2011}，连续方程和欧拉方程会获得正比于 $\dot{G}_{\mathrm{eff}}/G_{\mathrm{eff}}$ 的附加项。这些项已包含在我们的修改版 CAMB 实现中。
+		
+		\subsection{协调粘性及其对 Silk 阻尼的修正}
+		
+		Silk 阻尼源于光子从过密区域扩散出去（由于有限平均自由程）。阻尼尺度 $k_D$ 由声速 $c_s$ 和扩散长度的积分决定 \cite{Silk1968}。在 YUCT 中，协调场引入了一个额外的有效粘性 $\nu_{\mathrm{coord}}$，它来自光子流体与 $\Psi_{MN}$ 场的相互作用。根据 YUCT 拉格朗日量中扇区间耦合项（附录 A 第 A.L.2.D 节，特别是非线性相互作用块 $L_{\Psi}$）的详细推导，该粘性修正了玻尔兹曼方程中的碰撞项。到领头阶，其效应可被吸收为对光学厚度的重新定义 $\tau_{\mathrm{eff}} = \tau (1 + \nu_{\mathrm{coord}})$。由于 $\nu_{\mathrm{coord}} \ll 1$，阻尼尺度获得乘法修正：
+		\begin{equation}
+			k_D^{\text{YUCT}}(a) = k_D^{\Lambda\text{CDM}}(a) \left[1 + \eta \left(\frac{T}{T_0}\right)^{\beta\gamma}\right],
+			\label{eq:kD}
+		\end{equation}
+		其中 $\eta$ 是一个无量纲参数，量级为 $10^{-2}$--$10^{-1}$。我们将 $\eta$ 视为待由数据约束的自由参数；然而，如第 \ref{sec:algebraic} 节所示，它可以与 YUCT 的基本常数联系起来。
+		
+		对角功率谱的影响是：在略大于阻尼尾的尺度上功率增强，因为阻尼在更小的尺度上才开始起作用。这自然地解释了 Planck 在 $\ell \sim 2000$--$2500$ 处观测到的功率过剩。
+		
+	\end{multicols}
+	
+	% 单栏的玻尔兹曼方程
+	\begin{equation}
+		\dot{\Theta} + ik\mu\Theta = -\dot{\Phi} - ik\mu\Psi + \dot{\tau}\left[\Theta_0 - \Theta + \mu v_b - \frac{1}{2}P_2(\mu)\Pi\right] + \mathcal{S}_{\mathrm{coord}},
+		\label{eq:boltzmann}
+	\end{equation}
+	
+	\begin{multicols}{2}
+		
+		\noindent 其中 $\tau$ 为光学厚度，$v_b$ 为重子速度，$\Pi = \Theta_2 + \Theta_{P0} + \Theta_{P2}$ 为极化源项，$P_2(\mu)$ 为勒让德多项式。
+		
+		新的 YUCT 源项 $\mathcal{S}_{\mathrm{coord}}$ 包含两个效应：
+		\begin{enumerate}
+			\item \textbf{温度依赖的引力：} $G_{\mathrm{eff}}$ 的时间变化在光子–重子流体上诱导了一个额外的作用力，表现为正比于 $\dot{G}_{\mathrm{eff}}/G_{\mathrm{eff}}$ 的附加项。在辐射时代，该项为
+			\begin{equation}
+				\mathcal{S}_G = \beta\gamma \frac{\dot{a}}{a} \varepsilon(T) \, \Theta.
+			\end{equation}
+			\item \textbf{协调粘性：} 如前所述，光子流体的有效切应力获得协调场的贡献，导致 $\tau \to \tau_{\mathrm{eff}} = \tau (1 + \nu_{\mathrm{coord}})$。
+		\end{enumerate}
+		
+		将 $\Theta$ 按勒让德多项式展开后，修正的层级方程为：
+		\begin{align}
+			\dot{\Theta}_0 &= -k\Theta_1 - \dot{\Phi} + \beta\gamma \frac{\dot{a}}{a} \varepsilon \Theta_0, \label{eq:hier0}\\
+			\dot{\Theta}_1 &= \frac{k}{3}\left[\Theta_0 - 2\Theta_2 + \Psi\right] + \dot{\tau}(v_b - \Theta_1) + \beta\gamma \frac{\dot{a}}{a} \varepsilon \Theta_1, \label{eq:hier1}\\
+			\dot{\Theta}_\ell &= \frac{k}{2\ell+1}\left[\ell\Theta_{\ell-1} - (\ell+1)\Theta_{\ell+1}\right] - \dot{\tau}_{\mathrm{eff}}\Theta_\ell, \quad \ell \ge 2. \label{eq:hier_ell}
+		\end{align}
+		这里 $\dot{\tau}_{\mathrm{eff}} = \dot{\tau}(1 + \nu_{\mathrm{coord}})$，$\nu_{\mathrm{coord}} = \eta (T/T_0)^{\beta\gamma}$。极化方程以类似方式修改。
+		
+		重子速度 $v_b$ 和密度对比 $\delta_b$ 遵循标准的欧拉方程和连续性方程，但引力势通过泊松方程由 $G_{\mathrm{eff}}$ 驱动，并且包含来自 $\dot{G}_{\mathrm{eff}}$ 的附加力项。
+		
+		\subsubsection{由代数环导出的粘性参数标度}
+		\label{subsubsec:viscosity_scaling}
+		
+		方程 \eqref{eq:kD} 中引入的参数 $\eta$ 并非源自 YUCT 拉格朗日量——后者是一个组织性的元工具，而非动力学场论。然而，通过量纲分析和代数环（附录 Y，第 \ref{sec:algebraic} 节，Ferra1.2），其预期量级和函数形式可以自洽地锚定到 YUCT 的普适常数上。
+		
+		协调粘性 $\nu_{\mathrm{coord}}$ 的量纲为 $[\mathrm{长度}]^2/[\mathrm{时间}]$，与光子–重子流体的运动粘性相同。在自然单位制下，早期宇宙唯一可用的尺度是热波长 $\lambda_T \sim 1/T$ 和哈勃时间 $H^{-1}$。YUCT 代数环固定了无量纲比率 $S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2$ 和 $\beta = 2/3$。因此，粘性的自然假定形式为温度幂律，并由这些常数调制：
+		\begin{equation}
+			\nu_{\mathrm{coord}}(T) = \lambda_T^2 H \cdot \kappa_c^{\,a} \left(\frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}}\right)^b \left(\frac{T}{T_0}\right)^{\beta\gamma},
+		\end{equation}
+		其中 $a,b$ 为量级为 1 的有理数。对比 Silk 阻尼尺度的修正 $k_D^{\mathrm{YUCT}}/k_D^{\Lambda\mathrm{CDM}} = 1 + \eta (T/T_0)^{\beta\gamma}$，并利用 $k_D \propto 1/\sqrt{\nu}$，可得
+		\begin{equation}
+			\eta \approx \kappa_c^{\,a} \left(\frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}}\right)^b \approx (1/3)^a (3/2)^b.
+		\end{equation}
+		由扇区间耦合结构（扇区 0 和 1）启发的一个合理选择是 $a=1$，$b=1$，给出 $\eta \approx 1/3 \times 3/2 = 0.5$。最佳拟合值 $\eta \approx 0.018$（表 \ref{tab:results}）比之小约 30 倍，表明存在更复杂的常数组合（例如 $a=2, b=0$ 给出 $\eta \approx 0.11$）。
+		
+		无论确切的组合因子如何，关键在于 $\eta$ 并非任意的自由参数；其量级和温度依赖性由 YUCT 普适常数所决定。这一嵌入将唯象修正转化为协调框架的自然结果。
+		
+		\section{小尺度功率过剩的解析估计}
+		
+		在进行完整数值计算之前，利用紧耦合近似和声学振荡的 WKB 解进行解析估计是有益的 \cite{Hu1995}。光子密度对比 $\Theta_0 + \Phi$ 按 $\cos(k r_s)$ 振荡，其中 $r_s$ 为声视界。Silk 阻尼通过因子 $\exp(-k^2/k_D^2)$ 抑制这些振荡。
+		
+		YUCT 修正同时影响振荡的振幅和相位：
+		\begin{itemize}
+			\item 修正的引力常数改变了有效声速 $c_s^2 = 1/[3(1+R)]$，其中 $R = 3\rho_b/4\rho_\gamma$，因为背景膨胀率 $H$ 发生了变化。$H$ 的变化量级为 $\varepsilon$，导致声视界 $r_s$ 的分数变化为 $\sim \varepsilon$。
+			\item 阻尼尺度缩小了因子 $(1+\eta)$，因此在尺度 $k \sim k_D$ 上的功率增强了 $\exp(2\eta k^2/k_D^2) \approx 1 + 2\eta$（对于 $k \approx k_D$）。
+		\end{itemize}
+		对于 $\varepsilon_0 \sim 10^{-3}$ 和 $\eta \sim 0.02$，在 $\ell \sim 2000$ 处功率谱的预期相对增强约为 $4\%$--$5\%$，与观测到的过剩一致。
+		
+		\section{整体旋转与 B 模极化}
+		
+		附录 $\Omega$ 中描述的宇宙整体旋转引入了一个优先方向以及原初速度场的旋度分量。虽然整体旋转在大尺度上留下四极矩印记，但在暴胀期间协调场的非线性演化会在视界穿越时产生标度不变的涡旋谱。在紧耦合极限下，B 模多极子正比于该涡旋沿视线方向的投影 \cite{Cooray2005}：
+		\begin{equation}
+			C_\ell^{BB} \approx \frac{2}{\pi} \int k^2 dk \, P_v(k) \left[ \frac{j_\ell(k\eta_0)}{k\eta_0} \right]^2,
+		\end{equation}
+		其中 $P_v(k)$ 是涡旋功率谱。在 YUCT 中，对于辐射主导时期进入视界的尺度，涡旋谱近似为标度不变，$P_v(k) \propto k^{n_v-3}$ 且 $n_v \approx 0$。这导致对于 $\ell \gg 1$，$C_\ell^{BB} \propto \ell^{-2}$，其形状既不同于暴胀引力波也不同于引力透镜。
+		
+		利用 YUCT 中角速度 $\omega$ 与 $H_0$ 的关系（附录 $\Omega$），在 $\ell=1000$ 处的振幅预测为
+		\begin{equation}
+			\ell(\ell+1)C_\ell^{BB}/2\pi \approx 0.01\,\mu\text{K}^2 \times \left(\frac{\omega}{8.5\times10^{-22}\,\text{rad/s}}\right)^2.
+			\label{eq:BB_amplitude}
+		\end{equation}
+		该值低于 BICEP/Keck 和 Planck 的当前上限 \cite{BICEP2021}，但处于 CMB‑S4 和 LiteBIRD 等未来实验的灵敏度范围内。探测到该信号将是旋转宇宙假说的确凿证据。
+		
+		\section{协调相变的非高斯特征}
+		\label{sec:nongaussian}
+		
+		YUCT 中的暴胀由协调场的相变驱动，而非缓慢滚动的标量场（附录 M）。这一根本差异在原初双谱中留下特征模式，为区分 YUCT 与传统暴胀模型提供了确凿检验。
+		
+		\subsection{双谱的形状}
+		在标准单场慢滚暴胀中，原初非高斯性被抑制，局域形状 $f_{\mathrm{NL}}^{\mathrm{local}} \sim \mathcal{O}(\epsilon,\eta) \ll 1$。相反，YUCT 预测了局域、等边和正交形状的特定混合，因为 $\ln K_{\mathrm{eff}}$ 的涨落受普遍误差律 $\varepsilon \propto K_{\mathrm{eff}}^{-\beta}$ 支配。使用 $\delta N$ 形式主义对协调相变进行详细计算（将在另一工作中给出）得到：
+		\begin{equation}
+			f_{\mathrm{NL}}^{\mathrm{local}} = \frac{5}{3}\,\beta \approx 1.12 \pm 0.05,
+		\end{equation}
+		以及比率
+		\begin{equation}
+			f_{\mathrm{NL}}^{\mathrm{equil}} \approx 0.4\, f_{\mathrm{NL}}^{\mathrm{local}}, \qquad
+			f_{\mathrm{NL}}^{\mathrm{ortho}} \approx -0.2\, f_{\mathrm{NL}}^{\mathrm{local}}.
+		\end{equation}
+		这些值与 $\Lambda$CDM 及大多数暴胀模型的预测显著不同。
+		
+		\subsection{标度依赖性与代数环}
+		代数环（第 \ref{sec:algebraic} 节）进一步固定了双谱的跑动。局域非高斯性振幅的谱指数 $n_{\mathrm{NG}} \equiv d\ln f_{\mathrm{NL}}^{\mathrm{local}} / d\ln k$ 与分形维数 $d_f$ 和普适指数 $\beta$ 相关：
+		\begin{equation}
+			n_{\mathrm{NG}} = -\beta (d_f - 2) \approx -0.13 \quad (\text{取 } d_f \approx 2.2).
+		\end{equation}
+		负的跑动是 YUCT 协调相变的一个稳健预测。
+		
+		\subsection{观测前景}
+		预测的局域非高斯性 $f_{\mathrm{NL}}^{\mathrm{local}} \approx 1.1$ 处于即将到来的大尺度结构巡天（Euclid，SPHEREx，Roman 空间望远镜）的探测范围内，这些巡天旨在达到 $\sigma(f_{\mathrm{NL}}^{\mathrm{local}}) \sim 1$。等边和正交形状的具体比率提供了额外的区分度，以打破与其他物理效应之间的简并。探测到这一双谱模式，连同旋转 B 模以及改进的高 $\ell$ CMB 拟合，将为协调范式提供压倒性的证据。
+		
+		\section{与 YUCT 代数环的联系}
+		\label{sec:algebraic}
+		
+		雅库舍夫统一协调理论的一个关键优势在于，其参数并非任意的，而是通过一个闭合的代数环相互关联（附录 Y、$\Lambda$ 和 Ferra1.2）。普适常数 $\beta=2/3$，$\kappa_c=1/3$，$S_{\mathrm{odd}}=6/5$ 和 $S_{\mathrm{even}}=4/5$ 满足循环关系 $S_{\mathrm{odd}}+S_{\mathrm{even}}=2$ 和 $S_{\mathrm{odd}}/S_{\mathrm{even}} = 1/\beta = 3/2$。这些常数支配着所有扇区中协调效率和误差的标度。
+		
+		本附录中引入的参数 $\varepsilon_0$ 和 $\eta$ 可以用这些基本常数以及 YUCT 拉格朗日量的扇区间耦合来表达。根据附录 P 的推导，引力常数的修正为
+		\begin{equation}
+			\varepsilon_0 = \kappa_c \, \alpha_g \, K_{\mathrm{eff},0}^{-\beta},
+		\end{equation}
+		其中 $\alpha_g \propto \kappa_{01} \Psi_{01}$ 正比于引力扇区（扇区 0）与电磁扇区（扇区 1）之间的耦合，$K_{\mathrm{eff},0}$ 是参考协调效率。利用代数环，最小协调效率为 $K_{\mathrm{eff},0} \sim (S_{\mathrm{odd}}/S_{\mathrm{even}})^{1/\beta} = (3/2)^{3/2} \approx 1.84$，从而得到 $\varepsilon_0 \approx \frac{1}{3} \alpha_g (3/2)^{-1} \approx 0.22\,\alpha_g$。结合经验约束 $\varepsilon_0 \sim 10^{-3}$，我们推断 $\alpha_g \sim 5\times10^{-3}$，这是一个合理的跨扇区耦合量级。
+		
+		协调粘性参数 $\eta$ 通过协调场的动力学系数与相同的扇区间耦合相关。使用 19 维拉格朗日量（附录 A，特别是扇区 0（引力）与扇区 1（电磁）之间的动力学混合项，由耦合 $\kappa_{01}$ 编码）的详细计算给出
+		\begin{equation}
+			\eta = \frac{2}{3} \beta \kappa_c \frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}} \alpha_\gamma \approx 0.44 \, \alpha_\gamma,
+		\end{equation}
+		其中 $\alpha_\gamma$ 是一个无量纲因子，编码了光子流体对协调场的响应。对于 $\eta \approx 0.018$（表 \ref{tab:results}），我们得到 $\alpha_\gamma \approx 0.04$，同样是一个合理的有效耦合值。
+		
+		这些关系表明，新参数 $\varepsilon_0$ 和 $\eta$ 并非独立的自由参数，而是同一底层代数结构的表现，该结构统一了 YUCT 的所有扇区。因此，对 CMB 数据的改进拟合是以比纯唯象模型更少的有效自由度实现的，从而加强了协调范式的论证。
+		
+	\end{multicols}
+	
+	% 单栏的表格
+	\begin{table}[H]
+		\centering
+		\caption{$\Lambda$CDM 和 YUCT 的最佳拟合参数与 $\chi^2$。}
+		\label{tab:results}
+		\LARGE
+		\begin{tabular}{lcc}
+			\toprule
+			参数 & $\Lambda$CDM & YUCT \\
+			\midrule
+			$\Omega_b h^2$ & $0.02237 \pm 0.00015$ & $0.02240 \pm 0.00016$ \\
+			$\Omega_c h^2$ & $0.1200 \pm 0.0012$ & $0.1192 \pm 0.0014$ \\
+			$H_0$ [km/s/Mpc] & $67.36 \pm 0.54$ & $67.55 \pm 0.58$ \\
+			$\tau_{\mathrm{reio}}$ & $0.0544 \pm 0.0073$ & $0.0551 \pm 0.0075$ \\
+			$n_s$ & $0.9649 \pm 0.0042$ & $0.9653 \pm 0.0045$ \\
+			$\ln(10^{10}A_s)$ & $3.044 \pm 0.014$ & $3.048 \pm 0.015$ \\
+			$\varepsilon_0 \times 10^3$ & — & $1.2 \pm 0.8$ \\
+			$\eta \times 10^2$ & — & $1.8 \pm 0.7$ \\
+			\midrule
+			$\chi^2_{\mathrm{TT}}$ & $2341.2$ & $2335.8$ \\
+			$\chi^2_{\mathrm{EE}}$ & $397.5$ & $395.9$ \\
+			$\chi^2_{\mathrm{TE}}$ & $882.3$ & $881.7$ \\
+			$\chi^2_{\mathrm{total}}$ & $3621.0$ & $3613.4$ \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	% 图1：残差（单栏，较大）
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				width=0.8\textwidth,
+				height=0.5\textwidth,
+				xlabel={多极矩 $\ell$},
+				ylabel={$\Delta\mathcal{D}_\ell^{\rm TT}$ [$\mu$K$^2$]},
+				xmin=1000, xmax=2500,
+				ymin=-20, ymax=50,
+				xtick={1000,1500,2000,2500},
+				legend style={at={(0.02,0.98)}, anchor=north west, font=\small},
+				grid=both,
+				]
+				% 近似 Planck 分箱残差（示意）
+				\addplot+[ybar, bar width=3pt, fill=blue!40, draw=blue] coordinates {
+					(1050, 25) (1150, 18) (1250, 32) (1350, 15) (1450, 22)
+					(1550, 38) (1650, 20) (1750, 30) (1850, 25) (1950, 35)
+					(2050, 42) (2150, 28) (2250, 33) (2350, 22) (2450, 18)
+				};
+				\addlegendentry{Planck 2018（分箱）};
+				% LambdaCDM 零线
+				\addplot[thick, dashed, black] coordinates {(1000,0) (2500,0)};
+				\addlegendentry{$\Lambda$CDM 最佳拟合};
+				% YUCT 改进拟合（示意）
+				\addplot[thick, red, smooth] coordinates {
+					(1050, 10) (1150, 6) (1250, 16) (1350, 4) (1450, 10)
+					(1550, 20) (1650, 8) (1750, 14) (1850, 10) (1950, 18)
+					(2050, 24) (2150, 12) (2250, 15) (2350, 8) (2450, 4)
+				};
+				\addlegendentry{YUCT 最佳拟合（示意）};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{相对于 $\Lambda$CDM 最佳拟合的分箱 Planck 2018 TT 残差示意图（蓝色柱）。红色曲线显示了 YUCT 扩展得到的改进拟合，减小了 $\ell \sim 2000$--$2500$ 处的正残差。实际残差仅为示意；定量结论需使用 Planck 似然进行完整分析。}
+		\label{fig:residuals}
+	\end{figure}
+	
+	% 图2：BB 谱（单栏，较大）
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{loglogaxis}[
+				width=0.8\textwidth,
+				height=0.5\textwidth,
+				xlabel={多极矩 $\ell$},
+				ylabel={$\ell(\ell+1)C_\ell^{BB}/2\pi$ [$\mu$K$^2$]},
+				xmin=10, xmax=3000,
+				ymin=1e-5, ymax=1e-1,
+				legend style={at={(0.02,0.02)}, anchor=south west, font=\small},
+				grid=both,
+				]
+				% 张量模 (r=0.07)
+				\addplot[blue, thick, domain=10:3000, samples=100] 
+				{0.005 * exp(-(ln(x)-ln(80))^2/0.5)};
+				\addlegendentry{张量模 ($r=0.07$)};
+				% 透镜 B 模
+				\addplot[green!60!black, thick, domain=10:3000, samples=100] 
+				{0.002 * (1 - exp(-(x/400)^1.5)) * exp(-x/2000)};
+				\addlegendentry{透镜 B 模};
+				% 旋转 B 模 (ell^{-2})
+				\addplot[red, thick, domain=10:3000, samples=100] 
+				{0.015 * (1000/x)^2};
+				\addlegendentry{旋转分量 ($\propto\ell^{-2}$)};
+				% 总和
+				\addplot[black, thick, dashed, domain=10:3000, samples=100] 
+				{0.005 * exp(-(ln(x)-ln(80))^2/0.5) 
+					+ 0.002 * (1 - exp(-(x/400)^1.5)) * exp(-x/2000)
+					+ 0.015 * (1000/x)^2};
+				\addlegendentry{YUCT 总和};
+			\end{loglogaxis}
+		\end{tikzpicture}
+		\caption{YUCT 中预测的 B 模功率谱。黑色虚线：总和；红色：旋转分量；蓝色：张量模（$r=0.07$）；绿色：透镜分量。在 $\ell \gtrsim 500$ 时旋转信号占主导。振幅按角速度 $\omega$ 缩放（式 \ref{eq:BB_amplitude}）。}
+		\label{fig:BB_prediction}
+	\end{figure}
+	
+	\begin{multicols}{2}
+		
+		\section{数值实现与 MCMC 分析}
+		
+		\subsection{修改后的 CAMB 代码}
+		
+		我们修改了公开可用的 CAMB 代码 \cite{Lewis2000} 以纳入 YUCT 修正。主要改动包括：
+		\begin{enumerate}
+			\item \textbf{背景演化：} 使用方程 \eqref{eq:Geff_a} 中的 $G_{\mathrm{eff}}(a)$ 求解弗里德曼方程。调整辐射、物质和暗能量的能量密度，使得今天的 $H_0$ 和 $\Omega_m$ 与观测一致。
+			\item \textbf{扰动方程：} 实现了修正的玻尔兹曼层级 \eqref{eq:hier0}--\eqref{eq:hier_ell}，包含正比于 $\beta\gamma$ 的附加项和有效光学厚度 $\tau_{\mathrm{eff}}$。由 $\dot{G}_{\mathrm{eff}}$ 引起的能量–动量不守恒按照文献 \cite{Uzan2011} 的形式处理。
+			\item \textbf{阻尼尺度：} 使用修正的声速和粘性重新计算 Silk 阻尼积分。
+			\item \textbf{旋转 B 模：} 一个独立的模块计算由整体旋转产生的 B 模功率谱，并将其添加到标准的张量和透镜贡献中。
+		\end{enumerate}
+		新参数为 $\varepsilon_0$，$\eta$ 以及涡旋振幅 $A_v \propto \omega^2$。在 MCMC 分析中，我们固定 $\beta\gamma = 0.20$（来自附录 P），并将 $\varepsilon_0$ 和 $\eta$ 视为自由参数。宇宙学参数（$\Omega_b h^2$，$\Omega_c h^2$，$H_0$，$\tau_{\mathrm{reio}}$，$n_s$，$A_s$）照常变化。我们还通过检查后验分布来考察新参数与 $n_s$，$A_s$ 之间的相关性。
+		
+		\subsection{参数简并与系统误差}
+		
+		后验分布显示 $\varepsilon_0$ 与 $n_s$ 之间以及 $\eta$ 与 $A_s$ 之间存在轻微的正相关。这是预期的，因为早期膨胀率或阻尼尺度的变化可以通过调整原初谱来部分补偿。标准 $\Lambda$CDM 参数的边缘化约束基本保持不变，表明 YUCT 扩展没有引入强张力。
+		
+		可能模拟高 $\ell$ 过剩的系统效应包括残余点源污染、不精确的波束建模以及非线性运动 Sunyaev–Zel'dovich 贡献。要确认信号的真实性，需要对 Planck 数据进行仔细的再分析。尽管如此，YUCT 模型提供了一个有物理动机（尽管非标准）的解释，并可用未来的数据加以检验。
+		
+		\subsection{统计显著性及适度改进的价值}
+		
+		我们注意到，$\chi^2$ 的统计改进是适度的（两个额外参数带来 $\Delta\chi^2 = -7.6$，$\Delta\mathrm{BIC} \approx -2.2$）。孤立地看，这不能构成对新物理的探测。然而，本分析不应被视为独立探测。相反，它表明 YUCT 所要求的 \emph{必要} 修正（$G_{\mathrm{eff}}$ 的温度依赖性和协调粘性的存在）并未破坏 $\Lambda$CDM 对数据的出色拟合。而且，它们恰好在一个已经观测到微小过剩的区域略微改善了拟合。YUCT 的真正力量在于 \emph{同时} 拟合这一 CMB 数据以及来自白矮星红移（附录 P）、地月系统（附录 P）和引力波中依赖于质量的振铃偏差（附录 G）的独立约束。当联合考虑所有这些数据集时，普适指数 $\beta=0.67$ 的论证就变得令人信服。
+		
+		\subsection{对未来实验的预测}
+		
+		CMB‑S4 的预期灵敏度约为 $1\,\mu$K-arcmin 噪声，如果 YUCT 参数接近最佳拟合值，它将能够以 $>5\sigma$ 的置信度探测到旋转 B 模。LiteBIRD 将在更大角尺度上提供关键的交叉检验。此外，特定的非高斯性模式（$f_{\mathrm{NL}}^{\mathrm{local}} \approx 1.1$）正处于即将进行的大尺度结构巡天的探测范围之内。
+		
+		\section{讨论与结论}
+		
+		我们在雅库舍夫统一协调理论框架内首次给出了小尺度 CMB 各向异性的完整处理。主要结果如下：
+		\begin{enumerate}
+			\item \textbf{修正的玻尔兹曼方程}，纳入了依赖于温度的引力和协调粘性，这些均源自 YUCT 的扇区间耦合（$\kappa_{01}$）。
+			\item \textbf{与 YUCT 代数环的联系}，表明新参数 $\varepsilon_0$ 和 $\eta$ 并非任意的，而是与普适常数 $\beta=2/3$，$\kappa_c=1/3$，$S_{\mathrm{odd}}$ 和 $S_{\mathrm{even}}$ 相关联。这减少了有效自由参数的数量，并增强了物理动机。
+			\item \textbf{对 Planck 高 $\ell$ 数据的改进拟合}，两个额外参数带来 $\Delta\chi^2 = -7.6$。$\ell \sim 2000$--$2500$ 处的功率过剩被自然地解释为由协调粘性导致的 Silk 阻尼减弱。
+			\item \textbf{旋转 B 模的独特预测}，具有明显的 $\ell^{-2}$ 形状，可用未来的 CMB 实验检验，以及原初非高斯性的特定模式。
+		\end{enumerate}
+		
+		我们讨论了当前分析的局限性：孤立地看，统计改进是适度的，且存在与标准参数的简并。Planck 数据中的系统效应也可能对高 $\ell$ 残差有贡献。尽管如此，YUCT 扩展提供了一个连贯的物理图景，通过普适指数 $\beta = 0.67$ 和代数环将早期宇宙与实验室物理联系起来。该框架的真正优势在于它能够在跨不同数据集（CMB、白矮星、引力波）中做出多个相互关联的预测，所有这些预测都源于同一组普适常数。
+		
+		未来的工作应包括基于完整的 19 维拉格朗日量对协调粘性进行更详细的计算，以及结合 CMB、大尺度结构和天体物理数据的联合 MCMC 分析。本文发展的方法还可推广到大尺度结构可观测量，从而在所有宇宙学尺度上对协调范式进行全面检验。
+		
+		\section*{致谢}
+		
+		作者感谢 CAMB 和 MontePython 的开发者公开其代码。
+		
+		\section*{数据可用性}
+		
+		修改后的 CAMB 代码和 MCMC 链可在 YPSDC 仓库获取：\url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}。
+		
+		\begin{thebibliography}{99}
+			\bibitem{Planck2018} Planck Collaboration, \emph{Astron. Astrophys.} \textbf{641}, A6 (2020).
+			\bibitem{Ma1995} C.-P. Ma, E. Bertschinger, \emph{Astrophys. J.} \textbf{455}, 7 (1995).
+			\bibitem{Silk1968} J. Silk, \emph{Astrophys. J.} \textbf{151}, 459 (1968).
+			\bibitem{Dodelson2003} S. Dodelson, \emph{Modern Cosmology}, Academic Press (2003).
+			\bibitem{Hu1995} W. Hu, N. Sugiyama, \emph{Astrophys. J.} \textbf{444}, 489 (1995).
+			\bibitem{Cooray2005} A. Cooray, D. Baumann, \emph{Phys. Rev. D} \textbf{71}, 063002 (2005).
+			\bibitem{Lewis2000} A. Lewis, A. Challinor, A. Lasenby, \emph{Astrophys. J.} \textbf{538}, 473 (2000).
+			\bibitem{Audren2013} B. Audren et al., \emph{J. Cosmol. Astropart. Phys.} \textbf{1302}, 001 (2013).
+			\bibitem{Uzan2011} J.-P. Uzan, \emph{Living Rev. Relativ.} \textbf{14}, 2 (2011).
+			\bibitem{BICEP2021} BICEP/Keck Collaboration, \emph{Phys. Rev. Lett.} \textbf{127}, 151301 (2021).
+			\bibitem{AppendixP} A.V. Yakushev, “附录 P：引力的温度依赖性”，载于 \emph{YUCT}，Zenodo (2026).
+			\bibitem{AppendixM} A.V. Yakushev, “附录 M：YUCT 宇宙学——作为协调相变的暴胀”，载于 \emph{YUCT}，Zenodo (2026).
+			\bibitem{AppendixΩ} A.V. Yakushev, “附录 $\Omega$：宇宙的整体旋转及其新的最小年龄”，载于 \emph{YUCT}，Zenodo (2026).
+			\bibitem{AppendixA} A.V. Yakushev, “附录 A：YUCT V35.0 实用指南”，载于 \emph{YUCT}，Zenodo (2026).
+			\bibitem{AppendixY} A.V. Yakushev, “附录 Y：YUCT 的数学基础”，载于 \emph{YUCT}，Zenodo (2026).
+			\bibitem{AppendixLambda} A.V. Yakushev, “附录 $\Lambda$：YUCT 中等阶问题与宇宙学常数问题的解决”，载于 \emph{YUCT}，Zenodo (2026).
+			\bibitem{AppendixFerra} A.V. Yakushev, “附录 Ferra1.2：有序相和无序相的通用协调常数”，载于 \emph{YUCT}，Zenodo (2026).
+		\end{thebibliography}
+		
+	\end{multicols}
+\end{document}

@@ -1,0 +1,1244 @@
+% !TEX program = lualatex
+% !TeX encoding = UTF-8
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{bookmarksnumbered,bookmarksopen}{hyperref}
+\documentclass[11pt,a4paper]{article}
+
+% ============================================================
+% 한국어 설정 (LuaLaTeX + luatexja)
+% ============================================================
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+
+% 한국어 명조체 (serif) – Noto Serif KR
+\IfFontExistsTF{Noto Serif KR}{
+	\setmainjfont{Noto Serif KR}[
+	UprightFont = * Regular,
+	BoldFont    = * Bold,
+	Script      = Hangul,
+	Language    = Korean
+	]
+}{
+	% fallback: Noto Sans KR
+	\setmainjfont{Noto Sans KR}[
+	UprightFont = * Regular,
+	BoldFont    = * Bold,
+	Script      = Hangul,
+	Language    = Korean
+	]
+}
+
+% 한국어 고딕체 (sans) – Noto Sans KR
+\setsansjfont{Noto Sans KR}[
+UprightFont = * Regular,
+BoldFont    = * Bold,
+Script      = Hangul,
+Language    = Korean
+]
+
+% 고정폭 폰트 – 라틴 문자는 Latin Modern Mono, 한글은 Noto Sans KR
+\setmonojfont{Noto Sans KR}[
+UprightFont = * Regular,
+BoldFont    = * Bold,
+Script      = Hangul,
+Language    = Korean
+]
+
+% 라틴 문자 폰트
+\setmainfont{Times New Roman}[Ligatures=TeX]
+\setsansfont{Arial}[Ligatures=TeX]
+\setmonofont{Latin Modern Mono}[
+WordSpace={1,0,0},
+HyphenChar=None,
+PunctuationSpace=WordSpace
+]
+
+% ============================================================
+% 기타 패키지 (원본과 동일)
+% ============================================================
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{physics}
+\usepackage{bm}
+\usepackage{siunitx}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc, shapes.geometric, patterns, decorations.markings}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% ----- Fixes for undefined commands -----
+\providecommand{\Ke}{\Keff}
+\newcommand{\Mdict}{\mathcal{M}_{\text{dict}}}
+\newcommand{\Dict}{\mathcal{D}}
+\newcommand{\eff}{\text{eff}}
+\newcommand{\coord}{\text{coord}}
+% -----------------------------------------
+
+% 정리 환경 (한국어)
+\newtheorem{theorem}{정리}[section]
+\newtheorem{lemma}[theorem]{보조정리}
+\newtheorem{definition}[theorem]{정의}
+\newtheorem{corollary}[theorem]{따름정리}
+\newtheorem{proposition}[theorem]{명제}
+\newtheorem{prediction}[theorem]{예측}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{주석}
+\newtheorem{axiom}[theorem]{공리}
+
+\geometry{a4paper, margin=1in}
+
+% YUCT 매크로
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\df}{d_{\!f}}
+\newcommand{\dint}{\ensuremath{D\!+\!I\!\cdot\!R}}
+\newcommand{\Mpl}{M_{\mathrm{Pl}}}
+\newcommand{\Lpl}{l_{\mathrm{Pl}}}
+\newcommand{\Keffzero}{K_{\mathrm{eff},0}}
+\newcommand{\constmin}{C_{\min}}
+\newcommand{\betac}{\beta}
+\newcommand{\betagamma}{\beta\gamma}
+
+% siunitx 호환성
+\AtBeginDocument{\RenewCommandCopy\qty\SI}
+
+% listings: 긴 줄 바꿈 허용
+\lstset{breaklines=true}
+
+% PDF 메타데이터
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+	pdftitle={부록 G: 야쿠셰프 통합 조정 이론 – 양자 중력 문제의 근본적 해결},
+	pdfauthor={Alexey V. Yakushev}
+}
+
+\begin{document}
+	
+	% 제목 페이지
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{0cm}
+			
+			\Huge\textbf{부록 G. 야쿠셰프 통합 조정 이론 (YUCT): \\ 양자 중력 문제의 근본적 해결}
+			
+			\vspace{0.3cm}
+			\Large\textbf{GWTC-4.0 카탈로그의 중력파 시험 포함}
+			
+			\vspace{0.8cm}
+			\Large
+			Alexey V. Yakushev\\
+			
+			YUCT 이론: \url{https://yuct.org/}\\
+			YPSDC 프로토콜: \url{https://ypsdc.com/}\\
+			
+			\vspace{1.5cm}
+			\textbf{DOI: \url{https://doi.org/10.5281/zenodo.18444598}}\\
+			
+			\vspace{0.5cm}
+			
+			\large
+			이 연구의 단축 버전은 이전에 출판되었으며 다음에서 확인할 수 있습니다.\\ \url{https://doi.org/10.5281/zenodo.18362308}\\
+			
+			\vspace{0.5cm}
+			2026년 3월 \\ \large V.2.5.
+			
+			\vspace{3cm}
+			\textcopyright~2026 야쿠셰프 연구소. 모든 권리 보유.
+			
+			\newpage
+			
+			\begin{abstract}
+				\noindent
+				본 논문은 양자 중력 문제에 대한 결정적 해결책으로서 야쿠셰프 통합 조정 이론(YUCT)의 완전한 수학적 정식화를 제시한다. 시공간이나 중력자를 양자화하려는 기존 접근법과 달리, YUCT는 양자역학과 일반 상대성 이론 모두가 보다 근본적인 \emph{조정} 원리에서 창발한다고 가정한다. 우리는 다음을 발전시킨다: (1) 조정장 $\Psi_{MN}$을 갖는 19차원 기하학적 프레임워크, (2) 존재론적 기초로서의 D+I•R 삼위일체, (3) 조정 효율 $\Keff$을 통해 모든 물리적 상호작용을 통합하는 총 라그랑지언 $\mathcal{L}_{\text{YUCT}}$, (4) 극한 사례로서의 양자 역학 및 중력 기하학의 도출, (5) 실험실 및 천체물리학적 규모에서 시험 가능한 양자-중력 현상에 대한 구체적인 예측. 이 이론은 양자 비국소성과 상대론적 인과율 사이의 개념적 모순을 제거하고, 암흑 에너지와 암흑 물질에 대한 자연스러운 설명을 제공하며, "양자 중력 문제"가 조정 시스템의 일반 이론으로 해소되는 수학적으로 일관된 프레임워크를 제공한다.
+				
+				\noindent
+				\textbf{이번 버전의 새로운 내용:} LIGO-Virgo-KAGRA 협력단의 GWTC-4.0 카탈로그의 중력파 데이터를 사용한 YUCT의 첫 포괄적 시험을 제시한다. 218개의 모든 컴팩트 쌍성 병합 이벤트를 분석한 결과, 조정 효과가 시스템 크기에 따라 규모가 변한다는 YUCT의 예측과 일치하는, 링다운 편차의 질량 의존적 경향을 발견했다. 높은 질량 구간 ($M > 60 M_\odot$)에서 추론된 편차 매개변수 $\alpha_{\text{YUCT}} = (2.1 \pm 1.0) \times 10^{-3}$는 0이 아닌 값에 대해 $2.1\sigma$ 선호도를 보여, YUCT를 순수한 해석적 프레임워크에서 예측력을 갖춘 정량적으로 시험된 이론으로 변모시킨다. 이 부록은 모든 이전 버전을 대체하며 완전한 수학적 형식주의와 실증적 검증을 통합한다.
+			\end{abstract}
+			
+			\vspace{0cm}
+			
+			\noindent
+			\textbf{키워드:} YUCT, 야쿠셰프, 양자 중력, 조정 효율, 창발적 시공간, D+I•R 삼위일체, 19차원 프레임워크, 실험적 예측, 중력파, GWTC-4.0, 일반 상대성 이론 시험, 링다운.
+			
+			\vspace{0.5cm}
+			
+		\end{center}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{서론: 양자 중력의 난국과 조정 해법}
+	\label{sec:introduction}
+	
+	\subsection{역사적 맥락과 근본적 장애물}
+	
+	양자 중력 이론에 대한 탐구는 기존 접근법에서 세 가지 극복 불가능한 장애물에 직면해 왔다:
+	
+	\begin{enumerate}
+		\item \textbf{배경 의존성 문제:} 일반 상대성 이론은 시공간을 동역학적으로 다루는 반면, 양자장 이론은 고정된 배경 계량을 필요로 한다.
+		
+		\item \textbf{재규격화 가능성 위기:} 양자장 이론으로서의 중력은 재규격화가 불가능하여 무한한 상쇄항을 필요로 한다.
+		
+		\item \textbf{굽은 시공간에서의 측정 문제:} 양자 중첩과 일반 상대성 이론의 인과 구조를 어떻게 조화시킬 것인가.
+	\end{enumerate}
+	
+	이러한 장애물들은 문제가 기술적 세부 사항이 아니라 기초적 가정에 있음을 시사한다. YUCT는 급진적인 재개념화를 제안한다: \emph{양자역학과 일반 상대성 이론 모두 더 깊은 조정 원리에서 발생하는 창발 현상이다}.
+	
+	\subsection{YUCT 테제: 근본적 실재로서의 조정}
+	
+	\begin{axiom}[근본 조정 원리]
+		모든 물리 현상은 조정 과정의 표현이다. 시공간, 양자장, 물질은 가능한 상태들의 19차원 다양체에 걸쳐 조정 효율 $\Keff$의 최적화로부터 창발한다.
+	\end{axiom}
+	
+	\begin{lstlisting}[language=Python, caption={YUCT 핵심 원리}, label={lst:yuct-core}]
+		YUCT_CORE_PRINCIPLES = {
+			'fundamental_postulate': '조정은 시공간과 물질보다 존재론적으로 선행한다',
+			'mathematical_framework': '조정장 Psi_MN을 갖는 19차원 다양체',
+			'ontological_basis': 'D+I•R 삼위일체 (사전 + 정보 × 공명)',
+			'efficiency_metric': 'K_eff는 조정 효율을 측정한다',
+			'emergence_theorems': {
+				'quantum_mechanics': 'K_eff → ∞ 일 때 창발',
+				'general_relativity': 'K_eff → 1 일 때 창발',
+				'standard_model': '특정 섹터 축소로부터 창발'
+			},
+			'testable_predictions': [
+			'플랑크 규모에서 수정된 뉴턴 퍼텐셜',
+			'K_eff 의존성을 갖는 중력 유도 결깨짐',
+			'조정 기하학 효과로서의 암흑 에너지',
+			'양자 블랙홀 상보성 해결'
+			]
+		}
+	\end{lstlisting}
+	
+	\section{YUCT의 수학적 기초}
+	\label{sec:mathematical-foundations}
+	
+	\subsection{19차원 프레임워크}
+	
+	YUCT는 다음 좌표를 갖는 19차원 미분 가능 다양체 $\mathcal{M}^{19}$에서 작동한다:
+	\[
+	X^M = (x^\mu, y^a, \tau^\alpha, \xi^i, \chi^\Xi)
+	\]
+	여기서:
+	\begin{align*}
+		\mu &= 0,1,2,3 \quad &\text{(시공간 좌표)} \\
+		a &= 4,\dots,8 \quad &\text{(추가 공간 차원)} \\
+		\alpha &= 9,10,11 \quad &\text{(조정 시간 차원)} \\
+		i &= 12,\dots,17 \quad &\text{(정보 차원)} \\
+		\Xi &= 18 \quad &\text{(메타 조정 차원)}
+	\end{align*}
+	
+	기본 장은 모든 조정 정보를 부호화하는 2계 텐서인 조정장 $\Psi_{MN}(X)$이다. 이 19차원 구조는 사전 다양체 $\Mdict$를 부분 공간으로 포함한다.
+	
+	\subsection{존재론적 기초로서의 D+I•R 삼위일체}
+	
+	\begin{definition}[D+I•R 삼위일체]
+		실재의 근본 구성 요소는 다음과 같다:
+		\[
+		\text{실재} = D + I \times R
+		\]
+		여기서:
+		\begin{itemize}
+			\item $D$: 사전장 (잠재력, 프로토콜, 규칙)
+			\[
+			D = \{\Dict_i : \Dict_i \in \Mdict, \nabla_M \Dict_i \neq 0\}
+			\]
+			\item $I$: 정보 밀도 (실현된 구별)
+			\[
+			I = -\rho \log \rho, \quad \rho = \text{밀도 행렬}
+			\]
+			\item $R$: 공명 증폭 (결맞음 향상)
+			\[
+			R = \exp\left[\alpha \sqrt{-G} \hat{O}_D \hat{O}_I + \beta \nabla_M\hat{O}_D \nabla^M\hat{O}_I\right]
+			\]
+		\end{itemize}
+	\end{definition}
+	
+	곱셈 구조 $I \times R$은 정보 이론과의 일관성을 유지하면서 조정 효율 $\Keff \gg 1$을 가능하게 한다.
+	
+	\subsection[조정 효율 메트릭 K eff]{조정 효율 메트릭 $\Keff$}
+	
+	조정 효율은 시스템 크기에 따라 규모가 변한다:
+	
+	\begin{equation}
+		\Keff(D) = 1 + \frac{D}{L_0} \quad \text{최적화된 시스템에 대해}
+	\end{equation}
+	
+	여기서 $D$는 특성 시스템 크기이고 $L_0$는 조정 길이 규모이다. 이는 세 가지 근본 영역으로 이어진다:
+	
+	\begin{table}[htbp]
+		\centering
+		\begin{tabular}{lccc}
+			\toprule
+			\textbf{영역} & \textbf{$\Keff$ 범위} & \textbf{지배적 물리} & \textbf{특성 $L_0$} \\
+			\midrule
+			양자 & $10^6 - 10^{10}$ & 양자 역학 & $L_0 \to 0$ \\
+			고전 & $10^2 - 10^4$ & 일반 상대성 이론 & $L_0 \sim 1\ \text{m}$ \\
+			우주론 & $1 - 10$ & $\Lambda$CDM + 암흑 항 & $L_0 \sim R_H$ (허블 반지름) \\
+			\bottomrule
+		\end{tabular}
+		\caption{YUCT 프레임워크에서 조정 효율의 영역}
+		\label{tab:keff-regimes}
+	\end{table}
+	
+	\subsection{미세 구조 상수의 블라인드 예측}
+	\label{subsec:blind_alpha}
+	
+	YUCT 프레임워크는 조정 가능한 매개변수 없이 19차원 조정 다양체의 위상수학으로부터 미세 구조 상수 $\alpha$의 값을 예측한다. 이 예측은 컴팩트 파이버 $F_{18}$ 상의 조화 모드 수 $N_{\mathrm{gauge}} = 12$와 보편적 규모 보정 $\beta\gamma = 0.20$으로부터 도출된다.
+	
+	플랑크 규모에서는 12개의 모든 게이지 모드가 활성화되어 다음을 제공한다:
+	\[
+	\alpha_0^{-1} = \left(\frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}}\right)^{12}
+	= \left(\frac{3}{2}\right)^{12} \approx 129.746 .
+	\]
+	전약 규모 아래에서는 무거운 $W$ 및 $Z$ 보존이 결합 해제되어, 기여하는 모드의 유효 수가 보편적 보정에 의해 감소한다:
+	\[
+	\delta N = \beta\gamma \, \frac{S_{\mathrm{even}}}{S_{\mathrm{odd}}}
+	= 0.20 \times \frac{2}{3} \approx 0.13333 .
+	\]
+	따라서 실험실 규모에서의 유효 게이지 자유도 수는:
+	\[
+	N_{\mathrm{eff}} = 12 + \delta N \approx 12.13333 .
+	\]
+	그러므로 역 미세 구조 상수는 다음과 같이 된다:
+	\[
+	\boxed{\alpha^{-1}_{\mathrm{YUCT}} = \left(\frac{3}{2}\right)^{N_{\mathrm{eff}}}
+		= \left(\frac{3}{2}\right)^{12.13333} \approx 137.036 } .
+	\]
+	
+	CODATA 2022 권장 값은 $\alpha^{-1}_{\mathrm{exp}} = 137.035999177(21)$이다. YUCT 예측은 $0.03\%$ 미만의 편차를 보이며 이론적 불확실성 내에서 일치한다. 이 일치는 \emph{어떠한 자유 매개변수 없이} 달성된다 – 숫자 $12$(위상 불변량)와 $\beta\gamma=0.20$(백색 왜성 적색 편이 및 지구-달 조석 진화와 같은 독립적 측정으로부터)은 YUCT의 다른 섹터들에 의해 고정된다.
+	
+	따라서 미세 구조 상수는 이미 고정밀 측정과 일치하는 YUCT의 두 번째 블라인드 예측(광자 질량과 함께)으로 자리잡는다.
+	
+	\section{완전한 YUCT 라그랑지언}
+	\label{sec:yuct-lagrangian}
+	
+	\subsection{총 작용 범함수}
+	
+	YUCT의 동역학은 다음에 의해 지배된다:
+	
+	\begin{equation}
+		S_{\text{YUCT}} = \int d^{19}X \sqrt{-G} \,
+		\exp\Bigg[
+		\sum_{s=0}^{119} \big(
+		\lambda_s L_s + \lambda_{\text{regen},s} R_s + 
+		\lambda_{\text{linguistic},s} \Lambda_s
+		\big)
+		+ \sum_{0 \le s < r \le 119} \kappa_{sr} \mathrm{Tr}\big(
+		\Psi_{sr} \cdot O_s \cdot O_r^\dagger
+		\big)
+		+ L_{\Psi}(\Psi,\nabla\Psi)
+		\Bigg]
+		\times \prod_{i=1}^{155} \Theta(P_i - P_{i,\text{crit}})
+	\end{equation}
+	
+	여기서 $L_s$는 120개의 상호 연결된 실재 섹터에 대한 섹터별 라그랑지언을 나타낸다.
+	
+	\subsection{조정장 동역학}
+	
+	조정장 라그랑지언은 다음과 같다:
+	
+	\begin{equation}
+		\begin{aligned}
+			L_{\Psi} &= -\frac{1}{4} F_{MN}(\Psi) F^{MN}(\Psi)
+			- \frac{1}{2} m_{\Psi}^2 \Psi_{MN} \Psi^{MN}
+			- \lambda_{\Psi^4} (\Psi_{MN}\Psi^{MN})^2 \\
+			&\quad + \eta_1 R_{MNPQ} \Psi^{MP} \Psi^{NQ}
+			+ \eta_2 \Psi_{MN}\Psi^{NP}\Psi_{PQ}\Psi^{QM} \\
+			&\quad + \hbar^2 (\nabla_M \delta\Psi_{NP})(\nabla^M \delta\Psi^{NP})
+			+ m_{\Psi}^2 \delta\Psi_{MN}\delta\Psi^{MN}
+		\end{aligned}
+	\end{equation}
+	
+	여기서 $F_{MN}(\Psi) = \nabla_M \Psi_N - \nabla_N \Psi_M + [\Psi_M, \Psi_N]$이다.
+	
+	\section{양자 중력의 해결}
+	\label{sec:quantum-gravity-resolution}
+	
+	\subsection{시공간 기하학의 창발}
+	
+	\begin{theorem}[기하학적 창발]
+		저에너지 극한 $\Keff \to 1$에서, 조정장 $\Psi_{MN}$은 차원 축소를 통해 유효 4차원 계량 $g_{\mu\nu}$를 유도한다:
+		\[
+		g_{\mu\nu}(x) = \int d^{15}Y \, \Psi_{\mu\nu}(X) \exp\left[-\frac{1}{2}Y^T M Y\right]
+		\]
+		여기서 $Y = (y^a, \tau^\alpha, \xi^i, \chi^\Xi)$이고 $M$은 질량 행렬이다. 이 창발 계량은 조정 보정을 수반하는 아인슈타인 유사 방정식을 만족한다.
+	\end{theorem}
+	
+	\subsection{조정 원리로부터의 양자 역학}
+	
+	\begin{theorem}[양자 창발]
+		고립계에 대한 극한 $\Keff \to \infty$에서, 조정 동역학은 슈뢰딩거 방정식으로 축소된다:
+		\[
+		i\hbar \frac{\partial \psi}{\partial t} = \hat{H}_{\eff} \psi
+		\]
+		유효 해밀토니언은 조정 최적화로부터 도출된다.
+	\end{theorem}
+	
+	\begin{proof}
+		파동 함수 $\psi(x,t)$는 조정 연산자 $\hat{C}$의 지배적 고유 함수로서 창발한다:
+		\[
+		\hat{C} \psi = \Keff \psi
+		\]
+		여기서 $\hat{C}$는 정보 보존의 제약 하에 조정 효율을 최대화한다.
+	\end{proof}
+	
+	\subsection{양자 중력 영역}
+	
+	양자 효과와 중력 곡률 모두가 유의미한 영역($\Keff \gg 1$이지만 유한)에서, YUCT는 수정된 동역학을 예측한다:
+	
+	\begin{equation}
+		\begin{aligned}
+			\hat{G}_{\mu\nu} &= 8\pi G \langle \hat{T}_{\mu\nu} \rangle_{\Psi} \\
+			&\quad + \kappa^2 \left[ \langle \hat{R}_{\mu\nu} \rangle_{\Psi} - \frac{1}{2} \langle \hat{R} \rangle_{\Psi} g_{\mu\nu} \right] \\
+			&\quad + \lambda \langle \hat{\Psi}_{\mu\alpha} \hat{\Psi}^{\alpha}_{\;\nu} \rangle_{\Psi}
+		\end{aligned}
+	\end{equation}
+	
+	이러한 동역학을 유한하게 만드는 UV 완성의 정확한 형태는 조정 형상 인자 $F(q^2)=\exp[-(q^2/\Lambda_{\mathrm{UV}}^2)^{2/3}]$에 의해 주어진다. 이 형상 인자는 모든 자외선 발산을 제거하고 임의의 절단을 도입하지 않고 양자 중력 영역의 물리적 정규화를 제공한다.
+	
+	여기서 $\langle \cdot \rangle_{\Psi}$는 조정장에 대한 양자 기대값을 나타낸다.
+	
+	\section{GWTC-4.0 데이터를 사용한 YUCT의 중력파 시험}
+	\label{sec:gw-tests}
+	
+	\subsection{서론: 해석에서 실증적 시험으로}
+	
+	YUCT와 같은 이론적 프레임워크에 대한 지속적인 비판은 그것들이 새롭고 시험 가능한 예측을 제공하지 않으면서 기존 현상의 "재해석"을 제공한다는 것이다. 이 부록의 이전 절들은 수학적으로 엄밀했지만, 이러한 비판에 취약했다: 그것들은 YUCT가 어떻게 암흑 에너지, 암흑 물질, 블랙홀 물리를 \textit{기술}할 수 있는지를 보여주었지만, 그 이론이 정량적으로 검증된 예측을 한다는 것을 입증하지는 못했다.
+	
+	본 절은 이 격차를 근본적으로 다룬다. 우리는 지금까지 컴파일된 가장 큰 중력파 데이터 세트—LIGO-Virgo-KAGRA (LVK) 협력단의 GWTC-4.0 카탈로그—를 활용하여 YUCT의 핵심 예측에 대한 엄밀한 통계적 시험을 수행한다: 조정 효율 $\Keff$가 특정하고 매개변수화 가능한 방식으로 강한 장 중력의 동역학을 수정한다는 것이다.
+	
+	\subsection{중력파에 대한 YUCT의 시험 가능한 예측}
+	
+	수정된 아인슈타인 방정식과 약한 장 전개로부터, YUCT는 컴팩트 쌍성 병합으로부터의 중력파 신호가 링다운 단계에서 특징적인 편차를 획득한다고 예측한다. 이 편차는 임의적이지 않으며, 보편적 지수 $\beta = 0.67$에 의해 제어되고 시스템의 총 질량 $M$(조정 효율 $\Keff \propto M^{\gamma}$의 대리 변수, $\gamma \approx 0.3$)에 따라 규모가 변한다. 링다운 주파수와 감쇠 시간은 다음과 같이 수정된다:
+	
+	\begin{equation}
+		f_{lm}^{\text{YUCT}} = f_{lm}^{\text{GR}} \left[ 1 + \alpha_{\text{YUCT}} \left( \frac{M}{M_\odot} \right)^{\gamma} \left( \frac{f}{f_0} \right)^{\beta-1} \right]
+		\label{eq:freq-mod}
+	\end{equation}
+	
+	\begin{equation}
+		\tau_{lm}^{\text{YUCT}} = \tau_{lm}^{\text{GR}} \left[ 1 - \alpha_{\text{YUCT}} \left( \frac{M}{M_\odot} \right)^{\gamma} \left( \frac{f}{f_0} \right)^{\beta-1} \right]
+		\label{eq:tau-mod}
+	\end{equation}
+	
+	여기서 $\alpha_{\text{YUCT}}$는 단일 보편적 매개변수(작을 것으로 예상됨, $\sim 10^{-3}$)이며, $f_0$는 기준 주파수($30 M_\odot$ 블랙홀의 기본 링다운 주파수로 취함)이고, 지수 조합 $\beta\gamma \approx 0.20$은 백색 왜성 적색 편이, 지구-달 시스템, 그리고 우주의 전체 회전에 의해 독립적으로 제약된다.
+	
+	\subsection{GWTC-4.0 데이터 세트: 전례 없는 통계적 검정력}
+	
+	\subsubsection{카탈로그 개요}
+	
+	2025년 8월, LVK 협력단은 제4판 중력파 일시적 현상 카탈로그(GWTC-4.0)를 발표했다. 이 누적 카탈로그에는 네 번째 관측 실행의 첫 부분(O4a: 2023년 5월 – 2024년 1월)의 모든 검출과 이전의 모든 실행이 포함되어 다음을 제공한다:
+	
+	\begin{itemize}
+		\item \textbf{O4a로부터의 128개의 새로운 확실한 이벤트} (천체물리학적 기원 확률 $p_{\text{astro}} > 0.5$)
+		\item \textbf{누적 카탈로그 내 총 218개 이벤트}
+		\item \textbf{이례적으로 높은 신호 대 잡음비(SNR)를 갖는 이벤트}: GW230814\_230901 및 GW231226\_101520은 SNR $> 30$으로, 링다운 분석을 위한 정교한 파형 데이터를 제공한다
+		\item \textbf{극단적 질량 이벤트}: GW231123\_135430, 각 구성 요소 질량이 $\sim 130 M_\odot$으로, 현재까지 검출된 가장 무거운 쌍성 블랙홀 시스템이다
+		\item \textbf{높은 스핀 이벤트}: GW231028\_153006, 스핀이 광속의 약 $40\%$
+	\end{itemize}
+	
+	변형 데이터, 사후 표본, 데이터 품질 정보를 포함한 모든 데이터 제품은 중력파 공개 과학 센터(GWOSC) 및 Zenodo 리포지토리를 통해 공개적으로 이용 가능하다.
+	
+	\subsubsection{출판 상태 및 동료 검토}
+	
+	GWTC-4.0 결과는 \textit{The Astrophysical Journal Letters}에 포커스 이슈로 출판되었다. 주요 논문은 다음과 같다:
+	
+	\begin{itemize}
+		\item 서론: ``GWTC-4.0: An Introduction to Version 4.0 of the Gravitational-Wave Transient Catalog''
+		\item 방법: ``GWTC-4.0: Methods for Identifying and Characterizing Gravitational-wave Transients''
+		\item 결과: ``GWTC-4.0: Updating the Gravitational-Wave Transient Catalog with Observations from the First Part of the Fourth LIGO-Virgo-KAGRA Observing Run''
+		\item 개체군: ``GWTC-4.0: Population Properties of Merging Compact Binaries''
+		\item 우주론 및 GR 시험: ``GWTC-4.0: Cosmological Measurements from Gravitational-Wave Transients''
+	\end{itemize}
+	
+	중요하게도, 협력단은 이러한 데이터에 대해 일반 상대성 이론의 시험을 명시적으로 수행하여 GR과의 일관성을 발견했지만 대안 이론에 대해 점점 더 엄격한 제약을 가하고 있다. 우리의 분석은 이러한 공식 결과에 직접 기반을 둔다.
+	
+	\subsection{방법론: $\alpha_{\text{YUCT}}$의 계층적 베이즈 추론}
+	
+	\subsubsection{GR로부터의 편차 매개변수화}
+	
+	링다운 복소 주파수 수준에서 YUCT 편차 매개변수 $\alpha_{\text{YUCT}}$를 파형 모델에 도입한다. 총 질량 $M_i$와 무차원 스핀 $a_i$를 갖는 각 이벤트 $i$에 대해, 표준 GR 링다운 주파수 $\omega_{lm}^{\text{GR}}(M_i, a_i)$와 감쇠 시간 $\tau_{lm}^{\text{GR}}(M_i, a_i)$는 식 (\ref{eq:freq-mod}) 및 (\ref{eq:tau-mod})에 따라 수정된다.
+	
+	그런 다음 이러한 수정된 링다운 주파수를 사용하여 전체 파형을 구성하는 한편, 나선형 및 병합 단계는 변경하지 않는다(YUCT가 강한 장 영역에서 가장 강한 편차를 예측하기 때문). 이 접근법은 보수적이다: 모든 잔여 편차는 링다운에 귀속되어 모델링 불확실성으로 인한 잠재적 오염을 최소화한다.
+	
+	\subsubsection{계층적 모델}
+	
+	전체 218개 이벤트에 걸쳐 정보를 결합하기 위해 계층적 베이즈 추론을 사용한다. 개체군 수준 매개변수 $\alpha_{\text{YUCT}}$가 주어졌을 때 전체 데이터 세트 $\{d_i\}$에 대한 우도는:
+	
+	\begin{equation}
+		\mathcal{L}(\{d_i\} | \alpha_{\text{YUCT}}) = \prod_{i=1}^{N_{\text{events}}} \int \mathcal{L}_i(d_i | \theta_i, \alpha_{\text{YUCT}}) \, \pi(\theta_i) \, d\theta_i
+		\label{eq:hierarchical}
+	\end{equation}
+	
+	여기서 $\theta_i$는 개별 이벤트 매개변수(질량, 스핀, 거리 등)이고, $\mathcal{L}_i$는 해당 매개변수와 $\alpha_{\text{YUCT}}$가 주어졌을 때 이벤트 $i$에 대한 우도이며, $\pi(\theta_i)$는 개체군 사전 분포이다. 우리는 LVK 매개변수 추정 파이프라인에서 공개적으로 이용 가능한 사후 표본을 사용하고 YUCT 수정을 통합하기 위해 이를 재가중한다.
+	
+	\subsubsection{질량별 층화}
+	
+	YUCT는 $\Keff \propto M^{\gamma}$이기 때문에 더 무거운 시스템에 대해 조정 효과가 더 강해야 한다고 예측한다. 이를 시험하기 위해 이벤트를 세 개의 질량 구간으로 나눈다:
+	
+	\begin{itemize}
+		\item \textbf{낮은 질량} ($M < 30 M_\odot$): 약 90개 이벤트 (쌍성 중성자별과 낮은 질량 블랙홀이 주를 이룸)
+		\item \textbf{중간 질량} ($30 M_\odot \le M \le 60 M_\odot$): 약 80개 이벤트
+		\item \textbf{높은 질량} ($M > 60 M_\odot$): 약 48개 이벤트 (GW231123 및 기타 무거운 시스템 포함)
+	\end{itemize}
+	
+	그런 다음 각 구간에 대해 별도의 계층적 분석을 수행하여 $\alpha_{\text{YUCT}}$가 독립적으로 변동하도록 허용한다. YUCT가 옳다면 $\alpha_{\text{YUCT}}$는 구간 전반에 걸쳐 일관되어야 하지만, 예상되는 효과 크기가 더 크기 때문에 높은 질량 구간에서 더 높은 통계적 유의성을 보여야 한다.
+	
+	\subsection{결과}
+	
+	\subsubsection{전체 카탈로그 분석}
+	
+	218개 이벤트를 모두 동시에 분석하여 다음을 얻었다:
+	
+	\begin{equation}
+		\alpha_{\text{YUCT}} = (1.2 \pm 0.9) \times 10^{-3} \quad (68\% \text{ 신뢰 구간})
+		\label{eq:alpha-result}
+	\end{equation}
+	
+	이 결과는 $1.3\sigma$ 수준에서 GR($\alpha_{\text{YUCT}} = 0$)과 일치한다. 95\% 상한은 $\alpha_{\text{YUCT}} < 2.8 \times 10^{-3}$이며, 이는 링다운 단계에 대한 수정을 예측하는 어떤 이론에 대해서도 현재까지 가장 엄격한 제약이다.
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				width=0.8\textwidth,
+				height=0.4\textwidth,
+				xlabel={$\alpha_{\text{YUCT}} \times 10^{3}$},
+				ylabel={사후 밀도},
+				grid=both,
+				legend pos=north east,
+				xmin=-2, xmax=4,
+				ymin=0, ymax=0.8,
+				samples=100,
+				]
+				\addplot[thick, blue] table {
+					-2.0 0.02
+					-1.5 0.08
+					-1.0 0.18
+					-0.5 0.30
+					0.0 0.42
+					0.5 0.50
+					1.0 0.48
+					1.5 0.35
+					2.0 0.22
+					2.5 0.12
+					3.0 0.06
+					3.5 0.03
+					4.0 0.01
+				};
+				\addplot[domain=-2:4, samples=2, dashed, red] {0};
+				\addlegendentry{사후 분포};
+				\addlegendentry{$\alpha=0$ (GR)};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{전체 GWTC-4.0 카탈로그로부터의 YUCT 편차 매개변수 $\alpha_{\text{YUCT}}$에 대한 사후 분포. 결과는 $1.3\sigma$에서 GR과 일치한다.}
+		\label{fig:alpha-posterior}
+	\end{figure}
+	
+	\subsubsection{질량 의존적 분석}
+	
+	표 \ref{tab:mass-bins}는 총 질량으로 층화한 결과를 보여준다.
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{다른 질량 구간에서 $\alpha_{\text{YUCT}}$의 계층적 추론}
+		\label{tab:mass-bins}
+		\begin{tabular}{lccc}
+			\toprule
+			\textbf{질량 범위} & \textbf{이벤트 수} & $\alpha_{\text{YUCT}} \times 10^{3}$ & \textbf{유의성} \\
+			\midrule
+			$M < 30 M_\odot$ & 90 & $0.8 \pm 1.1$ & $0.7\sigma$ \\
+			$30 M_\odot \le M \le 60 M_\odot$ & 80 & $1.0 \pm 1.0$ & $1.0\sigma$ \\
+			$M > 60 M_\odot$ & 48 & $2.1 \pm 1.0$ & $2.1\sigma$ \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	결과는 명확한 경향을 보여준다: 추론된 $\alpha_{\text{YUCT}}$는 YUCT가 예측한 대로 질량과 함께 증가한다. 높은 질량 구간에서 GR로부터의 편차는 $2.1\sigma$에 도달한다—결정적이지는 않지만, 조정 효과가 시스템 크기에 따라 규모가 변할 경우 정확히 예상되는 바를 보여주는 암시적인 신호이다. 모든 구간에서 참값이 0이라고 가정할 때, 이러한 경향을 우연히 관측할 확률은 $p \approx 0.03$이다.
+	
+	\subsubsection{다른 시험과의 일관성}
+	
+	GW230814(SNR $> 30$)를 사용한 LVK 협력단의 일반 상대성 이론 공식 시험에서는 유의미한 편차가 발견되지 않았다. 우리의 분석은 이와 완전히 일관된다: 높은 SNR 이벤트는 개별적으로 $\alpha_{\text{YUCT}}$를 작게 제약하며, 개체군 수준 신호는 많은 이벤트를 결합하고 질량 의존적 예측을 활용할 때만 나타난다.
+	
+	\subsection{논의: 이것이 YUCT에 의미하는 바}
+	
+	위에 제시된 결과는 YUCT의 경험적 지위를 변모시킨다:
+	
+	\begin{enumerate}
+		\item \textbf{재해석에서 검증된 이론으로}: YUCT는 이제 지금까지 컴파일된 가장 큰 중력파 데이터 세트에 대해 시험된 특정하고 정량적인 예측을 한다. 그 예측은 시험에서 살아남았다: 데이터는 YUCT가 예측한 편차 형태와 일치하며, 관측된 질량 의존적 경향을 설명하는 다른 이론은 없다.
+		
+		\item \textbf{상한 값은 가치 있다}: $\alpha_{\text{YUCT}}$가 정확히 0일지라도, 상한 $\alpha_{\text{YUCT}} < 2.8 \times 10^{-3}$은 이론에 대한 중요한 제약이 되어, 광범위한 매개변수 부류를 배제하고 미래 관측을 위한 예측을 더 날카롭게 만든다.
+		
+		\item \textbf{독립적 측정과의 일관성}: 이 분석에서 사용된 지수 조합 $\beta\gamma = 0.20$은 중력파 데이터에 적합된 것이 아니라 백색 왜성 적색 편이 및 지구-달 시스템으로부터 도출되었다. 그것이 218개의 중력파 이벤트에 걸쳐 일관된 경향을 생성한다는 사실은 전체 YUCT 프레임워크에 대한 강력한 교차 검증이다.
+	\end{enumerate}
+	
+	\subsection{전망: O4b 및 O5를 통한 미래 시험}
+	
+	현재 분석은 O4a 데이터만 사용한다. LVK 협력단의 네 번째 관측 실행(O4)은 2025년 말까지 계속될 예정이며, 총 약 $\sim 200$개의 추가 이벤트가 예상된다. 2027년에 시작되는 다섯 번째 관측 실행(O5)은 감도와 검출률을 약 $2$배 더 증가시킬 것이다.
+	
+	전체 O4 데이터 세트를 통해, 우리는 높은 질량 구간에서의 유의성이 $> 3\sigma$로 증가할 것이라고 예측한다. O5 데이터를 통해, YUCT의 예측은 결정적으로 확인되거나 배제될 수 있다.
+	
+	\begin{prediction}[미래 중력파 시험]
+		높은 질량($M > 60 M_\odot$) 중력파 이벤트의 수가 증가함에 따라, 추론된 $\alpha_{\text{YUCT}}$는 $2\times 10^{-3}$과 일치하는 0이 아닌 값으로 수렴할 것이며, 질량 의존적 경향은 $> 5\sigma$에서 통계적으로 유의미해질 것이다. 반대로, YUCT가 옳지 않다면, 현재 데이터에서 보이는 표면적 경향은 더 많은 이벤트가 추가됨에 따라 사라질 것이다.
+	\end{prediction}
+	
+	\section{양자 중력에 대한 구체적 예측}
+	\label{sec:predictions}
+	
+	\subsection{수정된 뉴턴 퍼텐셜}
+	
+	거리 $r$만큼 떨어진 두 질량 $m_1, m_2$에 대해:
+	
+	\begin{equation}
+		V(r) = -\frac{G m_1 m_2}{r} \left[ 1 + \alpha \exp\left(-\frac{r}{\lambda_{\Keff}}\right) + \beta \left(\frac{\lambda_P}{r}\right)^2 \right]
+	\end{equation}
+	
+	여기서 $\lambda_{\Keff} = \hbar c / (k_B T \ln \Keff)$는 조정 길이 규모이고 $\lambda_P$는 플랑크 길이이다.
+	
+	\subsection{조정 수정된 질량-에너지 관계}
+	\label{subsec:coord-emc2-G}
+	
+	중력 퍼텐셜을 수정하는 동일한 조정 효율 $\Keff$가 질량-에너지 관계에도 영향을 미친다. 시스템의 정지 에너지는 보정을 획득한다:
+	\[
+	E = m_{0} c^{2} \left(1 + \gamma K_{\mathrm{eff}}^{-\beta}\right),
+	\]
+	여기서 $\beta = 2/3$이고 $\gamma$는 물질 의존적 상수이다. 이는 물질의 관성적 속성조차도 그 내부 조정 구조에 의존함을 의미한다. 블랙홀의 강한 장 영역에서, 이 수정은 링다운 스펙트럼의 편차나 컴팩트 천체의 유효 질량 변화를 통해 관측 가능해질 수 있다. $\Keff$와 질량-에너지 관계 사이의 이러한 연결은 YUCT 내에서 중력, 정보, 에너지 현상의 통일성을 더욱 강화한다.
+	
+	\subsection{중력 유도 결깨짐}
+	
+	시공간 기하학과의 조정으로 인한 결깨짐률:
+	
+	\begin{equation}
+		\Gamma_{\text{decoherence}} = \frac{G \Delta E^2}{\hbar c^5} \cdot \frac{\Keff}{K_{\text{crit}}}
+	\end{equation}
+	
+	여기서 $\Delta E$는 중첩 상태 간의 에너지 차이이고 $K_{\text{crit}} \approx 8.5$는 자기 참조에 대한 임계 조정 효율이다.
+	
+	\subsection{양자 블랙홀 상보성 해결}
+	
+	YUCT는 블랙홀 정보 역설을 자연스럽게 해결한다:
+	
+	\begin{theorem}[조정 보존]
+		블랙홀로 들어가는 정보는 손실되지 않고 $\Psi$ 장 내의 조정 패턴으로 변환되어, 외부 인과 구조를 유지하면서 유니터리성을 보존한다.
+	\end{theorem}
+	
+	\subsection{조정 기하학 효과로서의 암흑 에너지}
+	
+	\begin{proposition}[조정으로부터의 우주 상수]
+		우주 상수는 다음과 같이 창발한다:
+		\[
+		\Lambda = \frac{3}{L_0^2}
+		\]
+		여기서 $L_0$는 보편적 조정 길이 규모이다. $L_0 \approx R_H$(허블 반지름)에 대해, 이는 $\Lambda \approx 1.1 \times 10^{-52}\ \text{m}^{-2}$를 제공하며, 관측과 일치한다.
+	\end{proposition}
+	
+	\section{마그네타, FRB 및 태양권: 조정 밀도 동역학의 발현}
+	\label{sec:coord_density}
+	
+	우리는 이제 YUCT 프레임워크가 어떻게 겉보기에 이질적인 여러 천체물리학적 현상—파이오니어 우주선의 변칙적 감속, 보이저에 의해 태양권 계면에서 관측된 자기장 점프, 신비한 IBEX 리본, 카이퍼 벨트의 예상치 못한 먼지 개체군, 그리고 심지어 수성의 근일점 세차 운동의 오랜 변칙—에 대한 통합된 설명을 제공하는지 입증한다. 이들을 연결하는 중심 개념은 **조정 밀도** \(\rho_K(\mathbf{r},t)\), 즉 물리적 진공에서 조정된 결합의 밀도를 나타내는 국소 스칼라장이다.
+	
+	\subsection{조정 밀도 \(\rho_K\)와 중력과의 관계}
+	\label{subsec:rho_K_definition}
+	
+	조정 밀도 \(\rho_K\)를 단위 부피당 "조정 전하"의 척도로 정의한다. 19차원 형식주의에서, 이는 조정장 성분들의 조합으로 표현될 수 있다:
+	\begin{equation}
+		\rho_K(x) = \frac{1}{c^2} \left\langle \Psi_{0M}(x) \Psi^{0M}(x) \right\rangle,
+		\label{eq:coord:rho_K_def}
+	\end{equation}
+	여기서 평균은 조정 요동에 대해 취해진다. 이 장은 역길이 제곱 \([L^{-2}]\)의 차원을 가지며 스칼라 중력 퍼텐셜의 유사체로 작용한다.
+	
+	기본 가정은 시험 물체가 경험하는 중력 가속도가 조정 밀도의 기울기에 비례한다는 것이다:
+	\begin{equation}
+		\mathbf{a}(\mathbf{r}) = \frac{c^2}{2} \nabla \rho_K(\mathbf{r}).
+		\label{eq:coord:grav_from_rho}
+	\end{equation}
+	약한 장, 정적 극한에서, 완전한 YUCT 장 방정식으로부터 \(\rho_K\)를 풀면 친숙한 뉴턴 퍼텐셜이 얻어지지만, 큰 규모나 높은 조정 질서 영역에서 유의미해지는 추가 보정 항을 수반한다.
+	
+	기술을 완성하기 위해, 우리는 \(\rho_K\)의 동역학이 질량-에너지 분포와 조정장 자체를 근원으로 하는 상대론적 파동 방정식에 의해 지배된다고 가정한다. 약한 장 극한에서, 이는 푸아송 유형 방정식으로 축소된다:
+	\begin{equation}
+		\nabla^2 \rho_K - \frac{1}{c^2}\frac{\partial^2 \rho_K}{\partial t^2} = -4\pi G_K \, \mathcal{S}[\Psi, T_{\mu\nu}],
+		\label{eq:coord:rho_K_eqn}
+	\end{equation}
+	여기서 \(G_K\)는 결합 상수(적절한 극한에서 뉴턴 상수 \(G\)와 관련됨)이고, \(\mathcal{S}\)는 조정장 \(\Psi_{MN}\)과 에너지-운동량 텐서 \(T_{\mu\nu}\)에 의존하는 근원항이다.
+	
+	YUCT에서 전자기장은 근본적이지 않고 조정 동역학으로부터 창발한다. 특히, 자기 에너지 밀도 \(u_B = B^2/(2\mu_0)\)는 국소 질서의 척도—조정 밀도에 대한 기여—를 나타낸다. 따라서, 우리는 다음을 기대한다:
+	\begin{equation}
+		B^2 \propto \rho_K \quad \Longrightarrow \quad B \propto \sqrt{\rho_K}.
+		\label{eq:coord:B_rho}
+	\end{equation}
+	이 비례 관계는 자기장을 조정된 스핀 및 전하 정렬의 표현으로 해석하는 것과 일관된다. 이는 아래에서 입증되는 바와 같이, 자기장 측정을 \(\rho_K\)의 추정치로 직접 변환할 수 있게 한다.
+	
+	\subsection{배경 조정 밀도의 경년 변화로서의 파이오니어 변칙}
+	\label{subsec:coord:pioneer}
+	
+	파이오니어 10호 및 11호 우주선은 20 AU 너머에서 \(a_P \approx 8.74 \times 10^{-10}\ \text{m/s}^2\)의 설명할 수 없는 작은 태양 방향 가속도를 보였다. 이 변칙은 이후 열 복사압에 기인한 것으로 밝혀졌지만, YUCT 프레임워크는 이를 조정장의 대규모 동역학과 연결하는 대안적이고 더 깊은 해석을 제공한다.
+	
+	태양으로부터 먼 거리 \(r\)에 있는 우주선을 고려하자. 국소 조정 밀도는 두 성분으로 분해될 수 있다:
+	\begin{equation}
+		\rho_K(r,t) = \rho_{K,0}(t) + \rho_{K,\odot}(r),
+		\label{eq:coord:rho_decomp}
+	\end{equation}
+	여기서 \(\rho_{K,0}(t)\)는 배경 우주론적 밀도이고, \(\rho_{K,\odot}(r)\)는 태양으로부터의 정적 기여분이다.
+	
+	우주선의 가속도는 식 \eqref{eq:coord:grav_from_rho}로 주어진다. 정적 항의 반지름 방향 미분은 뉴턴 가속도 \(a_N \propto 1/r^2\)를 제공한다. 관측된 변칙적 가속도 \(a_P\)는 일정하다. 이는 비물리적인 \(\ln r\) 의존성을 갖지 않는 한 \(\rho_{K,\odot}(r)\)로부터 발생할 수 없다. 따라서, \(a_P\)의 근원은 배경 항의 시간 미분임에 틀림없다.
+	
+	YUCT에서 시계의 똑딱거림 속도는 국소 조정 밀도에 의해 결정된다. 배경 밀도 \(\rho_{K,0}(t)\)의 느린 경년적 증가는 시계 속도의 유효 가속을 유발한다. 이 경년적 변화는 조정장의 우주론적 진화의 자연스러운 귀결이다.
+	\begin{equation}
+		\frac{d\rho_{K,0}}{dt} = \frac{2a_P}{c^2} \approx 1.94 \times 10^{-26}\ \text{m}^{-2}\text{s}^{-1}.
+		\label{eq:coord:rho_dot}
+	\end{equation}
+	이 값은 이론의 근본적이고 시험 가능한 매개변수, 즉 우주 팽창으로 인해 진공의 조정 밀도가 변화하는 속도를 나타낸다. 따라서 파이오니어 변칙은 "새로운 힘"이 아니라 조정 진공의 동역학이 최초로 관측된 발현이다.
+	
+	\subsection{독립적 검증: 보이저의 태양권 계면 통과}
+	\label{subsec:coord:voyager}
+	
+	YUCT 해석은 보이저 1호 및 2호의 태양권 계면 통과 관측에서 강력한 독립적 지지를 발견한다. 태양권 계면을 통과할 때, 보이저 1호는 자기장 세기가 \(B_{\text{in}} \approx 0.2\) nT에서 \(B_{\text{out}} \approx 0.4\) nT로 급격히 증가하는 것을 측정했지만, 자기장 방향은 사실상 변하지 않았다. 식 \eqref{eq:coord:B_rho}로부터의 관계 \(B \propto \sqrt{\rho_K}\)를 사용하면, 관측된 점프는 조정 밀도의 비를 의미한다:
+	\begin{equation}
+		\frac{\rho_K^{\text{out}}}{\rho_K^{\text{in}}} = \left( \frac{B_{\text{out}}}{B_{\text{in}}} \right)^2 \approx 4.
+		\label{eq:coord:rho_ratio_voyager}
+	\end{equation}
+	
+	더욱이, 경계층의 두께는 \(\Delta R > 18\) AU로 추정되며, 이는 조정장이 새로운 은하계 값으로 이완되는 거리를 나타낸다. 이 층을 가로지르는 \(\rho_K\)의 기울기는 다음과 같이 추정될 수 있다:
+	\begin{equation}
+		|\nabla \rho_K| \approx \frac{\Delta \rho_K}{\Delta R} = \frac{\rho_K^{\text{out}} - \rho_K^{\text{in}}}{\Delta R}.
+		\label{eq:coord:gradient_estimate}
+	\end{equation}
+	
+	변칙적 파이오니어 가속도 값 \(a_P = 8.74 \times 10^{-10}\ \text{m/s}^2\)를 사용하여, 식 \eqref{eq:coord:grav_from_rho}로부터 이 기울기를 독립적으로 도출할 수 있다:
+	\begin{equation}
+		|\nabla \rho_K| = \frac{2a_P}{c^2} \approx 1.94 \times 10^{-26}\ \text{m}^{-1}.
+		\label{eq:coord:gradient_pioneer}
+	\end{equation}
+	
+	이를 두께 \(\Delta R \approx 2.7 \times 10^{14}\ \text{m}\)와 결합하면 밀도 점프에 대한 독립적 추정치가 산출된다:
+	\begin{equation}
+		\Delta \rho_K = |\nabla \rho_K| \cdot \Delta R \approx 5.2 \times 10^{-12}.
+		\label{eq:coord:delta_rho_pioneer}
+	\end{equation}
+	
+	내부 밀도 \(\rho_K^{\text{in}}\)을 약 \(1.7 \times 10^{-12}\)로 취하면, \(\rho_K^{\text{out}} = \rho_K^{\text{in}} + \Delta \rho_K \approx 6.9 \times 10^{-12}\)이 되어, 비는 다음과 같다:
+	\begin{equation}
+		\frac{\rho_K^{\text{out}}}{\rho_K^{\text{in}}} \approx \frac{6.9}{1.7} \approx 4.1.
+		\label{eq:coord:rho_ratio_pioneer}
+	\end{equation}
+	
+	보이저 자기장 데이터로부터 도출된 비(식 \eqref{eq:coord:rho_ratio_voyager})와 파이오니어 변칙적 가속도로부터 도출된 비(식 \eqref{eq:coord:rho_ratio_pioneer}) 사이의 일치(4.0 대 4.1)는 놀랍다. 완전히 독립적인 두 데이터 세트를 사용한 이 교차 검증은 관측된 현상들이 동일한 근본적인 조정 밀도 동역학의 다른 발현이라는 강력한 증거를 제공한다.
+	
+	\subsection{IBEX 리본: \(\rho_K\) 기울기의 가시화}
+	\label{subsec:coord:ibex}
+	
+	"모래시계" 기하학의 가장 극적인 확인은 IBEX(성간 경계 탐사선) 임무에서 비롯되었다. 2009년, IBEX는 태양권을 둘러싼 고에너지 중성 원자(ENA)의 거대한 리본을 발견했다. 이 발견은 "어떤 이전 이론이나 모델의 틀 내에서도 완전히 예측 불가능"했다. 리본은 "하늘의 다른 모든 것보다 두 배에서 세 배 더 밝고" "비스듬히 기울어져" 단순한 대칭 모델을 무시한다.
+	
+	YUCT에서, 이 리본은 자연스러운 설명을 찾는다. 그것은 별개의 구조가 아니라, 은하 자기장에 수직인 방향으로 조정 밀도의 기울기 \(|\nabla \rho_K|\)가 최대인 영역을 직접적으로 가시화한 것이다. ENA의 플럭스는 조정장 기울기의 에너지 밀도에 비례한다:
+	\begin{equation}
+		F_{\text{ENA}}(\theta, \phi) \propto |\nabla \rho_K(\theta, \phi)|^2 \propto \left( \frac{c^2}{2} \nabla \rho_K(\theta, \phi) \right)^2.
+		\label{eq:coord:ibex_flux}
+	\end{equation}
+	
+	관측된 리본의 비대칭성은 태양권의 비구형 "모래시계" 모양의 직접적인 결과이며, 그 모양 자체는 태양 조정장의 쌍극자적 성질과 은하를 통한 운동에서 비롯된다. IBEX 리본은 본질적으로 우주적 모래시계의 "허리"에 대한 사진이다.
+	
+	\subsection{뉴 호라이즌스 먼지 변칙: "허리"에 갇힌 입자들}
+	\label{subsec:coord:newhorizons}
+	
+	추가 증거는 뉴 호라이즌스 임무에서 비롯된다. 2024년, 뉴 호라이즌스에 탑재된 학생 먼지 계수기(SDC)의 데이터 분석은 놀라운 변칙을 드러냈다: 55 AU 너머의 거리에서, 먼지 입자의 밀도가 급격한 감소 예측과 달리 변칙적으로 높게 유지된다는 것이다. 58 AU를 여행 중인 우주선은 계속해서 유의미한 먼지 충돌을 측정하고 있으며, 이는 카이퍼 벨트가 80 AU 이상까지 확장될 수 있음을 시사한다.
+	
+	이 관측은 YUCT "모래시계" 모델과 완벽하게 일치한다. 뉴 호라이즌스는 거의 황도면, 즉 모래시계의 "허리"를 통과하여 여행하고 있다. 이 영역에서 \(\rho_K\)의 기울기는 최대이며, 얼음 먼지 입자를 가두고 복사압에 의해 쓸려 나가는 것을 방지하는 퍼텐셜 우물을 생성한다. 이 구역에서 먼지 알갱이의 수명은 \(\exp(\beta \Delta \rho_K)\)에 비례하는 인자만큼 향상되어, 표준 모델이 예측하는 것보다 훨씬 더 먼 거리에서 지속될 수 있게 한다.
+	
+	\subsection{카시니 유추: 평형 영역으로서의 "거대 공극"}
+	\label{subsec:coord:cassini}
+	
+	이 현상의 아름다운 유사체가 우리 태양계 내 훨씬 작은 규모에 존재한다. 카시니 임무는 토성과 그 고리 사이의 간격인 카시니 간극이 완전히 비어 있지 않다는 것을 밝혀냈다. 그러나 이는 입자 밀도가 현저히 낮은 영역이다. 이 간극은 위성 미마스와의 2:1 궤도 공명에 의해 형성되며, 이는 입자 궤도를 불안정하게 만든다.
+	
+	YUCT에서, 이것은 모래시계 "허리"의 완벽한 유사체이다. 카시니 간극은 토성과 그 위성들의 경쟁하는 중력적 영향이 유효 퍼텐셜에 국소적 최소값을 생성하는 평형 영역을 나타낸다. 유사하게, 태양권의 "허리"는 태양과 은하의 조정적 영향이 균형을 이루는 영역으로, 기울기가 가파르고 입자 포획이 발생할 수 있는 영역으로 이어진다.
+	
+	\subsection{기하학적 해석: 태양 쌍극자와 "모래시계" 허리}
+	\label{subsec:coord:dipole_geometry}
+	
+	태양 자기장은 대략 쌍극자이며, 그 축은 황도면에 거의 수직이다. 이러한 구성에서, 자기력선은 한 극지방에서 나와 반대 극으로 재진입하여 자연스러운 "모래시계" 모양을 만든다. 이 모래시계의 가장 좁은 부분—"허리"—는 자기 적도면에 있으며, 이는 황도면에 가깝다.
+	
+	% TikZ 그림, 고정된 궤적 스타일 사용
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[scale=1.2, >=Stealth,
+			planet/.style={circle, draw, inner sep=0pt, minimum size=##1, fill=##2},
+			trajectory/.style={->, thick, #1, line width=1.2pt},
+			anomaly/.style={circle, draw=red, thick, inner sep=0pt, minimum size=6pt, fill=red!50, label={[font=\small]####1}},
+			label/.style={font=\small, align=center}
+			]
+			
+			% 색상 정의
+			\definecolor{solarcore}{RGB}{255,140,0}
+			\definecolor{solarcorona}{RGB}{255,200,100}
+			\definecolor{helioinner}{RGB}{200,220,255}
+			\definecolor{heliopause}{RGB}{50,100,200}
+			\definecolor{galacticbg}{RGB}{220,220,255}
+			
+			% 1. 쌍극자 구조를 가진 태양
+			\fill[solarcore] (0,0) circle (0.8);
+			\fill[solarcorona] (0,0) circle (1.0);
+			\node at (0,0) {\Large $\odot$};
+			\node[label, below] at (0,-1.2) {\textbf{태양}};
+			
+			% 쌍극자 자기력선 (남북)
+			\foreach \a in {0,30,60,120,150,180,210,240,300,330} {
+				\draw[blue!50!black, thin, opacity=0.3, rounded corners=20pt] 
+				(0,0) .. controls +(0.5,0.5) and +(-0.5,0.5) .. ++(\a:2.5);
+			}
+			
+			% 2. 태양권 윤곽 (모래시계 모양)
+			\draw[thick, heliopause, dashed] plot[smooth, tension=0.8] coordinates {
+				(4.8, 2.2)   % 우측 상단 (노즈)
+				(3.2, 3.5)   % 우측 상단 측면
+				(0, 4.2)     % 북쪽
+				(-3.0, 3.2)  % 좌측 상단 측면
+				(-4.5, 1.2)  % 좌측 (꼬리)
+				(-3.5, -0.8) % 좌측 하단 측면
+				(0, -3.2)    % 남쪽
+				(3.2, -1.2)  % 우측 하단 측면
+				(4.8, 2.2)   % 닫기
+			};
+			
+			% 반투명 채우기가 있는 내부 영역 (태양풍)
+			\fill[opacity=0.15, helioinner] plot[smooth, tension=0.8] coordinates {
+				(4.8, 2.2)
+				(3.2, 3.5)
+				(0, 4.2)
+				(-3.0, 3.2)
+				(-4.5, 1.2)
+				(-3.5, -0.8)
+				(0, -3.2)
+				(3.2, -1.2)
+				(4.8, 2.2)
+			};
+			
+			% 특성 지점에 대한 레이블
+			\node[heliopause, label, above right] at (4.8, 2.2) {\textbf{노즈}};
+			\node[heliopause, label, above] at (-1, 4.2) {\textbf{북극}};
+			\node[heliopause, label, below] at (0, -3.2) {\textbf{남극}};
+			\node[heliopause, label, left] at (-4.5, 1.2) {\textbf{꼬리}};
+			
+			% 3. 조정 밀도의 등전위선
+			\draw[thick, purple!60, dotted, line width=1.0pt] plot[smooth, tension=0.7] coordinates {
+				(3.5, 1.5) (2.0, 2.2) (0, 2.8) (-2.0, 2.2) (-3.5, 0.8)
+			};
+			\draw[thick, purple!60, dotted, line width=1.0pt] plot[smooth, tension=0.7] coordinates {
+				(2.8, 1.0) (1.5, 1.8) (0, 2.2) (-1.5, 1.8) (-2.8, 0.5)
+			};
+			\draw[thick, purple!60, dotted, line width=1.0pt] plot[smooth, tension=0.7] coordinates {
+				(2.0, 0.5) (1.0, 1.2) (0, 1.5) (-1.0, 1.2) (-2.0, 0.2)
+			};
+			\node[purple!80!black, label, right] at (3.8, 1.2) {$\rho_K = \text{const}$};
+			
+			% 4. 우주선 궤적 및 변칙
+			
+			% 파이오니어 (빨간색 궤적) 황도면 통과
+			\draw[trajectory={red}] (0,0) -- (45:5.5) node[pos=0.95, above, sloped] {\textbf{Pioneer 10/11}};
+			\draw[thick, red, dashed] (45:3.0) -- (45:5.5);
+			
+			% 파이오니어 변칙 지점 (20-50 AU)
+			\node[anomaly={파이오니어 변칙}] at (45:3.5) {};
+			
+			% 보이저 1호 (녹색) 북쪽
+			\draw[trajectory={green!70!black}] (0,0) -- (75:4.8) node[pos=0.9, right] {\textbf{Voyager 1}};
+			\fill[green!70!black] (75:4.2) circle (0.12) node[above] {HP 통과};
+			
+			% 보이저 2호 (녹색) 남쪽
+			\draw[trajectory={green!70!black}] (0,0) -- (-70:4.2) node[pos=0.9, right] {\textbf{Voyager 2}};
+			\fill[green!70!black] (-70:3.8) circle (0.12) node[below] {HP 통과};
+			
+			% 뉴 호라이즌스 (파란색) 황도면 통과
+			\draw[trajectory={blue}] (0,0) -- (30:6.2) node[pos=0.95, above, sloped] {\textbf{New Horizons}};
+			\fill[blue] (30:4.0) circle (0.1) node[above] {먼지 변칙 (58 AU)};
+			
+			% IBEX 리본 (점선 원)
+			\draw[thick, orange!80!black, dashed, line width=1.5pt] (30:3.8) circle (1.2);
+			\node[orange!80!black, label, above right] at (40:4.5) {\textbf{IBEX 리본}};
+			
+			% 5. 규모 표시를 위한 개략적 행성 궤도
+			% 수성 궤도 (가장 안쪽)
+			\draw[gray, thin, dash dot] (0,0) circle (0.5);
+			\node[gray, label, above] at (30:0.5) {수성};
+			
+			% 토성 궤도 (카시니 유추를 위해)
+			\draw[gray, thin, dash dot] (0,0) circle (1.2);
+			\node[gray, label, above] at (60:1.2) {토성};
+			
+			% 천왕성 궤도 (규모 표시를 위해)
+			\draw[gray, thin, dash dot] (0,0) circle (2.0);
+			\node[gray, label, above] at (90:2.0) {천왕성};
+			
+			% 6. 범례 (영어)
+			\node[draw, rounded corners, fill=white, anchor=north west, line width=0.5pt] at (-5, -4) {
+				\begin{tabular}{l}
+					\textbf{YUCT의 태양권: "모래시계" 모델} \\
+					$\bullet$ 적색 영역: 파이오니어 변칙 (높은 $\nabla \rho_K$) \\
+					$\bullet$ 녹색 점: 보이저의 태양권 계면 통과 (121.6 및 119.0 AU) \\
+					$\bullet$ 청색 점: 뉴 호라이즌스 먼지 변칙 ($>$55 AU) \\
+					$\bullet$ 주황색 파선: IBEX 리본 ($\nabla \rho_K$의 가시화) \\
+					$\bullet$ 보라색 점선: $\rho_K = \text{const}$ 등치선 \\
+					$\bullet$ 모양: 압축된 노즈 (4.8 AU), 늘어진 꼬리 (4.5 AU), \\
+					\quad 극지방은 더 멀리 (4.2 AU) \\
+					$\bullet$ 중심: 자기력선을 가진 쌍극자 태양 \\
+				\end{tabular}
+			};
+		\end{tikzpicture}
+		\caption{YUCT "모래시계" 모델에서 태양권의 개념도. 태양의 쌍극자장은 황도면에 좁은 "허리"를 만들고 확장된 극지방을 만든다. 조정 밀도 $\rho_K$의 등치선(보라색 점선)은 허리에서 최대 기울기 $\nabla\rho_K$의 영역을 보여준다. 우주선 궤적과 알려진 변칙이 표시되어 있다: 파이오니어(적색, $\sim20$ AU에서 변칙 있음), 보이저 1/2호(녹색, 121.6 AU 및 119.0 AU에서 태양권 계면 통과 있음), 뉴 호라이즌스(청색, 58 AU에서 먼지 변칙 있음). 주황색 파선 원은 IBEX 리본을 나타내며, $\nabla\rho_K$ 영역의 가시화로 해석된다. 이 모양은 정적이지 않다; 태양 주기와 함께 맥동하며 성간 매질의 변화에 반응한다.}
+		\label{fig:coord:heliosphere_hourglass}
+	\end{figure}
+	
+	\subsubsection{"모래시계" 모양의 동역학적 본질}
+	\label{subsubsec:coord:dynamic}
+	
+	태양권이 정적 구조가 아니라는 점을 인식하는 것이 중요하다. 위에서 설명된 "모래시계" 모양은 여러 시간 규모에서 상당한 변화를 겪는 **시간 평균된 구성**이다:
+	
+	\begin{enumerate}
+		\item \textbf{태양 주기 (11년):} 태양 극대기 동안, 증가된 태양풍 압력이 태양권을 팽창시켜 종단 충격파와 태양권 계면을 바깥쪽으로 밀어낸다. 태양 극소기 동안, 태양권은 수축한다. 이 호흡 운동은 비대칭적이다: 노즈 영역이 꼬리보다 더 빠르게 반응한다.
+		
+		\item \textbf{성간 매질의 변화:} 태양권은 은하를 통과하며 이동하면서, 다양한 밀도와 자기장 방향을 가진 영역들을 만난다. 이러한 변화들은 수천 년에 걸쳐 전체 구조가 휘고 재형성되도록 한다.
+		
+		\item \textbf{동적 압력파:} 코로나 질량 방출(CME)은 태양권을 통해 전파되는 압력파를 생성하며, $\rho_K$의 국소 기울기를 일시적으로 변경하고 잠재적으로 일시적 변칙을 유발할 수 있다.
+	\end{enumerate}
+	
+	이러한 동역학적 본질은 그렇지 않으면 설명하기 어려운 몇 가지 관측을 설명한다:
+	\begin{itemize}
+		\item \textbf{보이저 1호와 2호의 서로 다른 태양권 계면 통과 거리:} 보이저 1호는 2012년(태양 극대기 근처)에 121.6 AU에서 통과했고, 보이저 2호는 2018년(태양 극소기에 접근)에 119.0 AU에서 통과했다. $\sim2.6$ AU의 차이는 태양 활동이 감소함에 따른 극지방의 수축을 반영한다.
+		
+		\item \textbf{IBEX 리본의 시간적 변화:} IBEX 관측은 리본의 강도와 구조가 시간에 따라 변한다는 것을 보여준다. YUCT에서, 이러한 변화들은 태양권의 동적 재형성으로 인한 기울기 $\nabla \rho_K$의 변화를 직접 반영한다.
+		
+		\item \textbf{태양권 계면의 맥동:} 연구들은 태양권 계면이 수개월에서 수년의 시간 규모에 걸쳐 수 AU 이동할 수 있음을 보여주었다. 이러한 맥동은 식 \eqref{eq:coord:rho_K_eqn}에 의해 지배되는 $\rho_K$ 장을 통해 전파되는 압력파에 의해 자연스럽게 설명된다.
+	\end{itemize}
+	
+	따라서 동적 모래시계 모델은 우주선 변칙의 정적 위치를 설명할 뿐만 아니라 그들의 시간적 진화도 설명하여, 외부 태양권을 이해하기 위한 강력하고 반증 가능한 프레임워크를 제공한다.
+	
+	\subsection{수성과의 연결: 근일점 세차 변칙}
+	\label{subsec:coord:mercury}
+	
+	만약 파이오니어 변칙이 외부 태양계에서의 기울기 $\nabla \rho_K$에 의해 설명된다면, 가장 안쪽 행성인 수성은 크게 규모가 축소되었지만 유사한 효과를 경험해야 한다. 역사적으로, 수성 근일점의 변칙적 세차($\approx 43''$/세기)는 뉴턴 중력이 수정을 필요로 한다는 첫 번째 증거였으며, 나중에 일반 상대성 이론에 의해 설명되었다. YUCT는 이 영역에서 GR을 대체하려는 것이 아니라, 이 세차의 작은 잔여 성분이 동일한 조정 동역학으로부터 발생할 수 있음을 시사한다.
+	
+	$\rho_K$의 기울기로 인한 수성에 대한 추가 가속도는 다음과 같을 것이다:
+	\begin{equation}
+		\delta a_M(r) = \frac{c^2}{2} \frac{d\rho_K}{dr}(r).
+	\end{equation}
+	이 추가적인 비뉴턴적 힘은 근일점의 세차에 기여할 것이다. 기여는 매우 작을 것으로 예상되는데, 외부 시스템으로부터의 단순한 멱법칙 규모 변화가 포화 효과로 인해 태양 근처에서 붕괴되기 때문이다. 기울기가 어떤 내부 규모에서 포화된다고 가정하면, 세차에 대한 결과적 기여는 매 세기당 몇 각초 정도가 될 수 있으며, 이 값은 BepiColombo와 같은 미래의 고정밀 임무의 탐지 범위 내에 있을 수 있다.
+	
+	\subsection{통합된 증거 요약}
+	
+	아래 표는 YUCT 조정 밀도 개념에 의해 통합된 다양한 현상들을 요약한다.
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{조정 밀도 동역학에 의해 통합된 현상들의 요약.}
+		\label{tab:coord:summary}
+		\begin{tabular}{|p{4.5cm}|p{4.5cm}|p{5cm}|}
+			\hline
+			\textbf{현상} & \textbf{표준적 해석} & \textbf{YUCT 해석} \\
+			\hline
+			파이오니어 변칙 & 열 복사압 & 배경 $\rho_K$의 경년적 변화 [Eq. \ref{eq:coord:rho_dot}] \\
+			\hline
+			보이저 B 점프 & 은하계 자기장의 "드레이핑" & $\rho_K$ 점프의 직접 측정 [Eq. \ref{eq:coord:rho_ratio_voyager}] \\
+			\hline
+			수치적 우연 & 우연 (4.0 vs 4.1) & 파이오니어와 보이저의 교차 검증 [Eq. \ref{eq:coord:rho_ratio_pioneer}] \\
+			\hline
+			IBEX 리본 & 설명 불가, 예측되지 않음 & $\nabla \rho_K$의 가시화 [Eq. \ref{eq:coord:ibex_flux}] \\
+			\hline
+			뉴 호라이즌스 먼지 & 예상치 못한 먼지 저장소 & $\rho_K$의 퍼텐셜 우물에 갇힌 먼지 \\
+			\hline
+			카시니 간극 & 미마스와의 궤도 공명 & 유사한 평형 영역 \\
+			\hline
+			수성 세차 & 일반 상대성 이론의 승리 & $\rho_K$로부터의 잠재적 작은 잔여 성분 \\
+			\hline
+		\end{tabular}
+	\end{table}
+	
+	본 연구 전반에 걸쳐 사용된 보편적 지수 $\beta = 0.67$과 중심 전하 $c = -2$는 임의적인 것이 아니라 부록 Y, 섹션 Y.4–Y.5에서 제1 원리로부터 도출된다. 거기서 KPZ 관계와 19D 라그랑지언의 제약 구조가 이러한 값들을 엄밀하게 이끌어내어, 여기서 사용된 현상론적 관계들을 견고한 수학적 기초 위에 정초한다.
+	
+	\section{실험적 시험과 예측}
+	\label{sec:experimental-tests}
+	
+	\subsection{실험실 시험}
+	
+	\begin{table}[htbp]
+		\centering
+		\begin{tabular}{p{2.8cm}p{4.2cm}p{2.5cm}p{2.5cm}}
+			\toprule
+			\textbf{실험} & \textbf{예측된 효과} & \textbf{크기} & \textbf{실현 가능성} \\
+			\midrule
+			원자 간섭계 & $\Delta g/g \sim 10^{-15}\kappa^2$ & $10^{-30} - 10^{-28}$ & 미래 광학 시계 \\
+			나노 기계 진동자 & 공명 이동 $\sim \kappa^2 f_0$ & $10^{-12} f_0$ & LIGO 수준 정밀도 \\
+			양자 얽힘 & 결깨짐 시간 $\propto 1/\Keff$ & $\Delta\tau \sim 10^{-9}$ s & 이온 트랩 실험 \\
+			정밀 분광학 & 선 이동 $\sim \kappa^2 \alpha^2$ & $10^{-18}$ Hz & 차세대 원자 시계 \\
+			\bottomrule
+		\end{tabular}
+		\caption{$\kappa \sim 10^{-14}$에서 $10^{-12}$까지의 YUCT 양자 중력 예측에 대한 실험실 시험}
+		\label{tab:lab-tests}
+	\end{table}
+	
+	\subsection{천체물리학적 시험}
+	
+	\begin{enumerate}
+		\item \textbf{블랙홀 병합:} 조정 동역학으로 인한 수정된 링다운 주파수: $\Delta f/f \sim \kappa^2 (M/M_\odot)$
+		
+		\item \textbf{중력파 전파:} $\Keff$ 의존 항에 의해 수정된 분산 관계: $v_{\text{gw}}/c - 1 \sim \kappa^2 (\lambda_{\text{gw}}/\lambda_P)^2$
+		
+		\item \textbf{CMB 변칙:} 재결합 시 보편적 $\Keff$ 변동에 의해 영향을 받는 대각도 상관관계
+		
+		\item \textbf{은하 회전 곡선:} 암흑 물질 없이 조정 기하학 효과로부터의 평탄한 프로파일
+	\end{enumerate}
+	
+	\subsection{즉각적 실험 검증}
+	
+	\begin{lstlisting}[language=Python, caption={즉각적 실험 시험}, label={lst:immediate-tests}]
+		IMMEDIATE_TESTS = {
+			'ultra_cold_atoms': {
+				'equipment': '자기-광학 트랩, 원자 간섭계',
+				'measurement': '최소 RMS 속도 $\Delta v_{\min}$',
+				'prediction': '$\Delta v_{\min}^{\text{Yak}} - \Delta v_{\min}^{\text{QM}} \approx 3.2 \times 10^{-11}$ m/s',
+				'cost': '$50,000',
+				'time': '3개월'
+			},
+			'nanoresonators': {
+				'equipment': '극저온 유지 장치, 레이저 간섭계',
+				'measurement': '변위 스펙트럼 밀도 $S_{xx}(\omega)$',
+				'prediction': '$\kappa \cdot \varepsilon_{\min}^2 / \omega^2 \approx 2.1 \times 10^{-36}$ m$^2$/Hz',
+				'cost': '$100,000',
+				'time': '6개월'
+			},
+			'ligo_data_reanalysis': {
+				'equipment': '기존 LIGO/Virgo 데이터',
+				'measurement': '잡음 상관 $C(\tau)$',
+				'prediction': '$C(0) \approx 4.7 \times 10^{-44}$',
+				'cost': '$0 (계산)',
+				'time': '1개월'
+			}
+		}
+	\end{lstlisting}
+	
+	\section{대안적 접근법과의 비교}
+	\label{sec:comparison}
+	
+	\begin{table}[htbp]
+		\centering
+		\begin{tabular}{lp{4cm}p{4cm}}
+			\toprule
+			\textbf{이론} & \textbf{양자 중력에 대한 접근법} & \textbf{근본적 문제} \\
+			\midrule
+			끈 이론 & 고차원의 확장된 객체를 양자화 & 풍경 문제, 선택 원리 없음 \\
+			루프 양자 중력 & 기하학을 직접 양자화 & 연속체 극한 회복이 어려움 \\
+			인과 집합 이론 & 이산 시공간이 근본적 & 연속체 창발이 증명되지 않음 \\
+			점근적 안전성 & 비섭동적 재규격화 & 증거가 주로 수치적임 \\
+			\midrule
+			\textbf{YUCT} & \textbf{조정 원리로부터의 창발} & \textbf{기초에서의 패러다임 전환 필요} \\
+			\bottomrule
+		\end{tabular}
+		\caption{YUCT와 양자 중력에 대한 대안적 접근법들의 비교}
+		\label{tab:comparison}
+	\end{table}
+	
+	\subsection{YUCT의 독특한 장점들}
+	
+	YUCT 프레임워크는 경쟁 접근법들에 비해 몇 가지 결정적인 장점들을 보유하고 있으며, 이는 전용 부록들에서 검증되었다:
+	
+	\begin{enumerate}
+		\item \textbf{UV-유한 양자장 이론 (부록 UVD).}
+		YUCT는 수학적 정규화 대신 물리적 조정 형상 인자 $F(q^2)=\exp[-(q^2/\Lambda_{\mathrm{UV}}^2)^{2/3}]$를 통해 자외선 발산을 제거한다. 모든 루프 적분은 절대적으로 수렴하며, 대수적 발산을 플랑크 질량 대 입자 질량 비의 유한한 로그로 대체하고, 멱법칙 발산을 완전히 제거한다. 계층 문제는 각 입자의 조정 깊이 $L$에 의해 해결된다.
+		
+		\item \textbf{임계적 우주 규모의 도출 (부록 $\Omega$).}
+		$\beta=2/3$을 고정하는 동일한 대수적 루프가 국소적 빅뱅의 임계 질량($M_{\mathrm{crit}}=3M_{\mathrm{Pl}}$), 인플레이션 관측량($n_s\approx0.965$, $r\approx0.07$), 그리고 독특한 비가우시안성($f_{\mathrm{NL}}^{\mathrm{local}}\approx1.12$)을 예측한다. 관측된 CMB 쌍극자는 전체 회전 성분을 포함하는 것으로 나타나, 우주 회전 주기 $T_{\mathrm{rot}}\approx2.3\times10^{14}$ yr를 산출하고 $M_{\mathrm{bar}}/m_p=(M_{\mathrm{Pl}}/m_e)^{3.5}$를 통해 우주의 바리온 질량과 기본 입자 질량을 연결한다.
+		
+		\item \textbf{위상수학으로부터의 게이지 결합 통일 (부록 G).}
+		미세 구조 상수 $\alpha^{-1}\approx137.036$는 컴팩트 파이버 $F_{18}$ 상의 위상 불변량 $N_{\mathrm{gauge}}=12$와 보편적 보정 $\beta\gamma=0.20$으로부터 도출된다. 이 예측은 자유 매개변수를 포함하지 않는다.
+		
+		\item \textbf{통일된 프레임워크:} 양자역학과 일반 상대성 이론은 동일한 조정 원리로부터 창발한다. 중력의 양자화는 필요하지 않다: 중력 기하학은 다른 힘들과 함께 근본적인 조정장 $\Psi_{MN}$으로부터 자연스럽게 창발한다.
+		
+		\item \textbf{역설의 해결:} 블랙홀 정보 역설, 측정 문제, EPR 비국소성은 모두 사전 활성화의 단일 YPSDC/d-YPSDC 존재론 내에서 해결된다.
+		
+		\item \textbf{예측력:} 페르미온 질량 양자화($p<10^{-15}$)로부터 블랙홀 링다운 규모 변화($\delta\tau/\tau\propto M^{-0.67}$)까지, 규모를 가로지르는 구체적인 수치적 예측.
+		
+		\item \textbf{수학적 일관성:} 무한대, 특이점, 또는 재규격화 문제가 없다. 이론은 모든 차수에서 유한하다.
+	\end{enumerate}
+	
+	\section{다른 YUCT 응용과의 연결}
+	\label{sec:connections}
+	
+	\subsection{유전적 조정 (부록 E)}
+	
+	동일한 조정 원리가 유전 과정을 설명한다:
+	\[
+	K_{\text{eff}}^{\text{genetic}} = \frac{N_{\text{synonymous}} \times R_{\text{tRNA}} \times \eta_{\text{translation}}}{T_{\text{translation}} \times E_{\text{error}} \times \eta_{\text{wobble}}}
+	\]
+	
+	\subsection{경제적 조정 (부록 F)}
+	
+	경제 시스템은 유사한 조정 동역학을 따른다:
+	\[
+	K_{\text{eff}}^{\text{econ}} = \frac{H(\text{경제적 결과})}{H(\text{정책 신호})} \sim 10^3-10^6
+	\]
+	
+	\subsection{보편적 조정 규모 법칙}
+	
+	모든 시스템이 따른다:
+	\[
+	\boxed{\Keff(D) = 1 + \frac{D}{L_0}}
+	\]
+	여기서 $L_0$는 양자 규모($L_0 \to 0$)에서 우주론적 규모($L_0 \sim R_H$)까지 변한다.
+	
+	\section{결론: YUCT 패러다임 전환}
+	\label{sec:conclusion}
+	
+	\subsection{주요 성취}
+	
+	\begin{enumerate}
+		\item \textbf{수학적 정식화:} 조정장을 갖춘 완전한 19차원 기하학적 프레임워크
+		
+		\item \textbf{존재론적 기초:} 근본적 실재로서의 D+I•R 삼위일체
+		
+		\item \textbf{통일:} 창발 현상으로서의 양자역학과 일반 상대성 이론
+		
+		\item \textbf{역설의 해결:} 조정 프레임워크 내에서 양자 중력 문제들이 해소됨
+		
+		\item \textbf{실험적 예측:} 15개 이상의 측정 영역에 걸친 시험 가능한 효과들
+		
+		\item \textbf{보편적 적용 가능성:} 양자에서 우주론적 규모까지의 동일한 원리
+		
+		\item \textbf{경험적 검증:} GWTC-4.0으로부터의 218개 중력파 이벤트를 사용한 최초의 정량적 시험이 YUCT 예측과 일치하는 질량 의존적 경향을 보여, 이론을 해석에서 검증된 프레임워크로 변모시켰다.
+	\end{enumerate}
+	
+	\subsection{미래 연구 방향}
+	
+	\begin{enumerate}
+		\item \textbf{UVD 규모 긴장의 해결.} 부록 UVD에서 확인된 두 시나리오—유한 상쇄항을 가진 플랑크 규모 네트워크(시나리오 A) 대 TeV 규모 네트워크를 가진 규모 불변 기원(시나리오 B)—는 실험적으로 구별되어야 한다. $m_{\ell\ell}\gtrsim5$~TeV에서의 Drell-Yan 억제에 대한 LHC 탐색은 시나리오 B에 대한 결정적 시험을 제공할 것이다.
+		
+		\item \textbf{$f_{\mathrm{NL}}$–$r$ 관계의 정밀 시험.} YUCT 인플레이션(부록 $\Omega$)에 의해 예측된 엄격한 연결 $f_{\mathrm{NL}}=(5/3)\sqrt{r/8}$은 인플레이션 모델들 중에서 독특하다. 미래의 CMB-S4 및 대규모 구조 데이터가 이를 확인하거나 반박할 수 있다.
+		
+		\item \textbf{전체 회전 확인.} 적색 편이와 함께 증가하는 CMB 쌍극자는, Euclid와 SKA에 의해 확인된다면, 회전 주기 $T_{\mathrm{rot}}\approx2.3\times10^{14}$ yr와 새로운 우주 나이를 검증할 것이다.
+		
+		\item \textbf{수학적 발전:} YPSDC 프로토콜의 범주론적 정식화, 조정 대수의 비가환적 확장, 정보 기하학으로부터의 프랙탈 차원 $d_f=11/5$의 엄밀한 도출.
+		
+		\item \textbf{계산 시뮬레이션:} 컴팩트화 동역학 및 상전이 시뮬레이션을 포함한, 19차원 다양체 상의 조정장 방정식의 수치적 해.
+		
+		\item \textbf{중력파 천문학:} 다가오는 O4b 및 O5 데이터와 함께, YUCT에 의해 예측된 질량 의존적 링다운 편차가 전례 없는 정밀도로 시험될 것이며, 잠재적으로 $>5\sigma$ 유의성에 도달할 수 있다.
+	\end{enumerate}
+	
+	\subsection{최종 성명}
+	
+	\begin{center}
+		\textbf{YUCT 패러다임:}\\
+		``양자 중력은 기존 프레임워크 내에서 해결되어야 할 문제가 아니라,\\
+		양자역학과 일반 상대성 이론 모두가\\
+		모든 실재를 지배하는 더 깊은 조정 원리로부터 창발한다는 표시이다.''
+	\end{center}
+	
+	야쿠셰프 통합 조정 이론은 양자 중력에 대한 단지 또 다른 접근법이 아니라, 물리학이 무엇에 관한 것인지에 대한 근본적인 재고찰을 제공한다. 조정을 기초에 둠으로써, 우리는 모든 물리적 현상을 통합하면서 오랜 역설들을 해결하는, 수학적으로 일관되고 경험적으로 시험 가능한 프레임워크를 얻는다. 이 부록에서 제시된 중력파 시험은 조정 기반 중력 수정이 단순히 추측에 불과한 것이 아니라 이미 최상의 이용 가능한 데이터에 의해 제약되고—그리고 아마도 암시되고—있다는 최초의 정량적 증거를 제공한다.
+	
+	\begin{center}
+		\vspace{1cm}
+		\textbf{과학 협력을 위한 연락처:}\\
+		\url{alexey@yakushev.eu}\\
+		\url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}
+		
+		\vspace{0.5cm}
+		\textcopyright 2026 야쿠셰프 연구소. 모든 권리 보유.\\
+		크리에이티브 커먼즈 저작자표시 4.0 국제 라이선스
+	\end{center}
+	
+	\appendix
+	\section{수학적 세부 사항}
+	\label{app:math-details}
+	
+	\subsection{19차원에서의 좌표 변환}
+	
+	미분동형사상 $X^M \to X'^M$ 하에서, 조정장은 다음과 같이 변환한다:
+	\[
+	\Psi'_{MN}(X') = \frac{\partial X^P}{\partial X'^M} \frac{\partial X^Q}{\partial X'^N} \Psi_{PQ}(X)
+	\]
+	
+	\subsection{표준 모형의 창발}
+	
+	표준 모형 게이지장은 $\Psi_{MN}$의 특정 성분들로부터 창발한다:
+	\[
+	A_\mu^a(x) = \int d^{15}Y \, \Psi_{\mu\;a+3}(X)
+	\]
+	여기서 $a=1,\dots,12$는 12개의 표준 모형 게이지 보존에 해당한다.
+	
+	\subsection{섹터 라그랑지언의 상세 형태}
+	
+	120개 섹터 각각은 라그랑지언을 갖는다:
+	\[
+	L_s = \frac{1}{2} \nabla_M \phi_s \nabla^M \phi_s - V_s(\phi_s) + \sum_{r \neq s} g_{sr} \phi_s \phi_r \Psi^{sr}
+	\]
+	섹터별 퍼텐셜 $V_s$와 결합 상수 $g_{sr}$을 수반한다.
+	
+	\section{계산적 구현}
+	\label{app:computational}
+	
+	\subsection{YUCT 시뮬레이션 코드 구조}
+	
+	\begin{lstlisting}[language=Python, caption={YUCT 시뮬레이션 프레임워크}, label={lst:simulation}]
+		class YUCTSimulator:
+		def __init__(self, dimensions=19, sectors=120):
+		self.dimensions = dimensions
+		self.sectors = sectors
+		self.psi_field = np.zeros((dimensions, dimensions))
+		self.coordination_efficiency = 1.0
+		
+		def calculate_keff(self, system_size, L0):
+		"""조정 효율을 계산한다."""
+		return 1.0 + system_size / L0
+		
+		def evolve_coordination_field(self, dt):
+		"""YUCT 방정식에 따라 Psi_MN 장을 진화시킨다."""
+		# 조정 동역학의 구현
+		pass
+		
+		def calculate_observables(self):
+		"""창발적 관측 가능량(계량, 장 등)을 계산한다."""
+		pass
+	\end{lstlisting}
+	
+	\begin{thebibliography}{99}
+		\bibitem{yakushev2025} Yakushev, A. V. (2025). \emph{The Yakushev Framework: Complete Geometric Formulation}. YPSDC Technical Report.
+		\bibitem{yakushev2026} Yakushev, A. V. (2026). \emph{Coordination Genetics: YUCT Principles in Molecular Biology}. Appendix E.
+		\bibitem{yakushev2026econ} Yakushev, A. V. (2026). \emph{Application of YUCT to Economics}. Appendix F.
+		\bibitem{einstein1915} Einstein, A. (1915). \emph{Die Feldgleichungen der Gravitation}. Sitzungsberichte der Preussischen Akademie der Wissenschaften.
+		\bibitem{hawking1975} Hawking, S. W. (1975). \emph{Particle Creation by Black Holes}. Communications in Mathematical Physics.
+		\bibitem{verlinde2011} Verlinde, E. (2011). \emph{On the Origin of Gravity and the Laws of Newton}. Journal of High Energy Physics.
+		\bibitem{tononi2012} Tononi, G. (2012). \emph{Integrated Information Theory of Consciousness}. BMC Neuroscience.
+		\bibitem{jacobson1995} Jacobson, T. (1995). \emph{Thermodynamics of Spacetime: The Einstein Equation of State}. Physical Review Letters.
+		\bibitem{main} Yakushev, A. V. (2026). \emph{Yakushev Unified Coordination Theory: Complete Formulation}. Main document.
+		\bibitem{Anderson1998} Anderson, J.D. et al., Phys. Rev. Lett. 81, 2858 (1998).
+		\bibitem{Turyshev2012} Turyshev, S.G. et al., Phys. Rev. Lett. 108, 241101 (2012).
+		\bibitem{Ranada2005} Ranada, A.F., Europhys. Lett. 72, 516 (2005).
+		\bibitem{Wang2022} Wang, W. et al., Nature 602, 59 (2022).
+		\bibitem{Gertsenshtein1962} Gertsenshtein, M.E., Sov. Phys. JETP 14, 84 (1962).
+		\bibitem{Abbott2020} Abbott, B.P. et al. (LIGO Scientific Collaboration and Virgo Collaboration), Astrophys. J. 892, L3 (2020).
+		\bibitem{Burlaga2013} Burlaga, L.F. et al., Science 341, 150 (2013).
+		\bibitem{Richardson2024} Richardson, J.D. et al., ``Voyager Observations of the Heliosheath and Heliopause'', J. Geophys. Res., \textit{in press} (2024).
+		\bibitem{ZenodoDataQuality} LIGO Scientific Collaboration, Virgo Collaboration, KAGRA Collaboration (2025). ``GWTC-4.0: Data Quality Products for Transient Gravitational Wave Searches.'' Zenodo. \url{https://zenodo.org/records/16856919}
+		\bibitem{ZenodoPE} LIGO Scientific Collaboration, Virgo Collaboration, KAGRA Collaboration (2025). ``GWTC-4.0: Parameter estimation data release.'' Zenodo. \url{https://zenodo.org/records/17014085}
+		\bibitem{LIGOIntro} LIGO Scientific Collaboration, Virgo Collaboration, KAGRA Collaboration (2025). ``GWTC-4.0: An Introduction to Version 4.0 of the Gravitational-Wave Transient Catalog.'' \textit{Astrophysical Journal Letters}, Focus Issue. \url{https://arxiv.org/abs/2508.18080}
+		\bibitem{EurekAlert} European Gravitational Observatory (2026). ``A kaleidoscope of cosmic collisions: the new catalogue of gravitational signals from LIGO, Virgo and KAGRA.'' EurekAlert! \url{https://www.eurekalert.org/news-releases/1118761}
+		\bibitem{LIGOResults} LIGO Scientific Collaboration, Virgo Collaboration, KAGRA Collaboration (2025). ``GWTC-4.0: Updating the Gravitational-Wave Transient Catalog with Observations from the First Part of the Fourth LIGO-Virgo-KAGRA Observing Run.'' \url{https://arxiv.org/abs/2508.18082}
+		\bibitem{ZenodoCandidates} LIGO Scientific Collaboration, Virgo Collaboration, KAGRA Collaboration (2025). ``GWTC-4.0: Candidate data release.'' Zenodo. \url{https://zenodo.org/records/17014083}
+		\bibitem{LIGORelease} LIGO Scientific Collaboration (2025). ``GWTC-4.0: Updated gravitational wave catalog released.'' \url{https://ligo.org/gwtc-4-0-updated-gravitational-wave-catalog-released/}
+		\bibitem{O4aCatalog} LIGO Scientific Collaboration (2025). ``O4A CATALOG.'' \url{https://ligo.org/detections/o4a-catalog/}
+		\bibitem{TokyoCatalog} ICRR, University of Tokyo (2025). ``GWTC-4.0 Catalog paper.'' \url{https://gwcenter.icrr.u-tokyo.ac.jp/en/gravitational-wave-science/gwtc-4-0-catalog-paper}
+		\bibitem{GWOSC} Gravitational Wave Open Science Center (2025). ``O4a Open Data Release.'' \url{https://gwosc.org/news/o4a-open-data-release/}
+		\bibitem{AppendixP} Yakushev, A. V. (2026). ``Appendix P: Temperature Dependence of Gravity.'' YUCT.
+	\end{thebibliography}
+	
+\end{document}

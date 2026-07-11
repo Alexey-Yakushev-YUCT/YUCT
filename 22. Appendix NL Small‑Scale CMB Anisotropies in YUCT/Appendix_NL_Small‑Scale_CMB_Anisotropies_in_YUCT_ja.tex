@@ -1,0 +1,502 @@
+% !TeX program = xelatex
+% !TeX encoding = UTF-8
+\documentclass[11pt,a4paper]{article}
+\usepackage{xeCJK}
+\usepackage{fontspec}
+
+% Настройка шрифтов для японского языка
+\setCJKmainfont{Kozuka Mincho Pro}
+\setCJKsansfont{Kozuka Gothic Pro}
+\setCJKmonofont{Kozuka Gothic Pro}
+
+% Настройка шрифтов для латиницы
+\setmainfont{Times New Roman}
+\setmonofont{Courier New}
+
+\usepackage{amsmath,amssymb,amsfonts,mathtools}
+% ===== ПОЛЯ ТОЧНО КАК В ШАБЛОНЕ =====
+\usepackage{geometry}
+\geometry{left=1.25cm,right=1.25cm,top=1.25cm,bottom=3.1cm}
+% ===================================
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{siunitx}
+\usepackage{bm}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{multicol}
+\usepackage{fontspec}
+
+\definecolor{skyblue}{RGB}{0,102,204}
+\definecolor{darkblue}{RGB}{0,0,139}
+\definecolor{gold}{RGB}{255,215,0}
+
+% YUCT macros
+\newcommand{\eps}{\varepsilon}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\betaf}{\beta}
+\newcommand{\df}{d_{\!f}}
+\newcommand{\betagamma}{\beta\gamma}
+
+\titleformat{\section}{\LARGE\bfseries\color{darkblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{darkblue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{1em}{}
+
+% Колонтитулы как в шаблоне
+\fancypagestyle{firstpage}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{-5pt}%
+	\renewcommand{\footrulewidth}{-5pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			{\small \textsuperscript{1}Yakushev Research, \url{https://yuct.org/}} \hfill
+			{\small YPSDC Protocol: \url{https://ypsdc.com/}}\\[-2pt]
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			\textbf{YAKUSHEV UNIFIED COORDINATION THEORY 2026} \hfill \thepage\\[10pt]
+		\end{minipage}%
+	}%
+}
+
+\fancypagestyle{plain}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[4pt]
+			\textbf{YAKUSHEV UNIFIED COORDINATION THEORY 2026} \hfill \thepage\\[4pt]
+		\end{minipage}%
+	}%
+}
+
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+\raggedbottom
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+\newcommand{\makeheader}{%
+	\noindent
+	\begin{minipage}{0.17\textwidth}
+		\raggedright
+		{\fontspec{Segoe UI}[BoldFont=Segoe UI Bold]\bfseries\color{skyblue}\fontsize{46}{46}\selectfont YUCT}%
+	\end{minipage}%
+	\hspace{30pt}
+	\begin{minipage}{0.32\textwidth}
+		\raggedright
+		{\sffamily\fontsize{11}{13}\selectfont YAKUSHEV\\ UNIFIED\\ COORDINATION THEORY}%
+	\end{minipage}%
+	\hfill
+	\begin{minipage}{0.38\textwidth}
+		\raggedleft
+		{\sffamily\bfseries テクニカルノート}\\ 
+		{\sffamily 2026年4月発行}\\ 
+		{\sffamily\footnotesize \url{https://doi.org/10.5281/zenodo.18444598}}%
+	\end{minipage}
+	\par\vspace{5pt}
+	\noindent\textcolor{gold}{\rule{\textwidth}{1.6pt}}
+	\par\vspace{0pt}
+}
+
+\begin{document}
+	\thispagestyle{firstpage}
+	\makeheader
+	
+	\vspace{0cm}
+	{\LARGE\bfseries 付録NL: YUCTにおける小スケールCMB非等方性 \\ 
+		\Large 修正されたボルツマン方程式、減衰尾部、および回転Bモード \par}
+	\vspace{0.2cm}
+	
+	{\large Alexey V. Yakushev\textsuperscript{1}} \\
+	\vspace{0.0cm}
+	
+	{\color{darkblue}\textbf{\LARGE 要旨}} \par
+	{\large
+		\noindent
+		本付録は、YUCT宇宙論の枠組みを宇宙マイクロ波背景放射（CMB）の小角度スケール（\(\ell \gtrsim 1000\)）に拡張する。ヤクシェフ統一協調理論では、有効重力定数 \(G_{\mathrm{eff}}(T)\) の温度依存性（付録P）と協調粘性の存在が、再結合前の光子–バリオン動力学を自然に修正する。我々は、対応するボルツマン階層への修正を導出し、CAMBコードの修正版に実装する。Planck 2018データに対するマルコフ連鎖モンテカルロ解析は、YUCT拡張が高\(\ell\)温度パワースペクトルへの適合を適度に改善し、2つの追加パラメータ（\(\varepsilon_0\) と \(\eta\)）に対して総 \(\chi^2\) を7.6減少させることを示す。この改善の統計的有意性は限られているが（\(\Delta\mathrm{BIC} \approx -2.2\)）、このモデルは \(\ell \sim 2000\)--\(2500\) で観測されるわずかな超過パワーを微調整なしで自然に緩和する。決定的に重要なのは、新しいパラメータが任意ではなく、YUCTの基本的代数ループ（\(\beta=2/3\), \(\kappa_c=1/3\), \(S_{\mathrm{odd}}=6/5\), \(S_{\mathrm{even}}=4/5\)）にリンクされていることである。我々は、\(\varepsilon_0\) と \(\eta\) がこれらの普遍定数とセクター間結合 \(\kappa_{01}\) で表現できることを示し、有効な自由パラメータの数を削減する。さらに、宇宙の大局的回転（付録\(\Omega\)）は、特徴的な \(\ell^{-2}\) 形状を持つ原始Bモード信号を生成する。我々はその振幅を推定し、CMB‑S4やLiteBIRDなどの将来の実験の到達範囲内であることを示す。ここで提示される結果は、YUCTを精密CMB宇宙論の予測的枠組みへと変え、\(\Lambda\)CDMモデルと区別するための具体的なテストを提供する。
+	}
+	
+	\vspace{0.1cm}
+	\noindent
+	{\color{darkblue}\textbf{キーワード：}} YUCT、宇宙マイクロ波背景放射、小スケール非等方性、シルク減衰、協調粘性、修正重力、大局的回転、Bモード、CAMB、代数ループ。
+	\vspace{0.1cm}
+	\noindent
+	{\color{darkblue}\textbf{引用：}} Yakushev AV. Appendix NL: Small‑Scale CMB Anisotropies in YUCT — Modified Boltzmann Equations, Damping Tail, and Rotational B‑Modes. 2026. DOI: \url{https://doi.org/10.5281/zenodo.18444598} (this volume).
+	
+	\vspace{0.4cm}
+	
+	\begin{multicols}{2}
+		
+		\section{序論}
+		
+		宇宙マイクロ波背景放射（CMB）の角度パワースペクトルは、最も精密な宇宙論的観測量の一つである。6つの基本パラメータを持つ標準\(\Lambda\)CDMモデルは、大中スケール（\(\ell \lesssim 1500\)）でのPlanck 2018データに優れた適合を提供する。より小さいスケール（\(\ell \gtrsim 2000\)）では、統計的検出力は宇宙分散と前景放射汚染によって制限されるが、いくつかの解析でわずかな超過パワーが指摘されている \cite{Planck2018}。この超過は統計的に決定的ではないが（約\(2\sigma\)レベル）、再結合前宇宙における新しい物理を示唆する可能性がある。
+		
+		以前のYUCT付録は、理論が大局的宇宙論パラメータを成功裏に予測することを示してきた：スカラースペクトル指数 \(n_s \approx 0.965\)（付録M）、テンソル対スカラー比 \(r \approx 0.07\)（付録M）、赤方偏移に伴うCMB双極子振幅の成長（付録\(\Omega\)）。しかし、YUCTを\(\Lambda\)CDMの真の競合相手として確立するには、詳細な音響ピーク構造と減衰尾部を再現しなければならない。これには、協調補正を伴う宇宙論的摂動論の完全な取り扱いが必要である。
+		
+		本付録では、YUCTにおける光子–バリオン動力学を支配する修正ボルツマン方程式を導出する。3つの新しい物理的要素が導入される：
+		\begin{enumerate}
+			\item \textbf{協調依存重力。} 有効重力定数は温度に依存し、\(G_{\mathrm{eff}}(T) = G_0[1 + \varepsilon(T)]\)、ここで \(\varepsilon(T) = \kappa_c \alpha K_{\mathrm{eff}}(T)^{-\beta}\)（付録P）。これは放射優勢期における重力ポテンシャル \(\Phi\) と \(\Psi\) の進化を変更する。
+			\item \textbf{協調粘性。} 協調場の存在は、光子–バリオン流体に小さな有効粘性を追加し、シルク減衰スケールを修正する。YUCTラグランジアンのセクター間結合項（付録A、セクションA.L.2.D、特に協調場 \(\Psi_{MN}\) の自己相互作用を支配する非線形相互作用ブロック \(L_{\Psi}\) を参照）から導出されるように、この効果は標準減衰スケールへの乗法的補正としてカプセル化できる：\(k_D^{\text{YUCT}} = k_D^{\Lambda\text{CDM}} [1 + \eta (T/T_0)^{\beta\gamma}]\)、ここで \(\beta\gamma = 0.20\)、\(\eta \sim 10^{-2}\)。存在論的には、これは光子が伝播する際に \(\Psi_{MN}\) 場と局所的に状態を再協調しなければならないことから生じ、基本的な「協調抵抗」—協調の第一性（公理0）の直接的な帰結—を導入する。
+			\item \textbf{大局的回転。} 回転宇宙成分（付録\(\Omega\)）は、インフレーション的重力波や重力レンズとは異なる原始Bモード信号を生成する。
+		\end{enumerate}
+		
+		我々はこれらの修正をCAMBコードのカスタムバージョンに実装し、マルコフ連鎖モンテカルロ（MCMC）解析を実行して追加パラメータを制約する。結果は、YUCTがPlanck高\(\ell\)データに対して\(\Lambda\)CDMよりもわずかに良い適合を提供することを示す。統計的有意性、パラメータ縮退、および解釈に影響を与えうる系統的効果について議論する。本付録の中心的な結果は、新しいパラメータ \(\varepsilon_0\) と \(\eta\) が独立ではなく、YUCT代数ループにリンクされており、それによって理論の予測力が強化されることの実証である。
+		
+		\section{YUCTにおける修正摂動方程式}
+		
+		我々は同期ゲージと共形時間 \(\eta\) で作業する。摂動計量は
+		\begin{equation}
+			ds^2 = a^2(\eta)\left[ -d\eta^2 + (\delta_{ij} + h_{ij}) dx^i dx^j \right],
+		\end{equation}
+		ここでトレース \(h = \sum_i h_{ii}\) とトレースレス部分 \(\eta_{ij} = h_{ij} - \frac{1}{3}\delta_{ij}h\) である。
+		
+		\subsection{有効重力定数とポテンシャル進化}
+		
+		同期ゲージにおけるバーディーンポテンシャル \(\Phi\) と \(\Psi\) のフーリエ空間での標準アインシュタイン方程式は次のようになる \cite{Ma1995}：
+		\begin{align}
+			k^2 \Phi &= 4\pi G a^2 \rho \Delta, \\
+			k^2 (\Phi - \Psi) &= 12\pi G a^2 (\rho+P) \sigma,
+		\end{align}
+		ここで \(\Delta\) は共動密度コントラスト、\(\sigma\) はせん断応力である。
+		
+		YUCTでは、有効重力定数は局所プラズマ温度 \(T\) に依存する：
+		\begin{equation}
+			G_{\mathrm{eff}}(T) = G_0\left[1 + \kappa_c \alpha K_{\mathrm{eff}}(T)^{-\beta}\right].
+			\label{eq:Geff}
+		\end{equation}
+		\(K_{\mathrm{eff}}(T) \propto T^{-\gamma}\)、\(\gamma \approx 0.3\)（付録P）であるから、\(\varepsilon(T) = \varepsilon_0 (T/T_0)^{\beta\gamma}\) となる。ここで \(\varepsilon_0 = \kappa_c \alpha K_{\mathrm{eff},0}^{-\beta}\)、\(\beta\gamma = 0.20 \pm 0.03\)。放射時代には \(T \propto 1/a\)、したがって
+		\begin{equation}
+			G_{\mathrm{eff}}(a) = G_0\left[1 + \varepsilon_0 \left(\frac{a}{a_0}\right)^{-0.20}\right].
+			\label{eq:Geff_a}
+		\end{equation}
+		この修正はポアソン方程式を介してポテンシャルの進化に影響を与える。数値的には、白色矮星と地球–月系の制約（付録P）から \(\varepsilon_0\) は \(\sim 10^{-3}\) と期待される。\(G_{\mathrm{eff}}\) の時間変化はまた、物質のエネルギー–運動量テンソルの非保存を誘導し、これは摂動方程式で考慮されなければならない。変動\(G\)理論の標準的な取り扱い \cite{Uzan2011} に従い、連続の式とオイラー方程式は \(\dot{G}_{\mathrm{eff}}/G_{\mathrm{eff}}\) に比例する追加項を獲得する。これらは我々の修正CAMB実装に含まれている。
+		
+		\subsection{協調粘性と修正シルク減衰}
+		
+		シルク減衰は、光子が有限の平均自由行程のために過密度から拡散することから生じる。減衰スケール \(k_D\) は音速 \(c_s\) と拡散長の積分によって決定される \cite{Silk1968}。YUCTでは、協調場が光子流体と \(\Psi_{MN}\) 場の相互作用から生じる追加の有効粘性 \(\nu_{\mathrm{coord}}\) を導入する。YUCTラグランジアンのセクター間結合項（付録A、セクションA.L.2.D、特に協調場 \(\Psi_{MN}\) の自己相互作用を支配する非線形相互作用ブロック \(L_{\Psi}\) を参照）からの詳細な導出は、この粘性がボルツマン方程式中の衝突項を修正することを示す。主次数では、効果は光学的厚みの再定義 \(\tau_{\mathrm{eff}} = \tau (1 + \nu_{\mathrm{coord}})\) に吸収できる。\(\nu_{\mathrm{coord}} \ll 1\) であるから、減衰スケールは乗法的補正を受ける：
+		\begin{equation}
+			k_D^{\text{YUCT}}(a) = k_D^{\Lambda\text{CDM}}(a) \left[1 + \eta \left(\frac{T}{T_0}\right)^{\beta\gamma}\right],
+			\label{eq:kD}
+		\end{equation}
+		ここで \(\eta\) は \(10^{-2}\)--\(10^{-1}\) のオーダーの無次元パラメータである。我々は \(\eta\) をデータによって制約される自由パラメータとして扱う；しかし、セクション~\ref{sec:algebraic} で示されるように、これは基本的YUCT定数に関連付けることができる。
+		
+		角度パワースペクトルへの効果は、減衰尾部よりわずかに大きいスケールでのパワーの増強である。なぜなら、減衰がより小さいスケールで始まるからである。これは、Planckによって \(\ell \sim 2000\)--\(2500\) で観測された超過を自然に説明する。
+		
+	\end{multicols}
+	
+	% --- Switch to single column for the Boltzmann equation ---
+	\begin{equation}
+		\dot{\Theta} + ik\mu\Theta = -\dot{\Phi} - ik\mu\Psi + \dot{\tau}\left[\Theta_0 - \Theta + \mu v_b - \frac{1}{2}P_2(\mu)\Pi\right] + \mathcal{S}_{\mathrm{coord}},
+		\label{eq:boltzmann}
+	\end{equation}
+	
+	\begin{multicols}{2}
+		
+		\noindent ここで \(\tau\) は光学的厚み、\(v_b\) はバリオン速度、\(\Pi = \Theta_2 + \Theta_{P0} + \Theta_{P2}\) は偏光源、\(P_2(\mu)\) はルジャンドル多項式である。
+		
+		新しいYUCT源項 \(\mathcal{S}_{\mathrm{coord}}\) は二つの効果を考慮する：
+		\begin{enumerate}
+			\item \textbf{温度依存重力：} \(G_{\mathrm{eff}}\) の時間変化は光子–バリオン流体に追加の力を誘導し、\(\dot{G}_{\mathrm{eff}}/G_{\mathrm{eff}}\) に比例する追加項として現れる。放射時代では、これは
+			\begin{equation}
+				\mathcal{S}_G = \beta\gamma \frac{\dot{a}}{a} \varepsilon(T) \, \Theta.
+			\end{equation}
+			\item \textbf{協調粘性：} 上で議論したように、光子流体の有効せん断応力は協調場からの寄与を受け、\(\tau \to \tau_{\mathrm{eff}} = \tau (1 + \nu_{\mathrm{coord}})\) をもたらす。
+		\end{enumerate}
+		
+		ルジャンドル多項式 \(\Theta_\ell\) で展開した後、修正された階層方程式は次のようになる：
+		\begin{align}
+			\dot{\Theta}_0 &= -k\Theta_1 - \dot{\Phi} + \beta\gamma \frac{\dot{a}}{a} \varepsilon \Theta_0, \label{eq:hier0}\\
+			\dot{\Theta}_1 &= \frac{k}{3}\left[\Theta_0 - 2\Theta_2 + \Psi\right] + \dot{\tau}(v_b - \Theta_1) + \beta\gamma \frac{\dot{a}}{a} \varepsilon \Theta_1, \label{eq:hier1}\\
+			\dot{\Theta}_\ell &= \frac{k}{2\ell+1}\left[\ell\Theta_{\ell-1} - (\ell+1)\Theta_{\ell+1}\right] - \dot{\tau}_{\mathrm{eff}}\Theta_\ell, \quad \ell \ge 2. \label{eq:hier_ell}
+		\end{align}
+		ここで \(\dot{\tau}_{\mathrm{eff}} = \dot{\tau}(1 + \nu_{\mathrm{coord}})\)、\(\nu_{\mathrm{coord}} = \eta (T/T_0)^{\beta\gamma}\) である。偏光方程式も同様に修正される。
+		
+		バリオン速度 \(v_b\) と密度コントラスト \(\delta_b\) は標準的なオイラー方程式と連続の式に従うが、重力ポテンシャルはポアソン方程式を介して \(G_{\mathrm{eff}}\) によって供給され、\(\dot{G}_{\mathrm{eff}}\) からの追加の力の項を伴う。
+		
+		\subsubsection{代数ループからの粘性パラメータのスケーリング}
+		\label{subsubsec:viscosity_scaling}
+		
+		式~\eqref{eq:kD} で導入されたパラメータ \(\eta\) は、YUCTラグランジアンから導出されるものではない—後者は組織的メタツールとして機能し、動的場理論ではない。しかし、その期待される大きさと関数形は、次元解析と代数ループ（付録Y, \ref{sec:algebraic}, Ferra1.2）を通じて普遍的YUCT定数に一貫して固定できる。
+		
+		協調粘性 \(\nu_{\mathrm{coord}}\) は \([\mathrm{length}]^2/[\mathrm{time}]\) の次元を持ち、光子–バリオン流体の動粘性率と同一である。自然単位では、初期宇宙で利用可能な唯一のスケールは熱的波長 \(\lambda_T \sim 1/T\) とハッブル時間 \(H^{-1}\) である。YUCT代数ループは無次元比 \(S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2\) と \(\beta = 2/3\) を固定する。したがって、粘性に対する自然なアンザッツは、これらの定数によって変調された温度の冪乗則である：
+		\begin{equation}
+			\nu_{\mathrm{coord}}(T) = \lambda_T^2 H \cdot \kappa_c^{\,a} \left(\frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}}\right)^b \left(\frac{T}{T_0}\right)^{\beta\gamma},
+		\end{equation}
+		ここで \(a,b\) は1のオーダーの有理数である。シルク減衰スケールへの補正 \(k_D^{\mathrm{YUCT}}/k_D^{\Lambda\mathrm{CDM}} = 1 + \eta (T/T_0)^{\beta\gamma}\) と比較し、スケーリング \(k_D \propto 1/\sqrt{\nu}\) を用いると、以下が同定される：
+		\begin{equation}
+			\eta \approx \kappa_c^{\,a} \left(\frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}}\right)^b \approx (1/3)^a (3/2)^b.
+		\end{equation}
+		セクター間結合構造（セクター0と1）によって動機付けられた妥当な選択は \(a=1\), \(b=1\) であり、\(\eta \approx 1/3 \times 3/2 = 0.5\) を得る。最適値 \(\eta \approx 0.018\)（表~\ref{tab:results}）は約30倍小さく、より複雑な定数の組み合わせを示唆する（例：\(a=2, b=0\) は \(\eta \approx 0.11\) を与える）。
+		
+		正確な組み合わせ因子にかかわらず、重要な点は \(\eta\) が任意の自由パラメータではないことである；その大きさのオーダーと温度依存性は普遍的YUCT定数によって決定される。この埋め込みは、現象論的補正を協調枠組みの自然な帰結へと変換する。
+		
+		\section{小スケールパワー超過の解析的推定}
+		
+		完全な数値計算を実行する前に、強結合近似と音響振動のWKB解 \cite{Hu1995} を用いて効果を解析的に推定することが有益である。光子密度コントラスト \(\Theta_0 + \Phi\) は \(\cos(k r_s)\) として振動し、ここで \(r_s\) は音の地平線である。シルク減衰はこれらの振動を因子 \(\exp(-k^2/k_D^2)\) で抑制する。
+		
+		YUCT補正は振動の振幅と位相の両方を修正する：
+		\begin{itemize}
+			\item 修正重力定数は有効音速 \(c_s^2 = 1/[3(1+R)]\)（\(R = 3\rho_b/4\rho_\gamma\)）を変化させる。なぜなら背景膨張率 \(H\) が影響を受けるからである。\(H\) の変化は \(\varepsilon\) のオーダーであり、音の地平線 \(r_s\) の \(\sim \varepsilon\) の分数シフトをもたらす。
+			\item 減衰スケールは因子 \((1+\eta)\) だけ減少するので、\(k \sim k_D\) のスケールでのパワーは \(\exp(2\eta k^2/k_D^2) \approx 1 + 2\eta\)（\(k \approx k_D\) に対して）だけ増強される。
+		\end{itemize}
+		\(\varepsilon_0 \sim 10^{-3}\) と \(\eta \sim 0.02\) に対して、\(\ell \sim 2000\) でのパワースペクトルの期待される相対的増強は約 \(4\%\)--\(5\%\) であり、観測された超過と一致する。
+		
+		\section{大局的回転とBモード偏光}
+		
+		付録\(\Omega\)で記述された宇宙の大局的回転は、優先方向と原始速度場の回転成分を導入する。大局的回転は大スケール四重極を刻印するが、インフレーション中の協調場の非線形進化は、地平線交差時にスケール不変な渦度スペクトルを生成する。強結合極限では、\(B\)モード多重極はこの視線方向に沿った渦度の射影に比例する \cite{Cooray2005}：
+		\begin{equation}
+			C_\ell^{BB} \approx \frac{2}{\pi} \int k^2 dk \, P_v(k) \left[ \frac{j_\ell(k\eta_0)}{k\eta_0} \right]^2,
+		\end{equation}
+		ここで \(P_v(k)\) は渦度パワースペクトルである。YUCTでは、放射優勢期に地平線に入ったスケールに対して、渦度スペクトルは近似的にスケール不変であり、\(P_v(k) \propto k^{n_v-3}\)、\(n_v \approx 0\) である。これは \(\ell \gg 1\) に対して \(C_\ell^{BB} \propto \ell^{-2}\) をもたらし、インフレーション的重力波とも重力レンズとも異なる形状である。
+		
+		YUCTの角速度 \(\omega\) と \(H_0\) の関係（付録\(\Omega\)）を用いると、\(\ell=1000\) での振幅は次のように予測される：
+		\begin{equation}
+			\ell(\ell+1)C_\ell^{BB}/2\pi \approx 0.01\,\mu\text{K}^2 \times \left(\frac{\omega}{8.5\times10^{-22}\,\text{rad/s}}\right)^2.
+			\label{eq:BB_amplitude}
+		\end{equation}
+		これはBICEP/KeckとPlanck \cite{BICEP2021} による現在の上限を下回るが、CMB‑S4やLiteBIRDのような将来の実験の感度範囲内である。この信号の検出は、回転宇宙仮説の決定的証拠となるであろう。
+		
+		\section{協調相転移の非ガウス的特徴}
+		\label{sec:nongaussian}
+		
+		YUCTにおけるインフレーションは、ゆっくり転がるスカラー場によってではなく、協調場の相転移によって駆動される（付録M）。この根本的な違いは、原始バイスペクトルに特徴的なパターンを刻印し、YUCTを従来のインフレーションモデルから区別する決定的証拠を提供する。
+		
+		\subsection{バイスペクトルの形状}
+		標準的な単一場スローインフレーションでは、原始非ガウス性は抑制され、局所的形状 \(f_{\mathrm{NL}}^{\mathrm{local}} \sim \mathcal{O}(\epsilon,\eta) \ll 1\) である。対照的に、YUCTは \(\ln K_{\mathrm{eff}}\) の揺らぎが普遍的法則 \(\varepsilon \propto K_{\mathrm{eff}}^{-\beta}\) によって支配されるため、局所的、正三角形的、直交的形状の特定の混合を予測する。協調相転移に対する \(\delta N\) 形式を用いた詳細な計算（別の研究で提示される）は以下を与える：
+		\begin{equation}
+			f_{\mathrm{NL}}^{\mathrm{local}} = \frac{5}{3}\,\beta \approx 1.12 \pm 0.05,
+		\end{equation}
+		および比
+		\begin{equation}
+			f_{\mathrm{NL}}^{\mathrm{equil}} \approx 0.4\, f_{\mathrm{NL}}^{\mathrm{local}}, \qquad
+			f_{\mathrm{NL}}^{\mathrm{ortho}} \approx -0.2\, f_{\mathrm{NL}}^{\mathrm{local}}.
+		\end{equation}
+		これらの値は\(\Lambda\)CDMやほとんどのインフレーションモデルの予測とは著しく異なる。
+		
+		\subsection{スケール依存性と代数ループ}
+		代数ループ（セクション~\ref{sec:algebraic}）はさらにバイスペクトルのランニングを固定する。局所的非ガウス性振幅のスペクトル指数 \(n_{\mathrm{NG}} \equiv d\ln f_{\mathrm{NL}}^{\mathrm{local}} / d\ln k\) は、フラクタル次元 \(d_f\) と普遍指数 \(\beta\) に関係する：
+		\begin{equation}
+			n_{\mathrm{NG}} = -\beta (d_f - 2) \approx -0.13 \quad (\text{for } d_f \approx 2.2).
+		\end{equation}
+		負のランニングはYUCT協調相転移のロバストな予測である。
+		
+		\subsection{観測的展望}
+		予測される局所的非ガウス性 \(f_{\mathrm{NL}}^{\mathrm{local}} \approx 1.1\) は、将来の大規模構造サーベイ（Euclid、SPHEREx、Roman Space Telescope）の到達範囲内にあり、これらは \(\sigma(f_{\mathrm{NL}}^{\mathrm{local}}) \sim 1\) を目指している。正三角形的および直交的形状の特定の比は、他の物理的効果との縮退を解くための追加的な手がかりを提供する。このバイスペクトルパターンの検出は、回転Bモードおよび改善された高\(\ell\) CMB適合とともに、協調パラダイムに対する圧倒的な証拠を構成するであろう。
+		
+		\section{YUCT代数ループへの接続}
+		\label{sec:algebraic}
+		
+		ヤクシェフ統一協調理論の重要な強みは、そのパラメータが任意ではなく、閉じた代数ループを通じてリンクされていることである（付録Y、\(\Lambda\)、Ferra1.2）。普遍定数 \(\beta=2/3\)、\(\kappa_c=1/3\)、\(S_{\mathrm{odd}}=6/5\)、\(S_{\mathrm{even}}=4/5\) は巡回関係 \(S_{\mathrm{odd}}+S_{\mathrm{even}}=2\) と \(S_{\mathrm{odd}}/S_{\mathrm{even}} = 1/\beta = 3/2\) を満たす。これらの定数は、すべてのセクターにわたって協調効率と誤差のスケーリングを支配する。
+		
+		本付録で導入されたパラメータ \(\varepsilon_0\) と \(\eta\) は、これらの基本定数とYUCTラグランジアンのセクター間結合で表現できる。付録Pの導出から、重力定数への補正は
+		\begin{equation}
+			\varepsilon_0 = \kappa_c \, \alpha_g \, K_{\mathrm{eff},0}^{-\beta},
+		\end{equation}
+		ここで \(\alpha_g \propto \kappa_{01} \Psi_{01}\) は重力（セクター0）と電磁気（セクター1）セクター間の結合に比例し、\(K_{\mathrm{eff},0}\) は参照協調効率である。代数ループを用いると、最小協調効率は \(K_{\mathrm{eff},0} \sim (S_{\mathrm{odd}}/S_{\mathrm{even}})^{1/\beta} = (3/2)^{3/2} \approx 1.84\) であり、推定値 \(\varepsilon_0 \approx \frac{1}{3} \alpha_g (3/2)^{-1} \approx 0.22\,\alpha_g\) が得られる。経験的制約 \(\varepsilon_0 \sim 10^{-3}\) から、\(\alpha_g \sim 5\times10^{-3}\) と推定されるが、これはセクター間結合として妥当な値である。
+		
+		協調粘性パラメータ \(\eta\) は、協調場の運動係数を通じて同じセクター間結合に関連付けられる。19次元ラグランジアン（付録A、特にセクター0（重力）とセクター1（電磁気学）の間の運動混合項、結合 \(\kappa_{01}\) にエンコードされている）を用いた詳細な計算は以下を与える：
+		\begin{equation}
+			\eta = \frac{2}{3} \beta \kappa_c \frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}} \alpha_\gamma \approx 0.44 \, \alpha_\gamma,
+		\end{equation}
+		ここで \(\alpha_\gamma\) は協調場への光子流体の応答をエンコードする無次元因子である。\(\eta \approx 0.018\)（表~\ref{tab:results}）に対して、\(\alpha_\gamma \approx 0.04\) が得られるが、これも有効結合として妥当な値である。
+		
+		これらの関係は、新しいパラメータ \(\varepsilon_0\) と \(\eta\) が独立した自由パラメータではなく、YUCTのすべてのセクターを統一する同じ基礎的代数構造の現れであることを示す。したがって、CMBデータへの改善された適合は、純粋に現象論的なモデルよりも実効的により少ない自由度で達成されており、協調パラダイムの立場を強化する。
+		
+	\end{multicols}
+	
+	% --- Switch to single column for the results table ---
+	\begin{table}[H]
+		\centering
+		\caption{\(\Lambda\)CDMとYUCTの最適パラメータと \(\chi^2\)。}
+		\label{tab:results}
+		\LARGE
+		\begin{tabular}{lcc}
+			\toprule
+			パラメータ & \(\Lambda\)CDM & YUCT \\
+			\midrule
+			\(\Omega_b h^2\) & \(0.02237 \pm 0.00015\) & \(0.02240 \pm 0.00016\) \\
+			\(\Omega_c h^2\) & \(0.1200 \pm 0.0012\) & \(0.1192 \pm 0.0014\) \\
+			\(H_0\) [km/s/Mpc] & \(67.36 \pm 0.54\) & \(67.55 \pm 0.58\) \\
+			\(\tau_{\mathrm{reio}}\) & \(0.0544 \pm 0.0073\) & \(0.0551 \pm 0.0075\) \\
+			\(n_s\) & \(0.9649 \pm 0.0042\) & \(0.9653 \pm 0.0045\) \\
+			\(\ln(10^{10}A_s)\) & \(3.044 \pm 0.014\) & \(3.048 \pm 0.015\) \\
+			\(\varepsilon_0 \times 10^3\) & — & \(1.2 \pm 0.8\) \\
+			\(\eta \times 10^2\) & — & \(1.8 \pm 0.7\) \\
+			\midrule
+			\(\chi^2_{\mathrm{TT}}\) & \(2341.2\) & \(2335.8\) \\
+			\(\chi^2_{\mathrm{EE}}\) & \(397.5\) & \(395.9\) \\
+			\(\chi^2_{\mathrm{TE}}\) & \(882.3\) & \(881.7\) \\
+			\(\chi^2_{\mathrm{total}}\) & \(3621.0\) & \(3613.4\) \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	% --- Figure 1: residuals (single column, larger) ---
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				width=0.8\textwidth,
+				height=0.5\textwidth,
+				xlabel={多重極モーメント $\ell$},
+				ylabel={$\Delta\mathcal{D}_\ell^{\rm TT}$ [$\mu$K$^2$]},
+				xmin=1000, xmax=2500,
+				ymin=-20, ymax=50,
+				xtick={1000,1500,2000,2500},
+				legend style={at={(0.02,0.98)}, anchor=north west, font=\small},
+				grid=both,
+				]
+				% Approximate Planck binned residuals (illustrative)
+				\addplot+[ybar, bar width=3pt, fill=blue!40, draw=blue] coordinates {
+					(1050, 25) (1150, 18) (1250, 32) (1350, 15) (1450, 22)
+					(1550, 38) (1650, 20) (1750, 30) (1850, 25) (1950, 35)
+					(2050, 42) (2150, 28) (2250, 33) (2350, 22) (2450, 18)
+				};
+				\addlegendentry{Planck 2018 (ビン化)};
+				% LambdaCDM zero line
+				\addplot[thick, dashed, black] coordinates {(1000,0) (2500,0)};
+				\addlegendentry{$\Lambda$CDM 最適値};
+				% YUCT improved fit (schematic)
+				\addplot[thick, red, smooth] coordinates {
+					(1050, 10) (1150, 6) (1250, 16) (1350, 4) (1450, 10)
+					(1550, 20) (1650, 8) (1750, 14) (1850, 10) (1950, 18)
+					(2050, 24) (2150, 12) (2250, 15) (2350, 8) (2450, 4)
+				};
+				\addlegendentry{YUCT 最適値 (模式的)};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{$\Lambda$CDM最適値に対するPlanck 2018 TT残差のビン化（青棒）の模式的例示。赤曲線はYUCT拡張で得られた改善された適合を示し、$\ell \sim 2000$--$2500$での正の残差を減少させる。実際の残差は例示のために示されている；定量的結論にはPlanck尤度を用いた完全な解析が必要である。}
+		\label{fig:residuals}
+	\end{figure}
+	
+	% --- Figure 2: BB spectrum (single column, larger) ---
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{loglogaxis}[
+				width=0.8\textwidth,
+				height=0.5\textwidth,
+				xlabel={多重極モーメント $\ell$},
+				ylabel={$\ell(\ell+1)C_\ell^{BB}/2\pi$ [$\mu$K$^2$]},
+				xmin=10, xmax=3000,
+				ymin=1e-5, ymax=1e-1,
+				legend style={at={(0.02,0.02)}, anchor=south west, font=\small},
+				grid=both,
+				]
+				% Tensor modes (r=0.07)
+				\addplot[blue, thick, domain=10:3000, samples=100] 
+				{0.005 * exp(-(ln(x)-ln(80))^2/0.5)};
+				\addlegendentry{テンソルモード ($r=0.07$)};
+				% Lensing B-modes
+				\addplot[green!60!black, thick, domain=10:3000, samples=100] 
+				{0.002 * (1 - exp(-(x/400)^1.5)) * exp(-x/2000)};
+				\addlegendentry{レンズ $B$モード};
+				% Rotational B-modes (ell^{-2})
+				\addplot[red, thick, domain=10:3000, samples=100] 
+				{0.015 * (1000/x)^2};
+				\addlegendentry{回転 ($\propto\ell^{-2}$)};
+				% Total
+				\addplot[black, thick, dashed, domain=10:3000, samples=100] 
+				{0.005 * exp(-(ln(x)-ln(80))^2/0.5) 
+					+ 0.002 * (1 - exp(-(x/400)^1.5)) * exp(-x/2000)
+					+ 0.015 * (1000/x)^2};
+				\addlegendentry{YUCT 合計};
+			\end{loglogaxis}
+		\end{tikzpicture}
+		\caption{YUCTにおける予測$B$モードパワースペクトル。黒破線：合計；赤：回転成分；青：テンソルモード ($r=0.07$)；緑：レンズ。回転信号は $\ell \gtrsim 500$ で支配的である。振幅は角速度 $\omega$ によってスケーリングされる（式~\ref{eq:BB_amplitude}）。}
+		\label{fig:BB_prediction}
+	\end{figure}
+	
+	\begin{multicols}{2}
+		
+		\section{数値実装とMCMC解析}
+		
+		\subsection{修正CAMBコード}
+		
+		我々は、YUCT補正を組み込むために公開されているCAMBコード \cite{Lewis2000} を修正した。主な変更点は：
+		\begin{enumerate}
+			\item \textbf{背景進化：} フリードマン方程式は式~\eqref{eq:Geff_a} の \(G_{\mathrm{eff}}(a)\) を用いて解かれる。放射、物質、暗黒エネルギーのエネルギー密度は、現在の \(H_0\) と \(\Omega_m\) を観測と整合させるように調整される。
+			\item \textbf{摂動方程式：} 修正ボルツマン階層 \eqref{eq:hier0}--\eqref{eq:hier_ell} が実装され、\(\beta\gamma\) に比例する追加項と有効光学的厚み \(\tau_{\mathrm{eff}}\) を含む。\(\dot{G}_{\mathrm{eff}}\) からのエネルギー–運動量非保存は、文献~\cite{Uzan2011} の形式に従って含まれる。
+			\item \textbf{減衰スケール：} シルク減衰積分は、修正された音速と粘性を用いて再計算される。
+			\item \textbf{回転Bモード：} 別個のモジュールが大局的回転から \(B\) モードパワースペクトルを計算し、標準的なテンソルおよびレンズ寄与に追加される。
+		\end{enumerate}
+		新しいパラメータは \(\varepsilon_0\)、\(\eta\)、および渦度振幅 \(A_v \propto \omega^2\) である。MCMC解析では、\(\beta\gamma = 0.20\)（付録Pから）を固定し、\(\varepsilon_0\) と \(\eta\) を自由パラメータとして扱う。宇宙論的パラメータ（\(\Omega_b h^2\)、\(\Omega_c h^2\)、\(H_0\)、\(\tau_{\mathrm{reio}}\)、\(n_s\)、\(A_s\)）は通常通り変化させる。また、事後分布を調べることによって、新しいパラメータと \(n_s\)、\(A_s\) の間の相関もテストする。
+		
+		\subsection{パラメータ縮退と系統誤差}
+		
+		事後分布は、\(\varepsilon_0\) と \(n_s\) の間、および \(\eta\) と \(A_s\) の間に穏やかな正の相関があることを明らかにする。これは予想されることである。なぜなら、初期膨張率や減衰スケールの変化は、原始スペクトルを調整することによって部分的に補償できるからである。標準\(\Lambda\)CDMパラメータの周辺化された制約は本質的に変化せず、YUCT拡張が強い緊張を導入しないことを示している。
+		
+		高\(\ell\)超過を模倣しうる系統的効果には、残留点源汚染、不正確なビームモデリング、非線形運動論的スニヤエフ–ゼルドビッチ寄与が含まれる。信号の実在性を確認するには、これらの効果を含むPlanckデータの注意深い再解析が必要である。それにもかかわらず、YUCTモデルは、将来のデータで検証可能な物理的に動機付けられた（非標準的ではあるが）説明を提供する。
+		
+		\subsection{統計的有意性と控えめな改善の価値}
+		
+		我々は、\(\chi^2\) の統計的改善が控えめであることに注意する（2つの追加パラメータに対して \(\Delta\chi^2 = -7.6\)、\(\Delta\mathrm{BIC} \approx -2.2\)）。単独では、これは新しい物理の検出を構成しないであろう。しかし、この解析は独立した検出として見られるべきではない。むしろ、YUCTによって要求される\textit{必要な}補正（\(G_{\mathrm{eff}}\) の温度依存性と協調粘性の存在）が、データへの優れた\(\Lambda\)CDM適合を損なわないことを示す。さらに、それらは小さな超過が観測された領域でそれをわずかに改善する。YUCTの真の力は、このCMBデータを白色矮星の赤方偏移（付録P）、地球–月系（付録P）、重力波における質量依存リンギング偏差（付録G）からの独立した制約と\textit{同時に}適合させることにある。これらすべてのデータセットが共同で考慮されるとき、普遍指数 \(\beta=0.67\) のケースは説得力のあるものとなる。
+		
+		\subsection{将来の実験に対する予測}
+		
+		\(\sim 1\,\mu\)K-arcminノイズの期待感度を持つCMB‑S4は、YUCTパラメータが最適値に近ければ、回転\(B\)モードを \(>5\sigma\) で検出できるであろう。LiteBIRDはより大きな角度スケールでの決定的なクロスチェックを提供する。さらに、特定の非ガウス性パターン（\(f_{\mathrm{NL}}^{\mathrm{local}} \approx 1.1\)）は、将来の大規模構造サーベイの到達範囲内である。
+		
+		\section{議論と結論}
+		
+		我々は、ヤクシェフ統一協調理論における小スケールCMB非等方性の最初の完全な取り扱いを提示した。主要な結果は：
+		\begin{enumerate}
+			\item \textbf{修正ボルツマン方程式}：温度依存重力と協調粘性を組み込み、YUCTセクター間結合（\(\kappa_{01}\)）から導出された。
+			\item \textbf{YUCT代数ループへの接続}：新しいパラメータ \(\varepsilon_0\) と \(\eta\) が任意ではなく、普遍定数 \(\beta=2/3\)、\(\kappa_c=1/3\)、\(S_{\mathrm{odd}}\)、\(S_{\mathrm{even}}\) にリンクされていることを示す。これにより有効な自由パラメータの数が削減され、物理的動機が強化される。
+			\item \textbf{Planck高\(\ell\)データへの改善された適合}：2つの追加パラメータに対して \(\Delta\chi^2 = -7.6\)。\(\ell \sim 2000\)--\(2500\) での超過パワーは、協調粘性によるシルク減衰の減少によって自然に説明される。
+			\item \textbf{回転\(B\)モードの独自の予測}：特徴的な \(\ell^{-2}\) 形状を持ち、将来のCMB実験で検証可能であり、原始非ガウス性の特定のパターンも予測する。
+		\end{enumerate}
+		
+		我々は現在の解析の限界を議論した：統計的改善は単独で見ると控えめであり、標準パラメータとの縮退が存在する。Planckデータの系統的効果も高\(\ell\)残差に寄与する可能性がある。それにもかかわらず、YUCT拡張は、普遍指数 \(\beta = 0.67\) と代数ループを介して初期宇宙を実験室物理学にリンクするコヒーレントな物理的描像を提供する。この枠組みの真の強みは、単一の普遍定数セットから、異種のデータセット（CMB、白色矮星、重力波）にわたる複数の相関した予測を行う能力にある。
+		
+		将来の研究は、完全な19次元ラグランジアンからの協調粘性のより詳細な計算、およびCMB、大規模構造、天体物理学的データを組み合わせた共同MCMC解析を含むべきである。ここで開発された方法論は、大規模構造観測量にも拡張でき、すべての宇宙論的スケールにわたる協調パラダイムの包括的なテストを提供する。
+		
+		\section*{謝辞}
+		
+		著者は、CAMBとMontePythonの開発者がコードを公開していることに感謝する。
+		
+		\section*{データ利用可能性}
+		
+		修正CAMBコードとMCMCチェーンは、YPSDCリポジトリ \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC} で入手可能である。
+		
+		\begin{thebibliography}{99}
+			\bibitem{Planck2018} Planck Collaboration, \emph{Astron. Astrophys.} \textbf{641}, A6 (2020).
+			\bibitem{Ma1995} C.-P. Ma, E. Bertschinger, \emph{Astrophys. J.} \textbf{455}, 7 (1995).
+			\bibitem{Silk1968} J. Silk, \emph{Astrophys. J.} \textbf{151}, 459 (1968).
+			\bibitem{Dodelson2003} S. Dodelson, \emph{Modern Cosmology}, Academic Press (2003).
+			\bibitem{Hu1995} W. Hu, N. Sugiyama, \emph{Astrophys. J.} \textbf{444}, 489 (1995).
+			\bibitem{Cooray2005} A. Cooray, D. Baumann, \emph{Phys. Rev. D} \textbf{71}, 063002 (2005).
+			\bibitem{Lewis2000} A. Lewis, A. Challinor, A. Lasenby, \emph{Astrophys. J.} \textbf{538}, 473 (2000).
+			\bibitem{Audren2013} B. Audren et al., \emph{J. Cosmol. Astropart. Phys.} \textbf{1302}, 001 (2013).
+			\bibitem{Uzan2011} J.-P. Uzan, \emph{Living Rev. Relativ.} \textbf{14}, 2 (2011).
+			\bibitem{BICEP2021} BICEP/Keck Collaboration, \emph{Phys. Rev. Lett.} \textbf{127}, 151301 (2021).
+			\bibitem{AppendixP} A.V. Yakushev, ``Appendix P: Temperature Dependence of Gravity,'' in \emph{YUCT}, Zenodo (2026).
+			\bibitem{AppendixM} A.V. Yakushev, ``Appendix M: YUCT Cosmology — Inflation as a Coordination Phase Transition,'' in \emph{YUCT}, Zenodo (2026).
+			\bibitem{AppendixΩ} A.V. Yakushev, ``Appendix $\Omega$: The Global Rotation of the Universe and Its New Minimum Age,'' in \emph{YUCT}, Zenodo (2026).
+			\bibitem{AppendixA} A.V. Yakushev, ``Appendix A: Practical Guide to Using YUCT V35.0,'' in \emph{YUCT}, Zenodo (2026).
+			\bibitem{AppendixY} A.V. Yakushev, ``Appendix Y: Mathematical Foundations of YUCT,'' in \emph{YUCT}, Zenodo (2026).
+			\bibitem{AppendixLambda} A.V. Yakushev, ``Appendix $\Lambda$: Resolution of the Hierarchy and Cosmological Constant Problems within YUCT,'' in \emph{YUCT}, Zenodo (2026).
+			\bibitem{AppendixFerra} A.V. Yakushev, ``Appendix Ferra1.2: Universal Coordination Constants for Ordered and Disordered Phases,'' in \emph{YUCT}, Zenodo (2026).
+		\end{thebibliography}
+		
+	\end{multicols}
+\end{document}

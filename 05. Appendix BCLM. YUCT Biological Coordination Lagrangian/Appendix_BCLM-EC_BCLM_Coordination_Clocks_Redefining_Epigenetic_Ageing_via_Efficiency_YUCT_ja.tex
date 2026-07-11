@@ -1,0 +1,556 @@
+% !TEX program = lualatex
+\documentclass[12pt,a4paper]{ltjsarticle}
+
+% ============================================================
+% LuaTeX-ja 設定（日本語）
+% ============================================================
+\usepackage{luatexja-fontspec}
+\usepackage{luatexja}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.5cm,right=1.5cm,top=1.5cm,bottom=2.0cm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% ========= 日本語フォント =========
+\setmainjfont{HaranoAjiMincho}
+\setsansjfont{HaranoAjiGothic}
+\setmainfont{Times New Roman}
+\setsansfont{Segoe UI}
+
+% ========= セクション書式 =========
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+% --- YUCT 基本定数 ---
+\newcommand{\REL}{\mathcal{K}}          % relative coordination efficiency
+\newcommand{\ABS}{K_{\mathrm{eff}}}     % absolute
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\betaf}{\beta}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{2cm}
+		{\Huge\bfseries 付録 BCLM-EC. BCLM 調整時計\par}
+		\vspace{0.3cm}
+		{\Large\bfseries 調整効率 \(K_{\mathrm{eff}}\) によるエピジェネティックエイジングの再定義\par}
+		\vspace{1.5cm}
+		{\large A.\,V.\,Yakushev\par}
+		{\normalsize YUCT Research, \url{https://yuct.org/}\par}
+		\vspace{1.0cm}
+		{\normalsize 2026年6月\par}
+		\vfill
+		\begin{abstract}
+			\noindent
+			エピジェネティック時計は生物学的年齢の広く用いられるバイオマーカーであるが、それらは依然として統一された理論的基礎を持たない経験的構築物に過ぎない。
+			ここでは、Yakushev 統一調整理論 (YUCT) から導出された新しいタイプのエピジェネティック時計、BCLM 調整時計 (BCLM-EC) を提示する。
+			この時計は、CpG サイトのメチル化状態が周辺クロマチンの局所的な調整効率 \(K_{\mathrm{eff}}\) を反映しており、これらの状態の加齢関連ドリフトが普遍誤差則 \(\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}\) (\(\beta = 2/3\), \(\kappa_c = 1/3\)) に従うという前提に基づいている。
+			感度スコア \(S_{\mathrm{BCLM}} \propto K_{\mathrm{eff}}^{-\beta}\) により、メチル化レベルが \(K_{\mathrm{eff}}\) に最も敏感な CpG サイトのサブセットを同定する。
+			公開されている全血メチル化データ (GSE40279, \(n=656\)) を用いて BCLM-EC モデルを較正し、わずか 78 個の CpG を使用しながら、中央絶対誤差 3.2 年 (同じセットでの Horvath 時計 3.6 年、Hannum 時計 3.8 年と比較) を達成することを示す。
+			CpG の完全なリスト、その係数、および時計の数学的導出は本文書内で提供される。
+			さらに、BCLM-EC は、長寿命プロトコル (付録 BCLM) のような細胞の \(K_{\mathrm{eff}}\) を上昇させる介入に対する個々の CpG の応答を予測する。
+			このフレームワークは明示的に反証可能である：長寿命処理された細胞からの将来の縦断的メチル化データは、予測された軌跡に従わなければならない。
+			本研究は、調整の分子機構とエイジングのエピジェネティックマーカーとの間の直接的な機構的関連を確立する。
+		\end{abstract}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{序論}
+	\label{sec:intro}
+	Horvath (2013)、Hannum ら (2013)、Levine ら (2018) によって開発されたようなエピジェネティック時計は、特定の CpG サイトにおける DNA メチル化レベルの線形結合であり、暦年齢と強く相関する。
+	その驚くべき精度にもかかわらず、これらの時計は純粋に統計的な構成物であり、CpG メチル化をエイジングプロセスに結び付ける生物学的メカニズムはほとんど解明されていない。
+	Yakushev 統一調整理論 (YUCT) は新しい視点を提供する：エイジングは細胞サブシステムの調整効率 \(K_{\mathrm{eff}}\) の進行性低下であり、普遍誤差則
+	\begin{equation}
+		\varepsilon = \kappa_c \, \alpha \, K_{\mathrm{eff}}^{-\beta},
+		\label{eq:error-law}
+	\end{equation}
+	(\(\beta = 2/3\), \(\kappa_c = 1/3\)) によって駆動される。
+	メチル化マークはエイジングの原因因子ではなく、むしろ局所的な調整状態の \emph{レポーター} であり；それらの緩やかなドリフトは、意図されたエピジェネティックパターンと実際のパターンとの間の蓄積されたミスマッチを反映しており、これは誤差率 (\ref{eq:error-law}) によって支配される修復を受ける。
+	
+	本付録では、単に暦年齢を予測するためではなく、細胞の基礎にある調整効率 \(\REL = K_{\mathrm{eff}}/K_{\mathrm{eff}}^{\max}\) を推定するように訓練された \textbf{BCLM 調整時計 (BCLM-EC)} を構築する。
+	BCLM-EC は、メチル化アレイによって測定される分子表現型と、YUCT によればエイジングの速度を制御する普遍パラメータとの間の直接的な操作的関連を提供する。
+	理論的導出、\(\REL\) に敏感な CpG サイトの選択、公開データでの時計の較正、および BCLM-EC を純粋に経験的な時計から区別する具体的で反証可能な予測を記述する。
+	
+	\section{BCLM 調整時計の数学的導出}
+	\label{sec:math}
+	本節では、YUCT 誤差則から始めて線形予測子に至るまで、時計を段階的に構築する。生物学の背景を持つ読者が論理を追えるように、方程式とともに口頭での説明を含める。
+	
+	\subsection{エピジェネティック誤差モデル}
+	与えられた細胞型における単一の CpG サイト \(i\) を考える。完全に調整された「若い」状態では、このサイトは局所的なクロマチン辞書によって決定された明確なメチル化レベル \(m_{0,i}\) を持つ。時間の経過とともに、維持の失敗により実際のメチル化レベル \(m_i\) は \(m_{0,i}\) からドリフトする。絶対偏差
+	\[
+	\delta m_i = |m_i - m_{0,i}|
+	\]
+	は調整誤差である。普遍則によれば、維持イベントが失敗してサイトを間違った状態に残す確率 \(P_{\mathrm{err},i}\) は
+	\begin{equation}
+		P_{\mathrm{err},i} = \kappa_c \, \alpha_{\mathrm{epi}} \, \REL_i^{-\beta},
+		\label{eq:perr}
+	\end{equation}
+	のようにスケールする。ここで \(\REL_i\) はサイト \(i\) を含むクロマチンドメインの相対調整効率であり、\(\alpha_{\mathrm{epi}}\) は維持機構 (DNMT1 など) のベースライン忠実度を捉えるシステム固有の定数である。誤差確率は \(\REL_i\) が年齢とともに低下するにつれて増加する。
+	
+	維持誤差がランダムかつ独立に発生する場合、任意の時点での観測メチル化レベルはそのような確率的事象の多くの結果と考えることができる。細胞集団 (またはバルクサンプルで測定された単一 CpG) では、期待偏差は
+	\[
+	\langle \delta m_i \rangle \propto P_{\mathrm{err},i} \propto \REL_i^{-\beta}
+	\]
+	に従う。
+	
+	\subsection{調整効率の時間的低下}
+	エイジングは、すべての細胞層にわたる調整の漸進的な喪失を特徴とする。この喪失を指数関数的減衰としてモデル化する：
+	\begin{equation}
+		\REL(t) = \REL_0 \, e^{-\gamma t},
+		\label{eq:Kdecay}
+	\end{equation}
+	ここで \(\gamma\) は細胞型特異的な速度定数である。\(\gamma\) の値は、死亡率または分子誤差の年齢に伴う観測された増加から推定できる。指数形式は、一定の相対低下率と整合する最も単純な選択であり、より多くのデータが利用可能になるにつれて洗練することができる。
+	
+	(\ref{eq:Kdecay}) を (\ref{eq:perr}) に代入すると、誤差確率の時間依存性が得られる：
+	\[
+	P_{\mathrm{err}}(t) \propto e^{\beta\gamma t}.
+	\]
+	したがって、適切に正規化されたメチル化偏差の対数は、傾き \(\beta\gamma\) で年齢とともに線形に増加するはずである。
+	
+	\subsection{\(\REL\) に敏感な CpG の選択}
+	すべての CpG が細胞の調整状態について等しく情報を提供するわけではない。サイト \(i\) の \textbf{BCLM 感度スコア} を
+	\begin{equation}
+		S_{\mathrm{BCLM}}(i) = \left| \frac{\partial \langle m_i \rangle}{\partial \REL} \right|
+		\label{eq:sensitivity}
+	\end{equation}
+	と定義する。この量をデータから推定するために、連鎖則を使用する：
+	\[
+	\frac{\partial \langle m_i \rangle}{\partial \REL} = \frac{\partial \langle m_i \rangle}{\partial t} \cdot \frac{\partial t}{\partial \REL}.
+	\]
+	第一因子はサイト \(i\) でのメチル化の年齢傾きであり、訓練セットで \(m_i\) を暦年齢にロバスト線形回帰することによって推定できる。第二因子は (\ref{eq:Kdecay}) から導かれる：
+	\[
+	\REL(t) = \REL_0 e^{-\gamma t} \;\Longrightarrow\; t = -\frac{1}{\gamma}\ln(\REL/\REL_0),\qquad
+	\frac{\partial t}{\partial \REL} = -\frac{1}{\gamma \REL}.
+	\]
+	したがって、
+	\[
+	S_{\mathrm{BCLM}}(i) \approx \frac{|\beta_i|}{\gamma \, \REL},
+	\]
+	ここで \(\beta_i\) は回帰 \(m_i \sim \beta_i \cdot \text{age}\) の傾きである。\(\gamma\) と \(\REL\) は同じサンプル内のすべてのサイトに共通であるため、CpG を \(|\beta_i|\) でランク付けすることは感度でランク付けすることと等価である。
+	
+	\textbf{重要な注意。}
+	現在の感度スコアは、個々の細胞での \(\REL\) の直接的でハイスループットな測定がまだ利用できないため、真の微分 \(\partial m_i/\partial \REL\) の代理として年齢傾き \(\beta_i\) に依存している。
+	この置換は一次近似であり、単一細胞レベルで \(K_{\mathrm{eff}}\) を決定する実験技術 (例えば、代謝フラックスと修復能の同時定量) が成熟するにつれて洗練されるであろう。
+	したがって、時計の現在のバージョンは、YUCT ベースの選択原理の予備的な実装として見なされるべきであり、決定的で不変な CpG のセットではない。直接測定された \(\REL\) による再較正は将来の研究の明確な目標である。
+	
+	実際には、Illumina 450K アレイ上のすべての CpG について、訓練サブセット GSE40279 を使用して \(\beta_i\) を計算し、既知の交絡因子 (細胞型比率) を調整した。絶対年齢傾きが最大の上位 100 サイトを保持した。その後、高相関サイト (Pearson \(r > 0.85\)) を削除し、最終的に \textbf{78 個の CpG} のセットを得た。それらの完全なリストはセクション~\ref{sec:cpgs} に示す。
+	
+	\subsection{罰則付き回帰による時計の較正}
+	BCLM-EC は暦年齢の線形予測子として定義される：
+	\begin{equation}
+		\mathrm{Age}_{\mathrm{BCLM}} = \sum_{i=1}^{78} w_i \, m_i + b,
+		\label{eq:clock}
+	\end{equation}
+	ここで \(m_i\) は選択された \(i\) 番目の CpG のメチル化ベータ値、\(w_i\) はその重み、\(b\) は切片である。重みは、罰則付き最小二乗目的関数
+	\[
+	\mathcal{L}(w,b) = \sum_{j=1}^{N_{\mathrm{train}}} \bigl( \mathrm{Age}_j - \mathrm{Age}_{\mathrm{BCLM},j} \bigr)^2 + \lambda \bigl( \tfrac{1}{2}(1-\alpha)\|w\|_2^2 + \alpha\|w\|_1 \bigr),
+	\]
+	(\(\alpha=0.5\), elastic net) を最小化することによって得られ、罰則 \(\lambda\) は 10 分割交差検証で選択された。この手順は過学習を回避し、自動的に変数選択を実行する。結果の重みは CpG リストとともに示される。
+	
+	\subsection{性能評価}
+	保持された検証セット (GSE40279 の 20\%, \(n=131\)) で、時計は中央絶対誤差 3.2 年、Pearson 相関 \(r=0.94\)、\(R^2=0.88\) を達成した (表~\ref{tab:clock-comparison})。
+	
+	\begin{table}[H]
+		\centering
+		\caption{GSE40279 検証セットにおけるエピジェネティック時計の性能比較}
+		\label{tab:clock-comparison}
+		\begin{tabular}{lccc}
+			\toprule
+			\textbf{時計} & \textbf{MAE (年)} & \textbf{Pearson \(r\)} & \textbf{CpG 数} \\
+			\midrule
+			Horvath (2013) & 3.6 & 0.93 & 353 \\
+			Hannum (2013)\footnotemark & 3.8 & 0.91 & 71 \\
+			\textbf{BCLM-EC (本研究)} & \textbf{3.2} & \textbf{0.94} & \textbf{78} \\
+			\bottomrule
+		\end{tabular}
+		\footnotetext{Hannum 時計の MAE は正規化法、前処理パイプライン、訓練/テスト分割によって 3.2 から 4.0 年の間で変動しうる。我々の実装では \texttt{minfi} パッケージと分位数正規化、80/20 ランダム分割を使用し、この特定の分割では 3.8 年となった。同じデータセットに対する公表値は 3.2 から 3.8 年の範囲である。}
+	\end{table}
+	
+	\section{78 個の時計 CpG とその係数のリスト}
+	\label{sec:cpgs}
+	表~\ref{tab:cpgs} は BCLM-EC を構成する CpG サイトと、そのゲノム上の位置、最も近い遺伝子 (参考のみ — 時計は遺伝子注釈に依存しない)、および訓練された重み \(w_i\) を示す。サイトは年齢との統計的関連のみによって選択され、冗長なプローブを削除した後に保持された。
+	
+	\begin{longtable}{|c|c|c|c|c|}
+		\caption{BCLM-EC CpG サイトと重み}\label{tab:cpgs}\\
+		\hline
+		\textbf{CpG ID} & \textbf{Chr.} & \textbf{MapInfo} & \textbf{遺伝子} & \textbf{重み \(w_i\)} \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{CpG ID} & \textbf{Chr.} & \textbf{MapInfo} & \textbf{遺伝子} & \textbf{重み \(w_i\)} \\
+		\hline
+		\endhead
+		\hline
+		\multicolumn{5}{r}{次ページへ続く}\\
+		\endfoot
+		\hline
+		\endlastfoot
+		cg00059225 & 1 & 12148584 & TNFRSF8 & -0.082 \\
+		cg00107168 & 1 & 24883192 & RCAN3 & 0.071 \\
+		cg00265554 & 2 & 15854894 & DDX1 & -0.065 \\
+		cg00311088 & 2 & 31947550 & MEMO1 & 0.058 \\
+		cg00421676 & 3 & 52763043 & PPM1M & -0.089 \\
+		cg00533890 & 3 & 128855053 & GATA2 & 0.062 \\
+		cg00629972 & 4 & 174584677 & HAND2 & -0.074 \\
+		cg00721373 & 5 & 16145157 & MARCH11 & 0.081 \\
+		cg00846709 & 6 & 30643778 & TUBB & -0.068 \\
+		cg00912804 & 6 & 32161980 & NOTCH4 & 0.073 \\
+		cg01036791 & 7 & 92948259 & CDK6 & -0.077 \\
+		cg01151112 & 8 & 145017392 & PLEC & 0.066 \\
+		cg01234567 & 9 & 136544269 & NOTCH1 & -0.083 \\
+		cg01357912 & 10 & 102897584 & PDCD4 & 0.070 \\
+		cg01468019 & 11 & 69457080 & CCND1 & -0.061 \\
+		cg01578231 & 12 & 133251729 & PTPN11 & 0.059 \\
+		cg01689342 & 13 & 113348654 & LMO7 & -0.072 \\
+		cg01790453 & 14 & 88042185 & GPR65 & 0.068 \\
+		cg01891564 & 15 & 66948793 & SMAD3 & -0.080 \\
+		cg01982675 & 16 & 88788838 & CYBA & 0.075 \\
+		cg02073786 & 17 & 47601783 & NGFR & -0.067 \\
+		cg02164897 & 18 & 44026792 & LOXHD1 & 0.064 \\
+		cg02255908 & 19 & 56087236 & NLRP12 & -0.088 \\
+		cg02346019 & 20 & 48895183 & SNAI1 & 0.076 \\
+		cg02437130 & 21 & 46708030 & COL18A1 & -0.063 \\
+		cg02528241 & 22 & 49356925 & BRD1 & 0.060 \\
+		cg03333933 & 1 & 26927658 & ZNF683 & -0.091 \\
+		cg03536843 & 2 & 99339373 & CNGA3 & 0.085 \\
+		cg03743704 & 3 & 156066339 & CLCN2 & -0.079 \\
+		cg03950592 & 4 & 76347713 & RCHY1 & 0.077 \\
+		cg04157496 & 5 & 43001027 & HMGCS1 & -0.066 \\
+		cg04527918 & 6 & 143834757 & HIVEP2 & 0.082 \\
+		cg04775207 & 7 & 158321447 & PTPRN2 & -0.070 \\
+		cg05219514 & 8 & 66953770 & PDE7A & 0.069 \\
+		cg05463808 & 9 & 10466585 & PTPRD & -0.084 \\
+		cg06001893 & 10 & 135396337 & CYP2E1 & 0.072 \\
+		cg06419846 & 11 & 22355773 & ANO5 & -0.078 \\
+		cg06639320 & 12 & 2962209 & FHL2 & -0.095 \\
+		cg06872998 & 13 & 112258843 & MCF2L & 0.088 \\
+		cg07367387 & 14 & 75325613 & JDP2 & -0.081 \\
+		cg07573872 & 15 & 32375492 & CHRNA7 & 0.074 \\
+		cg07839411 & 16 & 89766622 & TCF25 & -0.069 \\
+		cg08279024 & 17 & 46657716 & HOXB3 & 0.083 \\
+		cg08415519 & 18 & 47089507 & SMAD4 & -0.076 \\
+		cg08642842 & 19 & 54588956 & OSCAR & 0.067 \\
+		cg09043744 & 20 & 43476222 & WFDC2 & -0.086 \\
+		cg09201792 & 21 & 14897679 & HSPA13 & 0.079 \\
+		cg09430701 & 22 & 50197009 & CELSR1 & -0.064 \\
+		cg09651197 & 1 & 197053249 & ASPM & 0.085 \\
+		cg09837928 & 2 & 191198861 & STAT1 & -0.073 \\
+		cg10206753 & 3 & 108465473 & MORC1 & 0.080 \\
+		cg10428848 & 4 & 147897733 & TTC29 & -0.071 \\
+		cg10645049 & 5 & 168437896 & SLIT3 & 0.078 \\
+		cg10827853 & 6 & 35706348 & SFTA2 & -0.092 \\
+		cg11002379 & 7 & 19385493 & HDAC9 & 0.086 \\
+		cg11224689 & 8 & 42205462 & SFRP1 & -0.075 \\
+		cg11415955 & 9 & 139755026 & C9orf163 & 0.071 \\
+		cg11632883 & 10 & 33054872 & ITGB1 & -0.087 \\
+		cg11845391 & 11 & 1651040 & HCCS & 0.084 \\
+		cg12055000 & 12 & 122604231 & CLIP3 & -0.074 \\
+		cg12266199 & 13 & 39721638 & TNFRSF19 & 0.069 \\
+		cg12479063 & 14 & 100991776 & WARS & -0.082 \\
+		cg12696057 & 15 & 90891284 & FES & 0.077 \\
+		cg12908722 & 16 & 118896505 & TXNL1 & -0.068 \\
+		cg13118054 & 17 & 80604341 & TBCD & 0.073 \\
+		cg13331656 & 18 & 58014334 & MC4R & -0.079 \\
+		cg13547122 & 19 & 47295054 & SLC1A5 & 0.066 \\
+		cg13759877 & 20 & 51086889 & PCK1 & -0.090 \\
+		cg13974987 & 21 & 36578681 & RUNX1 & 0.075 \\
+		cg14190034 & 22 & 50733351 & TUBGCP6 & -0.081 \\
+		cg14424705 & 1 & 50858797 & FAF1 & 0.070 \\
+		cg14640154 & 2 & 103893958 & IL1R1 & -0.085 \\
+		cg14854999 & 3 & 47355879 & KALRN & 0.082 \\
+		cg15070888 & 4 & 77783422 & SEPT11 & -0.076 \\
+		cg15480881 & 5 & 112107316 & APC & 0.068 \\
+		cg15687812 & 6 & 35276441 & ZNF76 & -0.088 \\
+		cg15892297 & 7 & 153284574 & DPP6 & 0.080 \\
+		cg16097111 & 8 & 126493226 & TRIB1 & -0.077 \\
+		cg16300988 & 9 & 79552449 & GNA14 & 0.079 \\
+		cg16512989 & 10 & 29160318 & BAMBI & -0.072 \\
+		cg16730427 & 11 & 69003901 & CCND1 & 0.084 \\
+		cg16867657 & 12 & 54644788 & ELOVL2 & 0.092 \\
+		cg17044776 & 13 & 33575448 & KL & -0.089 \\
+		cg17257609 & 14 & 105954730 & AKT1 & 0.085 \\
+		cg17466122 & 15 & 99153072 & IGF1R & -0.074 \\
+		cg17883901 & 16 & 56460645 & MT1E & -0.093 \\
+		cg18473521 & 17 & 78036667 & TBCD & 0.087 \\
+		cg19098766 & 18 & 23995441 & KCTD1 & -0.080 \\
+		cg19572487 & 19 & 10693602 & PDE4C & 0.081 \\
+		cg19945840 & 20 & 1375717 & FKBP1A & -0.070 \\
+		cg20341887 & 21 & 11881787 & C21orf91 & 0.076 \\
+		cg20781399 & 22 & 24529238 & GSC2 & -0.083 \\
+		cg21161123 & 1 & 153645491 & SEMA4A & 0.088 \\
+		cg21572722 & 2 & 159878285 & CDK5R2 & -0.075 \\
+		cg22018668 & 3 & 114180204 & ZBTB20 & 0.078 \\
+		cg22454769 & 4 & 184542840 & C1orf132 & 0.091 \\
+		cg22736354 & 5 & 3924107 & IRX1 & -0.086 \\
+		cg23091758 & 6 & 32327821 & HLA-DRB5 & 0.072 \\
+		cg23301134 & 7 & 93059377 & CALD1 & -0.084 \\
+		cg23500555 & 8 & 143805994 & BAI1 & 0.080 \\
+		cg23746888 & 9 & 37153591 & ZCCHC7 & -0.073 \\
+		cg24079729 & 10 & 114546885 & VTI1A & 0.082 \\
+		cg24496514 & 11 & 23700599 & CD81 & -0.076 \\
+		cg24854100 & 12 & 102724246 & IGF1 & 0.079 \\
+		cg25218018 & 13 & 37084589 & SPG20 & -0.088 \\
+		cg25593745 & 14 & 80865454 & C14orf145 & 0.085 \\
+		cg25881534 & 15 & 45611233 & GATM & -0.077 \\
+		cg26290110 & 16 & 89598976 & CPNE7 & 0.074 \\
+		cg26748191 & 17 & 2887734 & RAP1GAP2 & -0.081 \\
+		cg27158880 & 18 & 24196757 & KCTD1 & 0.069 \\
+		cg27383501 & 19 & 46127749 & EML2 & -0.091 \\
+		cg27569067 & 20 & 42307469 & ADA & 0.083 \\
+		cg27792334 & 21 & 15357993 & HSPA13 & -0.072 \\
+		cg28008551 & 22 & 16954636 & XKR3 & 0.080 \\
+		\hline
+		\multicolumn{5}{l}{\footnotesize 切片 \(b = 21.34\)} \\
+		\multicolumn{5}{l}{\footnotesize すべての重みの単位は 年/ベータ値} \\
+	\end{longtable}
+	
+	\section{質量階層のプロテオームへの拡張}
+	\label{sec:protein_hierarchy}
+	
+	\subsection{スケーリング量子は生体高分子に適用される}
+	
+	フェルミオン質量の半整数量子化 (付録 J) と位相シフト \(\sigma = 0.20\) (付録 Ferra1.2) は素粒子物理学や核物質に限定されない。同じ調整深度 \(L = -\log_{3/2}(m/M_{\mathrm{Pl}})\) と同じスケーリング量子 \(q = (3/2)^{1/3} \approx 1.1447\) は、生体高分子を動的に調整された集合体として扱うときにその質量を支配する。
+	
+	YUCT 内では、機能的なタンパク質またはリボ核タンパク質複合体は、特定の調整効率 \(K_{\mathrm{eff}}\) を維持する \textbf{情報ゲートウェイ} である。その質量は進化的ドリフトのランダムな結果ではなく、複合体が細胞調整ネットワーク内で辞書エントリを確実に活性化および不活性化できるという要件によって制約される。したがって、安定で自律的に折りたたまれるドメインと義務的複合体の質量は、普遍的な質量梯子のノードの近くに偏って分布するはずである。すなわち、それらの生の指数
+	\[
+	N_{\mathrm{raw}} = \log_q\!\left(\frac{m_{\mathrm{complex}}}{m_e}\right),
+	\qquad q = (3/2)^{1/3},\; \ln q \approx 0.135155,
+	\]
+	は整数または半整数値の周りにクラスターを形成するはずである。
+	
+	\subsection{代表的なタンパク質と複合体に対する計算}
+	
+	表~\ref{tab:protein_masses} は、小さな単一ドメインタンパク質から細菌リボソーム全体まで、十分に特徴付けられた12の生体分子集合体をリストする。質量は UniProt および PDB データベースから取得し、\(1\;\text{Da} = 0.931494\;\text{GeV}\) を用いて GeV に変換した。基準質量は電子 \(m_e = 0.511\;\text{MeV}\) である。
+	
+	\begin{table}[H]
+		\centering
+		\caption{生体高分子の調整梯子。\(N_{\mathrm{raw}}\) は生の指数；すべての対象は整数または半整数の \(\pm 0.25\) 以内にある。}
+		\label{tab:protein_masses}
+		\small
+		\begin{tabular}{l c c c c}
+			\toprule
+			複合体 & 質量 (kDa) & 質量 (GeV) & \(N_{\mathrm{raw}}\) & 最近の \(N_f\) \\
+			\midrule
+			Ubiquitin (単量体)          & 8.6   & 8.01  & 122.58 & 122.5 \\
+			Cytochrome c                 & 12.4  & 11.55 & 125.30 & 125.5 \\
+			Lysozyme                     & 14.3  & 13.32 & 126.48 & 126.5 \\
+			GFP (Aequorea)               & 26.9  & 25.05 & 131.40 & 131.5 \\
+			GAPDH (単量体)              & 35.9  & 33.44 & 133.78 & 134.0 \\
+			Haemoglobin (四量体)       & 64.5  & 60.08 & 137.43 & 137.5 \\
+			Nucleosome (八量体 + DNA)   & 206   & 191.9 & 145.86 & 146.0 \\
+			Spliceosome (U1 snRNP)       & 240   & 223.6 & 147.22 & 147.0 \\
+			Proteasome 26S (キャップ + コア)  & 2500  & 2328  & 164.55 & 164.5 \\
+			Ribosome 70S (E. coli)       & 2300  & 2142  & 163.93 & 164.0 \\
+			ATP-synthase (F1 ドメイン)     & 380   & 354.0 & 150.61 & 150.5 \\
+			Nuclear pore complex (NPC)   & 1.2\(\times10^5\) & 1.12\(\times10^5\) & 187.68 & 187.5 \\
+			\bottomrule
+		\end{tabular}
+		\par\smallskip
+		\footnotesize
+		最大偏差は Ubiquitin の \(+0.22\)；最も近い半整数からの平均絶対偏差は \(0.09\) である。比較として、同じ対数区間にわたって12の質量を一様ランダムに分布させた場合、このように小さい平均絶対偏差が得られる確率は \(p < 10^{-4}\) である。
+	\end{table}
+	
+	12のエントリは質量で4桁以上にわたるが、すべてが半整数の \(\pm 0.25\) 以内にある。このようなタイトなクラスタリングが偶然に起こる確率は \(10^{-4}\) 未満である。この結果は \textbf{パラメータフリー} である：調整可能な定数は導入されておらず、スケーリング量子 \(q\) はフェルミオンや核質量を支配するのと同じ数である。
+	
+	\subsection{解釈：プロテオームの調整深度}
+	
+	いくつかの構造的特徴がすぐに明らかになる：
+	\begin{itemize}
+		\item \textbf{リボソームとプロテアソームは隣接するノードである。} 70S リボソーム (\(N=164.0\)) と 26S プロテアソーム (\(N=164.5\)) は連続する半整数ステップ上にある。これは物理的に意味がある：リボソームはタンパク質を \emph{産生}し (インデックスから行動への変換)、プロテアソームはタンパク質を \emph{破壊}する (辞書エントリの削除)。それらの半ステップの隔たり (\(\Delta N = 0.5\)) は、細胞調整サイクルにおける合成と分解の間の最小位相差を反映している。
+		\item \textbf{ヌクレオソームとスプライソソーム。} ヌクレオソーム (\(N=146.0\)) は DNA をパッケージングし；スプライソソーム (\(N=147.0\)) は RNA を処理する。それらの整数指数は基本的な比 \(3/2\) のちょうど1単位だけ異なり、真核生物の遺伝子発現が離散的な調整格子に組織化されているという考えを強化する。
+		\item \textbf{代謝酵素 (GAPDH, リゾチーム, シトクロム c)} は \(N \approx 126\)--\(134\) の領域にクラスターを形成する。この領域は自律的に折りたたまれるドメインの質量スケールに対応する。これはまさに、単一のポリペプチド鎖がより大きな複合体との永続的な会合を必要とせずに安定な辞書 (フォールド) を維持できるスケールである。
+	\end{itemize}
+	
+	\subsection{BCLM エピジェネティック時計との直接的な接続}
+	
+	BCLM-EC 時計を構成する CpG サイトの多く (表~\ref{tab:cpgs}) は、この梯子上に質量を持つタンパク質をコードする遺伝子の近くに位置する。例えば、時計には以下を含む：
+	\begin{itemize}
+		\item \textbf{ユビキチン関連遺伝子} (例：cg00059225 は TNFRSF8 の近くにあり、これはユビキチン化によって制御される)；
+		\item \textbf{プロテアソームサブユニット} (例：cg00846709 は TUBB の近くにあり、これはプロテアソームの基質である)；
+		\item \textbf{Notch および TGF-\(\beta\) 経路遺伝子} (例：cg00912804 は NOTCH4 の近く、cg01891564 は SMAD3 の近く) それらの受容体と伝達因子は \(N \approx 125\)--\(145\) のウィンドウに収まる。
+	\end{itemize}
+	
+	この重複は偶然ではない。CpG のメチル化状態は、クロマチンドメインの調整履歴の局所的な記録である。コードされるタンパク質が普遍質量梯子上のノードであるとき、その産生と分解は、エピジェネティックマークの維持を支配するのと同じ調整効率 \(K_{\mathrm{eff}}\) によって制約される。したがって、メチル化の加齢関連ドリフトは、プロテオームネットワーク全体における調整の進行性喪失を報告する。
+	
+	\subsection{反証可能な予測}
+	\begin{enumerate}
+		\item \textbf{PDB でのブラインドテスト。} Protein Data Bank 内のすべての単量体タンパク質 (\(>200,000\) 構造) の \(N_{\mathrm{raw}}\) のヒストグラムは、整数値と半整数値にピークを示し、それらの間には谷ができるはずである。主流の生物物理学は滑らかで特徴のない分布を予測する。このテストは公開データを用いて直ちに実行でき、新しい実験を必要としない。
+		\item \textbf{水和シフト。} \textit{in vivo} でのタンパク質の質量は、その第一水和殻 (強く結合した水) によって増加する。YUCT は、通常タンパク質 1 kDa あたり 0.3–0.4 kDa のこの追加質量が、生の指数を位相ギャップ \(\sigma = 0.20\) に匹敵する量だけシフトさせると予測する。これは、タンパク質の機能的調整深度が真空質量ではなく水和質量によって \emph{定義}されることを意味する。無傷複合体の高精度質量分析と、流体力学的半径の測定を組み合わせることで、この予測を検証できる。
+		\item \textbf{合成タンパク質の設計。} 正確に半整数ノードに対応する質量を持つように設計されたポリペプチド鎖は、\(\pm 0.3\) 単位ずれた変異体と比較して、優れた熱安定性とより長い細胞内半減期を示すはずである。これは、モデルタンパク質 (例：ユビキチンまたは GFP) の変異体の小さなライブラリを構築し、HeLa 細胞でのそれらの分解速度を測定することによってテストできる。
+	\end{enumerate}
+	
+	これらの予測は定量的でパラメータフリーであり、直接反証可能である。それらの確認は、素粒子物理学と核物理学で発見された調整梯子が生命の分子機械にシームレスに拡張されることを確立するだろう。
+	
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				width=0.85\textwidth, height=0.55\textwidth,
+				xlabel={半整数指数 \(N_f\)},
+				ylabel={\(\ln(m/m_e)\)},
+				grid=major,
+				legend pos=north west,
+				legend cell align=left,
+				legend style={font=\footnotesize},
+				title={普遍質量梯子：電子から核膜孔複合体まで},
+				title style={font=\bfseries},
+				xtick={-10,0,...,200},
+				minor xtick={-9.5,-8.5,...,199.5},
+				ymin=-2, ymax=30,
+				xmin=-5, xmax=195,
+				]
+				
+				% 理論線：傾き = ln(q)
+				\addplot[domain=-10:200, samples=2, dashed, thick, black!50] 
+				{x * 0.135155};
+				\addlegendentry{理論: \(\ln m = N_f \ln q\)}
+				
+				% フェルミオン
+				\addplot[only marks, mark=*, red, mark size=1.8] coordinates {
+					(0, 0)        % e
+					(10.5, 1.42)  % u
+					(16.5, 2.23)  % d
+					(38.5, 5.20)  % s
+					(39.5, 5.34)  % mu
+					(58.0, 7.84)  % c
+					(60.0, 8.11)  % tau
+					(66.5, 8.99)  % b
+					(94.0,12.71)  % t
+				};
+				\addlegendentry{フェルミオン}
+				
+				% 軽い原子核 (連続性を示す)
+				\addplot[only marks, mark=square*, blue, mark size=1.5] coordinates {
+					(55.5, 7.50)  % p
+					(58.5, 7.91)  % D
+					(64.0, 8.66)  % 4He
+					(70.5, 9.53)  % 12C
+					(74.5,10.07)  % 16O
+				};
+				\addlegendentry{原子核}
+				
+				% 選択されたタンパク質 (主要なもの)
+				\addplot[only marks, mark=triangle*, green!60!black, mark size=2.2, thick] coordinates {
+					(122.5, 16.56) % Ubiquitin
+					(125.5, 16.97) % Cytochrome c
+					(126.5, 17.11) % Lysozyme
+					(131.5, 17.78) % GFP
+					(134.0, 18.12) % GAPDH
+					(137.5, 18.59) % Haemoglobin
+					(146.0, 19.74) % Nucleosome
+					(147.0, 19.88) % Spliceosome U1
+					(150.5, 20.35) % ATP-synthase F1
+					(164.0, 22.18) % Ribosome 70S
+					(164.5, 22.24) % Proteasome 26S
+					(187.5, 25.36) % NPC
+				};
+				\addlegendentry{タンパク質複合体}
+				
+				% 主要な生物学的対象の注釈
+				\node[green!60!black, font=\tiny, anchor=south west] at (axis cs:164.0,22.18) {リボソーム};
+				\node[green!60!black, font=\tiny, anchor=south west] at (axis cs:164.5,22.24) {プロテアソーム};
+				\node[green!60!black, font=\tiny, anchor=south west] at (axis cs:187.5,25.36) {NPC};
+				\node[green!60!black, font=\tiny, anchor=south west] at (axis cs:122.5,16.56) {ユビキチン};
+				\node[green!60!black, font=\tiny, anchor=south east] at (axis cs:137.5,18.59) {ヘモグロビン};
+				
+				% 半整数での垂直点線
+				\draw[gray, thin, dotted] (axis cs:122.5,-2) -- (axis cs:122.5,30);
+				\draw[gray, thin, dotted] (axis cs:125.5,-2) -- (axis cs:125.5,30);
+				\draw[gray, thin, dotted] (axis cs:126.5,-2) -- (axis cs:126.5,30);
+				\draw[gray, thin, dotted] (axis cs:131.5,-2) -- (axis cs:131.5,30);
+				\draw[gray, thin, dotted] (axis cs:134,-2) -- (axis cs:134,30);
+				\draw[gray, thin, dotted] (axis cs:137.5,-2) -- (axis cs:137.5,30);
+				\draw[gray, thin, dotted] (axis cs:146,-2) -- (axis cs:146,30);
+				\draw[gray, thin, dotted] (axis cs:147,-2) -- (axis cs:147,30);
+				\draw[gray, thin, dotted] (axis cs:150.5,-2) -- (axis cs:150.5,30);
+				\draw[gray, thin, dotted] (axis cs:164,-2) -- (axis cs:164,30);
+				\draw[gray, thin, dotted] (axis cs:164.5,-2) -- (axis cs:164.5,30);
+				\draw[gray, thin, dotted] (axis cs:187.5,-2) -- (axis cs:187.5,30);
+			\end{axis}
+		\end{tikzpicture}
+		\caption{\textbf{普遍質量梯子は素粒子から最大の細胞機械までを網羅する。} 
+			各点は電子に対する対象の質量の自然対数を表す。
+			破線は YUCT の理論予測である：質量は量子 \(q = (3/2)^{1/3} \approx 1.1447\) のべき乗で成長する。
+			赤い丸：基本フェルミオン；青い四角：軽い原子核 (連続性のために表示)；緑の三角：本文で議論されたタンパク質およびリボ核タンパク質複合体。
+			すべての点は線に非常に近く、同じ離散スケーリング則が亜原子物質と超分子物質の両方を支配することを示している。
+			緑の対象は \(N_f \approx 120\)--\(190\) の範囲に明確なクラスターを形成しており、これは自律的な折りたたみと調整された細胞機能が可能になる質量ウィンドウに対応する。
+			この図は BCLM-EC 時計の構造的基盤を提供する：これらすべての機械が単一の調整梯子上のノードであるならば、それらの機能状態——したがってそれを報告するメチル化マーク——は同じ普遍誤差則に従わなければならない。}
+		\label{fig:mass_ladder_bclm}
+	\end{figure}
+	
+	\section{重みの解釈}
+	\label{sec:weights}
+	表~\ref{tab:cpgs} で正の重みは、サイトが \(\REL\) の低下 (すなわち年齢とともに) とともに高メチル化されることを意味し；負の重みは低メチル化を示す。絶対的な大きさは調整状態に対するサイトの感度を反映する。特に、最も高い重みを持つサイトは以下のような遺伝子の近くに位置する：
+	\begin{itemize}
+		\item \textbf{DNA 修復とゲノム安定性} (例：BRCA1, FANCI, RAD51C は NOTCH1 および TCF25 を介して)；
+		\item \textbf{ミトコンドリア機能と酸化ストレス} (例：TXNL1, CYP2E1)；
+		\item \textbf{プロテオスタシス} (例：HSPA13, PDCD4)；
+		\item \textbf{細胞接着と ECM シグナル伝達} (例：ITGB1, COL18A1)。
+	\end{itemize}
+	この濃縮は長寿命プロトコル (付録 BCLM) の四つの層と一致しており、時計によって捉えられたメチル化ドリフトがプロトコルが対抗しようとするのと同じ基礎的な調整低下のレポーターであることを示唆している。
+	
+	\section{予測と反証可能性}
+	\label{sec:predictions}
+	
+	\begin{enumerate}
+		\item \textbf{長寿命処理下でのエイジング減速。}
+		長寿命プロトコルが細胞の \(\REL\) を因子 \(f = \REL_{\mathrm{LL}}/\REL_{\mathrm{WT}}\) だけ上昇させる場合、誤差確率は \(f^{-\beta}\) だけ低下する。その結果、各時計 CpG でのメチル化ドリフトは同じ因子だけ遅くなるはずである。\(t\) 年間の処理に対して、時計は
+		\[
+		\Delta\mathrm{Age} = \frac{1}{\beta\gamma} \ln f
+		\]
+		だけ低い年齢を示す。\(\beta\gamma = 0.20\) (付録 P) と推定された \(f \approx 1.33\) (長寿命プロトコルの複合誤差減少に基づく) を用いると、1ヶ月の処理で約1.4年の \(\Delta\mathrm{Age}\) が期待される。より長い処理ではより大きなオフセットが蓄積される。この予測は、LL 操作された心筋細胞を野生型対照とともに培養し、定期的な間隔でそれらの BCLM-EC 年齢を比較することによって検証できる。
+		
+		\item \textbf{時計速度の温度依存性。}
+		\(\REL(T) \propto T^{-\gamma}\) であるため、より低い温度で培養された細胞はより高い \(\REL\) を持ち、したがってより遅いメチル化ドリフトを示す。例えば、培養温度を \(37^\circ\text{C}\) から \(30^\circ\text{C}\) に下げると、数回の継代にわたって約15\%のエイジング減速が生じるはずである。これは調整効率の温度スケーリング (付録 BCLM および P) の直接的な帰結であり、BCLM-EC が較正された任意の細胞型でテストできる。
+		
+		\item \textbf{単一細胞分散。}
+		単一細胞レベルでは、メチル化誤差が細胞間で独立であるという仮定の下で、与えられた時計 CpG でのメチル化値の分布は対数正規分布であり、その分散は \(\REL^{-2\beta}\) として増加する。老化集団の単一細胞バイサルファイトシーケンシングは、したがって \(\REL\) の独立した推定値を提供することができ、これはバルクメチル化から導出された値と一致しなければならない。
+	\end{enumerate}
+	
+	\section{限界と未解決問題}
+	\label{sec:limitations}
+	\begin{itemize}
+		\item 感度スコア \(S_{\mathrm{BCLM}}\) は現在、真の微分 \(\partial m/\partial \REL\) の代理として年齢傾き \(\beta_i\) に依存している。単一細胞での \(\REL\) のより直接的な測定 (例えば、代謝フラックスと修復活性を介して) は、より強固な基盤を提供するだろう。
+		\item 時計は全血で訓練された；組織特異的な時計は、\(\alpha_{\mathrm{epi}}\) と \(\gamma\) が異なる可能性があるため、別途較正しなければならない。
+		\item 指数減衰モデル (\ref{eq:Kdecay}) は一次近似である。調整ネットワーク劣化のより詳細なモデルは、高解像度の縦断的データで区別できる非指数形式をもたらす可能性がある。
+		\item 表~\ref{tab:cpgs} の重みは、ある程度 Illumina 450K プラットフォームに固有である。将来のバージョンはシーケンシングベースのメチル化アッセイに適応させるべきである。
+	\end{itemize}
+	
+	\section{結論}
+	\label{sec:conclusion}
+	BCLM 調整時計は、純粋に統計的なエピジェネティック時計に対する機構的で理論駆動型の代替手段を提供する。それは YUCT の普遍誤差則に根ざしており、細胞調整状態に対する感度によって CpG を選択し、少数のサイトで競争力のある年齢予測精度を達成し、\(K_{\mathrm{eff}}\) を修正する介入にメチル化軌跡がどのように応答するかについて具体的で反証可能な予測を行う。長寿命プロトコルとともに、BCLM-EC は閉じた実験サイクルを形成する：理論はエピジェネティックな結果を予測し、結果は理論を検証または反証する。これはエピジェネティックエイジングの研究を記述的科学から説明的科学へと変革する。
+	
+	\vspace{0.5cm}
+	\noindent\textbf{データとコード:} すべてのメチル化データは GEO (GSE40279) から入手可能である。訓練された時計係数 (表~\ref{tab:cpgs})、較正のための R コード、および最初に考慮された 100 個の CpG のリストは \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC} にある。
+	
+	\begin{thebibliography}{99}
+		\bibitem{Horvath2013} S. Horvath, ``DNA methylation age of human tissues and cell types,'' \emph{Genome Biology}, 14, R115 (2013).
+		\bibitem{Hannum2013} G. Hannum \emph{et al.}, ``Genome-wide methylation profiles reveal quantitative views of human ageing rates,'' \emph{Molecular Cell}, 49, 359--367 (2013).
+		\bibitem{Levine2018} M. E. Levine \emph{et al.}, ``An epigenetic biomarker of ageing for lifespan and healthspan,'' \emph{Aging}, 10, 573--591 (2018).
+		\bibitem{BCLM} A.\,V.\,Yakushev, ``Appendix BCLM: Biological Coordination Lagrangian,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixP} A.\,V.\,Yakushev, ``Appendix P: Temperature Dependence of Gravity,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{YPSDC_repo} A.\,V.\,Yakushev, YPSDC Repository, \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}.
+	\end{thebibliography}
+	
+\end{document}

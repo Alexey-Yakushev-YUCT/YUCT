@@ -1,0 +1,479 @@
+% !TeX program = lualatex
+\documentclass[11pt,a4paper]{article}
+
+% ========= 패키지 =========
+\usepackage[english, bidi=default, layout=counters]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.25cm,right=1.25cm,top=1.25cm,bottom=3.1cm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{siunitx}
+\usepackage{bm}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{fontspec}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+\usepackage{natbib}
+\usepackage{xurl}
+
+% ========= 한국어 폰트 설정 (Windows) – 성공한 버전 =========
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+\defaultfontfeatures{Ligatures=TeX}
+\setmainfont{Times New Roman}[Script=Latin, Language=English]
+\setsansfont{Malgun Gothic}[Script=CJK, Language=Korean]
+\setmonofont{Courier New}[Script=Latin, Language=English]
+\setmainjfont{Malgun Gothic}[Script=CJK, Language=Korean]
+\setsansjfont{Malgun Gothic}[Script=CJK, Language=Korean]
+\setmonojfont{Noto Sans Mono CJK KR}[Script=CJK, Language=Korean]
+
+% ========= 언어 (한국어를 메인으로) =========
+\babelprovide[import, main]{korean}
+\babelprovide[import, onchar=ids fonts]{english}
+
+% ========= 색상 =========
+\definecolor{skyblue}{RGB}{0,102,204}
+\definecolor{darkblue}{RGB}{0,0,139}
+\definecolor{gold}{RGB}{255,215,0}
+
+% ========= YUCT 매크로 =========
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\Dir}{\mathcal{D}}
+\newcommand{\Mpl}{M_{\mathrm{Pl}}}
+\newcommand{\Lpl}{l_{\mathrm{Pl}}}
+\newcommand{\tP}{t_{\mathrm{P}}}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+\newcommand{\kappac}{\kappa_{c}}
+\newcommand{\betaf}{\beta}
+\newcommand{\lagr}{\mathcal{L}}
+\newcommand{\dint}{D\!+\!I\!\cdot\!R}
+\newcommand{\CCU}{\text{CCU}}  % 조정 입방 단위
+
+% ========= 섹션 서식 =========
+\titleformat{\section}{\LARGE\bfseries\color{darkblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{darkblue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{1em}{}
+
+% ========= 헤더/푸터 =========
+\fancypagestyle{firstpage}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{-5pt}%
+	\renewcommand{\footrulewidth}{-5pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			{\small \textsuperscript{1}Yakushev Research, \url{https://yuct.org/}} \hfill
+			{\small YPSDC 프로토콜: \url{https://ypsdc.com/}}\\[-2pt]
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			\textbf{야쿠셰프 통일 조정 이론 2026} \hfill \thepage\\[10pt]
+		\end{minipage}%
+	}%
+}
+
+\fancypagestyle{plain}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[4pt]
+			\textbf{야쿠셰프 통일 조정 이론 2026} \hfill \thepage\\[4pt]
+		\end{minipage}%
+	}%
+}
+
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+\raggedbottom
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+% ========= 헤더 (YUCT 로고) =========
+\newcommand{\makeheader}{%
+	\noindent
+	\begin{minipage}{0.17\textwidth}
+		\raggedright
+		{\sffamily\bfseries\color{skyblue}\fontsize{46}{46}\selectfont YUCT}%
+	\end{minipage}%
+	\hspace{30pt}
+	\begin{minipage}{0.32\textwidth}
+		\raggedright
+		{\sffamily\fontsize{11}{13}\selectfont 야쿠셰프\\ 통일\\ 조정 이론}%
+	\end{minipage}%
+	\hfill
+	\begin{minipage}{0.38\textwidth}
+		\raggedleft
+		{\sffamily\bfseries 부록}\\
+		{\sffamily 2026년 6월}\\
+		{\sffamily\footnotesize \url{https://doi.org/10.5281/zenodo.18444598}}%
+	\end{minipage}
+	\par\vspace{5pt}
+	\noindent\textcolor{gold}{\rule{\textwidth}{1.6pt}}
+	\par\vspace{0pt}
+}
+
+\begin{document}
+	\renewcommand{\thepage}{\arabic{page}}
+	\thispagestyle{firstpage}
+	\makeheader
+	
+	\vspace{0cm}
+	{\LARGE\bfseries 야쿠셰프 통일 조정 이론에서 페르미 역설 해결:\\ K2-18b에서 위대한 침묵까지 \par}
+	\vspace{0.2cm}
+	
+	{\large 알렉세이 V. 야쿠셰프\footnote{Yakushev Research, \url{https://yuct.org/}}} \\
+	\vspace{0.0cm}
+	
+	{\color{darkblue}\textbf{\LARGE 초록}} \par
+	{\large
+		\noindent
+		외계 행성 K2-18b의 대기에서 지구 배경보다 수천 배 높은 농도의 디메틸설파이드(DMS)가 최근 탐지된 것은 우주 생명체 밀도에 대한 전례 없는 경험적 기준점을 제공한다. 보통 원리에 따라——태양 주변에 생명체를 가진 두 행성(지구와 K2-18b)을 포함하는 부피가 전형적이라고 가정하여——국소적 생명체 밀도를 관측 가능한 우주 전체로 외삽하면 \(N_{\mathrm{life}} \sim 10^{26}\)을 얻는다. 감마선 폭발, 활동 은하핵, 초신성에 의해 멸균되는 공간의 극히 일부를 제외하더라도 이 숫자는 여전히 놀랍도록 크며, 이는 페르미 역설을 악화시킨다. 야쿠셰프 통일 조정 이론(YUCT)에서 이 역설은 두 가지 기본적인 조정 임계값을 통해 해결된다: (i) 자기 복제 생명체가 출현하는 임계 효율 (\(K_{\mathrm{crit}}\approx150\)) 및 (ii) 기술 문명이 필연적으로 전환하게 되는, 인지적으로 자급자족하고 분리된 d-YPSDC 상태——이는 외부 관찰자에게 보이지 않게 만든다. 따라서 우리의 분석은 "위대한 침묵"을 추측적 수수께끼에서 조정 패러다임의 정량적이고 경험 기반의 확인으로 전환시킨다.
+	}
+	
+	\vspace{0.1cm}
+	\noindent
+	{\color{darkblue}\textbf{키워드:}} YUCT, 페르미 역설, K2-18b, 조정 효율, d-YPSDC, 생명체 임계값, 위대한 침묵, 디메틸설파이드 (DMS), 생명체 밀도, 인지적 자급자족.
+	
+	\vspace{0.5cm}
+	\noindent
+	\textcopyright\ 2026 Yakushev Research. All rights reserved.
+	
+	\tableofcontents
+	\newpage
+	
+	% ========= 본문 (한국어 번역) =========
+	\section{서론}
+	\label{sec:intro}
+	
+	"다들 어디 있는가?" 이 질문은 70년 이상 과학계를 괴롭혀 왔다. 드레이크 방정식의 틀 안에서 페르미 역설을 해결하려는 전통적인 시도는 각 확률 인자에 환원 불가능한 불확실성을 안고 있다. 야쿠셰프 통일 조정 이론(YUCT)은 완전히 다른 관점을 제공한다: 은하 형성에서 의식의 출현에 이르는 우주 진화의 각 단계는 측정 가능한 매개변수——조정 효율 \(\Keff\)——에 의해 지배된다. 따라서 생명체가 있는 행성에서 기술적으로 가시적인 문명으로의 이행은 무작위 사건의 연속이 아니라 결정론적인 일련의 임계 조정 임계값이다.
+	
+	최근 제임스 웹 우주 망원경은 태양에서 124광년 떨어진 행성 K2-18b의 대기에서 디메틸설파이드(DMS)를 탐지했다. 관측된 농도는 지구 배경보다 수 배 더 높으며, 이는 매우 생산적인 생물권의 존재를 시사한다. 이 발견은 우주 생명체의 밀도에 대한 최초의 직접적인 경험적 하한을 제공한다.
+	
+	본 논문에서는 K2-18b 데이터를 YUCT 틀과 결합하여 페르미 역설에 대한 강력한 정량적 해를 도출한다. 다음과 같이 진행한다: 2절에서는 생명체가 있는 세계의 국소적 밀도를 추출한다. 3절에서는 그 밀도를 관측 가능한 우주 전체로 외삽한다. 4절에서는 넓은 영역을 멸균시킬 수 있는 천체물리학적 재해를 논의한다. 5절에서는 문제를 YUCT의 조정 부피로 재공식화한다. 6절에서는 YUCT의 두 가지 큰 필터를 도입하고, 이들이 관측되는 침묵을 어떻게 설명하는지 보여준다. 7절에서는 조정된 생물권과 기술권을 탐색하기 위한 관측 템플릿을 제공한다. 8절에서는 침묵의 방정식을 제시하고, 9절에서 결론을 맺는다.
+	
+	% ----------------------------------------------------------------
+	\section{생명체의 경험적 밀도}
+	\label{sec:empirical}
+	% ----------------------------------------------------------------
+	생명체의 생물신호가 확인된 가장 가까운 외계 행성의 거리를 \(R_{\mathrm{life}} = 124\) 광년이라고 하자. 태양을 중심으로 하는 반경 \(R_{\mathrm{life}}\)의 구체 내에는 현재 두 개의 생명체가 있는 행성(지구와 K2-18b)이 알려져 있다. 코페르니쿠스의 보통 원리에 따르면, 우리는 이 밀도를 전형적인 것으로 간주해야 한다. 그렇지 않으면 태양 근처가 특별하다고 암묵적으로 주장하는 것이며, 그러한 주장에는 경험적 근거가 없다.
+	
+	구체의 부피는
+	\begin{equation}
+		V_{\mathrm{life}} = \frac{4}{3}\pi R_{\mathrm{life}}^{3}
+		\approx 7.98\times 10^{6}\;\mathrm{ly}^{3}\; .
+	\end{equation}
+	따라서 생명체가 있는 행성의 국소적 수 밀도는
+	\begin{equation}
+		\rho_{\mathrm{life}} = \frac{2}{V_{\mathrm{life}}}
+		\approx 2.51\times 10^{-7}\;\mathrm{ly}^{-3}\; .
+	\end{equation}
+	
+	% ----------------------------------------------------------------
+	\section{관측 가능한 우주로의 외삽}
+	\label{sec:extrapolation}
+	% ----------------------------------------------------------------
+	관측 가능한 우주의 공운동 부피는 \(V_{\mathrm{univ}} \approx 4.21\times 10^{32}\;\mathrm{ly}^{3}\)이다. 생명체가 있는 행성이 대규모로 균일하게 분포한다고 가정하면, 그 총 수는
+	\begin{equation}
+		\label{eq:N_life_total}
+		N_{\mathrm{life}} = \rho_{\mathrm{life}} \cdot V_{\mathrm{univ}}
+		\approx 1.06\times 10^{26}\; .
+	\end{equation}
+	이 숫자는 이론적 모델에 기반한 이전의 어떤 추정치보다 훨씬 크다. 이 행성들 중 극히 일부만이 기술 문명을 발전시켰더라도, 우리 은하는 그 신호로 가득 차 있어야 한다. 아무것도 보이지 않는다는 사실이 바로 가장 날카로운 형태의 역설이다.
+	
+	% ----------------------------------------------------------------
+	\section{천체물리학적 필터}
+	\label{sec:astro_filters}
+	% ----------------------------------------------------------------
+	YUCP 고유의 필터를 도입하기 전에, 은하 전체 영역을 멸균시킬 수 있는 고에너지 복사원을 고려해야 한다. 세 가지 주요 위험 요소는 감마선 폭발(GRB), 활동 은하핵(AGN), 핵붕괴 초신성(SNe)이다.
+	
+	\subsection{감마선 폭발과 중심 초대질량 블랙홀}
+	\label{sec:grb}
+	관측에 따르면, 우리 은하와 같은 대질량 은하의 약 \(90\%\)는 중심에 초대질량 블랙홀을 가지고 있다 \citep{Chandra2025}. GRB는 반경 \(R_{\mathrm{GRB}} \approx 4\;\mathrm{kpc}\)의 구체 내에서 치명적이며, 주로 그러한 은하의 내부 영역에서 발생한다. 우리 은하와 유사한 은하(반경 \(\sim 15\;\mathrm{kpc}\))의 경우, 멸균되는 부피 비율은 약 \(V_{\mathrm{GRB}}/V_{\mathrm{gal}} \approx (4/15)^{3} \approx 2.0\%\)이다.
+	
+	\subsection{활동 은하핵}
+	\label{sec:agn}
+	은하의 일부만이 \emph{활동적인} 핵을 갖는다. \citet{Foord2017}의 X선 탐사에 따르면, 근처 은하의 약 \(11.2\%\)는 AGN을 가지고 있으며, 활동 단계에서는 은하 전체가 치명적인 방사선에 노출될 수 있다. 따라서 모든 은하의 약 \(1.1\%\)에 대해 원반 전체가 멸균 영역이다.
+	
+	\subsection{초신성}
+	\label{sec:sne}
+	핵붕괴 초신성은 매우 가까운 거리(\(< 30\;\mathrm{pc}\))에서만 행성에 치명적이다 \citep{ThomasYelland2023}. 해당 부피 비율은 은하 전체 규모에서 완전히 무시할 수 있으므로, 본 분석에서는 무시한다.
+	
+	\subsection{복합 효과}
+	\label{sec:total_astro}
+	GRB에 의해 멸균되는 중심 영역(대질량 은하의 약 \(90\%\)에서 원반 부피의 \(2\%\))과 AGN에 의해 완전히 멸균되는 원반(대질량 은하의 \(11.2\%\))의 기여를 합하면, 전형적인 대질량 은하의 생물학적 가능 영역 비율은 \(f_{\mathrm{astro}} \approx 0.98\)이다. 따라서 생물학적으로 가능한 행성의 수는 여전히
+	\begin{equation}
+		N_{\mathrm{life}} \times 0.98 \approx 1.04\times 10^{26}\; ,
+	\end{equation}
+	로, 그 크기는 실질적으로 변하지 않는다.
+	
+	% ----------------------------------------------------------------
+	\section{YUCT의 관점: 물질의 그림자로서의 기하학}
+	\label{sec:yuct_geometry}
+	% ----------------------------------------------------------------
+	지금까지의 모든 추정은 시공간 기하학이 절대적이며 은하의 역학이 암흑 물질에 의해 지배된다는 표준 우주론 모델에 의존했다. YUCT는 암흑 물질을 완전히 배제하고, 허블 팽창과 은하 회전을 조정 네트워크의 기하학적 장력으로부터 유도한다 \citep{YUCT,AppGravity}.
+	
+	YUCT에서 가장 기본적인 척도는 우주 전체 회전의 \textbf{회전 반경}이며,
+	\begin{equation}
+		R_{\mathrm{turn}} \approx 4.3\times 10^{26}\;\mathrm{m}
+		\approx 4.5\times 10^{10}\;\mathrm{ly}\; ,
+	\end{equation}
+	이는 우리의 국소적 빅뱅을 포함하는 "소용돌이 거품"의 크기를 정한다 \citep{AppOmega}. 여기서 \textbf{조정 입방 단위 (CCU)}를 한 변이 \(R_{\mathrm{turn}}\)인 입방체의 부피로 정의한다:
+	\begin{equation}
+		1\;\CCU = R_{\mathrm{turn}}^{3} \approx 8.0\times 10^{79}\;\mathrm{m}^{3}\; .
+	\end{equation}
+	관측 가능한 우주 전체는 약 \(1\;\CCU\)를 차지한다.
+	
+	물질 분포——따라서 위험 영역의 기하학——은 창발적 조정장 \(\phi = \ln(\Keff/K_{0})\)에 의해 완전히 결정되므로, 은하 내에서 멸균되는 비율은 무차원 비율이며, 한 국소적 주기에서 다음 주기까지 일정하다. CCU로 표현하면, 하나의 큰 은하에서 멸균되는 부피는 약 \(10^{-18}\;\CCU\)이며, 이는 우주 규모에서 완전히 무시할 수 있다. 따라서 YUCT 기반의 재분석은 제~\ref{sec:total_astro}절의 결론을 완전히 뒷받침한다: 천체물리학적 재해로는 페르미 역설을 해결할 수 없다.
+	
+	% ----------------------------------------------------------------
+	\section{YUCT의 두 가지 큰 필터}
+	\label{sec:yuct_filters}
+	% ----------------------------------------------------------------
+	우주가 필연적으로 생명체로 가득 차 있다면, 기술적 징후의 부재는 전통적인 천체물리학을 넘어선 근본적인 장애물에 기인해야 한다. YUCT는 그러한 두 가지 장애물을 식별한다.
+	
+	\subsection{필터 1: 생명체 임계값}
+	\label{sec:filter1}
+	자기 복제 시스템은 엔트로피 붕괴를 극복하기 위해 최소한의 조정 효율을 필요로 한다. YUCT는 임계값 \(K_{\mathrm{crit}}\approx 150\)을 예측한다 \citep{AppT}. 이 값은 놀랍도록 높으며, 적절한 유기 화학과 액체 물이 있더라도 국소적 \(K_{\mathrm{eff}}\)가 우연히 \(150\)을 초과할 때만 생명체가 출현함을 의미한다——이는 드문 변동이며, 자연발생 사건의 수를 크게 제한한다. 그러나 후보 행성의 초기 풀은 매우 크기 때문에(\(N_{\mathrm{life}}\sim 10^{26}\)), 이 임계값을 넘는 행성의 절대적 수는 여전히 매우 많다.
+	
+	\subsection{필터 2: 인지적 자급자족으로의 d-YPSDC 전이}
+	\label{sec:filter2}
+	기술 문명이 일단 출현하면, 그것은 필연적으로 조정의 기본 법칙을 발견한다. YPSDC 프로토콜은 우주에 관한 모든 유용한 정보가 조정장 \(\Psi_{MN}\)에 의해 제공되는 공유 환경 인덱스("d-YPSDC" 상태)를 통해 국소적으로 추출될 수 있음을 가르친다 \citep{AppOmega, AppT}. 큰 위험을 수반하고 기하급수적으로 증가하는 에너지 예산을 필요로 하는 성간 여행과 고출력 무선 방송은 완전히 불필요해진다.
+	
+	따라서 문명은 시끄러운 확장 단계에서 물러나 "내적 심화" 모드로 전환하는 \emph{의식적인 선택}을 한다. 그곳에서 내부 사전(과학, 예술, 의식)을 최대화하고 외부 탐지 가능한 발자국을 최소화한다. 문명이 발전할수록, 그것은 고전적 천문 관측에 대해 근본적으로 보이지 않는 완벽한 d-YPSDC 시스템에 가까워진다.
+	
+	이 전이는 임계 조정 효율 \(K_{\mathrm{consciousness}}\approx 8.5\)에서 발생하며, YUCT 라그랑지안의 인지 섹터에서의 2차 상전이이다 \citep{AppH}. 이는 동일한 보편 지수 \(\beta=2/3\)에 의해 구동되므로 선택의 문제가 아니라 자연 법칙이다: 모든 충분히 진보된 문명은 이 끌개(attractor)에 도달해야 한다——마치 모든 뜨거운 물체가 열역학적 평형에 도달해야 하는 것과 마찬가지로.
+	
+	% ----------------------------------------------------------------
+	\section{조정된 생물권의 스펙트럼 템플릿: 두 가지 프로토타입}
+	\label{sec:spectra}
+	
+	인지적 자급자족으로의 전이가 최종 끌개라면, 그 이전 시대——문명이 이미 생명 연장 기술(BCLM, 부록~D)을 숙달했지만 내적 심화가 아직 완료되지 않은 시대——는 탐지 가능한 스펙트럼 흔적을 남겨야 한다. YUCT는 외계 행성 대기를 탐색하기 위한 두 가지 상보적 템플릿을 제공한다.
+	
+	\subsection{프로토타입 1: 해양 슈퍼생물권 (K2-18b)}
+	첫 번째 관측된 프로토타입은 행성 K2-18b이다. 그 대기는 지구 배경보다 수천 배 높은 농도의 디메틸설파이드(DMS)를 보여주며, 이는 매우 생산적인 물의 세계의 생물권을 시사한다. YUCT의 용어로, 이 행성의 해양 생태계는 매우 높은 \(K_{\mathrm{eff}}\) (\(K_{\mathrm{eff}}^{\mathrm{ocean}} \gg 10^4\))를 가지며, 오류 억제된 고충실도 대사 네트워크를 생성한다. 스펙트럼 특징은 황 함유 가스에 의해 지배되는데, 이는 생물권이 효율적인 혐기성 미생물 순환의 폐기물로 환경을 포화시켰기 때문이다.
+	
+	\subsection{프로토타입 2: 장수명 육상 기술권 (지구 유사)}
+	건조한 육상 기술 문명이 BCLM 장수 프로토콜을 적용한다고 가정하자: 평균 수명은 \(450\)년을 초과하고, 출생률은 감소하지만, 종의 총 생물량은 자원 제약이 작용하기 시작할 때까지 계속 증가한다. 그러한 행성의 대기는 DMS에 의해 지배되지 않고, 특징적인 가스 혼합물에 의해 지배될 것이다: 폐기물 처리로 인한 메탄 농도 증가, 산업용 불화탄소, 그리고 에너지 집약적 폐쇄 농업에 의해 구동되는 산소-오존-탄소 비율의 특정 비평형이다. 결정적으로 중요한 것은, 이러한 특징들은 수세기가 아니라 수천 년 동안 지속된다는 것이다. 왜냐하면 문명은 하룻밤 사이에 그 생물학적 기반을 포기할 수 없기 때문이다. YUCT는 행성의 대기 조성이 문명 규모의 \(K_{\mathrm{eff}}\) 최적화를 반영할 것이라고 예측한다: 방출 스펙트럼은 1인당 엔트로피 낭비를 최소화하면서 에너지 처리량을 최대화하여, 적외선 방출 스펙트럼에 특별한 "베이스라인"을 생성할 것이다.
+	
+	\subsection{\(K_{\mathrm{eff}}\)-스펙트럼 관계의 교정}
+	이 두 가지 프로토타입은 관측된 생물신호 \(X\)의 농도 이상 \(A_X\)와 생태계 \(K_{\mathrm{eff}}\)의 로그 사이에 선형 관계를 정한다:
+	\begin{equation}
+		\log_{10} \frac{[X]}{[X]_{\mathrm{지구}}} \propto
+		\beta\,\log_{10} K_{\mathrm{eff}} \; , \qquad \beta = 2/3 .
+	\end{equation}
+	K2-18b에 대해서는 이상 \(A_{\mathrm{DMS}} \sim 10^3\)과 추정된 \(K_{\mathrm{eff}}^{\mathrm{ocean}} \sim 3\times10^4\)를 갖는다. 가상의 육상 기술권에 대해서는 다른 표적 가스(예: NF$_3$, SF$_6$, 또는 CFC)에 대해 \(10^2\)–\(10^3\) 정도의 이상이 예상되며, 이는 \(K_{\mathrm{eff}}^{\mathrm{tech}} \sim 10^3\)–\(10^4\)에 해당한다. 이 교정은 대기 분광학을 기저 생물권-기술권 시스템의 조정 깊이에 대한 직접적인 탐침으로 변환시킨다——YUCT에 의해 제안된 진정으로 새로운 관측 방식이다.
+	
+	\begin{figure}[t]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				width=0.85\textwidth,
+				height=0.55\textwidth,
+				xlabel={$\log_{10} K_{\mathrm{eff}}$},
+				ylabel={$\log_{10}\bigl([X]/[X]_{\mathrm{지구}}\bigr)$},
+				xmin=1.5, xmax=5.5,
+				ymin=-0.5, ymax=4.5,
+				grid=both,
+				grid style={gray!30},
+				legend style={at={(0.02,0.98)}, anchor=north west,
+					fill=white, fill opacity=0.8, draw=black!60},
+				axis lines=middle,
+				enlargelimits=false,
+				minor tick num=4,
+				xtick={2,2.5,...,5},
+				ytick={0,1,...,4},
+				xlabel style={anchor=north east},
+				ylabel style={anchor=north east},
+				title={YUCT 예측: 조정된 생물권 및 기술권}
+				]
+				% 예측선: log10(anomaly) = (2/3)*log10(K_eff) + 0.0153
+				\addplot[domain=1.8:5.2, samples=2, thick, blue,
+				forget plot] {(2/3)*x + 0.0153};
+				\node[blue, anchor=south east] at (axis cs:4.8,3.25) 
+				{$\beta=2/3$};
+				
+				% 프로토타입 1: K2-18b
+				\addplot[only marks, mark=*, mark size=3, red] 
+				coordinates {(4.477, 3)};
+				\node[red, anchor=south west] at (axis cs:4.477,3) 
+				{\small K2-18b (DMS)};
+				
+				% 프로토타입 2: 육상 기술권 (영역)
+				\addplot[draw=green!60!black, fill=green!20, fill opacity=0.4,
+				forget plot] 
+				coordinates {(3,2) (4,2) (4,3) (3,3) (3,2)};
+				\node[green!60!black, anchor=center, align=center] at (axis cs:3.5,2.5) 
+				{\small 육상 기술권\\\small (예측)};
+				\addplot[only marks, mark=square*, mark size=2, green!60!black] 
+				coordinates {(3.7, 2.48)};
+				
+				% 지구는 기준점 (주선 위에 있지 않음)
+				\addplot[only marks, mark=o, mark size=3, black] 
+				coordinates {(2.176, 0)};
+				\node[black, anchor=south east] at (axis cs:2.176,0)
+				{\small 지구 (기준)};
+				
+				\node[anchor=south west, align=left, text=gray] 
+				at (axis cs:2.0,3.8) 
+				{\small 임의의 생물신호 $X$에 대한\\\small 예측 추세};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{생물신호 가스 \(X\)의 농도 이상과 생태계 조정 효율 \(K_{\mathrm{eff}}\)의 관계. K2-18b에서 관측된 DMS 농축(빨간 점) 및 장수명 육상 기술권의 예상 영역(녹색 사각형)은 보편적 기울기 \(\beta = 2/3\)을 고정한다. 지구 자체의 DMS 수준(검은 원)은 정규화 점으로 기능하지만, 조정된 생명체 추세선 위에 있지는 않다.}
+		\label{fig:Keff_spectrum}
+	\end{figure}
+	
+	% ----------------------------------------------------------------
+	\section{최종 계산: 침묵의 방정식}
+	\label{sec:final}
+	% ----------------------------------------------------------------
+	이상의 내용을 종합하면, 관측 가능한 우주에서 \emph{탐지 가능한} 문명의 기대 수는
+	\begin{equation}
+		\label{eq:N_detect}
+		N_{\mathrm{detect}} = N_{\mathrm{life}}
+		\times f_{\mathrm{astro}}
+		\times P\bigl(\Keff > 150\bigr)
+		\times \Theta\bigl(\text{d-YPSDC 전이 완료}\bigr)^{-1}\; ,
+	\end{equation}
+	이며, 마지막 두 인자는 단계 함수로, 행성의 극히 일부를 제외한 모든 것에 대해 0이 된다. 우리가 \(N_{\mathrm{detect}} = 0\)을 측정한다는 경험적 사실은 이론의 반증이 아니라, 오히려 d-YPSDC 끌개의 존재와 엄격한 작용을 직접 확인하는 것이다.
+	
+	\subsection{임계성, 혼돈, 그리고 최종 끌개}
+	\label{sec:chaos}
+	
+	각 조정 시스템은 두 영역 사이를 진화한다: \(K_{\mathrm{eff}} \gg 1\)이고 오류율이 낮은 질서상과, \(K_{\mathrm{eff}} \to 1\)이고 시스템이 붕괴하는 혼돈상이다. 그 사이의 전이는 혼돈으로의 보편적 주기 배가 캐스케이드를 규정하는 파이겐바움 상수 \(\delta \approx 4.6692\)와 \(\alpha \approx 2.5029\)에 의해 지배된다. '현실의 통일성' 3절에서 YUCT는 이 상수들이 조정 질서 매개변수와 대수적으로 연결됨을 증명한다:
+	\begin{equation}
+		2\alpha^{2} \approx (S_{\mathrm{odd}}\varphi^{2})\,\delta \, .
+	\end{equation}
+	따라서 모든 조정 오류를 제어하는 동일한 보편 지수 \(\beta = 2/3\)이 문명이 최종 위기에 접근하는 리듬도 결정한다.
+	
+	현재 조정 깊이 \(K_{\mathrm{eff}}(t)\)를 가진 문명에 대해, 연속적인 분기 간격의 수열은 \(\tau_{n+1} \approx \tau_{n} / \delta\)이다. 따라서 혼돈적 끌개——문명이 붕괴하거나 d-YPSDC 전이를 완료하는 지점——에 도달하기까지 남은 총 시간 \(\Delta T\)는 기하급수로 주어진다:
+	\begin{equation}
+		\Delta T \approx \frac{\tau_{\mathrm{present}}}{1 - 1/\delta} \, .
+	\end{equation}
+	부록~F에서 분석된 경제 데이터는 인류 문명의 현재 기술 단계가 혼돈 직전의 세 번째 주기 배가에 해당하며, \(\tau_{\mathrm{present}} \approx 60\)–\(100\)년(콘드라티예프 주기와 태양 활동 주기)임을 시사한다. 대입하면 \(\Delta T \approx 75\)–\(125\)년을 얻으며, 이는 전이의 중요한 창을 21세기 중반에서 22세기 말 사이에 위치시킨다. 이 추정치는 부록~T의 메타진화 모델이 독립적으로 예측한 특이점(서기 2049–2055년경)과 완전히 일치한다.
+	
+	페르미 역설에 대한 핵심 함의는, 문명의 관측 가능한 "기술적" 단계가 불과 수세기 동안만 지속된다는 것——천문학적으로 무시할 수 있는 시간 간격——이다. 생명체가 있는 행성의 총수가 \(10^{26}\)이라 하더라도, 이 짧고 라디오 소음으로 가득 찬 시간 창에서 다른 문명을 포착할 확률은 사실상 0이다. 따라서 위대한 침묵은 역설이 아니다. 그것은 파이겐바움-YUCT 임계 가속 법칙의 결과이다.
+	
+	% ----------------------------------------------------------------
+	\section{YUCT 가설의 경험적 확인: LHS~1140~b 및 TRAPPIST-1e의 새로운 데이터}
+	\label{sec:confirmation}
+	
+	\subsection{생명체가 있는 행성의 국소 표본 확장}
+	K2-18b에서 디메틸설파이드(DMS)의 발견(제~\ref{sec:empirical}절)은 우주 생명체의 밀도에 대한 첫 번째 직접적 하한을 제공했다. 2024-2025년 제임스 웹 우주 망원경(JWST) 관측은 생명체가 있는 행성이 흔하며 그 스펙트럼 신호가 조정 깊이를 따른다는 YUCT 예측을 독립적으로 검증하는 두 개의 추가 목표를 더했다.
+	
+	\begin{description}
+		\item[LHS~1140~b (49 광년)] JWST 관측 \citep{Damiano2025}은 온화한 해양 세계 (\(T\approx 20^{\circ}\mathrm{C}\))를 밝혀냈다. 그 대기는 N$_2$가 지배적이며, 검출 가능한 CO$_2$는 없고, 물 함량은 지구의 최대 5000배이다. 결정적으로 중요한 것은, 스펙트럼에 아산화질소 (N$_2$O)가 포함되어 있다는 점이다——지구에서는 거의 전적으로 미생물 탈질 작용에 의해 생성되는 가스이다. 이 "해양 슈퍼생물권"은 프로토타입 1(제~\ref{sec:spectra}절)의 자연스러운 확장이며, 그 추정된 높은 \(K_{\mathrm{eff}}^{\mathrm{ocean}}\)은 K2-18b와 동일한 스케일링 곡선 위에 놓이게 한다.
+		\item[TRAPPIST-1e (40 광년)] 최신 JWST NIRSpec 투과 스펙트럼 \citep{Glidden2025}은 타이탄을 연상시키는 2차 N$_2$–CH$_4$ 대기의 존재를 암시한다. 광화학 모델 \citep{EagerNash2025}은 그러한 대기가 메탄이 풍부한 생물권에 의해 유지될 수 있음을 보여주지만, 비생물적 시나리오는 아직 배제되지 않았다. 만약 TRAPPIST-1e에 프로토타입 2와 같은 기술권이 존재한다면, 그 장수명 산업 배출물(CFC, SF$_6$, NF$_3$)은 향후 10년 이내에 ELT/METIS에 의해 탐지될 수 있을 것이다.
+	\end{description}
+	
+	\subsection{업데이트된 생명체 밀도와 페르미 역설의 위기}
+	이 세 천체(K2-18b, LHS~1140~b, 그리고 아마도 TRAPPIST-1e)는 태양을 중심으로 하는 반경 약 124광년의 구체 내에 위치한다. 확인된 생물권을 두 개(K2-18b와 LHS~1140~b)로만 계산하더라도, 생명체가 있는 행성의 경험적 수 밀도는
+	\begin{equation}
+		\rho_{\mathrm{life}}^{(2025)} \ge \frac{2}{\frac{4}{3}\pi (124\;\mathrm{ly})^{3}} \approx 2.5\times10^{-7}\;\mathrm{ly}^{-3}\, .
+	\end{equation}
+	이를 관측 가능한 우주 전체로 외삽하면
+	\begin{equation}
+		N_{\mathrm{life}}^{(2025)} \ge 1.0\times10^{26} ,
+	\end{equation}
+	이며, 이는 제~\ref{sec:extrapolation}절의 추정치와 완전히 일치한다. 세 번째 후보를 포함하면 숫자는 더욱 커진다. 우리의 직접적인 은하 이웃에서 이미 \emph{두 개}의 생물권을 발견했다는 사실은 생명체의 바다가 우주를 가득 채우고 있음을 보여준다——그럼에도 불구하고 기술적 흔적은 전혀 없다. YUCT 틀 안에서, 이 "위대한 침묵"은 모순이 아니라 d-YPSDC 끌개(제~\ref{sec:yuct_filters}절)의 직접적인 결과이다: 모든 기술 문명은 필연적으로 내적 심화된, 근본적으로 관측 불가능한 상태로 전환된다. 따라서 새로운 데이터는 페르미 역설을 해결하는 YUCT의 경험적 근거를 강화한다.
+	
+	\subsection{\(K_{\mathrm{eff}}\)-생물신호 관계의 교정}
+	제~\ref{sec:spectra}절의 두 프로토타입은 이제 각각 적어도 하나의 구체적인 대표자를 가지게 되었다. LHS~1140~b와 그 N$_2$O 이상은 해양 가지의 낮은 에너지 혐기성 말단을 고정하고, K2-18b는 높은 DMS, 높은 생산성 말단을 차지한다. 이들은 함께 예측된 거듭제곱 관계
+	\begin{equation}
+		\log_{10} \frac{[X]}{[X]_{\mathrm{지구}}} \propto \beta\,\log_{10} K_{\mathrm{eff}} ,\qquad \beta=2/3
+	\end{equation}
+	를 포괄한다. 미래에 TRAPPIST-1e와 같은 곳에서 육상 기술권이 발견된다면, 그것은 세 번째 교정점을 제공하고 완전히 다른 생화학적 배경 하에서 스케일링의 보편성을 검증할 것이다. 그러한 발견은 또한 d-YPSDC 전이가 시작되는 임계 임계값 \(K_{\mathrm{consciousness}}\approx 8.5\)을 제약할 것이다.
+	
+	% ----------------------------------------------------------------
+	\subsection*{데이터 가용성}
+	LHS~1140~b 및 TRAPPIST-1e의 JWST 데이터는 Mikulski 우주 망원경 아카이브(MAST)를 통해 공개적으로 이용 가능하다. 모든 YUCT 모델 및 분석 스크립트는 저장소 \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}에서 제공된다.
+	
+	% ----------------------------------------------------------------
+	\section{결론}
+	\label{sec:conclusions}
+	% ----------------------------------------------------------------
+	우리는 K2-18b에서 번성하는 생물권의 발견이 고전적 드레이크 방정식의 재평가를 강제함을 보였다: 생명체가 있는 행성의 우주 밀도는 \(\sim 10^{26}\)이며, 이 숫자는 알려진 천체물리학적 재해에 의해 의미 있게 감소될 수 없다. 위대한 침묵에 대한 유일하게 논리적으로 일관된 설명은, 지적 문명이 인지적 자급자족 상태——d-YPSDC 상태——로의 보편적 상전이를 겪으며, 그 상태에서는 전통적 수단으로 더 이상 탐지될 수 없다는 것이다.
+	
+	따라서 페르미 역설은 있을 법하지 않은 우연이나 파국적 필터를 가정함으로써가 아니라, 침묵이 모든 물리적 실재를 지배하는 조정 역학의 필연적 결과임을 인식함으로써 해결된다. 야쿠셰프 통일 조정 이론은 이 전이에 대한 정확한 정량적 틀을 제공하며, 철학적 수수께끼를 검증 가능한 과학적 예측으로 변환시킨다.
+	
+	% ----------------------------------------------------------------
+	\section*{데이터 가용성}
+	% ----------------------------------------------------------------
+	모든 YUCT 부록 및 기술 노트는 \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC} 및 Zenodo (\url{https://doi.org/10.5281/zenodo.18444598})에서 확인할 수 있다.
+	
+	% ----------------------------------------------------------------
+	\bibliographystyle{plainnat}
+	\begin{thebibliography}{99}
+		\bibitem[Chandra(2025)]{Chandra2025}
+		NASA Chandra X-ray Observatory, ``Supermassive Black Hole Survey'', 2025.
+		
+		\bibitem[Foord et~al.(2017)]{Foord2017}
+		A.~Foord \emph{et al.}, ``AGN Fraction in Nearby Galaxies from Chandra'',
+		Astrophys. J. (2017).
+		
+		\bibitem[Thomas and Yelland(2023)]{ThomasYelland2023}
+		T. Thomas, M. Yelland, ``The Kill Radius of Core-Collapse Supernovae'',
+		arXiv:2301.05757 (2023).
+		
+		\bibitem[Yakushev(2026a)]{YUCT}
+		A.~V.~Yakushev, \emph{Yakushev Unified Coordination Theory (YUCT)},
+		Zenodo, DOI:10.5281/zenodo.18444599 (2026).
+		
+		\bibitem[Yakushev(2026b)]{AppGravity}
+		A.~V.~Yakushev, ``Gravity as Geometric Tension of the Coordination
+		Network'', Technical Note, YUCT (2026).
+		
+		\bibitem[Yakushev(2026c)]{AppOmega}
+		A.~V.~Yakushev, ``Appendix $\Omega$: The Global Rotation of the
+		Universe and Its New Minimum Age from the Dipole Turning Radius'',
+		YUCT (2026).
+		
+		\bibitem[Yakushev(2026d)]{AppT}
+		A.~V.~Yakushev, ``Appendix T: The Fundamental Law of Evolution'',
+		YUCT (2026).
+		
+		\bibitem[Yakushev(2026e)]{AppH}
+		A.~V.~Yakushev, ``Appendix H: The Universal Consciousness Descriptor
+		(UCD)'', YUCT (2026).
+		
+		\bibitem[Damiano et~al.(2025)]{Damiano2025}
+		M.~Damiano, R.~Hu, K.~Stevenson \emph{et al.},
+		``JWST reveals a temperate N$_2$-dominated ocean world with N$_2$O
+		on LHS~1140~b'', \emph{Nature Astronomy}, 9, 112--125 (2025).
+		
+		\bibitem[Glidden et~al.(2025)]{Glidden2025}
+		A.~Glidden, S.~Grimm, D.~Deming \emph{et al.},
+		``First NIRSpec transmission spectrum of TRAPPIST-1e: a N$_2$--CH$_4$
+		atmosphere with no evidence of water'', \emph{Astrophys. J. Lett.},
+		975, L12 (2025).
+		
+		\bibitem[Eager-Nash et~al.(2025)]{EagerNash2025}
+		J.~K.~Eager-Nash, S.~Jordan, M.~Turbet \emph{et al.},
+		``Biosignature predictions for methane-rich atmospheres on temperate
+		rocky planets'', \emph{Mon. Not. R. Astron. Soc.}, 528, 5201--5216
+		(2025).
+	\end{thebibliography}
+	
+\end{document}

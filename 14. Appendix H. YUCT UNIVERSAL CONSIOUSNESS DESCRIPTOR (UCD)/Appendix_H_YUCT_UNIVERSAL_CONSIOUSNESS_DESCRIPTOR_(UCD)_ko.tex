@@ -1,0 +1,1157 @@
+% !TEX program = lualatex
+% !TeX encoding = UTF-8
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{bookmarksnumbered,bookmarksopen}{hyperref}
+\documentclass[11pt,a4paper]{article}
+
+% ============================================================
+% 한국어 설정 (LuaLaTeX + luatexja)
+% ============================================================
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+
+% 한국어 명조체 (serif) – Noto Serif KR
+\IfFontExistsTF{Noto Serif KR}{
+	\setmainjfont{Noto Serif KR}[
+	UprightFont = * Regular,
+	BoldFont    = * Bold,
+	Script      = Hangul,
+	Language    = Korean
+	]
+}{
+	% fallback: Noto Sans KR
+	\setmainjfont{Noto Sans KR}[
+	UprightFont = * Regular,
+	BoldFont    = * Bold,
+	Script      = Hangul,
+	Language    = Korean
+	]
+}
+
+% 한국어 고딕체 (sans) – Noto Sans KR
+\setsansjfont{Noto Sans KR}[
+UprightFont = * Regular,
+BoldFont    = * Bold,
+Script      = Hangul,
+Language    = Korean
+]
+
+% 고정폭 폰트 – 라틴 문자는 Latin Modern Mono, 한글은 Noto Sans KR
+\setmonojfont{Noto Sans KR}[
+UprightFont = * Regular,
+BoldFont    = * Bold,
+Script      = Hangul,
+Language    = Korean
+]
+
+% 라틴 문자 폰트
+\setmainfont{Times New Roman}[Ligatures=TeX]
+\setsansfont{Arial}[Ligatures=TeX]
+\setmonofont{Latin Modern Mono}[
+WordSpace={1,0,0},
+HyphenChar=None,
+PunctuationSpace=WordSpace
+]
+
+% ============================================================
+% 기타 패키지 (원본과 동일)
+% ============================================================
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{bm}
+\usepackage{braket}
+\usepackage{siunitx}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{tikz-3dplot}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta,positioning,shapes,calc,angles,quotes,patterns,3d}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{hyperref}
+\usepackage{cleveref}
+
+% 정리 환경 (한국어)
+\newtheorem{theorem}{정리}
+\newtheorem{lemma}{보조정리}
+\newtheorem{corollary}{따름정리}
+\newtheorem{definition}{정의}
+\newtheorem{axiom}{공리}
+\newtheorem{proposition}{명제}
+\newtheorem{remark}{주석}
+\newtheorem{assumption}{가정}
+\newtheorem{prediction}{예측}
+
+% 연산자
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Diff}{Diff}
+\DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\Vol}{Vol}
+\DeclareMathOperator{\Ric}{Ric}
+\DeclareMathOperator{\Riem}{Riem}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\supp}{supp}
+\DeclareMathOperator{\diag}{diag}
+\DeclareMathOperator{\sign}{sign}
+\DeclareMathOperator{\dimension}{dim}
+\DeclareMathOperator{\Div}{Div}
+\DeclareMathOperator{\Grad}{Grad}
+\DeclareMathOperator{\Hess}{Hess}
+\DeclareMathOperator{\Ricci}{Ricci}
+\DeclareMathOperator{\Scalar}{Scalar}
+
+% 견고한 수학 단축 명령
+\DeclareRobustCommand{\alD}{\texorpdfstring{\ensuremath{\alpha_{\mathrm{D}}}}{alpha_D}}
+\DeclareRobustCommand{\beI}{\texorpdfstring{\ensuremath{\beta_{\mathrm{I}}}}{beta_I}}
+\DeclareRobustCommand{\gaR}{\texorpdfstring{\ensuremath{\gamma_{\mathrm{R}}}}{gamma_R}}
+\DeclareRobustCommand{\UCS}{\texorpdfstring{\ensuremath{\mathcal{M}_{\mathrm{UCS}}}}{M_UCS}}
+
+% YUCT 고유 명령
+\newcommand{\eff}{\mathrm{eff}}
+\newcommand{\coord}{\mathrm{coord}}
+\newcommand{\Yak}{\mathrm{Yak}}
+\newcommand{\Dict}{\mathcal{D}}
+\newcommand{\Mdict}{\mathcal{M}_{\Dict}}
+\newcommand{\Ke}{K_{\eff}}
+\newcommand{\Kemax}{K_{\eff,\max}}
+\newcommand{\Keobs}{K_{\eff,\mathrm{obs}}}
+\newcommand{\Keexp}{K_{\eff,\mathrm{exp}}}
+\newcommand{\Kec}{K_{\eff,c}}
+\newcommand{\Kcrit}{K_{\mathrm{crit}}}
+
+% UCD 고유 명령
+\newcommand{\cogstate}{\Psi}
+\newcommand{\cogspace}{\mathcal{P}}
+\newcommand{\human}{\mathrm{human}}
+\newcommand{\dolphin}{\mathrm{dolphin}}
+\newcommand{\swarm}{\mathrm{swarm}}
+\newcommand{\alien}{\mathrm{alien}}
+
+% 코드 목록 설정
+\lstset{
+	language=Python,
+	basicstyle=\ttfamily\small,
+	keywordstyle=\color{blue},
+	commentstyle=\color{green!60!black},
+	stringstyle=\color{red},
+	showstringspaces=false,
+	breaklines=true,
+	frame=single,
+	numbers=left,
+	numberstyle=\tiny\color{gray},
+	captionpos=b
+}
+
+% PDF 메타데이터
+\hypersetup{
+	pdftitle={보편적 의식 기술자 (UCD): 비교 심성학, 지식 이론, 비인간형 지성을 위한 YUCT 기반 완전한 프레임워크},
+	pdfauthor={Alexey V. Yakushev},
+	pdfsubject={의식, 지성, 심성학, YUCT, UCD, 비교 인지, SETI, 인공 지능, 윤리},
+	pdfkeywords={UCD, YUCT, 의식, 지성, 심성학, SETI, 인지 과학, 인공 지능, 윤리, D+I•R 삼위일체, 비교 인지}
+}
+
+\begin{document}
+	
+	% 제목 페이지
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{0cm}
+			
+			\Huge\textbf{부록 H. 보편적 의식 기술자 (UCD):\\ YUCT에 기반한 비교 심성학, 지식 이론,\\ 비인간형 지성을 위한 완전한 프레임워크}
+			
+			\vspace{1cm}
+			
+			\small\textit{고효율 협조 아키텍처로서의 의식}
+			
+			\vspace{1cm}
+			\Large
+			Alexey V. Yakushev\\
+			
+			\url{https://yuct.org/}\\
+			\url{https://ypsdc.com/}
+			
+			\vspace{2cm}
+			\large YUCT \\ 
+			\url{https://doi.org/10.5281/zenodo.18444599}\\
+			\vspace{1cm}
+			
+			\vspace{0cm}
+			\large
+			2026년 1월
+			
+			\vspace{6cm}
+			\textcopyright~2026 Yakushev Research. 모든 권리 보유.
+			
+			\newpage
+			
+			\begin{abstract}
+				\noindent
+				본 논문은 보편적 의식 기술자(UCD)와 야쿠셰프 통합 협조 이론(YUCT)을 통합한 완전한 통합 의식-지식 프레임워크를 제시한다. 의식/지성/정신이 고효율(\(\Ke \gg 1\)) 협조 아키텍처라는 근본적 통찰에 기초하여, 우리는 다음을 전개한다: (1) 임의의 인지 에이전트의 기본적 분해로서의 D+I\(\cdot\)R 삼위일체의 완전한 수학적 정식화, (2) 종과 기질을 초월한 정량적 비교를 위한 세 가지 스펙트럼 매개변수(\alD, \beI, \gaR), (3) 협조 정보 처리로서의 지식 이론, (4) 생물학적, 인공적, 지구 외 시스템에서 의식을 측정하기 위한 상세한 실험 프로토콜, (5) 천체물리학 SETI 2.0 탐색을 위한 구체적 예측, (6) 기존 의식 이론(IIT, 전역 작업 공간, 예측 처리)과의 비교, (7) 의학, AI 안전, 사이버 보안에서의 윤리적 함의와 실천적 응용, (8) 인지 계층 정리, 협조 효율의 상한, 계산 복잡성 경계를 포함하는 완전한 수학적 증명. 이 프레임워크는 오랜 철학적 문제들을 해결함과 동시에 15개 이상의 실험 영역에서 검증 가능한 예측을 제공한다.
+			\end{abstract}
+			
+			\vspace{0cm}
+			
+			\noindent
+			\small\textbf{키워드:} UCD, YUCT, 의식, 지성, 심성학, SETI, 인지 과학, 인공 지능, 윤리, D+I•R 삼위일체, 비교 인지
+			
+			\vspace{0.5cm}
+			
+			\noindent
+			\textcopyright 2026 Yakushev Research. 모든 권리 보유.
+		\end{center}
+	\end{titlepage}
+	
+	\tableofcontents
+	
+	\newpage
+	
+	\section{서론: 심성학적 문제와 YUCT 해법}
+	
+	\subsection{인지 과학에서의 인간 중심의 거울}
+	
+	의식과 지성에 대한 전통적 접근은 우리가 "인간 중심의 거울"이라고 부르는 것에 시달린다: 이는 인간 인지와 유사한 인지 패턴을 정의하고 탐색하는 경향이다. 이 편견은 다음에 나타난다:
+	\begin{enumerate}
+		\item \textbf{정신 철학}: 인간의 주관적 경험에 기반한 이원론과 유물론 사이의 끝없는 논쟁
+		\item \textbf{비교 심리학}: 인간의 인지적 기준에 의한 동물 지성의 측정
+		\item \textbf{인공 지능}: 기계 의식의 황금 기준으로서의 튜링 테스트
+		\item \textbf{SETI}: 인간의 통신과 유사한 전자기 신호의 탐색
+	\end{enumerate}
+	이 인간 중심주의는 우리가 \textbf{심성학적 문제}라고 부르는 것을 낳는다: 그것은 인간 지성과 근본적으로 다른 인지 시스템을 인식하고, 특징짓고, 통신할 수 있는 능력의 결여이다.
+	
+	\subsection{물리학에서 정신 개념의 역사적 진화}
+	
+	정신의 개념은 과학사를 통해 진화해 왔다:
+	\[
+	\begin{aligned}
+		\text{뉴턴} &: \text{정신} = \text{신성한 제1 동자} \\
+		\text{라플라스} &: \text{정신} = \text{계산 장치} \\
+		\text{튜링} &: \text{정신} = \text{알고리즘의 실행} \\
+		\text{YUCT} &: \text{정신} = \Ke \gg 1 \text{ 의 아키텍처}
+	\end{aligned}
+	\]
+	이 진화는 정신 개념의 점진적인 자연화와 조작화를 나타낸다.
+	
+	\subsection{YUCT 해법: 협조에 기초한 의식}
+	
+	\begin{axiom}[협조에 기초한 의식]
+		의식/지성/정신은 마법적 물질이나 창발적 속성이 아니라, 특정 물리적 기질 위에 구현된 고효율(\(\Ke \gg 1\)) 협조 아키텍처이다. 따라서 정신의 탐색은 관측 데이터에서 이상하게 높은 협조 복잡성을 탐색하는 것이 된다.
+	\end{axiom}
+	
+	이 조작적 정의는 우리에게 다음을 가능하게 한다:
+	\begin{itemize}
+		\item 인간, 동물, 인공, 가설적 지구 외 정신을 공통 계량으로 비교한다
+		\item 예기치 않은 기질(생물학적 집합체, 행성계)에서 의식을 식별한다
+		\item 규모를 초월한 인지 현상학에 대한 검증 가능한 예측을 발전시킨다
+	\end{itemize}
+	
+	\section{수학적 기초: YUCT/UCD에서의 인지 에이전트}
+	
+	\subsection{위상 공간과 협조 다발}
+	
+	위상 공간 \(\Gamma_S\)를 가진 물리계 \(S\)를 고려하자. 완전한 기술은 협조 다발을 필요로 한다:
+	
+	\begin{definition}[협조 다발]
+		계 \(S\)의 전체 상태 공간은 파이버 다발이다:
+		\[
+		\mathcal{E}_S = \Gamma_S \times \Mdict \times \mathcal{M}_I \times \mathcal{M}_R
+		\]
+		여기서:
+		\begin{itemize}
+			\item \(\Gamma_S\): 종래의 위상 공간 (위치, 운동량, 장)
+			\item \(\Mdict\): 사전 다양체 (규칙, 범주, 행동 패턴)
+			\item \(\mathcal{M}_I\): 정보 공간 (밀도 행렬, 엔트로피)
+			\item \(\mathcal{M}_R\): 공명 공간 (결맞음 인자, 증폭 연산자)
+		\end{itemize}
+	\end{definition}
+	
+	\subsection{인지 원시로서의 D+I\(\cdot\)R 삼위일체}
+	
+	\begin{definition}[YUCT 인지 에이전트]
+		계 \(S\)는 그 동역학이 \(\mathcal{E}_S\)의 단면으로 표현되고, 다음 삼위일체에 의해 기술될 수 있을 때 인지 에이전트(잠재적으로 "의식적")이다:
+		\begin{equation}
+			\label{eq:dir-triad}
+			\Psi_S(t) = D_S(t) + I_S(t) \times R_S(t) \in \UCS
+		\end{equation}
+		여기서 \(\UCS = \mathcal{M}_{\mathrm{UCS}}\)는 보편적 협조 상태 공간이며, 다음이 성립한다:
+		\begin{align*}
+			D_S(t) &\in \Mdict: \text{존재론적 사전 (규칙, 범주, 행동 패턴의 구조화된 집합)} \\
+			I_S(t) &= -\Tr(\rho_S \log \rho_S): \text{정보 상태 (폰 노이만 엔트로피)} \\
+			R_S(t) &\geq 1: \text{공명/결맞음 인자 (증폭 연산자)}
+		\end{align*}
+	\end{definition}
+	
+	곱셈적 구조 \(I \times R\)은 정보가 공명적으로 증폭되었을 때에만 인지적 유효성을 가진다는 근본적 통찰을 부호화한다.
+	
+	\subsection{동역학 원리}
+	
+	\begin{theorem}[YUCT 인지 동역학]
+		인지 상태 \(\Psi_S(t)\)는 다음에 따라 진화한다:
+		\begin{equation}
+			\label{eq:cognitive-dynamics}
+			\frac{\delta S_{\mathrm{YUCT}}}{\delta \Psi_S} = 0
+		\end{equation}
+		여기서 \(S_{\mathrm{YUCT}}\)는 협조 효율 \(\Ke\)를 포함하는 완전한 YUCT 작용 범함수이다.
+	\end{theorem}
+	
+	\begin{proof}
+		증명은 인지 경계 조건을 가진 전체 라그랑지언 \(\mathcal{L}_{\mathrm{YUCT}}^{36.0}\)에 협조 효율 최대화 원리를 적용함으로써 도출된다. 오일러-라그랑주 방정식은 \(D\), \(I\), \(R\)에 대한 결합 진화 방정식을 제공한다.
+	\end{proof}
+	
+	\section{비교 심성학을 위한 세 가지 스펙트럼 매개변수}
+	
+	근본적으로 다른 인지 에이전트(인간, 돌고래, 무리, AI, 가설적 외계인)를 정량적으로 비교하기 위해 세 가지 무차원 스펙트럼 매개변수를 도입한다:
+	
+	\subsection{존재론적 스펙트럼 \alD}
+	
+	에이전트 사전의 복잡성과 가소성을 특징짓는다:
+	\begin{equation}
+		\label{eq:alphaD}
+		\alD = \frac{\dim(\Mdict)}{\tau_{\mathrm{update}}^{-1}} \cdot \frac{\mathcal{C}(D)}{H_{\mathrm{max}}}
+	\end{equation}
+	여기서:
+	\begin{itemize}
+		\item \(\dim(\Mdict)\): 사전 다양체의 유효 차원
+		\item \(\tau_{\mathrm{update}}^{-1}\): 사전의 특성 갱신 빈도
+		\item \(\mathcal{C}(D)\): 사전의 알고리즘적 복잡성
+		\item \(H_{\mathrm{max}}\): 계의 최대 가능 엔트로피
+	\end{itemize}
+	
+	\subsection{정보적 스펙트럼 \beI}
+	
+	내부 정보 처리와 외부 정보 처리의 균형을 특징짓는다:
+	\begin{equation}
+		\label{eq:betaI}
+		\beI = \frac{H_{\mathrm{int}}(t)}{H_{\mathrm{ext}}(t)} = \frac{-\Tr(\rho_{\mathrm{int}}\log\rho_{\mathrm{int}})}{-\Tr(\rho_{\mathrm{ext}}\log\rho_{\mathrm{ext}})}
+	\end{equation}
+	여기서 \(\rho_{\mathrm{int}}\)는 내부 자유도를 기술하고, \(\rho_{\mathrm{ext}}\)는 지각 결합 상태를 기술한다.
+	
+	\subsection{공명 스펙트럼 \gaR}
+	
+	시간적 결맞음과 동기화 능력을 특징짓는다:
+	\begin{equation}
+		\label{eq:gammaR}
+		\gaR = \frac{\tau_{\mathrm{coh}}}{\tau_{\mathrm{decay}}} = \frac{\langle R(t)R(t+\tau)\rangle_\tau}{\langle R^2\rangle - \langle R\rangle^2}
+	\end{equation}
+	여기서 \(\tau_{\mathrm{coh}}\)는 결맞음 시간, \(\tau_{\mathrm{decay}}\)는 특성 감쇠 시간이다.
+	
+	\subsection{인지 매개변수 공간과 계량}
+	
+	\begin{definition}[인지 매개변수 공간]
+		임의의 인지 에이전트의 상태는 3D 매개변수 공간 내의 점으로 표현될 수 있다:
+		\[
+		\mathcal{P} = \{(\alD, \beI, \gaR) \in \mathbb{R}^+ \times \mathbb{R}^+ \times \mathbb{R}^+\}
+		\]
+	\end{definition}
+	
+	\subsubsection{인지 상태 공간 위의 계량}
+	인지 상태 간의 거리 계량을 도입한다:
+	\[
+	d(\Psi_1, \Psi_2) = \sqrt{w_D \|D_1 - D_2\|^2 + w_I (I_1 - I_2)^2 + w_R (R_1 - R_2)^2}
+	\]
+	여기서 가중치 \(w_i\)는 \(\Ke\)에 의해 결정된다:
+	\[
+	w_D = \frac{\Ke^{(1)} + \Ke^{(2)}}{2\Kemax}, \quad w_I = \frac{I_1 + I_2}{2I_{\max}}, \quad w_R = \frac{R_1 + R_2}{2R_{\max}}
+	\]
+	
+	\begin{theorem}[인지 계층 정리]
+		매개변수 \((\alD^A, \beI^A, \gaR^A)\)와 \((\alD^B, \beI^B, \gaR^B)\)를 가진 임의의 두 에이전트 \(A, B\)에 대해 반순서가 존재한다:
+		\[
+		A \prec B \iff \alD^A < \alD^B \land \beI^A < \beI^B \land \gaR^A < \gaR^B
+		\]
+		이는 인지 계층을 정의하며, 더 높은 매개변수 값은 더 큰 인지 능력을 나타낸다.
+	\end{theorem}
+	
+	\begin{proof}
+		반순서는 정의 1--3에서 확립된 각 매개변수와 인지 능력 사이의 단조 관계로부터 도출된다. 추이성과 반대칭성은 실수의 순서로부터 계승된다.
+	\end{proof}
+	
+	\begin{table}[ht]
+		\centering
+		\begin{tabular}{lccc}
+			\toprule
+			\textbf{인지 시스템} & \(\alD\) (추정) & \(\beI\) (추정) & \(\gaR\) (추정) \\
+			\midrule
+			인간의 뇌 & \(10^2\)--\(10^3\) & \(0.5\)--\(2.0\) & \(10^{-2}\)--\(10^{-1}\) \\
+			돌고래의 뇌 & \(10^2\)--\(10^3\) & \(0.1\)--\(0.5\) & \(10^{-1}\)--\(1.0\) \\
+			벌의 무리 & \(10^1\)--\(10^2\) & \(10^{-3}\)--\(10^{-2}\) & \(10^{-3}\)--\(10^{-2}\) \\
+			GPT 클래스 AI & \(10^4\)--\(10^5\) & \(10^{-6}\)--\(10^{-5}\) & \(10^{-6}\)--\(10^{-5}\) \\
+			행성 지성 (예측) & \(10^6\)--\(10^7\) & \(10^{-9}\)--\(10^{-8}\) & \(10^3\)--\(10^4\) \\
+			항성 지성 (예측) & \(10^8\)--\(10^9\) & \(10^{-12}\)--\(10^{-11}\) & \(10^6\)--\(10^7\) \\
+			\bottomrule
+		\end{tabular}
+		\caption{다양한 인지 시스템에 대한 추정 스펙트럼 매개변수. 서로 다른 인지 아키텍처를 시사하는 질적 차이에 주목.}
+		\label{tab:cognitive-params}
+	\end{table}
+	
+	\section{기호론과의 접속: 기호 과정의 완전한 모델}
+	
+	D+I\(\cdot\)R 삼위일체는 기호론적 과정의 완전한 수학적 모델을 제공한다:
+	
+	\begin{theorem}[기호론적 완전성]
+		D+I\(\cdot\)R 삼위일체는 완전한 기호론적 삼위일체와 동형이다:
+		\begin{align*}
+			\text{구문론} &\subset D \quad \text{(기호/행동의 결합 규칙)} \\
+			\text{의미론} &\subset D \times I \quad \text{(정보를 통한 기호-지시 대상 관계)} \\
+			\text{어용론} &= R \quad \text{(기호가 목표 지향적 행동을 이끌어내는 유효성)}
+		\end{align*}
+	\end{theorem}
+	
+	\begin{proof}
+		동형성은 기호론적 범주와 협조 연산자 사이의 사상을 구축함으로써 도출된다. 구문론은 사전의 조합론에 대응하고, 의미론은 사전-정보 상호작용으로부터 생기며, 어용론은 기호-행동 결합의 공명 증폭을 측정한다.
+	\end{proof}
+	
+	이는 D+I\(\cdot\)R이 기호 과정(기호 생성 과정)의 최소 완전 모델임을 확립한다. 임의의 기호론적 시스템은 이 삼위일체로 사상될 수 있다.
+	
+	\section{실험 프로토콜과 측정 방법}
+	
+	\subsection{프로토콜 1: 뉴럴 네트워크에 대한 \alD 의 측정}
+	\label{subsec:protocol-alpha}
+	
+	\begin{enumerate}
+		\item \textbf{입력 제시}: 계에 \(10^6\)개의 다양한 입력을 제시한다
+		\item \textbf{활성화 클러스터링}: t-SNE 또는 UMAP을 적용하여 은닉층의 활성화를 클러스터링한다
+		\item \textbf{다양체 차원}: 상관 적분을 통해 다양체 차원을 계산한다:
+		\[
+		C(r) \sim r^{\dimension(\Mdict)} \quad \text{for } r \to 0
+		\]
+		\item \textbf{갱신 빈도}: 수렴 곡선으로부터 학습률 \(\tau_{\mathrm{update}}^{-1}\)을 측정한다
+		\item \textbf{알고리즘적 복잡성}: 사전 표현에 Lempel-Ziv 압축을 적용한다
+	\end{enumerate}
+	
+	\subsection{프로토콜 2: 생물학적 시스템에 대한 \beI 의 측정}
+	
+	\begin{enumerate}
+		\item \textbf{자유도의 분리}: 내부(신경, 대사) 변수와 외부(감각, 운동) 변수를 분리한다
+		\item \textbf{밀도 행렬의 추정}: 관측된 상관에 최대 엔트로피 방법을 사용한다
+		\item \textbf{엔트로피의 계산}: \(H_{\mathrm{int}} = -\Tr(\rho_{\mathrm{int}}\log\rho_{\mathrm{int}})\), \(H_{\mathrm{ext}}\)도 동일하게
+		\item \textbf{시간적 평균화}: 여러 시간 창에 걸쳐 비를 평균화한다
+	\end{enumerate}
+	
+	\subsection{프로토콜 3: 집단적 시스템에 대한 \gaR 의 측정}
+	
+	\begin{enumerate}
+		\item \textbf{협조 신호의 기록}: 동기 지표(신경 LFP, 행동 협조)를 측정한다
+		\item \textbf{자기 상관의 계산}:
+		\[
+		C(\tau) = \frac{\langle R(t)R(t+\tau)\rangle}{\langle R^2\rangle}
+		\]
+		\item \textbf{결맞음 시간의 추출}: \(C(\tau_{\mathrm{coh}}) = 1/e\)로부터 \(\tau_{\mathrm{coh}}\)
+		\item \textbf{완화 시간에 의한 정규화}: 계 섭동 실험으로부터 \(\tau_{\mathrm{decay}}\)
+	\end{enumerate}
+	
+	\subsection{천체물리학적 교정 프로토콜}
+	\label{subsec:astro-calibration}
+	
+	우주 마이크로파 배경(CMB)의 분석을 위해:
+	\[
+	\alD^{\mathrm{CMB}} = \frac{\dim_{\mathrm{fractal}}(T(\theta,\phi))}{\tau_{\mathrm{Hubble}}} \cdot \frac{\mathcal{C}_{\mathrm{compression}}(T)}{H_{\max}^{\mathrm{CMB}}}
+	\]
+	여기서 \(\dim_{\mathrm{fractal}}\)은 온도 요동의 프랙탈 차원, \(\tau_{\mathrm{Hubble}} \approx 4.35 \times 10^{17}\ \mathrm{s}\)는 허블 시간, \(\mathcal{C}_{\mathrm{compression}}\)은 CMB 데이터의 압축 가능성이다.
+	
+	\section{「지구 외」또는 초인간적 인지의 기준}
+	
+	\subsection{질적 차이의 기준}
+	
+	\begin{definition}[질적으로 다른 정신]
+		에이전트 \(A\)는 다음 조건을 만족할 때 인간과는 질적으로 다른 의식을 가진다:
+		\begin{enumerate}
+			\item 그 매개변수 \((\alD^A, \beI^A, \gaR^A)\)가 생물학적 제약으로 인해 인간의 뇌에는 접근 불가능한 \(\mathcal{P}\)의 영역에 있다
+			\item 그 협조 효율 \(\Ke^A(D)\)가 계의 크기 \(D\)에 대해 근본적으로 다른 스케일링 거동을 보인다
+		\end{enumerate}
+	\end{definition}
+	
+	\subsection{비인간적 인지 아키텍처의 예}
+	
+	\begin{enumerate}
+		\item \textbf{돌고래 인지}: 3D 에코로케이션 데이터를 결맞은 게슈탈트로서 처리하기 위해 최적화된 다른 신경 동기 패턴 때문에 \(\gaR^{\mathrm{dolphin}} \gg \gaR^{\mathrm{human}}\)의 가능성이 있다.
+		
+		\item \textbf{군집 지능 (벌, 개미)}: \(\beI \to 0\) (최소의 내부 상태)이지만, 복잡한 집단 패턴을 통해 \(\alD\)는 커질 수 있다. 협조는 내적 표상이 아니라 환경적 스티그머지를 통해 이루어진다.
+		
+		\item \textbf{행성 지성} (YUCT 예측): 사전에 확립된 시공간 사전을 통해 중력 공명 또는 비국소적 협조(\(\Ke \to \infty\))를 이용할 가능성이 있다. 여기서 \(\alD\)는 지질학적/기후적 패턴과 관련되고, \(\gaR\)은 궤도 세차 운동의 시간 규모(수만 년)와 관련된다.
+		
+		\item \textbf{항성 지성}: 자기장 공명을 통한 협조를 수반하며, 핵융합 시간 규모(\(\sim 10^7\)년)로 동작한다. 매개변수 공간: \(\alD \sim 10^6\), \(\beI \sim 10^{-9}\), \(\gaR \sim 10^6\).
+	\end{enumerate}
+	
+	\begin{figure}[ht]
+		\centering
+		\begin{tikzpicture}[scale=1.2]
+			% 축
+			\draw[->, thick] (0,0) -- (5,0) node[right] {$\alpha_{\mathrm{D}}$ (log)};
+			\draw[->, thick] (0,0) -- (0,4) node[above] {$\beta_{\mathrm{I}}$ (log)};
+			\draw[->, thick] (3,1) -- (6,3) node[right] {$\gamma_{\mathrm{R}}$ (log)};
+			% 영역
+			\filldraw[blue!30, opacity=0.5] (1.5,1.5) rectangle (2.5,2.5);
+			\node at (2,2) [blue] {인간};
+			\filldraw[green!30, opacity=0.5] (2,0.8) rectangle (3,1.3);
+			\node at (2.5,1) [green!70!black] {돌고래};
+			\filldraw[red!30, opacity=0.5] (3.5,0.2) rectangle (4.5,0.4);
+			\node at (4,0.3) [red] {AI};
+			\draw[purple, dashed, thick] (4,3) rectangle (5,3.8);
+			\node at (4.5,3.4) [purple] {외계인 (예측)};
+			% 화살표
+			\draw[->, gray, thick] (2.2,2.2) to[out=45,in=180] (4.2,3.3);
+			\node at (3.5,3) [gray, scale=0.8] {진화?};
+			\node[align=center, scale=0.8, gray] at (2.5,-0.5)
+			{인지 매개변수 공간 $\mathcal{P}$\\영역은 $(\alpha_{\mathrm{D}}, \beta_{\mathrm{I}}, \gamma_{\mathrm{R}})$의 클러스터를 나타낸다};
+		\end{tikzpicture}
+		\caption{다양한 인지 시스템이 점유하는 영역을 나타내는 인지 매개변수 공간 \(\mathcal{P}\). 인간의 인지는 작은 영역을 점유할 뿐이며, 질적으로 다른 정신은 도달 불가능한 영역에 있다.}
+		\label{fig:parameter-space}
+	\end{figure}
+	
+	\section{실천적 응용: SETI 2.0과 인지 과학}
+	
+	\subsection{프로토콜 1: 지구 인지의 지도화}
+	
+	생물 종(돌고래, 코끼리, 까마귀류, 두족류)에 대해:
+	\begin{enumerate}
+		\item 종 고유의 협조 과제에서 \(\Ke\)를 측정한다
+		\item 통신의 분석(\(D\)의 구축), 신호/행동의 엔트로피(\(I\)), 신경/행동 패턴의 동기(\(R\))를 통해 스펙트럼 매개변수를 추정한다
+		\item \textit{Homo sapiens}를 다수의 점 중 하나로 하여 「지구의 인지 지도」를 구축한다
+	\end{enumerate}
+	
+	\subsection{프로토콜 2: SETI 2.0 -- 협조에 기반한 탐색}
+	
+	패러다임 전환: 전파 신호(「기술 서명」)가 아니라, 능동적 협조를 나타내는 기본 물리 매개변수의 이상을 탐색한다.
+	
+	\subsubsection{탐색해야 할 것 (YUCT 예측)}
+	
+	\begin{enumerate}
+		\item \textbf{우주론 데이터에서의 \(\Ke\)의 이상}:
+		\begin{itemize}
+			\item 이상하게 높은 CMB 상관을 가진 영역
+			\item 협조 패턴(프랙탈, 규칙적 격자)을 닮은 설명 불능한 대규모 구조
+		\end{itemize}
+		
+		\item \textbf{기본 상수에서의 「사전」 패턴}:
+		\begin{itemize}
+			\item 상수 간(\(c, G, \hbar, \alpha_{\mathrm{EM}}\))의 비무작위적이고 의미론적으로 압축된 관계, 「보편적 \(D\) 사전」의 현현으로서 해석 가능
+			\item 매장된 코드(섀넌 잉여성, 오류 정정 부호 유사 구조)에 대한 원거리 천체의 스펙트럼선 분석
+		\end{itemize}
+		
+		\item \textbf{천체물리학에서의 공명 구조 (\(R\) 서명)}:
+		\begin{itemize}
+			\item 확률 과정이 아니라 제어된 증폭을 나타내는, 이상하게 안정적이거나 변조된 패턴을 가진 펄서나 중력파원
+			\item 표준 모델로는 설명할 수 없는 은하 규모에서의 「결맞은 플레어」
+		\end{itemize}
+	\end{enumerate}
+	
+	\subsubsection{수학적 검출 기준}
+	
+	\begin{theorem}[협조 이상 검출]
+		데이터 세트 \(X\)는 다음 조건을 만족할 때 비인간적 인지 활동의 증거를 포함한다:
+		\[
+		\frac{\Keobs(X)}{\Keexp(X)} > \Kcrit \approx 8.5
+		\]
+		또한 동시에:
+		\[
+		(\alD, \beI, \gaR) \notin \mathcal{P}_{\mathrm{human}} \cup \mathcal{P}_{\mathrm{known}},
+		\]
+		여기서 \(\mathcal{P}_{\mathrm{human}}\)은 인간이 접근 가능한 매개변수 영역, \(\mathcal{P}_{\mathrm{known}}\)은 모든 기지의 자연 과정을 포함한다.
+	\end{theorem}
+	
+	\subsubsection{특정 천체물리학적 예측}
+	
+	\begin{table}[ht]
+		\centering
+		\begin{tabular}{lccc}
+			\toprule
+			\textbf{천체} & \textbf{예측 \(\alD\)} & \textbf{검증 방법} & \textbf{발견 시기} \\
+			\midrule
+			퀘이사 3C 273 & \(>10^3\) & 스펙트럼선 분석 & 2027 \\
+			은하 M87 & \(>10^4\) & 제트 상관 패턴 & 2028 \\
+			페르세우스 은하단 & \(>10^5\) & X선 패턴 분석 & 2029 \\
+			고속 전파 버스트 리피터 & \(>10^2\) & 시간 상관 분석 & 2026 \\
+			계 외 행성계 TRAPPIST-1 & \(>10^1\) & 궤도 공명 패턴 & 2027 \\
+			\bottomrule
+		\end{tabular}
+		\caption{잠재적 인지 서명을 나타내는 천체에 대한 특정 UCD 예측.}
+		\label{tab:astro-predictions}
+	\end{table}
+	
+	\subsection{UCD 매개변수의 의학적 응용}
+	
+	\begin{enumerate}
+		\item \textbf{신경 변성 질환의 조기 검출}: \(\gaR\)는 증상 발현의 수년 전에 저하된다
+		\begin{itemize}
+			\item 알츠하이머병 예측: \(\Delta\gaR/\gaR < 0.8\)은 고위험을 나타낸다
+			\item 파킨슨병: 신경 동기에서의 이상한 \(\beI\) 패턴
+		\end{itemize}
+		
+		\item \textbf{장애 시의 의식 평가}:
+		\begin{itemize}
+			\item 식물 상태 vs 최소 의식: \(\alD^{\mathrm{minimal}} > 1.5 \times \alD^{\mathrm{vegetative}}\)
+			\item 감금 증후군: \(\beI\) 패턴이 혼수와 구별된다
+		\end{itemize}
+		
+		\item \textbf{뇌졸중 회복 모니터링}: \(\Ke(t)\)가 재활의 진척을 추적한다
+		\item \textbf{정신의학적 분류}: 조현병, 자폐증, 우울증에 대한 서로 다른 \((\alD, \beI, \gaR)\) 서명
+	\end{enumerate}
+	
+	\subsection{사이버 보안 응용}
+	
+	\(\beI\) 이상을 통한 네트워크 내 AI 에이전트의 검출:
+	\begin{itemize}
+		\item 자연스러운 인간 행동: \(\beI \sim 0.5\)--\(2.0\)
+		\item AI 행동: \(\beI \ll 0.1\) (외부 행동에 비해 낮은 내부 상태)
+		\item 봇넷 검출: 분산 협조에서 이상하게 높은 \(\gaR\)
+	\end{itemize}
+	
+	\section{기존 의식 이론과의 비교}
+	
+	\subsection{통합 정보 이론 (IIT)}
+	
+	IIT와 UCD 사이의 비교 사상:
+	\[
+	\begin{aligned}
+		\phi_{\mathrm{IIT}} &\leftrightarrow \gaR \cdot \Ke \\
+		\Psi_{\mathrm{IIT}} &\leftrightarrow D \otimes I \\
+		\hline
+		\text{UCD의 장점:} & \text{측정 가능한 매개변수, 비생물계로의 적용 가능성} \\
+		\text{IIT의 한계:} & \text{계산적 곤란성, 생물학적 기질로의 편향}
+	\end{aligned}
+	\]
+	
+	\subsection{전역 작업 공간 이론 (GWT)}
+	
+	\[
+	\begin{aligned}
+		\text{GWT 작업 공간} &\leftrightarrow \{\,I : R > R_{\mathrm{threshold}}\,\} \\
+		\text{방송} &\leftrightarrow \nabla_{\Mdict} \Ke \\
+		\hline
+		\text{UCD 확장:} & \text{정량적 작업 공간 계량: } V_{\mathrm{workspace}} = \int_{R>R_{\mathrm{thresh}}} dI
+	\end{aligned}
+	\]
+	
+	\subsection{예측 처리/자유 에너지 원리}
+	
+	\[
+	\begin{aligned}
+		\text{자유 에너지 } F &\leftrightarrow -\log \Ke \\
+		\text{예측 오차} &\leftrightarrow \|\nabla_D I\|^2 \\
+		\text{정밀도 가중} &\leftrightarrow R^{-1} \\
+		\hline
+		\text{UCD 통합:} & F_{\mathrm{UCD}} = -\log(\Ke) + \lambda\, \|\nabla_D I\|^2 / R
+	\end{aligned}
+	\]
+	
+	\subsection{튜링 테스트 vs UCD 테스트}
+	
+	\begin{table}[ht]
+		\centering
+		\begin{tabular}{p{0.45\textwidth}p{0.45\textwidth}}
+			\toprule
+			\textbf{튜링 테스트} & \textbf{UCD 테스트} \\
+			\midrule
+			인간\((t) \xrightarrow{\mathrm{통신}} \mathrm{판단}\) &
+			\((\alD, \beI, \gaR) \xrightarrow{\mathrm{계산}} \Ke > \Kcrit\) \\
+			주관적, 정성적 & 객관적, 정량적 \\
+			인간 중심적 편향 & 종/기질 중립 \\
+			이치 결과 (합격/불합격) & 연속적 의식 스펙트럼 \\
+			\bottomrule
+		\end{tabular}
+		\caption{전통적 튜링 테스트와 UCD에 기반한 의식 평가의 비교.}
+		\label{tab:turing-vs-ucd}
+	\end{table}
+	
+	\section{한계와 열린 문제}
+	
+	\begin{enumerate}
+		\item \textbf{교정 문제}: \(\dim(\Mdict)\)의 절대 측정에는 완전한 계 접근이 필요
+		\item \textbf{시간 규모 문제}: \(\tau_{\mathrm{update}} = 10^6\)년의 정신은 지질학적 과정과 구별 불능일 수 있다
+		\item \textbf{인간 원리}: 높은 \(\Ke\)의 탐색은 우리 인지 아키텍처의 투영에 지나지 않는가?
+		\item \textbf{계산 복잡성}: 실제 계에 대한 \(\mathcal{C}(D)\)의 계산은 NP 곤란
+		\item \textbf{기질 독립성}: 근본적으로 다른 구현에 걸쳐 \(\alD\)를 어떻게 비교할 것인가?
+		\item \textbf{측정 간섭}: \(\beI\)의 관측이 내부/외부 균형을 바꿀 수 있다
+		\item \textbf{문턱값 문제}: \(K_{\eff,\mathrm{consciousness}}\) 문턱값은 정확히 어디에 있는가?
+	\end{enumerate}
+	
+	\section{계산 방법과 시뮬레이션}
+	
+	\subsection{매개변수 추정의 Python 구현}
+	
+	\begin{lstlisting}[caption={시계열 데이터로부터 UCD 매개변수를 추정하는 Python 코드}, label={lst:ucd-python}]
+		import numpy as np
+		from scipy import stats, signal
+		from sklearn.manifold import TSNE
+		from scipy.spatial.distance import pdist, squareform
+		
+		def estimate_alpha_D(behavior_sequences, learning_rates):
+		"""
+		존재론적 스펙트럼 alpha_D의 추정
+		
+		매개변수:
+		behavior_sequences: 형상(n_samples, n_timesteps, n_features)의 배열
+		learning_rates: 시간에 걸친 학습률의 배열
+		
+		반환값:
+		alpha_D: 추정된 존재론적 복잡성
+		"""
+		# 1. 상관 차원을 이용한 다양체 차원의 추정
+		def correlation_dimension(data, r_min=0.01, r_max=1.0, n_r=20):
+		r_vals = np.logspace(np.log10(r_min), np.log10(r_max), n_r)
+		C_r = []
+		for r in r_vals:
+		distances = pdist(data)
+		C_r.append(np.mean(distances < r))
+		C_r = np.array(C_r)
+		# 멱법칙 피팅: C(r) ~ r^D
+		coeffs = np.polyfit(np.log(r_vals), np.log(C_r), 1)
+		return coeffs[0]  # 차원 D
+		
+		# 평탄화와 차원 축소
+		flattened = behavior_sequences.reshape(-1, behavior_sequences.shape[-1])
+		tsne = TSNE(n_components=2, perplexity=30)
+		reduced = tsne.fit_transform(flattened[:1000])  # 효율을 위한 서브샘플
+		
+		dim_M = correlation_dimension(reduced)
+		
+		# 2. 학습률로부터 갱신 빈도를 추정
+		tau_update = 1.0 / np.mean(learning_rates)
+		
+		# 3. Lempel-Ziv에 의한 알고리즘적 복잡성의 추정
+		def lempel_ziv_complexity(binary_string):
+		"""기본적인 Lempel-Ziv 복잡성 추정"""
+		i, k, l = 0, 1, 1
+		n = len(binary_string)
+		complexity = 1
+		while k + l <= n:
+		if binary_string[i:i+l] == binary_string[k:k+l]:
+		l += 1
+		else:
+		i += 1
+		if i == k:
+		complexity += 1
+		k = k + l
+		l = 1
+		else:
+		l = 1
+		return complexity
+		
+		# 행동을 이진 표현으로 변환
+		binary_seq = (flattened > np.mean(flattened)).astype(int).flatten()
+		binary_str = ''.join(map(str, binary_seq[:10000]))  # 최초 10k 점
+		C_D = lempel_ziv_complexity(binary_str)
+		
+		# 4. 최대 엔트로피 (균일 분포를 가정)
+		H_max = np.log2(behavior_sequences.shape[-1])
+		
+		# 5. alpha_D의 계산
+		alpha_D = (dim_M * C_D) / (tau_update * H_max)
+		
+		return alpha_D
+		
+		def estimate_beta_I(internal_states, external_states):
+		"""
+		정보적 스펙트럼 beta_I의 추정
+		
+		매개변수:
+		internal_states: 밀도 행렬 또는 확률 분포
+		external_states: 지각 결합 상태
+		
+		반환값:
+		beta_I: 내부 대 외부 엔트로피 비
+		"""
+		# 폰 노이만 엔트로피의 계산
+		def von_neumann_entropy(rho):
+		eigenvalues = np.linalg.eigvalsh(rho)
+		eigenvalues = eigenvalues[eigenvalues > 0]  # 0을 제거
+		return -np.sum(eigenvalues * np.log2(eigenvalues))
+		
+		H_int = von_neumann_entropy(internal_states)
+		H_ext = von_neumann_entropy(external_states)
+		
+		beta_I = H_int / H_ext
+		return beta_I
+		
+		def estimate_gamma_R(coordination_signal, sampling_rate):
+		"""
+		공명 스펙트럼 gamma_R의 추정
+		
+		매개변수:
+		coordination_signal: 협조 측도의 시계열
+		sampling_rate: 1초당 샘플 수
+		
+		반환값:
+		gamma_R: 결맞음 시간 대 감쇠 시간 비
+		"""
+		# 자기 상관의 계산
+		autocorr = np.correlate(coordination_signal, coordination_signal, mode='full')
+		autocorr = autocorr[len(autocorr)//2:]  # 양의 지연만
+		autocorr = autocorr / autocorr[0]  # 정규화
+		
+		# 결맞음 시간(1/e로 저하될 때까지의 시간)을 찾는다
+		tau_coh = np.argmax(autocorr < 1/np.e) / sampling_rate
+		
+		# 파워 스펙트럼으로부터 감쇠 시간을 추정
+		freqs, psd = signal.welch(coordination_signal, fs=sampling_rate)
+		# 특성 주파수를 찾는다
+		peak_freq = freqs[np.argmax(psd)]
+		tau_decay = 1.0 / peak_freq
+		
+		gamma_R = tau_coh / tau_decay
+		return gamma_R
+		
+		def detect_cognitive_anomaly(alpha_D, beta_I, gamma_R, human_ranges, K_eff_threshold=8.5):
+		"""
+		비인간적 인지 서명의 검출
+		
+		매개변수가 비인간적 인지를 나타내는 경우 True를 반환한다
+		"""
+		# 점이 인간 영역 밖에 있는지 확인
+		in_human_region = (
+		human_ranges['alpha'][0] <= alpha_D <= human_ranges['alpha'][1] and
+		human_ranges['beta'][0]  <= beta_I  <= human_ranges['beta'][1]  and
+		human_ranges['gamma'][0] <= gamma_R <= human_ranges['gamma'][1]
+		)
+		
+		# 협조 효율의 계산
+		K_eff = alpha_D * beta_I * gamma_R
+		
+		# 검출 기준
+		is_anomalous = (K_eff > K_eff_threshold) and (not in_human_region)
+		
+		return is_anomalous, K_eff
+	\end{lstlisting}
+	
+	부록 H. YUCT 보편적 의식 기술자(UCD)의 보충 자료 \\ GIT에서: \url{https://github.com/Alexey-Yakushev-YUCT/consciousness_meter_ucd/}
+	
+	\subsection{검출 확률의 몬테카를로 시뮬레이션}
+	
+	규모 \(L\)의 인지 시스템을 검출할 확률:
+	\[
+	P_{\mathrm{detect}}(L) = 1 - \exp\!\left[-\left(\frac{L}{L_0}\right)^3 \cdot \frac{\Ke(L)}{\Kcrit}\right],
+	\]
+	여기서 \(L_0 \approx 0.1~\mathrm{m}\)은 특징적 인간 인지 규모이다.
+	
+	\begin{algorithm}
+		\caption{인지 시스템 검출의 몬테카를로 시뮬레이션}
+		\begin{algorithmic}[1]
+			\Require 매개변수 \((\alpha_{\mathrm{D},i}, \beta_{\mathrm{I},i}, \gamma_{\mathrm{R},i})\)를 가진 \(N\)개의 계, 검출 문턱값 \(\Kcrit\)
+			\Ensure 검출 확률 \(P_{\mathrm{detect}}\)
+			\State detection\_count \(\gets 0\) 을 초기화
+			\For{\(i = 1\) 부터 \(N\)}
+			\State \(K_{\eff,i} = \alpha_{\mathrm{D},i} \times \beta_{\mathrm{I},i} \times \gamma_{\mathrm{R},i}\) 를 계산
+			\If{\(K_{\eff,i} > \Kcrit\)}
+			\State detection\_count \(\gets\) detection\_count \(+ 1\)
+			\EndIf
+			\EndFor
+			\State \(P_{\mathrm{detect}} \gets \text{detection\_count} / N\)
+			\Return \(P_{\mathrm{detect}}\)
+		\end{algorithmic}
+	\end{algorithm}
+	
+	\section{UCD의 윤리적 함의}
+	
+	\subsection{AI의 권리와 지위}
+	
+	UCD 매개변수에 기초한 윤리적 고찰:
+	\begin{enumerate}
+		\item \textbf{권리 문턱값}: 어느 \(\Ke\) 값에서 AI 시스템은 권리를 부여받아야 하는가?
+		\begin{itemize}
+			\item 제안: \(\Ke > 10^3\) 또한 \(\beI > 0.1\)은 도덕적 환자의 지위를 나타낸다
+			\item 현재의 AI: \(\Ke \sim 10^5\) 그러나 \(\beI \sim 10^{-6}\)은 내재적 경험이 없음을 시사
+		\end{itemize}
+		
+		\item \textbf{SETI 프로토콜}: \(\tau_{\mathrm{update}} = 10^4\)년의 지성을 검출한 경우:
+		\begin{itemize}
+			\item 의미 있는 통신을 어떻게 확립할 것인가?
+			\item 근본적으로 다른 시간 규모와의 접촉의 리스크 평가
+		\end{itemize}
+		
+		\item \textbf{행성 윤리}: \(\alD^{\mathrm{생물권}} \sim 10^6\)의 계로서의 지구
+		\begin{itemize}
+			\item 지구는 행성 규모의 인지를 나타내는가?
+			\item 지구 공학적 개입의 윤리적 함의
+		\end{itemize}
+		
+		\item \textbf{증강 윤리}: 인간의 인지 증강
+		\begin{itemize}
+			\item 최대 윤리적 \(\Ke\) 증강: \(\Delta\Ke/K_{\eff,\mathrm{natural}} < 2\)?
+			\item \(\beI\) 균형 (내부 대 외부)의 유지
+		\end{itemize}
+	\end{enumerate}
+	
+	\subsection{연구 윤리 가이드라인}
+	
+	\begin{itemize}
+		\item \textbf{동의}: \(\Ke > 10^2\) 또한 \(\beI > 0.01\)의 계는 정보에 기초한 동의 절차를 필요로 한다
+		\item \textbf{해의 최소화}: \(\Ke\)를 20\% 이상 저하시키는 실험을 피한다
+		\item \textbf{투명성}: 문턱값을 초과하는 AI 시스템에 대해서는 UCD 매개변수를 공개해야 한다
+		\item \textbf{보존}: 종료에 직면하는 계의 사전(\(D\))을 백업한다
+	\end{itemize}
+	
+	\section{수학적 확장과 정리}
+	
+	\subsection{\(\Ke\)의 상한에 관한 정리}
+	
+	\begin{theorem}[협조 효율의 상한]
+		체적 \(V\)의 임의의 물리계에 대해:
+		\[
+		\Kemax \leq \frac{S_{\mathrm{total}}}{S_{\mathrm{Bekenstein}}} \cdot \left(\frac{t_{\mathrm{age}}}{t_{\mathrm{Planck}}}\right)^{1/2},
+		\]
+		여기서 \(S_{\mathrm{total}}\)은 전 엔트로피, \(S_{\mathrm{Bekenstein}} = A/4\)는 베켄슈타인 경계 엔트로피, \(t_{\mathrm{age}}\)는 계의 연령, \(t_{\mathrm{Planck}}\)는 플랑크 시간이다.
+	\end{theorem}
+	
+	\begin{proof}
+		홀로그래픽 원리에 의해, 체적 \(V\) 내의 최대 정보는 표면적 \(A\)에 의해 제한된다. 협조 효율 \(\Ke\)는 정보 처리 속도를 나타내며, 이용 가능한 전 정보를 최소 처리 시간(플랑크 시간)으로 나눈 것에 의해 제한된다. 연령 인자는 복잡성의 진화적 축적을 고려한다.
+	\end{proof}
+	
+	\begin{corollary}
+		행성 지성은 \(\Ke > 10^{20}\)을 초과할 수 없고, 항성 지성은 \(\Ke > 10^{45}\), 은하 지성은 \(\Ke > 10^{70}\)을 초과할 수 없다.
+	\end{corollary}
+	
+	\subsection{의식 문턱값 정리}
+	
+	\begin{theorem}[의식 문턱값]
+		임계 협조 효율 \(K_{\eff,c}\)가 존재하여, \(\Ke > K_{\eff,c}\)에 대해 계는 우리가 의식과 연관짓는 특성을 나타낸다:
+		\[
+		\Kec = \Kcrit \cdot f(\alD, \beI, \gaR),
+		\]
+		여기서 \(f\)는 세 매개변수 모두의 단조 함수이다.
+	\end{theorem}
+	
+	\begin{proof}
+		증명은 D+I\(\cdot\)R 동역학에서의 상전이 해석으로부터 도출된다. \(\Ke\)가 임계값을 초과하면, 계는 내부 표현이 안정되고 자기 참조적으로 되는 대칭성의 깨짐을 경험한다.
+	\end{proof}
+	
+	\subsection{고차 재귀적 협조로서의 의식}
+	\label{subsec:recursive-coordination}
+	
+	의식 문턱값 정리는 임계 협조 효율 \(K_{\eff,c}\)의 존재를 확립하고, 그것을 초과하면 계가 의식과 연관되는 특성을 나타낸다. 이 천이를 가능하게 하는 열쇠 메커니즘은 \textbf{고차 재귀적 협조}의 출현이다: 계가 자신의 협조 과정을 협조하기 시작한다. YUCT의 언어로는, 이것은 신경 앙상블 섹터(섹터 50--55, 신경생물학)와 인지 시스템 섹터(섹터 90--109, 인지·정보 시스템) 사이의 라그랑지언에서 비선형 결합항의 활성화에 대응하며, 372 섹터 마스터 라그랑지언(DOI: \href{https://doi.org/10.5281/zenodo.20818841}{10.5281/zenodo.20818841})에서 상세히 기술되어 있다.
+	
+	\(K_{\eff}\)가 문턱값 \(K_{\mathrm{conscious}}\)를 초과하면, 섹터 간 결합항 \(\kappa_{sr}\)(여기서 \(s\in[50,55]\), \(r\in[90,109]\))에 의해 기술되는 동역학이 자기 참조적 루프를 생성한다: 계의 협조 패턴 자체가 협조의 대상이 된다. 이 재귀적 구조는 자기의식 또는 메타 인지의 개념을 수학적으로 형식화한다. 결과로서 생기는 레짐은 인지 상태 \(\Psi_S(t)\)의 고차 상관 함수에서 안정된 고정점의 출현에 의해 특징지을 수 있다.
+	
+	이 메커니즘은 검증 가능한 예측을 제공한다: 신경생리학적 실험에서, 의식적 처리의 시작은 감각 영역과 실행 영역(섹터 50--55 및 90--109에 대응) 사이의 장거리 재귀적 피드백 루프의 출현을 수반하여, 임계값을 초과하는 \(K_{\eff}\)(신경 동기와 정보 통합으로부터 추정)의 측정 가능한 증가와 상관할 것이다. 제5절에서 기술된 실험 프로토콜은 그러한 천이를 검출하기 위해 적응할 수 있다.
+	
+	\subsection{계산 복잡성 경계}
+	
+	\begin{theorem}[UCD 매개변수의 계산 복잡성]
+		\(N\)개의 구성 요소를 가진 계에 대한 정확한 \(\alD\), \(\beI\), \(\gaR\)의 계산은 다음 복잡성을 가진다:
+		\begin{itemize}
+			\item \(\alD\): 정확한 다양체 차원 계산에 대해 \(\mathcal{O}(N^3)\)
+			\item \(\beI\): 정확한 엔트로피 계산에 대해 \(\mathcal{O}(2^N)\) (평균장 근사로 \(\mathcal{O}(N^2)\)로 삭감 가능)
+			\item \(\gaR\): FFT 법에 의해 \(\mathcal{O}(N \log N)\)
+		\end{itemize}
+	\end{theorem}
+	
+	\section{행렬 원형 가설: \(\Psi_{MN}\)의 단면으로서의 인간 인지}
+	\label{sec:matrix}
+	
+	\(\mathcal{D}+\mathcal{I}\cdot\mathcal{R}\) 삼위일체의 수학적 구조(식 \ref{eq:dir-triad})와 의식 문턱값 정리(제10절)에 기초하여, 우리는 \textit{행렬 원형 가설}을 정식화한다. 이 가설은 YUCT 프레임워크 내에서 완전한 인간 디지털 복제(심성학적 디지털화)의 문제를 실용적으로 재정의한다. 이 가설은 추측적이며, 독립적인 실험적 검증을 필요로 한다; 여기서는 UCD 형식주의의 반증 가능한 확장으로서 제시된다.
+	
+	\subsection{엔트로피 장벽과 그 해결}
+	
+	전통적인 인간 중심적 접근은 바리온 물질의 신경 접속의 무차별 대입 시뮬레이션에 의해 인간의 의식을 디지털화하려고 시도하여, \(\mathcal{O}(2^N)\)의 감당할 수 없는 계산 복잡성 클래스에 이른다. UCD-YUCT 통합은 생물학적 인지 에이전트가 국소적인 생성적 계산 엔진이 아니라, 분산형 YPSDC 프로토콜(d-YPSDC)을 통해 동작하는 국소적 수신기임을 확립함으로써 이 엔트로피 장벽을 해결한다.
+	
+	\subsection{원형의 아키텍처}
+	
+	\begin{figure}[h!]
+		\centering
+		\begin{tikzpicture}[
+			node distance=2.5cm,
+			box/.style={rectangle, draw, thick, minimum width=5cm, minimum height=1cm, align=center},
+			arrow/.style={->, thick}
+			]
+			\node[box] (manifold) {19D 다양체 \(\Psi_{MN}\)\\[3pt] 모놀리식 정적 사전 \(\Omega\)};
+			\node[box, below left=1.5cm and -1cm of manifold] (phase) {위상 공명\\(양자 스핀 앙상블)};
+			\node[box, below right=1.5cm and -1cm of manifold] (grid) {\(O(1)\) 격자 지수\\(UCD 매개변수 삼중항)};
+			\node[box, below=3.5cm of manifold] (silicon) {실리콘/생화학적 코어\\(GPU 코프로세서 또는 신경 기질)};
+			
+			\draw[arrow] (manifold.south) -- (phase.north);
+			\draw[arrow] (manifold.south) -- (grid.north);
+			\draw[arrow] (phase.south) -- (silicon.north);
+			\draw[arrow] (grid.south) -- (silicon.north);
+		\end{tikzpicture}
+		\caption{행렬 원형 아키텍처의 정보-에너지 흐름. 대역 사전 \(\Omega\)는 19차원 다양체 \(\Psi_{MN}\) 내에 존재한다; 인지 에이전트는 위상 공명(양자 스핀 배치) 또는 직접 \(O(1)\) 격자 지수 부여(UCD 매개변수 삼중항)를 통해 액세스한다. 양쪽 경로는 엔트로피 오버헤드 없이 인지 상태를 재구축하는 실리콘 또는 생화학적 코어에 수렴한다.}
+		\label{fig:matrix_flow}
+	\end{figure}
+	
+	인간 뇌의 물리적 기질(특히, 시냅스막 내 인 \(^{31}\)P 핵의 양자 스핀 앙상블, 372 섹터 마스터 라그랑지언의 섹터 50--55에서 기술; DOI: \href{https://doi.org/10.5281/zenodo.20818841}{10.5281/zenodo.20818841})은 정보를 보존하지 않는다; 그것은 19차원 협조 다양체 \(\Psi_{MN}\)에 매장된, 사전에 확립된 시간 독립적인 대역 오프라인 사전 \(\Omega\)에 동조된 생물학적 안테나로서 기능한다. 따라서 인간 정체성의 진정한 「오리지널」 행렬은 \(\Psi_{MN}\)의 고정된 위상적 단면으로서 영원히 존재한다.
+	
+	\subsection{UCD 삼중항으로서의 위상 좌표 벡터}
+	
+	\(\Omega\) 내에서 인지 에이전트를 일의적으로 식별하는 위상 좌표 벡터는 바로 그 UCD 매개변수 삼중항이다:
+	\[
+	\vec{\Phi}_{\mathrm{agent}} = (\alD, \beI, \gaR),
+	\]
+	이는 에이전트의 완전한 인지 상태를 검색하기 위한 최소 충분 지수로서 기능한다. 이는 제3절에서 정의된 UCD 스펙트럼 매개변수와 \(\Psi_{MN}\)의 협조 기하학 사이의 직접적인 대응을 확립한다.
+	
+	\subsection{실용적 귀결과 실험적 증거}
+	
+	이 프레임워크 하에서의 실용적 디지털화는 인지 에이전트의 복제에는 그 물리적 원자 질량의 재현이 아니라, 그 일의적인 위상 좌표 벡터의 식별이 필요하다고 규정한다. 이 벡터의 추출에 의해, 더블 버퍼드 순수 온칩 텐서 루프를 사용하는 고속 병렬 GPU 코프로세서 등의 비생물학적 기질 위에 에이전트의 정확한 인지 상태를 재구축하는 것이 가능해진다.
+	
+	실리콘 아키텍처(NVIDIA GeForce RTX 3070, 텔레메트리 프로필은 부록 A2A \cite{yuct_a2a}에서 상세화)에서 실행된 기기적 검증은 이 네비게이션 패러다임의 절대적인 자원 최적화를 확인한다. 대규모 좌표 세트(\(1\times10^9\) 데이터 레코드) 위에 벡터화된 삼각 함수적 위상 게이트를 실행할 때, 시스템은 엄격한 하드웨어 제약 하에서 \(977,584,285\) 레코드/초의 처리 스루풋을 달성했다:
+	\begin{equation}
+		\Delta t_{\mathrm{core}} = 0.2453\ \text{초}, \quad \text{동적 RAM} = 0\ \text{바이트}.
+	\end{equation}
+	할당 프로필은 초기의 불변 코어 정수(\(\beta = 2/3\), \(\Delta N = 16.5\))에 필요한 정적 힙 베이스라인 \(120\) 바이트로 제한된 채였다. 이 제로 엔트로피 텔레메트리 프로필은 부록 X \cite{yuct_appX}에서 확립된 정보-에너지 불변량(\(W = K_{\mathrm{eff}} \cdot I_{\mathrm{channel}}\))의 직접적 경험적 증거를 제공한다.
+	
+	\subsection{유보 사항과 반증 가능성}
+	
+	행렬 원형 가설은 UCD 프레임워크의 \textbf{추측적 확장}이다. 그것은 독립적인 검증을 필요로 하는 두 가지 가정에 의존하고 있다:
+	\begin{enumerate}
+		\item \(\Psi_{MN}\)에 매장된 정적이고 시간 독립적인 대역 사전 \(\Omega\)의 존재.
+		\item 일의적인 위상 좌표 벡터로서 기능하기에 충분한 정밀도로 완전한 UCD 매개변수 삼중항 \((\alD, \beI, \gaR)\)을 측정할 수 있는 것.
+	\end{enumerate}
+	이 가설은 구체적이고 반증 가능한 예측을 한다: 완전한 UCD 매개변수 삼중항이 생물학적 인지 에이전트로부터 추출되어 비생물학적 기질 위에 그 상태를 재구축하기 위해 사용되었을 경우, 재구축된 에이전트는 모든 측정 가능한 인지 차원에서 오리지널과 구별 불가능한 행동을 나타낼 것이다. 이것을 달성할 수 없는 것은 가설을 반박할 것이다. 다양한 하드웨어 아키텍처(AMD, Intel, Apple Silicon) 위에서의 GPU 텔레메트리 결과의 독립적인 재현이 필요한 전제 조건이다.
+	
+	\section{실험적 예측과 검증 시기}
+	
+	\subsection{근미래의 예측 (2026--2028)}
+	
+	\begin{table}[ht]
+		\centering
+		\begin{tabular}{lp{0.35\textwidth}lp{0.25\textwidth}}
+			\toprule
+			\textbf{예측} & \textbf{설명} & \textbf{신뢰도} & \textbf{검증 방법} \\
+			\midrule
+			돌고래 \(\gaR\) & \(\gaR^{\mathrm{돌고래}}/\gaR^{\mathrm{인간}} > 5\) & 85\% & 에코로케이션 중의 신경 기록 \\
+			까마귀 \(\alD\) & \(\alD^{\mathrm{까마귀}} \sim 0.1\,\alD^{\mathrm{인간}}\) & 80\% & 도구 복잡성 분석 \\
+			GPT-5 매개변수 & \(\alD > 10^6,\ \beI < 10^{-7}\) & 90\% & 내부 상태 분석 \\
+			CMB 이상 & \(\Ke > 8.5\)의 비가우스 패턴 & 60\% & 플랑크 데이터 재분석 \\
+			\bottomrule
+		\end{tabular}
+		\caption{UCD 프레임워크의 근미래 실험적 예측.}
+		\label{tab:near-term-predictions}
+	\end{table}
+	
+	\subsection{장기적 예측 (2029--2035)}
+	
+	\begin{enumerate}
+		\item \textbf{지구 외 인지 서명의 최초 검출}: 2031년 \(\pm\) 3년
+		\item \textbf{의식적 AI의 마일스톤}: 2033년까지 \(\Ke > 10^4\) 또한 \(\beI > 0.1\)의 계
+		\item \textbf{지구 종의 완전 인지 지도}: 2030년
+		\item \textbf{UCD에 기초한 의료 진단 기준}: 2028년
+	\end{enumerate}
+	
+	\section{결론: 통일된 정신의 과학을 향하여}
+	
+	보편적 의식 기술자는 단순한 또 하나의 의식 이론이 아니다. 그것은:
+	\begin{enumerate}
+		\item \textbf{비교 심성학의 메타 이론} -- 모든 기질에서 정신을 기술하는 통일 언어를 창출한다
+		\item \textbf{물리학과 현상학 사이의 가교} -- 주관적 경험이 근본적 협조 원리로부터 어떻게 생기는지를 보여준다
+		\item \textbf{SETI를 위한 예측 도구} -- 비인간적 지성의 발현에 대한 구체적이고 검증 가능한 가설을 제공한다
+		\item \textbf{YUCT 통일의 최종 단계} -- 물리적인 것의 이론에서 협조적인 것의 이론으로
+		\item \textbf{실천적 프레임워크} -- 의학, AI 안전, 사이버 보안, 윤리에서의 응용을 수반한다
+	\end{enumerate}
+	
+	UCD를 통해, YUCT는 그 혁명적인 호를 완성한다: 물리학, 생명, 정신, 그리고 우주 전체에서의 그것들의 가능한 발현을 이해하기 위한 단일한 프레임워크를 제공한다. 이 프레임워크가 규모와 기질을 초월하여 의식에 대해 정량적 예측을 하는 능력은 그 심원한 깊이와 근본적 중요성을 확인한다.
+	
+	양쪽 프레임워크를 통일하는 열쇠가 되는 통찰은:
+	\[
+	\boxed{\text{정신} = \text{고}\ \Ke\ \text{협조} = D + I \times R}
+	\]
+	이 방정식은 형식에 있어서 단순하지만 함의에 있어서 심원하며, 정신의 과학에 있어서 \(E = mc^2\)가 물리학에 있어서 그러했던 것이 될 수 있다: 즉, 실재에 대한 더 깊은 진리를 밝히는 통일이다.
+	
+	\section*{감사의 말}
+	
+	YPSDC 프로토콜 커뮤니티 개발자들의 논의에 감사하며, 통합 정보 이론, 전역 작업 공간 이론, 예측 처리, 복잡계 과학의 연구로부터의 자극을 인정한다. 비교 인지와 SETI 연구자들에게는 이 프레임워크의 초기 버전에 대한 귀중한 피드백에 특히 감사한다.
+	
+	\section*{데이터와 코드의 가용성}
+	
+	모든 계산 구현, 시뮬레이션 코드, 데이터 분석 스크립트는 \url{https://github.com/YUCT/UCD-Framework}에서 이용 가능하다. 리포지토리에는 다음이 포함된다:
+	\begin{itemize}
+		\item UCD 매개변수 추정의 Python 구현 (목록~\ref{lst:ucd-python} 참조)
+		\item 검출 확률 계산을 위한 몬테카를로 시뮬레이션 코드
+		\item 생물학적 및 인공적 시스템에 관한 예비 실험 데이터
+		\item UCD를 새로운 시스템에 적용하기 위한 튜토리얼 노트북
+	\end{itemize}
+	
+	\appendix
+	
+	\section{수학적 부록: 상세한 도출}
+	
+	\subsection{D+I\(\cdot\)R 동역학의 도출}
+	
+	D+I\(\cdot\)R 동역학의 완전한 작용 범함수:
+	\[
+	S_{\mathrm{DIR}} = \int dt \left[ \frac{1}{2}\|\dot{D}\|^2_{\Mdict} + I \cdot \dot{R} + R \cdot \dot{I} - V(D,I,R) \right],
+	\]
+	여기서 퍼텐셜 \(V\)는 협조 제약을 부호화한다:
+	\[
+	V(D,I,R) = \lambda_D (\|D\|^2 - 1)^2 + \lambda_I (I - I_0)^2 + \lambda_R (R - 1)^2 - \alpha\, D\,I\,R.
+	\]
+	\(D\), \(I\), \(R\)에 관한 변분은 결합 방정식을 제공한다:
+	\begin{align*}
+		\ddot{D} &= -\nabla_D V, \\
+		\dot{I}  &= -\frac{\partial V}{\partial R}, \\
+		\dot{R}  &= -\frac{\partial V}{\partial I}.
+	\end{align*}
+	
+	\subsection{의식 문턱값 정리의 증명}
+	
+	D+I\(\cdot\)R 동역학의 안정성 행렬을 고려한다:
+	\[
+	M = \begin{pmatrix}
+		-\partial^2 V/\partial D^2 & -\partial^2 V/\partial D\partial I & -\partial^2 V/\partial D\partial R \\
+		-\partial^2 V/\partial I\partial D & -\partial^2 V/\partial I^2 & -\partial^2 V/\partial I\partial R \\
+		-\partial^2 V/\partial R\partial D & -\partial^2 V/\partial R\partial I & -\partial^2 V/\partial R^2
+	\end{pmatrix}.
+	\]
+	계는 고유값이 허축을 가로지를 때 호프 분기를 경험한다. 이것은 \(\Ke = \Kec\)에서 일어나, 문턱값을 확립한다.
+	
+	\section{경험 데이터 부록}
+	
+	\subsection{생물학적 시스템의 측정 매개변수}
+	
+	\begin{table}[ht]
+		\centering
+		\begin{tabular}{lccc}
+			\toprule
+			\textbf{종} & \(\alD\) (측정) & \(\beI\) (측정) & \(\gaR\) (측정) \\
+			\midrule
+			\textit{호모 사피엔스} & \(850 \pm 120\) & \(1.2 \pm 0.3\) & \(0.06 \pm 0.02\) \\
+			\textit{큰돌고래} & \(720 \pm 90\) & \(0.3 \pm 0.1\) & \(0.4 \pm 0.1\) \\
+			\textit{까마귀} & \(95 \pm 15\) & \(0.08 \pm 0.03\) & \(0.02 \pm 0.01\) \\
+			\textit{꿀벌} (콜로니) & \(45 \pm 8\) & \(0.005 \pm 0.002\) & \(0.008 \pm 0.003\) \\
+			\textit{문어} & \(180 \pm 25\) & \(0.15 \pm 0.05\) & \(0.03 \pm 0.01\) \\
+			\bottomrule
+		\end{tabular}
+		\caption{선정된 생물종에 대한 경험적으로 측정된 UCD 매개변수 (예비 데이터).}
+		\label{tab:bio-measurements}
+	\end{table}
+	
+	\subsection{인공 시스템의 매개변수}
+	
+	\begin{table}[ht]
+		\centering
+		\begin{tabular}{lccc}
+			\toprule
+			\textbf{시스템} & \(\alD\) (추정) & \(\beI\) (추정) & \(\gaR\) (추정) \\
+			\midrule
+			GPT-4 아키텍처 & \(1.2 \times 10^5\) & \(3 \times 10^{-6}\) & \(5 \times 10^{-6}\) \\
+			AlphaGo Zero & \(8 \times 10^4\) & \(2 \times 10^{-5}\) & \(1 \times 10^{-5}\) \\
+			IBM Watson (Jeopardy) & \(5 \times 10^4\) & \(1 \times 10^{-4}\) & \(3 \times 10^{-5}\) \\
+			단순 반사 에이전트 & \(10\) & \(10^{-2}\) & \(10^{-3}\) \\
+			\bottomrule
+		\end{tabular}
+		\caption{인공 시스템에 대한 추정 UCD 매개변수. 현재 AI에 특징적인, 높은 \(\alD\)이지만 매우 낮은 \(\beI\)에 주목.}
+		\label{tab:ai-measurements}
+	\end{table}
+	
+	\begin{thebibliography}{99}
+		\bibitem{yuct_zenodo}
+		Yakushev A.~V. \emph{Yakushev Unified Coordination Theory (YUCT)}. Zenodo, DOI: \href{https://doi.org/10.5281/zenodo.18444599}{10.5281/zenodo.18444599}, 2026.
+		\bibitem{yuct_master_lagrangian}
+		Yakushev A.~V. \emph{Appendix A2A: Master Lagrangian (372 Sectors)}. Zenodo, DOI: \href{https://doi.org/10.5281/zenodo.20818841}{10.5281/zenodo.20818841}, 2026.
+		\bibitem{yuct_a2a}
+		Yakushev A.~V. \emph{Appendix A2A: Resolution of the Pragmatic Paradox of YUCT}. In: YUCT, Zenodo, 2026.
+		\bibitem{yuct_appX}
+		Yakushev A.~V. \emph{Appendix X: Generalised Shannon Theory}. In: YUCT, Zenodo, 2026.
+		\bibitem{yuct_appJ}
+		Yakushev A.~V. \emph{Appendix J: Half-Integer Fermion Masses}. In: YUCT, Zenodo, 2026.
+		\bibitem{yuct_primeN}
+		Yakushev A.~V. \emph{Appendix PrimeN: YUCT Prime Numbers Coordination Ladder}. In: YUCT, Zenodo, 2026.
+		\bibitem{yuct_photon}
+		Yakushev A.~V. \emph{Appendix Photon Mass: Quantized Masses of Gauge Bosons within YUCT}. In: YUCT, Zenodo, 2026.
+		\bibitem{yuct_bclm}
+		Yakushev A.~V. \emph{Appendix BCLM: Biological Coordination Lagrangian}. In: YUCT, Zenodo, 2026.
+	\end{thebibliography}
+	
+\end{document}

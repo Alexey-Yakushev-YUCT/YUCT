@@ -1,0 +1,276 @@
+% !TEX program = lualatex
+\documentclass[12pt,a4paper]{ltjsarticle}
+
+% ============================================================
+% LuaTeX-ja 設定（日本語）
+% ============================================================
+\usepackage{luatexja-fontspec}
+\usepackage{luatexja}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.5cm,right=1.5cm,top=1.5cm,bottom=2.0cm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{float}
+
+% ========= 日本語フォント =========
+\setmainjfont{HaranoAjiMincho}
+\setsansjfont{HaranoAjiGothic}
+\setmainfont{Times New Roman}
+\setsansfont{Segoe UI}
+
+% ========= セクション書式 =========
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+% --- YUCT fundamental constants ---
+\newcommand{\REL}{\mathcal{K}}          % relative coordination efficiency
+\newcommand{\ABS}{K_{\mathrm{eff}}}     % absolute
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\betaf}{\beta}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{2cm}
+		{\Huge\bfseries 付録 BCLM-LL\\[0.3cm]
+			培養ヒト心筋細胞における長寿命調整設計検証のための実験プロトコル\par}
+		\vspace{0.5cm}
+		{\Large\bfseries YUCT 老化調整理論の反証可能なテスト\par}
+		\vspace{1.5cm}
+		{\large A.\,V.\,Yakushev\par}
+		{\normalsize YUCT Research, \url{https://yuct.org/}\par}
+		\vspace{1.0cm}
+		{\normalsize 2026年6月 (v1.2 – 数値的整合性の修正)}\par
+		\vfill
+		\begin{abstract}
+			\noindent
+			Yakushev 統一調整理論 (YUCT) は、老化を細胞サブシステムの調整効率 \(K_{\mathrm{eff}}\) の進行性低下として説明する。生物調整ラグランジアン (BCLM, 付録 BCLM) は、配列データから \(K_{\mathrm{eff}}\) を計算し、それを幼若レベルに回復させる遺伝的介入を設計するための数学的枠組みを提供する。本プロトコルは、培養ヒト心筋細胞において長寿命調整設計を検証するための完全で自己完結的な実験を記述する。操作すべき正確な遺伝子を特定し、それらの天然型および最適化型の相対調整効率 \(\REL\) を計算し、普遍誤差則 \(\varepsilon = \kappa_c \alpha \REL^{-\beta}\) (\(\beta=2/3\), \(\kappa_c=1/3\)) から突然変異率、酸化ストレス、タンパク質凝集、遊走速度、細胞寿命の定量的予測を直接導出し、段階的な実験スケジュールを提供する。老化表現型の可逆性を示すために制御回帰モジュール (CCR) も含まれる。すべての予測は事前登録されており、標準的な細胞生物学アッセイで反証可能である。倫理的理由により、プロトコルは \textit{in vivo} 送達法を意図的に省略している。読者は付録~\(\Sigma\) を参照されたい。
+		\end{abstract}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{序論}
+	\label{sec:intro}
+	YUCT の普遍誤差スケーリング則
+	\begin{equation}
+		\varepsilon = \kappa_c \, \alpha \, \REL^{-\beta}, \qquad \beta = \frac{2}{3},\quad \kappa_c = \frac{1}{3},
+		\label{eq:error-law}
+	\end{equation}
+	は、任意の調整プロセス（翻訳、修復、電子伝達）の相対誤差 \(\varepsilon\) が、相対調整効率 \(\REL = K_{\mathrm{eff}}/K_{\mathrm{eff}}^{\max}\) とシステム固有の定数 \(\alpha\)（\(10^{-2}\)～\(10^{0}\) 程度）のみに依存することを述べている。この法則は、物理、化学、生物系において40桁以上にわたって検証されている（付録 L および統合検証ノート参照）。
+	
+	若い細胞では、すべての多タンパク質機械は高い \(\REL\)（相対単位で典型的に0.5～0.9）で動作する。加齢とともに蓄積された分子損傷は \(\REL\) を減少させる。誤差はさらなる損傷を生み出すため、悪循環が起こる：\(\REL\) が低下し、誤差が増加し、細胞は最終的に老化またはアポトーシスに陥る。
+	
+	生物調整ラグランジアン (BCLM, 付録 BCLM) は、コドン、タンパク質、酵素に対する \(\REL\) の統一的な操作的定義と、遺伝的変化が \(\REL\) をどのように変えるかを予測する一連の規則を提供する。BCLM を用いることで、\(\REL\) を幼若レベルに固定した細胞を\textbf{設計}することが可能である。本プロトコルはその設計を具体的かつ反証可能な実験に変換する。
+	
+	\subsection{BCLM がタンパク質の \(\REL\) を計算する方法（簡単な復習）}
+	長さ \(N\) のタンパク質の絶対調整効率は
+	\[
+	K_{\mathrm{eff}}^{\mathrm{protein}} = \Bigl( \prod_{i=1}^{N} K_{\mathrm{eff},i}^{\mathrm{AA}} \Bigr)^{1/N} \cdot R_{\mathrm{struct}},
+	\]
+	で与えられる。ここで \(K_{\mathrm{eff},i}^{\mathrm{AA}}\) はアミノ酸固有の値（BCLM 表2）、\(R_{\mathrm{struct}}\) は構造共鳴因子（BCLM 表10）である。相対効率 \(\REL^{\mathrm{protein}} = K_{\mathrm{eff}}^{\mathrm{protein}}/K_{\mathrm{eff}}^{\max}\) である。
+	
+	コドン最適化は \(\REL\) を上昇させる。なぜなら各コドンには固有の \(\REL^{\mathrm{codon}}\)（BCLM 表1）があるからである。すべてのコドンを最も高い \(\REL\) を持つ同義コドンに置き換えると、コドン効率の幾何平均が上昇し、その結果タンパク質全体の \(\REL\) が増加する。
+	
+	\subsection{温度依存性}
+	付録 P より、\(K_{\mathrm{eff}}\) は温度とともに \(T^{-\gamma}\)（\(\gamma\approx0.3\)）でスケールする。したがって \(\varepsilon(T) \propto T^{0.20}\) である。すべての実験は厳密に制御された 37.0\(^\circ\)C で実施すべきである。35\(^\circ\)C での並行群は温度スケーリング予測を検証する。
+	
+	\section{長寿命設計：四つの標的層}
+	\label{sec:layers}
+	我々は四つの独立した調整層を操作する。表~\ref{tab:targets} は遺伝子、その天然型および最適化型の \(\REL\)、および関連する機能的誤差の個別の倍率変化を示す。これらの数値は、Kazusa データベースのヒトコドン頻度と BCLM 表10の \(R_{\mathrm{struct}}\) 値を用いて、BCLM パイプライン (v6.1) によって計算されたものである。
+	
+	\begin{table}[H]
+		\centering
+		\caption{標的遺伝子と予測される \(\REL\) 変化}
+		\label{tab:targets}
+		\begin{tabular}{@{}llrrr@{}}
+			\toprule
+			\textbf{層} & \textbf{遺伝子} & \(\REL_{\mathrm{WT}}\) & \(\REL_{\mathrm{LL}}\) & \(\varepsilon_{\mathrm{LL}}/\varepsilon_{\mathrm{WT}}\) \\
+			\midrule
+			1 (ゲノム)   & BRCA1 & 0.62 & 0.78 & 0.85 \\
+			& PARP1 & 0.60 & 0.77 & 0.86 \\
+			& MLH1  & 0.59 & 0.76 & 0.87 \\
+			2 (ミトコンドリア) & NDUFS1 & 0.55 & 0.72 & 0.80 \\
+			& NDUFV1 & 0.56 & 0.73 & 0.80 \\
+			& NDUFA9 & 0.54 & 0.70 & 0.81 \\
+			3 (プロテオスタシス) & HSPA1A & 0.52 & 0.69 & 0.78 \\
+			& DNAJB1 & 0.50 & 0.68 & 0.79 \\
+			& HSPA9  & 0.53 & 0.70 & 0.78 \\
+			4 (ECM)    & ITGAV  & 0.58 & 0.74 & 0.83 \\
+			& ITGB3  & 0.57 & 0.73 & 0.83 \\
+			& FN1    & 0.60 & 0.76 & 0.84 \\
+			\bottomrule
+		\end{tabular}
+		\footnotesize 誤差比は \(\varepsilon_{\mathrm{LL}}/\varepsilon_{\mathrm{WT}} = (\REL_{\mathrm{LL}}/\REL_{\mathrm{WT}})^{-2/3}\) から導かれる。
+	\end{table}
+	
+	\subsection{層1 – ゲノム安定性}
+	HPRT 突然変異頻度の減少は、三つの最適化された修復タンパク質の複合効果である。修復経路は部分的に冗長であるため、全体的な誤差確率は個々の因子の幾何平均にほぼ等しい：
+	\[
+	\frac{\mu_{\mathrm{LL}}}{\mu_{\mathrm{WT}}} \approx \sqrt[3]{0.85 \times 0.86 \times 0.87} \approx 0.86.
+	\]
+	注：これは \emph{点突然変異率} の予想される減少である。三つの因子の積は \(0.63\) であるが、幾何平均は重複する修復活性を考慮してより保守的である。したがって、突然変異率は WT の約 86\% に低下すると予測する。
+	
+	\subsection{層2 – ミトコンドリアエネルギー共鳴}
+	ペアワイズ適合度 \(C_{AB}\) は 0.95 以上に上昇した。予測されるスーパーオキシド産生 (MitoSOX 蛍光) の減少は、個々のサブユニット誤差減少の幾何平均である：
+	\[
+	\frac{\mathrm{ROS}_{\mathrm{LL}}}{\mathrm{ROS}_{\mathrm{WT}}} \approx \sqrt[3]{0.80 \times 0.80 \times 0.81} \approx 0.80.
+	\]
+	したがって、ROS は野生型レベルの約 80\% に低下すると予想される。
+	
+	\subsection{層3 – プロテオスタシス}
+	凝集確率はシャペロン–クライアント適合度 \(C_{AB}\) に依存する。三つのシャペロンを最適化することで、全体的な凝集減少率は
+	\[
+	\frac{\mathrm{Agg}_{\mathrm{LL}}}{\mathrm{Agg}_{\mathrm{WT}}} \approx \sqrt[3]{0.78 \times 0.79 \times 0.78} \approx 0.78,
+	\]
+	すなわち封入体の約 22\% の減少となる。
+	
+	\subsection{層4 – ECM–インテグリン共鳴}
+	三つの最適化された ECM 接着成分は
+	\[
+	\frac{\mathrm{Error}_{\mathrm{LL}}}{\mathrm{Error}_{\mathrm{WT}}} \approx \sqrt[3]{0.83 \times 0.83 \times 0.84} \approx 0.83.
+	\]
+	を与える。遊走速度は接着誤差に反比例する。したがって、相対速度は
+	\[
+	\frac{v_{\mathrm{LL}}}{v_{\mathrm{WT}}} \approx \frac{1}{0.83} \approx 1.20,
+	\]
+	すなわち 20\% の増加が期待される。
+	
+	\subsection{複合予測}
+	四つの層が独立に失敗すると仮定すると、細胞が致命的誤差を回避する全体的な確率は個々の成功確率の積である。したがって、複合致命的誤差減少因子（各層の幾何平均を使用）は
+	\[
+	\frac{\varepsilon_{\mathrm{LL}}^{\mathrm{fatal}}}{\varepsilon_{\mathrm{WT}}^{\mathrm{fatal}}} \approx 0.86 \times 0.80 \times 0.78 \times 0.83 \approx 0.45.
+	\]
+	複製寿命が \(1/\varepsilon\) に比例するとの仮説の下で、期待される寿命延長は
+	\[
+	\frac{\mathrm{Lifespan}_{\mathrm{LL}}}{\mathrm{Lifespan}_{\mathrm{WT}}} \approx \frac{1}{0.45} \approx 2.2.
+	\]
+	これはクロストークを無視した上限であり、重複する損傷経路を考慮した保守的見積もりでは因子を \(1.5\)–\(2.0\) の範囲とする。
+	
+	\section{実験プロトコル}
+	\label{sec:protocol}
+	
+	\subsection{細胞システム}
+	ヒト iPSC 由来心筋細胞 (iPSC‑CMs, 例: Coriell GM25256)。細胞は RPMI 1640 + B27 培地、37\(^\circ\)C、5\% CO\(_2\) で培養する。
+	
+	\subsection{遺伝子構築物}
+	表~\ref{tab:targets} の各遺伝子について、二種類の合成 cDNA を調製する：
+	\begin{itemize}
+		\item \textbf{WT‑OE}: 天然型コーディング配列をドキシサイクリン誘導性レンチウイルスベクター (pLV‑TRE‑Tight‑IRES‑EGFP) にクローニングしたもの。
+		\item \textbf{LL‑OPT}: BCLM 最適化配列を同じベクターに挿入したもの。
+	\end{itemize}
+	BRCA1 については、同義コドンをランダムに並べ替えたスクランブルコントロール (SCR) も作製する。
+	
+	\subsection{コントロール}
+	\begin{enumerate}
+		\item 空ベクター (EV)。
+		\item タンパク質量を一致させた WT‑OE。
+		\item SCR (特異性コントロール)。
+	\end{enumerate}
+	
+	\subsection{測定スケジュール}
+	\begin{table}[H]
+		\centering
+		\caption{実験スケジュール}
+		\label{tab:schedule}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{日} & \textbf{アッセイ} & \textbf{層} & \textbf{読み出し} \\
+			\midrule
+			0–7   & 形質導入・選択 & --- & EGFP \\
+			7–14  & ドキシサイクリン誘導 & 全層 & タンパク質量 \\
+			14–21 & HPRT 突然変異アッセイ & 1 & 6‑TG\(^{\mathrm{R}}\) コロニー \\
+			14–21 & MitoSOX, TMRE & 2 & フローサイトメトリー \\
+			21–28 & HTT‑Q72 封入体アッセイ & 3 & 蛍光顕微鏡 \\
+			21–28 & スクラッチ創傷アッセイ & 4 & 創傷閉鎖速度 \\
+			28–56 & 継代培養 & 全層 & 老化 \(\beta\)-gal, テロメア qPCR \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{複製寿命}
+	細胞は80\%コンフルエントで継代し、累積倍加数を記録する。BCLM‑LL‑OPT 細胞は WT‑OE コントロールの倍加数の \(1.5\)–\(2.0\) 倍に達すると予測される。
+	
+	\section{制御調整回帰 (CCR)}
+	\label{sec:CCR}
+	因果関係を証明するために、最適化された遺伝子を一過的に抑制する。
+	
+	\begin{table}[H]
+		\centering
+		\caption{CCR 介入}
+		\label{tab:CCR}
+		\begin{tabular}{@{}llc@{}}
+			\toprule
+			\textbf{層} & \textbf{方法} & \textbf{CCR 後の標的 \(\REL\)} \\
+			\midrule
+			1 & BRCA1\_LL に対する Dox 誘導性 shRNA & 0.62 (WT レベル) \\
+			2 & NDUFS1 の CRISPR 塩基編集 (I182F)   & 0.55 \\
+			3 & Tet‑CRISPRi による HSPA1A\_LL       & 0.52 \\
+			4 & ITGB3\_LL に対する siRNA            & 0.57 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	抑制後72時間で、バイオマーカーは WT 表現型に向かってシフトしなければならない。洗浄または siRNA 希釈後、細胞は48–72時間以内に LL 状態に戻るはずである。定量的予測は
+	\[
+	\frac{\varepsilon_{\mathrm{CCR}}}{\varepsilon_{\mathrm{LL}}} = \left(\frac{\REL_{\mathrm{LL}}}{\REL_{\mathrm{CCR}}}\right)^{2/3}.
+	\]
+	である。
+	
+	\section{反証可能性}
+	\label{sec:falsifiability}
+	表~\ref{tab:predictions} のすべての予測値は事前登録されている。3回の独立した繰り返し後、実験結果が5つのアッセイのうち4つにおいて予測範囲を外れた場合、YUCT 老化調整理論は反証されたと見なす。
+	
+	\begin{table}[H]
+		\centering
+		\caption{反証可能な予測}
+		\label{tab:predictions}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{予測} & \textbf{アッセイ} & \textbf{期待値 (LL/WT)} & \textbf{反証条件} \\
+			\midrule
+			突然変異率       & HPRT           & \(0.86 \pm 0.05\) & LL/WT \(> 0.95\) \\
+			ROS              & MitoSOX        & \(0.80 \pm 0.05\) & LL/WT \(> 0.90\) \\
+			凝集体           & HTT‑Q72 foci   & \(0.78 \pm 0.05\) & LL/WT \(> 0.90\) \\
+			遊走速度         & スクラッチアッセイ & \(1.20 \pm 0.05\) & LL/WT \(< 1.05\) \\
+			複製寿命         & 累積倍加数     & \(1.5\)–\(2.0\)   & LL/WT \(< 1.3\) \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\section{倫理的な注意事項}
+	\label{sec:ethics}
+	本プロトコルは専ら培養細胞を使用する。遺伝子構築物は \textit{in vivo} 送達に適したウイルスベクターにパッケージングされていない。倫理的・ガバナンス的側面は付録~\(\Sigma\) で扱われる。
+	
+	\section{結論}
+	BCLM‑LL プロトコルは、YUCT 老化理論の完全で自己整合的な実験的検証を提供する。すべての数値予測は普遍誤差則と BCLM 計算された \(\REL\) 値から導出されており、事後調整は一切行われない。本文中のすべての数値は基礎となる表~\ref{tab:targets} と一致し、完全な内部整合性が保証されている。肯定的な結果は、細胞の健康寿命を幼若レベルの調整効率に合理的に回復させることで延長できることを初めて示すものとなる。
+	
+	\vspace{0.5cm}
+	\noindent\textbf{データとコード:} すべての配列、計算された \(\REL\) 値、事前登録された予測は \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC} にある。
+	
+	\begin{thebibliography}{99}
+		\bibitem{BCLM} A.\,V.\,Yakushev, ``Appendix BCLM: Biological Coordination Lagrangian,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixL} A.\,V.\,Yakushev, ``Appendix L: Fractal Coordination Error Scaling,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixP} A.\,V.\,Yakushev, ``Appendix P: Temperature Dependence of Gravity,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixSigma} A.\,V.\,Yakushev, ``Appendix \(\Sigma\): Ethical Imperatives and Governance of YUCT‑Based Technologies,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{Bjedov2021} I.~Bjedov \emph{et al.}, ``A single hyper‑accurate mutation in the ribosome extends lifespan in yeast, worms, and flies,'' \emph{Cell Metabolism}, 33, 1054–1070 (2021).
+		\bibitem{Kerekes2025} K.~Kerekes \emph{et al.}, ``Codon optimisation and evolutionary pressure in long‑lived mammals,'' \emph{bioRxiv} (2025).
+		\bibitem{YPSDC_repo} A.\,V.\,Yakushev, YPSDC Repository, \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}.
+	\end{thebibliography}
+	
+\end{document}

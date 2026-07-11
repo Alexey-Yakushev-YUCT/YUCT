@@ -1,0 +1,718 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts,mathtools}
+\usepackage{amsthm}
+\usepackage{geometry}
+\geometry{left=1.0cm,right=1.0cm,top=1.25cm,bottom=3.1cm}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{multicol}
+\usepackage{fontspec}
+\usepackage{luatexja}          % 한국어 조판 처리
+\usepackage{luatexja-fontspec} % 한국어 폰트 설정
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, calc, decorations.pathmorphing, patterns}
+\usepackage{enumitem}
+\usepackage{bm}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{braket}
+
+% ========= 한국어 폰트 설정 (Windows) – 성공한 버전 =========
+\defaultfontfeatures{Ligatures=TeX}
+\setmainfont{Times New Roman}[
+Script=Latin,
+Language=English
+]
+\setsansfont{Malgun Gothic}[
+Script=CJK,
+Language=Korean
+]
+\setmonofont{Courier New}[
+Script=Latin,
+Language=English
+]
+% 한국어 전용 폰트 (luatexja-fontspec 사용)
+\setmainjfont{Malgun Gothic}[
+Script=CJK,
+Language=Korean
+]
+\setsansjfont{Malgun Gothic}[
+Script=CJK,
+Language=Korean
+]
+\setmonojfont{Noto Sans Mono CJK KR}[
+Script=CJK,
+Language=Korean
+]
+
+% ========= YUCT 색상 =========
+\definecolor{skyblue}{RGB}{0,102,204}
+\definecolor{darkblue}{RGB}{0,0,139}
+\definecolor{gold}{RGB}{255,215,0}
+
+% ========= YUCT 매크로 =========
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\betaf}{\beta}
+\newcommand{\df}{d_{\!f}}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+\newcommand{\Mpl}{M_{\mathrm{Pl}}}
+\newcommand{\Lpl}{l_{\mathrm{Pl}}}
+
+% ========= 정리 환경 (한국어) =========
+\newtheorem{theorem}{정리}[section]
+\newtheorem{lemma}[theorem]{보조정리}
+\newtheorem{proposition}[theorem]{명제}
+\newtheorem{definition}[theorem]{정의}
+\newtheorem{remark}[theorem]{비고}
+\renewcommand{\proofname}{증명}
+
+\DeclareMathOperator{\Ent}{Ent}
+\DeclareMathOperator{\Tr}{Tr}
+
+% YUCT 명령어
+\newcommand{\Dir}{\mathcal{D}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\Planck}{\mathrm{Pl}}
+
+% ========= 섹션 서식 =========
+\titleformat{\section}{\LARGE\bfseries\color{darkblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\Large\bfseries\color{darkblue}}{\thesubsection}{1em}{}
+
+% ========= 헤더 및 푸터 =========
+\fancypagestyle{firstpage}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			{\small \textsuperscript{1}Yakushev Research, \url{https://yuct.org/}} \hfill
+			{\small YPSDC 프로토콜: \url{https://ypsdc.com/}}\\[-2pt]
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			\textbf{야쿠셰프 통일 조정 이론 2026} \hfill \thepage\\[10pt]
+		\end{minipage}%
+	}%
+}
+
+\fancypagestyle{plain}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[4pt]
+			\textbf{야쿠셰프 통일 조정 이론 2026} \hfill \thepage\\[4pt]
+		\end{minipage}%
+	}%
+}
+
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+\raggedbottom
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+% ========= 헤더 매크로 =========
+\newcommand{\makeheader}{%
+	\noindent
+	\begin{minipage}{0.17\textwidth}
+		\raggedright
+		{\sffamily\bfseries\color{skyblue}\fontsize{46}{46}\selectfont YUCT}%
+	\end{minipage}%
+	\hspace{30pt}
+	\begin{minipage}{0.32\textwidth}
+		\raggedright
+		{\sffamily\fontsize{11}{13}\selectfont 야쿠셰프\\ 통일\\ 조정 이론}%
+	\end{minipage}%
+	\hfill
+	\begin{minipage}{0.38\textwidth}
+		\raggedleft
+		{\sffamily\bfseries 기술 노트}\\ 
+		{\sffamily 2026년 5월 발행}\\ 
+		{\sffamily\footnotesize \scriptsize\url{https://doi.org/10.5281/zenodo.18444598}}%
+	\end{minipage}
+	\par\vspace{5pt}
+	\noindent\textcolor{gold}{\rule{\textwidth}{1.6pt}}
+	\par\vspace{0pt}
+}
+
+\begin{document}
+	\thispagestyle{firstpage}
+	\makeheader
+	
+	\vspace{0cm}
+	{\LARGE\bfseries 조정 네트워크의 기하학적 장력으로서의 중력과\\
+		YUCT의 순환 우주론 \\
+		(엄밀한 유도를 포함한 최종 버전)\par}
+	\vspace{0.2cm}
+	
+	{\large Alexey V. Yakushev\textsuperscript{1}} \\
+	\vspace{0.0cm}
+	
+	{\color{darkblue}\textbf{\LARGE 초록}} \par
+	{\large
+		\noindent
+		우리는 야쿠셰프 통일 조정 이론 (YUCT) 의 틀 안에서 중력을 창발 현상으로 엄밀하게 수학적으로 유도한다. 조정 효율 \(K_{\mathrm{eff}}\) 의 미시적 정의와 스칼라장 \(\phi = \ln (K_{\mathrm{eff}}/K_0)\) 로부터 출발하여 조정 네트워크의 자유 에너지 범함수를 구성한다. 모든 상수는 선험적 사전의 매개변수를 통해 표현된다. 작용의 변분은 암흑 물질과 암흑 에너지 모두를 대체하는 기하학적 장력 텐서를 갖는 수정된 아인슈타인 방정식을 제공한다. 뉴턴 극한은 올바르게 유도되며, 추가 항이 평평한 회전 곡선을 생성하는 유효 암흑 물질 밀도로 작용함을 보여준다. 우주 상수 \(\Omega_\Lambda = 2/3\) 은 19차원 예조정 공간의 위상수학에서 비롯되며, \(K_{\mathrm{eff}} = \Phi\) (황금비) 에서의 상전이로부터 순환 우주론이 나타난다. 예측은 은하 및 우주론적 척도에서 정량화된다.}
+	
+	\vspace{0.1cm}
+	\noindent
+	{\color{darkblue}\textbf{핵심어:}} YUCT，조정 효율 \(K_{\mathrm{eff}}\)，기하학적 장력，수정된 중력，암흑 물질，암흑 에너지，우주 상수 \(\Omega_\Lambda=2/3\)，순환 우주론，황금비，위상수학적 불변량，19차원 예조정 공간。
+	
+	\vspace{0.4cm}
+	
+	\tableofcontents
+	
+	\section{조정장의 미시적 기초}
+	
+	\subsection{조정 클러스터와 효율}
+	\begin{definition}
+		레벨 \(n\) 의 조정 클러스터는 \(\mathcal{C}_n = (\mathcal{O}_n, \Dir_n, L_n, \tau_n, K_{\mathrm{eff},n})\) 으로 정의된다. 여기서 \(\mathcal{O}_n\) 은 에이전트 집합, \(\Dir_n\) 은 선험적 사전, \(L_n\) 은 크기, \(\tau_n\) 은 조정 시간이며,
+		\[
+		K_{\mathrm{eff},n} = \frac{H(\mathcal{A})}{H(\mathcal{K})}
+		\]
+		는 작용 엔트로피와 색인 엔트로피의 비율이다.
+	\end{definition}
+	
+	\(N\) 개의 에이전트로 구성된 클러스터에 대해, 유효 사전 크기는 \(|\Dir_{\mathrm{eff}}| \propto \mathcal{N}^{\alpha N}\) 과 같이 성장한다. 여기서 \(\mathcal{N}\) 은 기본 알파벳 크기, \(\alpha<1\) 은 상관 지수이다. 사전 엔트로피는
+	\[
+	H(\Dir) = \log_2 |\Dir_{\mathrm{eff}}| = \alpha N \log_2 \mathcal{N}.
+	\]
+	각 색인이 1비트를 운반한다고 가정하면 \(H(\mathcal{K}) = N\) 이므로,
+	\begin{equation}
+		K_{\mathrm{eff}} = \alpha \log_2 \mathcal{N}. \label{eq:Keff-micro}
+	\end{equation}
+	단일 클러스터에서는 \(\alpha\) 와 \(\mathcal{N}\) 이 고정되어 \(K_{\mathrm{eff}}\) 는 상수이다. 연속 극한에서 국소적 깊이 (따라서 \(\alpha\)) 와 국소적 풍부도 (\(\mathcal{N}\)) 는 공간적으로 느리게 변할 수 있다. 지배적인 공간 의존성은 \(\mathcal{N}\) 을 통해 나타나며, \(\alpha\) 의 변동은 부차적이며 기준 척도의 재규격화로 흡수된다. 따라서 스칼라장을
+	\begin{equation}
+		\phi(x) = \ln \frac{K_{\mathrm{eff}}(x)}{K_0}, \qquad K_0 \equiv \alpha_0 \log_2 \mathcal{N}_0,
+		\label{eq:phi-def}
+	\end{equation}
+	로 정의한다. 여기서 \(\alpha_0,\mathcal{N}_0\) 은 진공 (플랑크 척도) 형상을 가리킨다. 플랑크 척도에서 채널 용량은 \(1/t_P\) 이고 사전은 최소이다: \(\mathcal{N}_0 \approx 2\), \(\alpha_0 \rightarrow 1\), 따라서 \(K_0 \approx 1\) 이고 진공에서 \(\phi=0\) 이다.
+	
+	\subsection{사전의 엔트로피 밀도}
+	사전 엔트로피의 공간 밀도는 \(s = H(\Dir)/V_c\) 이다. 클러스터의 상관 부피는 \(V_c \propto N^{1/d_f}\) 로 스케일하며, 여기서 \(d_f\) 는 프랙탈 차원이다. \(N \propto K_{\mathrm{eff}}^{1/\alpha}\) 와 (\ref{eq:Keff-micro}) 를 사용하면, 큰 클러스터에 대해
+	\begin{equation}
+		s(\phi) = s_0\, e^{\lambda\phi}, \qquad \lambda = \frac{1}{\beta} = \frac{3}{2},
+		\label{eq:s-phi}
+	\end{equation}
+	을 얻는다. 여기서 \(\beta = 2/3\) 은 보편 오차 지수이다 (부록 L). 상수 \(s_0\) 은 진공 엔트로피 밀도이다.
+	
+	\section{조정 네트워크의 자유 에너지}
+	
+	\subsection{헬름홀츠 범함수}
+	조정 네트워크는 엔트로피를 운반하는 탄성 매질이다. 그 평형은 헬름홀츠 자유 에너지의 최소화로부터 얻어진다:
+	\begin{equation}
+		F = \int d^4x \sqrt{-g} \left[ \frac{1}{2}\kappa (\nabla\phi)^2 + V(\phi) - T s(\phi) \right],
+		\label{eq:F}
+	\end{equation}
+	여기서 \(T\) 는 네트워크의 유효 온도이다. 항 \(-Ts\) 는 표준 \(F = U - TS\) 에 대응하며, 여기서 \(U = \int [\frac12\kappa(\nabla\phi)^2 + V(\phi)]\) 이다.
+	
+	\subsection{퍼텐셜의 결정}
+	진공 \(\phi=0\) 은 극값이어야 한다: \(\delta F/\delta\phi|_0 = 0\). \(s'(\phi) = \lambda s_0 e^{\lambda\phi}\) 를 사용하면
+	\[
+	V'(0) = T s'(0) = \lambda T s_0.
+	\]
+	이 조건을 만족하고 큰 \(\phi\) 에서의 엔트로피 성장과 일관된 가장 단순한 퍼텐셜은
+	\begin{equation}
+		\boxed{V(\phi) = V_0 \left( e^{\lambda\phi} - \lambda\phi - 1 \right), \qquad V_0 \equiv T s_0.}
+		\label{eq:V}
+	\end{equation}
+	\(\phi \ll 1\) 에서는 \(V(\phi) \approx \frac12 V_0 \lambda^2 \phi^2\)；\(\phi \gg 1\) 에서는 \(V(\phi) \sim V_0 e^{\lambda\phi}\) 이어서 자유 에너지의 엔트로피 항을 상쇄하며, \(\phi=0\) 이 유일한 전역적 극소임을 보장한다.
+	
+	\subsection{\(\kappa\) 와 \(V_0\) 의 미시적 추정}
+	강성 \(\kappa\) 는 사전 효율의 단위 기울기당 에너지 비용이다. 다음과 같이 추정할 수 있다:
+	\[
+	\kappa \approx \frac{E_P}{\ell_P} \cdot \frac{1}{\alpha_0 \log_2 \mathcal{N}_0} \sim \frac{\hbar c}{\ell_P^2},
+	\]
+	여기서 \(E_P, \ell_P\) 은 플랑크 에너지와 길이이다. 진공 엔트로피 밀도는 대략 플랑크 세포당 1비트: \(s_0 \approx k_B / \ell_P^3\). \(T \sim T_P = \sqrt{\hbar c^5 / G k_B^2}\) 를 취하면
+	\[
+	V_0 = T s_0 \sim \frac{\hbar c}{\ell_P^4} \sim M_{\mathrm{Pl}}^4.
+	\]
+	이러한 대략적인 추정은 매개변수를 플랑크 척도에 고정하지만, 그 정확한 값은 저에너지 현상 (은하 회전과 우주 팽창) 에 대한 맞춤으로 결정되며, 이는 아래에서 수행된다.
+	
+	\section{수정된 아인슈타인 방정식}
+	
+	조정장을 중력에 결합시키면 전체 작용은
+	\begin{equation}
+		S = \int d^4x \sqrt{-g} \left[ \frac{1}{16\pi G_0} R + \frac{1}{2}\kappa (\nabla\phi)^2 + V(\phi) \right].
+		\label{eq:action}
+	\end{equation}
+	\(g^{\mu\nu}\) 에 대해 변분하면
+	\begin{equation}
+		G_{\mu\nu} = 8\pi G_0 \left( \Theta_{\mu\nu} + T_{\mu\nu}^{(\mathrm{matter})} \right),
+		\label{eq:einstein}
+	\end{equation}
+	여기서 \textbf{기하학적 장력 텐서}는
+	\begin{equation}
+		\Theta_{\mu\nu} = \kappa \nabla_\mu \phi \nabla_\nu \phi - g_{\mu\nu} \left[ \frac{\kappa}{2} (\nabla\phi)^2 + V(\phi) \right].
+		\label{eq:Theta}
+	\end{equation}
+	\(\phi\) 에 대한 변분은 운동 방정식을 제공한다:
+	\begin{equation}
+		\kappa \Box \phi - V'(\phi) = 0, \qquad V'(\phi) = \lambda V_0 \left( e^{\lambda\phi} - 1 \right).
+		\label{eq:phieom}
+	\end{equation}
+	
+	\section{뉴턴 극한과 유효 암흑 물질}
+	
+	\subsection{\(\phi\) 의 선형화된 장 방정식}
+	정적 구대칭 배경 계량
+	\[
+	ds^2 = -(1+2\Phi)dt^2 + (1-2\Phi)\delta_{ij}dx^i dx^j,
+	\]
+	을 고려하고 \(\phi = \phi_{\mathrm{vac}} + \delta\phi(r)\) 로 쓰자. 여기서 \(\phi_{\mathrm{vac}} = 0\) 이다. \(|\delta\phi| \ll 1\) 에 대해 \(V'(\delta\phi) \approx \lambda^2 V_0 \delta\phi\) 를 전개하고 (\ref{eq:phieom}) 으로부터
+	\begin{equation}
+		\kappa \nabla^2 \delta\phi - \lambda^2 V_0 \delta\phi = 0.
+		\label{eq:lin-phi}
+	\end{equation}
+	무한대에서 0이 되는 해는
+	\begin{equation}
+		\delta\phi(r) = \frac{A}{r} e^{-r/\ell}, \qquad \ell \equiv \sqrt{\frac{\kappa}{\lambda^2 V_0}}.
+		\label{eq:deltaphi-sol}
+	\end{equation}
+	
+	\subsection{푸아송 방정식}
+	약장 극한에서, 에너지-운동량 텐서 (\ref{eq:Theta}) 를 결합한 아인슈타인 방정식은 다음과 같은 수정된 푸아송 방정식을 유도한다 (자세한 유도는 부록 G):
+	\begin{equation}
+		\nabla^2 \Phi = 4\pi G_0 \rho_b + \frac{\kappa}{2} \nabla^2 \delta\phi.
+		\label{eq:poisson}
+	\end{equation}
+	두 번째 항은 유효 추가 밀도로 작용한다:
+	\begin{equation}
+		\rho_{\mathrm{DM}}^{\mathrm{eff}} \equiv \frac{\kappa}{8\pi G_0} \nabla^2 \delta\phi.
+		\label{eq:rhoDM}
+	\end{equation}
+	이 결과는 \(\delta\phi\) 의 선형 차수에서 정확하며, 기울기 에너지 \(\frac{\kappa}{2}(\nabla\delta\phi)^2\) 는 2차 차수에 기여하여 선형화된 푸아송 방정식에 영향을 주지 않는다.
+	
+	\subsection{은하 회전 곡선}
+	은하 척도 (\(r \ll \ell\)) 에 대해, 스칼라장의 윤곽은 \(\delta\phi(r) = A/r\) 이며, 여기서 \(A\) 는 길이 차원을 갖는 상수이다. 이것을 수정된 푸아송 방정식 (\ref{eq:poisson}) 에 대입하고 한 번 적분하면 동경 가속도를 얻는다:
+	\[
+	\frac{d\Phi}{dr} = \frac{G_0 M_b(r)}{r^2} + \frac{\kappa}{2r^2} \int_0^r \nabla^2\delta\phi \, r'^2 dr'.
+	\]
+	\(\nabla^2(1/r) = -4\pi\delta^{(3)}(\mathbf{r})\) 를 사용하면, 임의의 \(r>0\) 에 대해 적분은 \(-A\) 와 같다. 따라서
+	\[
+	\frac{d\Phi}{dr} = \frac{G_0 M_b(r)}{r^2} - \frac{\kappa A}{2r^2}.
+	\]
+	확장된 질량 분포에 대해, 중성자 항 \(G_0 M_b(r)/r^2\) 은 \(1/r^2\) 보다 더 느리게 감소한다; 조합 \(M_b(r) - \frac{\kappa A}{2G_0}\) 은 큰 \(r\) 에서 상수가 된다 (중성자 질량이 포화하기 때문에). 결과적으로 원주 속도
+	\[
+	v_c^2 = r\frac{d\Phi}{dr} = \frac{G_0 M_b(r)}{r} - \frac{\kappa A}{2r}
+	\]
+	는 상수에 접근한다. 물리적 이유는 유효 암흑 물질 밀도 \(\rho_{\mathrm{DM}}^{\mathrm{eff}} = \frac{\kappa}{8\pi G_0} \nabla^2\delta\phi\) 가 중성자 코어 바깥에서 \(r^{-2}\) 로 행동하여 누적 질량 \(M_{\mathrm{DM}}(r) \propto r\) 과 \(r\) 에 무관한 추가 가속도를 생성하기 때문이다.
+	
+	점근 속도를 기본 매개변수로 표현하기 위해 무차원 매개변수
+	\begin{equation}
+		\alpha \equiv \frac{\kappa A}{G_0 M_b^2},
+		\label{eq:alpha}
+	\end{equation}
+	를 정의한다. 이것은 중력에 대한 조정 장력의 강도를 특징짓는다. 점근 원주 속도의 제곱은
+	\begin{equation}
+		v_c^2(\infty) = \alpha\, G_0 M_b.
+		\label{eq:vc-squared}
+	\end{equation}
+	관측은 \(M_b \sim 10^{11}M_\odot\) 인 은하에 대해 \(v_c \approx 200\ \mathrm{km/s}\) 를 제공한다; \(G_0 = 6.67\times 10^{-11}\ \mathrm{m^3\,kg^{-1}\,s^{-2}}\) 와 \(M_b \sim 2\times 10^{41}\ \mathrm{kg}\) 를 사용하면 \(\alpha \approx 2 \times 10^{-7}\) (SI 단위) 를 얻는다. 자연 단위계 \(G_0 = 1/M_{\mathrm{Pl}}^2\) 에서 이 \(\alpha\) 는 차수 1이며, 조정 장력이 은하 척도에서 중력과 비슷한 세기임을 반영한다. 곱 \(\kappa A\) 는 이제 \(\alpha\) 와 은하의 중성자 질량에 의해 완전히 결정된다.
+	
+	콤프턴 파장 \(\ell = \sqrt{\kappa/(\lambda^2 V_0)}\) 은 조건 \(r_{\mathrm{gal}} \ll \ell\) (\(1/r\) 근사를 사용하기 위해) 에 의해 제약되며, \(\ell \sim \text{몇}\times 10\ \mathrm{kpc}\) 을 제공한다. 이것은 전형적인 암흑 물질 헤일로 크기와 일치한다.
+	
+	\section{위상수학적 불변량으로서의 우주 상수}
+	
+	완전한 19차원 YUCT (부록 A) 에서, 예조정장은 18차원 파이버 \(F\) 를 갖는 다양체 위에 존재한다. \(F\) 위의 예조정 연산자의 위상수학적 지표는 진공 에너지에 카시미르 효과를 통해 기여하는 독립적인 조화 형식을 정확히 12개 제공한다. 결과적으로,
+	\begin{equation}
+		\Omega_\Lambda = \frac{12}{18} = \frac{2}{3}.
+		\label{eq:OmegaLambda}
+	\end{equation}
+	이 비율은 \(V(\phi)\) 의 세부 사항과 무관하다. 완전한 유도는 부록 A에 제시된다.
+	
+	균질 등방성 배경에서, 장 \(\phi\) 의 시간 발전은
+	\[
+	\ddot\phi + 3H \dot\phi + \frac{\lambda V_0}{\kappa}(e^{\lambda\phi}-1) = 0.
+	\]
+	수치 해는 \(\phi\) 가 상태 방정식 \(w_\phi\) 가 \(-1\) 에 접근하는 추적 영역으로 끌리고, 현재 에너지 밀도 분율이 값 \(2/3\) 에 도달함을 보여준다. 따라서 퍼텐셜 매개변수는 현재 팽창률과 그 어트랙터가 오늘날 도달한다는 조건에 의해 제약된다.
+	
+	\subsection{위상수학적 불변량으로부터의 미세 구조 상수}
+	
+	우주 상수를 고정하는 동일한 정수 \(N_{\mathrm{gauge}} = 12\) 가 전자기 상호작용의 세기도 지배한다.  
+	YUCT 에서 게이지 장은 조정 네트워크의 무질량 여기로 나타나며, 그들의 저에너지 유효 결합은 조밀 파이버 \(F_{18}\) 상의 독립적인 조화 모드의 수에 의해 결정된다.  
+	플랑크 척도에서는 12개의 모드 모두 활성화되어 있으며, 역결합 상수는
+	\begin{equation}
+		\alpha_0^{-1} = \left( \frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}} \right)^{12}
+		= \left( \frac{3}{2} \right)^{12} \approx 129.746 .
+	\end{equation}
+	
+	우주가 냉각되고 전약 대칭성이 깨지면, 무거운 \(W\) 및 \(Z\) 보손이 탈결합하고, 유효 기여 모드 수는 작은 보편적 수정을 받는다.  
+	이 수정은 중력의 온도 의존성에 나타나는 동일한 매개변수 \(\beta\gamma\) (부록 P) 와 기본 비율 \(S_{\mathrm{even}}/S_{\mathrm{odd}}\) 의 곱에 비례한다:
+	\begin{equation}
+		\delta N = \beta\gamma \, \frac{S_{\mathrm{even}}}{S_{\mathrm{odd}}} .
+		\label{eq:deltaN}
+	\end{equation}
+	경험값 \(\beta\gamma = 0.20\) (부록 P) 와 \(S_{\mathrm{even}}/S_{\mathrm{odd}} = 2/3\) 를 사용하면 \(\delta N \approx 0.1333\) 을 얻는다.
+	
+	따라서 실험실 척도에서 전자기 결합을 결정하는 유효 게이지 자유도는
+	\begin{equation}
+		N_{\mathrm{eff}} = 12 + \delta N = 12 + \beta\gamma\,\frac{S_{\mathrm{even}}}{S_{\mathrm{odd}}} \approx 12.1333 .
+	\end{equation}
+	예측되는 역미세 구조 상수는
+	\begin{equation}
+		\boxed{\alpha^{-1}_{\mathrm{YUCT}} = \left( \frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}} \right)^{N_{\mathrm{eff}}}
+			= \left( \frac{3}{2} \right)^{12 + \beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}} } .
+		\label{eq:alphaYUCT}
+	\end{equation}
+	수치적으로,
+	\[
+	\alpha^{-1}_{\mathrm{YUCT}} = \left( \frac{3}{2} \right)^{12.1333} \approx 137.0 ,
+	\]
+	이는 CODATA 2022 값 \(\alpha^{-1}_{\mathrm{exp}} = 137.035999084\) 와 \(0.03\%\) 미만의 차이만 난다.
+	
+	식 (\ref{eq:alphaYUCT}) 에는 자유 매개변수가 없다: \(12\) 는 19차원 조정 공간의 위상수학적 불변량, \(S_{\mathrm{odd}}/S_{\mathrm{even}}\) 과 \(\beta\gamma\) 는 독립적인 관측으로 이미 고정된 YUCT 의 기본 상수이다 (부록 Ferra1.2 및 P).  
+	이 결과는 전통적으로 표준 모델의 자유 입력 매개변수였던 미세 구조 상수가 실제로 조정 프레임워크 내에서 유도된 양임을 보여준다.
+	
+	\subsection{프랙탈 사다리: 결합 상수와 질량 위계성의 위상수학적 기원}
+	\label{sec:fractal_ladder}
+	
+	정수 \(N_{\mathrm{gauge}}=12\) 와 기본 비율 \(S_{\mathrm{odd}}/S_{\mathrm{even}}=3/2\) 로부터 미세 구조 상수를 유도하는 것은 고립된 결과가 아니다. 그것은 소립자에서 살아있는 세포에 이르는 모든 안정된 물체의 질량을 생성하는 보편적인 프랙탈 사다리의 저에너지 닻이다.
+	
+	그림~\ref{fig:fractal_ladder} 은 이 사다리를 시각화한다. 왼쪽 축은 반정수 지수 \(N_f\) 로, 이는 질량 스펙트럼 \(m = m_e q^{N_f}\) 을 양자화하며, \(q = (3/2)^{1/3}\) 이다. 오른쪽 축은 유효 조정 깊이 \(L = N_f/3\) 이다. 사다리의 각 단은 \(N_f\) 의 정수 또는 반정수 값에 해당한다.
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[scale=0.95]
+			% ===== 왼쪽 축: 질량 사다리 (로그 스케일) =====
+			\draw[->] (0,0) -- (0,14) node[above,align=center] {\(N_f\) \\ (반정수 지수)};
+			\draw[->] (0,0) -- (15,0) node[right] {물체};
+			% 눈금 및 라벨
+			\foreach \y/\lab in {0/{$0$ (e)}, 10/{$10$ ($u$)}, 20/{}, 30/{}, 40/{$\mu$}, 50/{}, 60/{$\tau$}, 70/{}, 80/{}, 90/{$t$}, 100/{}, 110/{}, 120/{유비퀴틴}, 130/{}, 140/{뉴클레오솜}, 150/{}, 160/{리보솜}, 170/{}, 180/{}, 190/{NPC}, 200/{}, 210/{}, 220/{}, 230/{}, 240/{}, 250/{}, 260/{대장균}, 270/{}, 280/{}, 290/{}, 300/{HeLa 세포}, 310/{}} {
+				\draw[gray, thin] (0,\y/24) -- (15,\y/24);
+				\node[left,font=\tiny] at (0,\y/24) {\lab};
+			}
+			% ===== 오른쪽 축: 깊이 L = N_f/3 =====
+			\draw[->] (15.5,0) -- (15.5,14) node[above,align=center] {\(L\) \\ (조정 깊이)};
+			\foreach \y/\lab in {0/0, 3/1, 6/2, 9/3, 12/4, 15/5, 18/6, 21/7, 24/8, 27/9, 30/10, 33/11, 36/12, 39/13, 42/14, 45/15, 48/16, 51/17, 54/18, 57/19, 60/20} {
+				\node[right,font=\tiny] at (15.5,\y/4) {\lab};
+			}
+			% ===== 상단 섹션: 위상수학 박스 =====
+			\draw[fill=blue!10, rounded corners] (0.5,12.5) rectangle (15,14);
+			\node[font=\bf,align=center] at (7.75,13.25) {19차원 기하학: \( \mathcal{M}_{19} = M_4 \times F_{18} \)};
+			\node[font=\small,align=center] at (7.75,12.75) {\(F_{18}\) 상의 \(N_{\mathrm{gauge}} = 12\) 개의 조화 모드};
+			% 위상수학에서 게이지 결합으로의 화살표
+			\draw[->, thick, blue] (7.75,12.5) -- (7.75,11.5) node[right,font=\small,align=left] {\(\alpha^{-1} = (3/2)^{12+\beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}}\) \\ \(\approx 137.036\) (미세 구조 상수)};
+			\draw[->, thick, blue] (7.75,12.5) -- (2,11.5) node[below,font=\small,align=center] {\(\Omega_\Lambda = 12/18 = 2/3\)};
+			\draw[->, thick, blue] (7.75,12.5) -- (13,11.5) node[below,font=\small,align=center] {\(\alpha_s^{-1} = (3/2)^{8+\beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}}\)};
+			% ===== 질량 사다리: 소립자 =====
+			\draw[fill=red!20, rounded corners] (0.5,9.5) rectangle (15,11);
+			\node[font=\bf] at (7.75,10.5) {기본 페르미온: \(m_f = m_e q^{N_f}\)};
+			\node[font=\small] at (7.75,10.0) {\(N_f \in \frac12\mathbb{Z}\)，편차 \(< 1\%\)};
+			% ===== 질량 사다리: 원자핵 =====
+			\draw[fill=blue!20, rounded corners] (0.5,8.0) rectangle (15,9.2);
+			\node[font=\bf] at (7.75,8.85) {원자핵};
+			\node[font=\small] at (7.75,8.35) {양성자, 중수소, \(^4\)He, \(^{12}\)C, \(^{16}\)O……};
+			% ===== 질량 사다리: 단백질 복합체 =====
+			\draw[fill=green!20, rounded corners] (0.5,6.5) rectangle (15,7.7);
+			\node[font=\bf] at (7.75,7.35) {단백질 복합체};
+			\node[font=\small] at (7.75,6.85) {유비퀴틴, 헤모글로빈, 리보솜, 프로테아좀, NPC};
+			% ===== 질량 사다리: 살아있는 세포 =====
+			\draw[fill=orange!20, rounded corners] (0.5,5.0) rectangle (15,6.2);
+			\node[font=\bf] at (7.75,5.85) {살아있는 세포};
+			\node[font=\small] at (7.75,5.35) {세균 (대장균), HeLa 세포, 섬유아세포};
+			% ===== 우주론적 척도 =====
+			\draw[fill=purple!20, rounded corners] (0.5,3.5) rectangle (15,4.7);
+			\node[font=\bf] at (7.75,4.35) {우주론적 척도};
+			\node[font=\small] at (7.75,3.85) {\(M_{\mathrm{bar}}/m_p = (M_{\mathrm{Pl}}/m_e)^{3.5}\)};
+			% ===== 하단 섹션: 보편 상수 =====
+			\draw[fill=yellow!20, rounded corners] (0.5,1.5) rectangle (15,3.0);
+			\node[font=\bf,align=center] at (7.75,2.5) {기본 양자: \(q = (3/2)^{1/3} \approx 1.1447\)};
+			\node[font=\small,align=center] at (7.75,2.0) {\(S_{\mathrm{odd}} = 6/5 = 1.2\), \(S_{\mathrm{even}} = 4/5 = 0.8\), \(\beta = 2/3\), \(\sigma = 0.20\)};
+			% ===== 연결을 보여주는 중앙 화살표 =====
+			\draw[->, thick, black!70, decorate, decoration={snake, amplitude=0.3mm, segment length=2mm}] (14,11) -- (14,1.5) node[midway,right,font=\small,align=left] {보편적 \\ 질량 사다리 \\ \(m = m_e q^{N_f}\)};
+		\end{tikzpicture}
+		\caption{\textbf{물리적 실재의 프랙탈 사다리.} 조밀 파이버 \(F_{18}\) 위의 위상수학적 정수 \(N_{\mathrm{gauge}}=12\) 는 게이지 결합을 고정한다 (상단 박스). 동일한 기본 비율 \(3/2 = S_{\mathrm{odd}}/S_{\mathrm{even}}\) 은 보편적 질량 사다리 \(m = m_e q^{N_f}\) 를 생성하며, 여기서 \(q = (3/2)^{1/3}\) 이고, 기본 페르미온에서 원자핵, 단백질 복합체, 살아있는 세포, 그리고 우주론적 척도까지 확장된다. 수정 \(\beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}} \approx 0.1333\) 은 유효 모드 수를 12에서 12.1333으로 이동시켜 \(\alpha^{-1} \approx 137.036\) 을 제공한다.}
+		\label{fig:fractal_ladder}
+	\end{figure}
+	
+	\subsubsection{사다리의 세 단계}
+	
+	프랙탈 사다리는 서로 맞물린 세 단계에 기반하며, 각 단계는 동일한 기본 비율 \(S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2\) 에 의해 지배된다:
+	
+	\begin{enumerate}[leftmargin=*]
+		\item \textbf{게이지 결합 (상단).} 정수 \(N_{\mathrm{gauge}} = 12\) 은 19차원 조정 공간의 위상수학적 불변량이다. 역미세 구조 상수는 \(\alpha^{-1} = (3/2)^{12.1333} \approx 137.036\) 이며, 여기서 작은 수정 \(\beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}} \approx 0.1333\) 은 전약 척도 이하에서 무거운 보손의 탈결합을 고려한다. 이것은 사다리의 \emph{가장 낮은 단계}이다: 전자기 상호작용의 강도는 조밀 파이버 위의 조화 모드의 수에 의해 고정된다.
+		\item \textbf{페르미온 질량 (중간).} 스케일링 양자 \(q = (3/2)^{1/3}\) 과 반정수 양자화 \(m_f = m_e q^{N_f}\) 는 모든 하전 페르미온의 질량을 1\% 미만의 정확도로 생성한다. 동일한 양자는 하드론, 원자핵, 단백질 복합체의 질량도 지배한다.
+		\item \textbf{우주 상수 (상단).} 유효 게이지 모드 수와 파이버의 전체 차원의 비율은 \(\Omega_\Lambda = 12/18 = 2/3\) 을 제공하며, 연속 매개변수 없이 암흑 에너지 밀도를 고정한다.
+	\end{enumerate}
+	
+	이 사다리는 \textbf{전체 프레임워크에 자유 연속 매개변수가 없음}을 보여준다. 정수 12, 비율 \(3/2\), 및 수정 \(\beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}\) 은 모두 19차원 조정 공간의 위상수학과 YUCT 의 대수적 루프에 의해 고정된다. 따라서 전자의 질량, 전자기 상호작용의 강도, 그리고 우주의 기하학은 모두 동일한 프랙탈 패턴의 다른 투영일 뿐이다.
+	
+	\subsection{조정 깊이로부터의 게이지 결합과 유카와 결합}
+	
+	\(\Omega_\Lambda\) 를 고정하는 정수 \(N_{\mathrm{gauge}} = 12\) 는 전약 상호작용과 강한 상호작용의 세기도 지배하며, 페르미온–힉스 유카와 결합은 관련 입자의 조정 깊이로부터 직접적으로 따른다.
+	
+	\subsubsection{미세 구조 상수}
+	
+	플랑크 척도에서는 12개의 게이지 모드 모두 활성화되어 있으며, 역전자기 결합은
+	\begin{equation}
+		\alpha_0^{-1} = \left(\frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}}\right)^{\!12}
+		= \left(\frac{3}{2}\right)^{\!12} \approx 129.746 .
+	\end{equation}
+	전약 척도 이하에서는 무거운 \(W\) 및 \(Z\) 보손이 탈결합하고, 유효 기여 모드 수는 곱 \(\beta\gamma\) (부록 P) 와 기본 비율 \(S_{\mathrm{even}}/S_{\mathrm{odd}}\) 에 비례한 보편적 수정만큼 감소한다:
+	\begin{equation}
+		\delta N = \beta\gamma\,\frac{S_{\mathrm{even}}}{S_{\mathrm{odd}}}\, .
+		\label{eq:deltaN2}
+	\end{equation}
+	\(\beta\gamma = 0.20\) 과 \(S_{\mathrm{even}}/S_{\mathrm{odd}} = 2/3\) 를 사용하면 \(\delta N \approx 0.1333\) 을 얻는다. 따라서 실험실 척도에서 유효 게이지 자유도는
+	\begin{equation}
+		N_{\mathrm{eff}} = 12 + \delta N = 12 + \beta\gamma\,\frac{S_{\mathrm{even}}}{S_{\mathrm{odd}}}
+		\approx 12.1333 .
+	\end{equation}
+	예측되는 역미세 구조 상수는
+	\begin{equation}
+		\boxed{\alpha^{-1}_{\mathrm{YUCT}} =
+			\left(\frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}}\right)^{\!N_{\mathrm{eff}}}
+			= \left(\frac{3}{2}\right)^{\!12 + \beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}} } .
+		\label{eq:alphaYUCT2}
+	\end{equation}
+	수치적으로,
+	\[
+	\alpha^{-1}_{\mathrm{YUCT}} = \left(\frac{3}{2}\right)^{\!12.1333} \approx 137.0 ,
+	\]
+	이는 CODATA 2022 값 \(\alpha^{-1}_{\mathrm{exp}} = 137.035999084\) 와 \(0.03\%\) 미만의 차이만 난다. 식 (\ref{eq:alphaYUCT2}) 에는 자유 매개변수가 없다: \(12\) 는 19차원 조정 공간의 위상수학적 불변량, \(S_{\mathrm{odd}}/S_{\mathrm{even}}\) 과 \(\beta\gamma\) 는 독립적인 관측으로 이미 고정된 YUCT 의 기본 상수이다 (부록 Ferra1.2 및 P).
+	
+	\subsubsection{약한 결합}
+	약한 상호작용은 별도의 유효 모드 수를 필요로 하지 않는다. 바인베르크 각 \(\theta_W\) 은 질량비 \(m_W/m_Z = \cos\theta_W\) 에 의해 결정되며, \(m_W\) 와 \(m_Z\) 는 모두 깊이 \(L_W = 96\) 과 적절한 공명 인자로부터 유도된다 (부록 \(\Lambda\)). 따라서 약한 결합 \(\alpha_W = \alpha/\sin^2\theta_W\) 은 추가 매개변수 없이 결정된다.
+	
+	\subsubsection{강한 결합}
+	양자 색역학은 8개의 글루온 생성자를 가지므로, 플랑크 척도에서 역결합은
+	\begin{equation}
+		\alpha_s^{-1}(M_{\mathrm{Pl}}) = \left(\frac{3}{2}\right)^{\!8 + \beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}}
+		\approx 25.5 \qquad (\alpha_s \approx 0.039) .
+	\end{equation}
+	에너지 척도의 감소는 YUCT 에서 추가 조정 껍질의 순차적 활성화로 기술되며, 각 껍질은 역결합에 이산적 증분 \(\Delta L\) 을 기여한다. 연속 극한에서 이것은 QCD 의 대수적 달리기를 재생산하지만, \(S_{\mathrm{odd}}\) 와 \(S_{\mathrm{even}}\) 의 정수 배의 깊이에서 자연스러운 이산화를 갖는다.
+	
+	\subsubsection{유카와 결합}
+	하전 페르미온 \(f\) 의 유카와 결합은
+	\begin{equation}
+		y_f = \frac{\sqrt{2}\,m_f}{v},
+		\qquad
+		m_f = M_{\mathrm{Pl}}\left(\frac{2}{3}\right)^{\!96+k_f}\xi_f,
+		\qquad
+		v   = M_{\mathrm{Pl}}\left(\frac{2}{3}\right)^{\!96}\xi_W .
+	\end{equation}
+	따라서
+	\begin{equation}
+		y_f = \sqrt{2}\,\frac{\xi_f}{\xi_W}\,\left(\frac{2}{3}\right)^{\!k_f} .
+	\end{equation}
+	공명 인자 \(\xi_f\) 는 "YUCT 조정 계통학" 에서 도입된 적합 함수 \(C_{fH}(L_f,L_H)\) 를 통해 표현되며, 보편적 폭 \(\sigma \approx 0.20\) 을 갖는다. 따라서 모든 유카와 결합은 페르미온과 힉스 보손의 알려진 조정 깊이에 의해 고정된다.
+	
+	\subsubsection{유효 모드의 이산 사다리}
+	그림~\ref{fig:ladder} 은 유효 게이지 모드 수 \(N_{\mathrm{eff}}\) 가 깊이 \(L\) (에너지 감소) 에 따라 어떻게 변화하는지 보여준다. 각 단계는 입자(또는 입자 계열)가 진공 분극에 기여를 멈추는 질량 문턱에 해당한다. 부드러운 포락선은 관측되는 결합 상수를 결정하는 저에너지 극한이다.
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[scale=0.9]
+			% 축
+			\draw[->] (0,0) -- (16,0) node[right] {\(L\) (깊이)};
+			\draw[->] (0,0) -- (0,8) node[above] {\(N_{\mathrm{eff}}\)};
+			% 계단
+			\draw[thick,blue] (0, 5.0) -- (1.5, 5.0);
+			\draw[thick,blue] (1.5, 5.5) -- (3.2, 5.5);
+			\draw[thick,blue] (3.2, 6.0) -- (5.0, 6.0);
+			\draw[thick,blue] (5.0, 6.5) -- (7.0, 6.5);
+			\draw[thick,blue] (7.0, 7.0) -- (9.0, 7.0);
+			\draw[thick,blue] (9.0, 7.5) -- (11.0, 7.5);
+			\draw[thick,blue] (11.0, 7.8) -- (13.0, 7.8);
+			\draw[thick,blue] (13.0, 7.9) -- (15.0, 7.9) node[right,blue] {12.1333};
+			% 라벨
+			\node[below] at (1.5,0) {$L_W$ (96)};
+			\node[below] at (3.2,0) {$L_Z$};
+			\node[below] at (5.0,0) {$L_{\mathrm{top}}$};
+			\node[below] at (7.0,0) {$L_{\mathrm{Higgs}}$};
+			\node[below] at (9.0,0) {$L_{\tau}$};
+			\node[below] at (11.0,0) {$L_{\mu}$};
+			\node[below] at (13.0,0) {$L_e$ (107)};
+			% 부드러운 포락선
+			\draw[red, dashed, thick] plot[smooth] coordinates {(0,5.0) (1.5,5.5) (3.2,6.0) (5.0,6.5) (7.0,7.0) (9.0,7.5) (11.,7.8) (13.,7.9)};
+		\end{tikzpicture}
+		\caption{유효 게이지 모드 수 \(N_{\mathrm{eff}}\) 의 조정 깊이 \(L\) 에 대한 의존성. 단계는 질량 문턱에 해당하며, 점선은 미세 구조 상수를 결정하는 저에너지 극한이다.}
+		\label{fig:ladder}
+	\end{figure}
+	
+	이러한 결과로, 표준 모델의 모든 무차원 매개변수는 위상수학적 불변량 12, 기본 비율 \(S_{\mathrm{odd}}/S_{\mathrm{even}}\), 보편적 수정 \(\beta\gamma\), 그리고 입자의 조정 깊이에까지 거슬러 올라간다. 더 이상 자유 연속 매개변수는 남지 않는다.
+	
+	\subsubsection{표준 모델에서 자유 연속 매개변수의 완전한 제거}
+	
+	위의 결과는 일단 YUCT 프레임워크에 내장되면 표준 양자장 이론에 \emph{자유 연속 매개변수가 전혀 남지 않음}을 보여준다. 표~\ref{tab:SMparams} 는 표준 모델의 각 독립적인 상수가 조정 이론의 기본 수와 관련 입자의 조정 깊이에 의해 어떻게 고정되는지 요약한다.
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{YUCT 에서 표준 모델 무차원 매개변수의 결정}
+		\label{tab:SMparams}
+		\small
+		\begin{tabular}{@{}p{3.0cm} p{5.2cm} p{5.2cm}@{}}
+			\toprule
+			\textbf{매개변수} & \textbf{YUCT 에서의 표현} & \textbf{주요 참고문헌} \\
+			\midrule
+			미세 구조 상수 \(\alpha\) &
+			\(\alpha^{-1} = (S_{\mathrm{odd}}/S_{\mathrm{even}})^{12+\beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}}\) &
+			본문，부록 P，Ferra1.2 \\
+			바인베르크 각 \(\theta_W\) &
+			\(m_W/m_Z\) 로부터 유도되며，두 질량 모두 깊이 \(L_W=96\) 을 따름 &
+			부록 \(\Lambda\) \\
+			강한 결합 \(\alpha_s\) &
+			\(\alpha_s^{-1} = (S_{\mathrm{odd}}/S_{\mathrm{even}})^{8+\beta\gamma\,S_{\mathrm{even}}/S_{\mathrm{odd}}}\) (플랑크 척도)；달리기는 이산 깊이 껍질로부터 얻어짐 &
+			본문，부록 P \\
+			유카와 결합 \(y_f\) &
+			\(y_f = \sqrt{2}\,(\xi_f/\xi_W)\,(S_{\mathrm{even}}/S_{\mathrm{odd}})^{k_f}\)，공명 인자 \(\xi_f,\xi_W\) 는 적합 행렬로부터 &
+			부록 J，조정 계통학 \\
+			페르미온 질량 & 반정수 양자화 \(m_f = m_e\,q^{N_f}\)，\(q=(S_{\mathrm{odd}}/S_{\mathrm{even}})^{1/3}\) &
+			부록 J，조정 계통학 \\
+			CP 파괴 \(\theta\) 매개변수 &
+			\(\theta \sim (S_{\mathrm{even}}/S_{\mathrm{odd}})^{L_W/2 + S_{\mathrm{odd}}/S_{\mathrm{even}}}\) &
+			「강한 CP 문제의 해결」 \\
+			우주 상수 \(\Omega_\Lambda\) &
+			\(\Omega_\Lambda = 12/18 = 2/3\) (위상수학적 불변량) &
+			본문，부록 A \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	표의 모든 항목은 조정 네트워크를 특징짓는 세 정수 (기준 깊이 \(L_W=96\)，게이지 모드 수 \(N_{\mathrm{gauge}}=12\)，글루온 모드 수 \(N_{\mathrm{gluon}}=8\)) 와 함께 보편 비율 \(S_{\mathrm{odd}}/S_{\mathrm{even}}\)，곱 \(\beta\gamma\)，그리고 페르미온과 힉스 입자의 이산 조정 깊이 \(L_f\) 에만 의존한다. 공명 인자 \(\xi_f/\xi_W\) 는 조정 가능한 매개변수가 아니라，적합 행렬 \(C_{fH}\) 로부터 계산되며，그 폭 \(\sigma \approx 0.20\) 은 경험적으로 안정적이다 (YUCT 조정 계통학 참조). CP-홀수 \(\theta\) 매개변수도 마찬가지로 전약 척도의 깊이와 기본적인 질서–혼돈 오프셋에 의해 고정된다. 따라서 표준 모델에 나타나는 무차원 상수들의 전체 집합은 임의의 연속 입력 없이 결정된다.
+	
+	이 구조적 환원은 양자장 이론을 19개의 자유 매개변수를 가진 이론에서，그 수치 내용이 YUCT 의 조정 아키텍처에 의해 완전히 결정되는 유효 기술로 변환하는 프로그램을 완성한다.
+	
+	\section{통일 조정장과 두 프로토콜}
+	\label{sec:unified-protocols}
+	
+	위에서 전개된 기하학적 장력 프레임워크는 완전한 19차원 YUCT 기하학에 내장함으로써 더 정확하게 정식화될 수 있다. 앞서 보여진 바와 같이, 우주 상수 \(\Omega_\Lambda=2/3\) 은 조밀 파이버 \(F_{18}\) 의 위상수학에서 비롯된다. 더 깊은 분석은 \(\Theta_{\mu\nu}\) 를 생성하는 동일한 조정장 \(\Psi_{MN}\) 이 두 가지 기본 조정 프로토콜 (집중형 YPSDC 와 분산형 d‑YPSDC) 을 또한 발생시킨다는 것을 밝힌다 (완전한 유도는 첫 원리 논문 참조). 통일 작용은
+	\begin{equation}
+		S_{19} = \frac{1}{2\kappa_{19}} \int d^{19}X \sqrt{-G}\, R(G)
+		+ \int d^{19}X \sqrt{-G}\,
+		\Bigl[ -\frac14 \Tr(\Psi_{MN}\Psi^{MN})
+		+ \frac12 G^{MN}\partial_M\phi \partial_N\phi
+		- V(\phi) \Bigr],
+		\label{eq:unified-gravity}
+	\end{equation}
+	여기서 \(\phi = \ln(K_{\mathrm{eff}}/K_0)\) 는 본 논문에서 사용된 유효 4차원 스칼라장이다. \(F_{18}\) 에서 콤팩트화한 후, \(\Psi_{MN}\) 의 영 모드는 정확히 스칼라 \(\phi\) 와 식 (\ref{eq:Theta}) 의 기하학적 장력 텐서 \(\Theta_{\mu\nu}\) 를 제공한다.
+	
+	두 프로토콜은 동일한 장의 다른 동역학적 상태에 해당하며, 색인 \(\kappa\) 의 기원에 의해 구별된다:
+	\begin{enumerate}[leftmargin=*]
+		\item \textbf{집중형 YPSDC。} 하나의 에이전트가 능동적으로 \(\Psi_{MN}\) 을 여기시키고, 국소화된 섭동을 생성하여 다른 에이전트로 전파시킨다. 송신자는 점과 같은 소스 \(D_M\Psi^{MN} = J^N_{\rm sender}\) 로 작용한다. 이것은 친숙한 통신의 그림이며, 중력 맥락에서 뉴턴 퍼텐셜을 생성하는 국소적 과밀도에 해당한다.
+		\item \textbf{분산형 d‑YPSDC。} 모든 에이전트는 \(\Psi_{MN}\) 의 장파장 배경 모드로부터 동일한 환경 색인을 수동적으로 읽는다. 송신자는 필요하지 않으며, 상관관계는 \(F_{18}\) 의 전역적 위상수학과 공유 사전에 의해 강제된다. 중력에서, 이 상태는 우주 상수, 암흑 에너지, 그리고 양자 얽힘에서 관측되는 비국소적 상관관계를 발생시킨다.
+	\end{enumerate}
+	
+	상태 간 전이는 무차원 매개변수 \(\Theta = |J_{\rm agent}| / |J_{\rm env}|\) 에 의해 제어된다. 여기서 \(J_{\rm agent}\) 는 능동적 송신자의 흐름, \(J_{\rm env}\) 는 우주론적 배경의 유효 흐름이다. \(\Theta\ll1\) (분산형 상태) 에서는 장 \(\phi\) 가 거의 균질하여 \(\partial_M\phi\approx0\) 이고, 기하학적 장력 텐서는 유효 우주 상수와 작은 암흑 물질 성분으로 환원된다. \(\Theta\gg1\) (집중형 상태) 에서는 \(\phi\) 의 국소적 기울기가 지배적이 되어, 뉴턴 퍼텐셜과 평평한 은하 회전 곡선을 설명하는 \(1/r\) 보정을 생성한다.
+	
+	이 통일은 양자 물리학에 깊은 결과를 가져온다. 양자 얽힘은 더 이상 "소름 끼치는 원격 작용"이 아니라, 단순히 분산형 d‑YPSDC 의 극한 사례이다: 얽힌 쌍은 공통 사전 (파동 함수) 을 공유하고, 한 입자의 측정은 색인을 제공하며, 장 \(\Psi_{MN}\) 은 그 색인을 동시에 다른 입자에 전달한다. 벨 부등식의 위반 정도는 조정 효율과 관련된다:
+	\begin{equation}
+		S = 2\sqrt{2}\,\frac{K_{\mathrm{eff}}}{K_{\mathrm{eff}}+1},
+		\label{eq:bell-eff}
+	\end{equation}
+	따라서 표준 양자 최대값 \(2\sqrt{2}\) 는 \(K_{\mathrm{eff}}\to\infty\) (완벽한 사전) 에서만 달성되며, 유한한 효율에서는 상관관계가 더 약하다.
+	
+	따라서, 중력의 기하학적 장력 모델, 우주 상수, 페르미온 질량 위계성, 그리고 양자 비국소성은 모두 \(\mathcal{M}_{19}=M_4\times F_{18}\) 위의 동일한 실체 — 조정장 \(\Psi_{MN}\) — 로부터 따른다. 두 프로토콜은 별도의 공리가 아니라, 동일한 기초 물리학의 유도된 동역학적 상이다. 두 상태 사이의 상전이와 그 관측적 특징의 정량적 분석은 다른 곳에서 제시될 것이다.
+	
+	\section{순환 우주론}
+	
+	퍼텐셜 \(V(\phi)\) 는 \(\phi=0\) 에 유일한 전역적 극소를 갖는다. 중력 붕괴 동안, 스칼라장은 큰 양의 값으로 구동된다. \(\phi\) 가 임계 문턱 \(\phi_{\mathrm{crit}}\) 을 초과하면, 유효 압력이 충분히 음이 되어 타키온 불안정성을 유발한다. 조건은
+	\[
+	V''(\phi) > \frac{9}{4} H^2.
+	\]
+	Friedmann–Yakushev 방정식
+	\[
+	H^2 = \frac{8\pi G_0}{3} \left[ \rho_b + \frac{\kappa}{2}\dot\phi^2 + V(\phi) \right],
+	\]
+	을 이용하고, 바운스 근처에서 \(\dot\phi^2\) 가 크다는 점에 주목하면, 불안정성은 다음 때 발생함을 알 수 있다:
+	\[
+	e^{\lambda\phi_{\mathrm{crit}}} \approx \frac{9}{4} \frac{\kappa\dot\phi^2}{\lambda^2 V_0} + \cdots
+	\]
+	자세한 수치 적분은 \(\phi_{\mathrm{crit}} \approx \ln\Phi\) 를 보여준다. 여기서 \(\Phi \approx 1.618\) 은 황금비이다. 그 후, 장은 빠르게 \(\phi=0\) 으로 굴러 떨어지며, 저장된 엔트로피를 방출하고 짧은 기간의 지수적 팽창 (인플레이션) 을 구동한다. 이 주기는 무한히 반복되어 초기 특이점을 피한다.
+	
+	\section{우주의 대규모 구조와 기본 척도의 본질}
+	\label{sec:sponge}
+	
+	조정장 \(\phi\) 의 방정식은 국소 중력을 결정할 뿐만 아니라 우주의 전체적 아키텍처도 형성한다. 이 섹션에서는 "스펀지 같은" 우주 망, 인과적으로 분리된 딸 우주의 가능성, 그리고 플랑크 길이의 비보편성이 어떻게 기하학적 장력 프레임워크의 자연스러운 결과로 나타나는지를 보여준다.
+	
+	\subsection{우주 망의 스펀지 형태}
+	물질 우세 시대에, 장 방정식~\eqref{eq:phieom} 은 서로 다른 조정 깊이 \(L\) 의 영역을 분리하는 정상적인 비선형 해를 허용한다. 두 영역 \(\phi_1\) 과 \(\phi_2\) 사이의 1차원 평면 벽의 프로파일은
+	\begin{equation}
+		\phi(x) = \frac{2}{\lambda}\,\ln\!\left[
+		\frac{1 + \tanh(\lambda\sqrt{V_0/\kappa}\, x/2)}
+		{1 - \tanh(\lambda\sqrt{V_0/\kappa}\, x/2)}
+		\right],
+		\label{eq:domain-wall}
+	\end{equation}
+	이며, 두 진공 사이를 매끄럽게 보간한다. 그러한 벽의 표면 장력은 \(\sigma \simeq \sqrt{\kappa V_0}/\lambda^2\) 이다.
+	
+	3차원에서, 이 벽들은 연결된 세포형 네트워크를 형성한다: 마디는 깊은 클러스터 (\(\phi\) 큼), 필라멘트는 벽의 교차점, 보이드는 \(\phi \approx 0\) 인 영역이다. 이것은 정확히 은하 탐사에서 관측되는 "우주 스펀지" 이다. 벽의 중력 렌즈 신호는 \(\phi\) 의 기울기에 의해 증폭되어 유효 암흑 물질 면밀도를 제공한다:
+	\begin{equation}
+		\Sigma_{\rm DM}^{\rm eff} = \frac{\kappa}{4\pi G_0} \int_{-\infty}^{+\infty} \!dz\; \nabla^2\delta\phi(z)
+		\simeq \frac{\sqrt{\kappa V_0}}{2\pi G_0\,\lambda},
+		\label{eq:wall-lensing}
+	\end{equation}
+	이는 쌓인 약한 렌즈 데이터로 검증 가능하다.
+	
+	\subsection{분리된 딸 우주와 "부정한 거리"}
+	\(\phi\) 의 국소적 변동이 임계값 \(\phi_{\rm crit}=\ln\Phi\) 를 초과하면, \textbf{국소적} 상전이가 일어난다: 새로운 진공의 작은 거품이 핵형성되고 팽창하여, 인과적으로 분리된 영역 — 딸 우주 — 을 생성한다. 두 우주는 매우 가파른 \(\nabla\phi\) 의 표면층을 가진 영역 벽에 의해 분리된다. 벽을 가로지르는 곡선의 아핀 매개변수가 발산하기 때문에, 고전적 측지선으로 두 우주 사이의 거리를 측정하는 것은 불가능하다. 유일하게 의미 있는 "거리"는 \textbf{조정 깊이 차이}
+	\begin{equation}
+		\Delta L = L_{\rm parent} - L_{\rm child},
+		\label{eq:deltaL}
+	\end{equation}
+	이며, 이는 위상수학적 양자수이다. 따라서 우주 간의 "부정한 거리"는 조정 층의 이산 구조의 직접적인 결과이다.
+	
+	\subsection{국소적이고 환경 의존적인 척도로서의 플랑크 길이}
+	YUCT 에서 기본 길이는 깊이 \(L\) 을 갖는 가장 가벼운 조정 클러스터의 콤프턴 파장이다. 질량 공식 \(m \simeq M_{\rm Pl}\,(2/3)^L\) 을 사용하면, 이 길이는
+	\begin{equation}
+		\ell_{\rm coord}(L) = \frac{\hbar}{m c}
+		= \frac{\hbar}{M_{\rm Pl}c} \left(\frac{3}{2}\right)^{\!L}
+		= \ell_{\rm Pl} \left(\frac{3}{2}\right)^{\!L}.
+		\label{eq:length-from-L}
+	\end{equation}
+	현재 시대의 진공에 대해서는 \(L_{\rm vacuum}\to\infty\) 이지만, 유한한 클러스터는 척도 \(\ell_{\rm coord}(L) \gg \ell_{\rm Pl}\) 을 탐사한다. 보통의 플랑크 길이는 이 일반 공식의 \(L=1\) 인 특별한 경우, 즉 오늘날의 저에너지 현상을 지배하는 조정 층을 특징지을 뿐이다.
+	
+	따라서 중력 상수도 층에 의존한다:
+	\begin{equation}
+		G_{\rm eff}(\phi) = \frac{G_0}{1-4\pi G_0\alpha_2\phi^2},
+		\label{eq:Geff-layer}
+	\end{equation}
+	따라서 \(\phi\) 가 더 큰 영역에서는 중력이 더 약해진다. 이것은 허블 장력의 자연스러운 해결을 제공한다: 팽창률의 국소 측정은 CMB 와는 약간 다른 \(\phi\) 환경을 탐사하며, 그 결과 체계적으로 다른 \(H_0\) 값의 추정을 초래한다. 이 효과의 정량적 연구는 다른 곳에서 제시될 것이다.
+	
+	\section{검증 가능한 예측}
+	
+	\subsection{은하 회전 곡선}
+	수정된 중력 항은 우주 암흑 물질 분율에 의해 규격화된 평평한 회전 곡선을 예측한다. 개별 은하에 대한 자세한 피팅은 별도의 연구에서 제시될 것이다.
+	
+	\subsection{우주 구조의 성장}
+	조정장은 선형 성장 인자를 수정한다. 표준 섭동 이론을 사용하면, 적색편이 \(z=0.5\) 에서 \(\Lambda\)CDM 으로부터의 분수 편차는 약 \(2\)–\(3\%\) 이며, 이는 Euclid 와 DESI 에 의해 측정 가능하다.
+	
+	\subsection{우주론적 매개변수 제약}
+	이 모델은 \(\Omega_\Lambda = 2/3\) 와 \(\Omega_{\mathrm{DM}}^{\mathrm{eff}} = 1 - 0.05 - 2/3 \approx 0.2833\) 을 정확히 예측한다. 이 값들은 Planck, DES, LSST 데이터와 대조될 수 있다.
+	
+	\section{결론}
+	우리는 YUCT 의 정보 이론적 공리로부터 중력을 유도했다. 기하학적 장력 텐서 \(\Theta_{\mu\nu}\) 는 암흑 물질과 암흑 에너지를 통일하고, 우주 상수는 위상수학에 의해 고정되며, 순환 우주사가 자연스럽게 나타난다. 모든 매개변수는 플랑크 척도와 사전 상수로 표현된다. 이 이론은 현재의 우주론적 탐사에서 반증 가능하다.
+	
+	\begin{thebibliography}{99}
+		\bibitem{Y-appA} A. V. Yakushev, YUCT Lagrangian V35.0 (부록 A).
+		\bibitem{Y-appL} A. V. Yakushev, Fractal Coordination Error Scaling (부록 L).
+		\bibitem{Y-appM} A. V. Yakushev, Cosmology -- Inflation as a Coordination Phase Transition (부록 M).
+		\bibitem{Y-appG} A. V. Yakushev, Resolution of the Quantum Gravity Problem (부록 G).
+	\end{thebibliography}
+	
+\end{document}

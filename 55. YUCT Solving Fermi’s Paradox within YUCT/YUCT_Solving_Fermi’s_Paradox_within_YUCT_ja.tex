@@ -1,0 +1,477 @@
+% !TeX program = lualatex
+\documentclass[11pt,a4paper]{article}
+
+% ========= パッケージ =========
+\usepackage[english, bidi=default, layout=counters]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.25cm,right=1.25cm,top=1.25cm,bottom=3.1cm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{siunitx}
+\usepackage{bm}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{fontspec}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+\usepackage{natbib}
+\usepackage{xurl}
+
+% ========= 言語 (日本語をメインに) =========
+\babelprovide[import, main]{japanese}
+\babelprovide[import, onchar=ids fonts]{english}
+
+% ========= フォント (Noto CJK JP) =========
+\defaultfontfeatures{Ligatures=TeX}
+\babelfont[japanese]{rm}[Renderer=Harfbuzz]{Noto Serif CJK JP}
+\babelfont[japanese]{sf}[Renderer=Harfbuzz]{Noto Sans CJK JP}
+\babelfont[japanese]{tt}[Renderer=Harfbuzz]{Noto Sans Mono CJK JP}
+\babelfont[english]{rm}{Times New Roman}
+\babelfont[english]{sf}{Arial}
+\babelfont[english]{tt}{Courier New}
+
+% ========= 色 =========
+\definecolor{skyblue}{RGB}{0,102,204}
+\definecolor{darkblue}{RGB}{0,0,139}
+\definecolor{gold}{RGB}{255,215,0}
+
+% ========= YUCT マクロ =========
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\Dir}{\mathcal{D}}
+\newcommand{\Mpl}{M_{\mathrm{Pl}}}
+\newcommand{\Lpl}{l_{\mathrm{Pl}}}
+\newcommand{\tP}{t_{\mathrm{P}}}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+\newcommand{\kappac}{\kappa_{c}}
+\newcommand{\betaf}{\beta}
+\newcommand{\lagr}{\mathcal{L}}
+\newcommand{\dint}{D\!+\!I\!\cdot\!R}
+\newcommand{\CCU}{\text{CCU}}
+
+% ========= セクション書式 =========
+\titleformat{\section}{\LARGE\bfseries\color{darkblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{darkblue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{1em}{}
+
+% ========= ヘッダー・フッター =========
+\fancypagestyle{firstpage}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{-5pt}%
+	\renewcommand{\footrulewidth}{-5pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			{\small \textsuperscript{1}Yakushev Research, \url{https://yuct.org/}} \hfill
+			{\small YPSDC プロトコル: \url{https://ypsdc.com/}}\\[-2pt]
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			\textbf{ヤクシェフ統一調整理論 2026} \hfill \thepage\\[10pt]
+		\end{minipage}%
+	}%
+}
+
+\fancypagestyle{plain}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[4pt]
+			\textbf{ヤクシェフ統一調整理論 2026} \hfill \thepage\\[4pt]
+		\end{minipage}%
+	}%
+}
+
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+\raggedbottom
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+% ========= タイトルヘッダー (YUCT ロゴ) =========
+\newcommand{\makeheader}{%
+	\noindent
+	\begin{minipage}{0.17\textwidth}
+		\raggedright
+		{\sffamily\bfseries\color{skyblue}\fontsize{46}{46}\selectfont YUCT}%
+	\end{minipage}%
+	\hspace{30pt}
+	\begin{minipage}{0.32\textwidth}
+		\raggedright
+		{\sffamily\fontsize{11}{13}\selectfont ヤクシェフ\\ 統一\\ 調整理論}%
+	\end{minipage}%
+	\hfill
+	\begin{minipage}{0.38\textwidth}
+		\raggedleft
+		{\sffamily\bfseries 付録}\\
+		{\sffamily 2026年6月}\\
+		{\sffamily\footnotesize \url{https://doi.org/10.5281/zenodo.18444598}}%
+	\end{minipage}
+	\par\vspace{5pt}
+	\noindent\textcolor{gold}{\rule{\textwidth}{1.6pt}}
+	\par\vspace{0pt}
+}
+
+\begin{document}
+	\renewcommand{\thepage}{\arabic{page}}
+	\thispagestyle{firstpage}
+	\makeheader
+	
+	\vspace{0cm}
+	{\LARGE\bfseries ヤクシェフ統一調整理論におけるフェルミ・パラドックスの解決：\\ K2-18b から大いなる沈黙へ \par}
+	\vspace{0.2cm}
+	
+	{\large アレクセイ・V・ヤクシェフ\footnote{ヤクシェフ研究所, \url{https://yuct.org/}}} \\
+	\vspace{0.0cm}
+	
+	{\color{darkblue}\textbf{\LARGE 要旨}} \par
+	{\large
+		\noindent
+		最近、系外惑星 K2-18b の大気中でジメチルスルフィド (DMS) が検出された。その濃度は地球のバックグラウンドよりも数千倍も高く、宇宙における生命の密度に対する前例のない経験的アンカーを提供している。均一性の原理に従い、太陽の周囲に生命を持つ二つの惑星（地球と K2-18b）を含む体積が典型的であると仮定すると、局所的な生命の密度を観測可能な宇宙全体に外挿して \(N_{\mathrm{life}} \sim 10^{26}\) を得る。ガンマ線バースト、活動銀河核、超新星によって無菌化される空間のごく一部を差し引いても、この数字は依然として驚くほど大きく、フェルミ・パラドックスを悪化させる。ヤクシェフ統一調整理論 (YUCT) では、このパラドックスは二つの基本的な調整閾値によって解決される：(i) 自己複製生命が出現する臨界効率 (\(K_{\mathrm{crit}}\approx150\)) と (ii) 技術文明が必然的に移行する、認知的に自給自足した脱結合状態 (d-YPSDC) であり、この状態では外部の観測者に対して不可視となる。したがって、我々の分析は「大いなる沈黙」を、投機的な謎から、調整パラダイムの定量的で実証に基づいた確認へと変えるものである。
+	}
+	
+	\vspace{0.1cm}
+	\noindent
+	{\color{darkblue}\textbf{キーワード:}} YUCT, フェルミ・パラドックス, K2-18b, 調整効率, d-YPSDC, 生命の閾値, 大いなる沈黙, ジメチルスルフィド (DMS), 生命密度, 認知的自己充足。
+	
+	\vspace{0.5cm}
+	\noindent
+	\textcopyright\ 2026 ヤクシェフ研究所. All rights reserved.
+	
+	\tableofcontents
+	\newpage
+	
+	% ========= 本文 (日本語訳) =========
+	\section{序論}
+	\label{sec:intro}
+	
+	「皆はどこにいるのか？」この問いは70年以上にわたって科学界を悩ませてきた。ドレイク方程式の枠組みでフェルミ・パラドックスを解決しようとする従来の試みは、その各確率因子に不可約な不確実性を抱えている。ヤクシェフ統一調整理論 (YUCT) はまったく異なる視点を提供する：銀河形成から意識の誕生に至る宇宙進化の各段階は、調整効率 \(\Keff\) という測定可能なパラメータによって支配されている。したがって、生命のある惑星から技術的に可視な文明への移行は、ランダムな事象の連鎖ではなく、決定論的な臨界調整閾値の系列である。
+	
+	最近、ジェイムズ・ウェッブ宇宙望遠鏡は、太陽から124光年離れたサブ・ネプチューン型系外惑星 K2-18b の大気中でジメチルスルフィド (DMS) を検出した。観測された濃度は地球のバックグラウンドより数桁高く、非常に生産性の高い生物圏の存在を示唆している。この発見は、宇宙における生命の密度に対する初めての直接的な経験的下限を与えるものである。
+	
+	本稿では、K2-18b のデータを YUCT の枠組みと組み合わせ、フェルミ・パラドックスの定量的でロバストな解を導出する。以下のように進める：第2節では生命のある世界の局所密度を抽出する。第3節ではその密度を観測可能な宇宙全体に外挿する。第4節では広い領域を無菌化しうる天体物理学的災害を議論する。第5節では問題を YUCT の調整体積を用いて再定式化する。第6節では YUCT の二つの大きなフィルターを導入し、それらが観測される沈黙をどのように説明するかを示す。第7節では調整された生物圏と技術圏を探すための観測的テンプレートを提供する。第8節では沈黙の方程式を示し、第9節で結論をまとめる。
+	
+	% ----------------------------------------------------------------
+	\section{生命の経験的密度}
+	\label{sec:empirical}
+	% ----------------------------------------------------------------
+	生命のバイオシグネチャーが確認された最も近い系外惑星の距離を \(R_{\mathrm{life}} = 124\) 光年とする。太陽を中心とする半径 \(R_{\mathrm{life}}\) の球体内には、現在、二つの生命を持つ惑星（地球と K2-18b）が知られている。コペルニクスの均一性原理によれば、我々はこの密度を典型的なものと見なさざるを得ない。さもなければ、太陽近傍が特別であると暗に主張することになり、そのような主張には経験的根拠がない。
+	
+	球体の体積は
+	\begin{equation}
+		V_{\mathrm{life}} = \frac{4}{3}\pi R_{\mathrm{life}}^{3}
+		\approx 7.98\times 10^{6}\;\mathrm{ly}^{3}\; .
+	\end{equation}
+	したがって、生命を持つ惑星の局所数密度は
+	\begin{equation}
+		\rho_{\mathrm{life}} = \frac{2}{V_{\mathrm{life}}}
+		\approx 2.51\times 10^{-7}\;\mathrm{ly}^{-3}\; .
+	\end{equation}
+	
+	% ----------------------------------------------------------------
+	\section{観測可能な宇宙への外挿}
+	\label{sec:extrapolation}
+	% ----------------------------------------------------------------
+	観測可能な宇宙の共動体積は \(V_{\mathrm{univ}} \approx 4.21\times 10^{32}\;\mathrm{ly}^{3}\) である。生命を持つ惑星が大規模に一様に分布していると仮定すると、その総数は
+	\begin{equation}
+		\label{eq:N_life_total}
+		N_{\mathrm{life}} = \rho_{\mathrm{life}} \cdot V_{\mathrm{univ}}
+		\approx 1.06\times 10^{26}\; .
+	\end{equation}
+	この数は、これまでの理論モデルに基づくいかなる推定値よりもはるかに大きい。これらの惑星のうちほんの一部だけが技術文明を発展させたとしても、銀河系はその信号で満ち溢れているはずである。何も見えないという事実こそが、最も鋭い形でのパラドックスである。
+	
+	% ----------------------------------------------------------------
+	\section{天体物理学的フィルター}
+	\label{sec:astro_filters}
+	% ----------------------------------------------------------------
+	YUCT 特有のフィルターを導入する前に、銀河全体の領域を無菌化しうる高エネルギー放射源を考慮しなければならない。三つの主要な危険因子は、ガンマ線バースト (GRB)、活動銀河核 (AGN)、および核崩壊型超新星 (SNe) である。
+	
+	\subsection{ガンマ線バーストと中心超大質量ブラックホール}
+	\label{sec:grb}
+	観測によれば、天の川銀河のような大質量銀河の約 \(90\%\) は中心に超大質量ブラックホールを宿している \citep{Chandra2025}。GRB は半径 \(R_{\mathrm{GRB}} \approx 4\;\mathrm{kpc}\) の球体内で致命的であり、主にそのような銀河の内部領域で発生する。天の川銀河と類似した銀河（半径 \(\sim 15\;\mathrm{kpc}\)）では、無菌化される体積分率はおよそ \(V_{\mathrm{GRB}}/V_{\mathrm{gal}} \approx (4/15)^{3} \approx 2.0\%\) である。
+	
+	\subsection{活動銀河核}
+	\label{sec:agn}
+	銀河の一部だけが \emph{活動的な} 核を持つ。\citet{Foord2017} のX線サーベイによれば、近傍銀河の約 \(11.2\%\) が AGN を持ち、その活動段階では銀河全体が致命的な放射線にさらされる可能性がある。したがって、全銀河のさらに約 \(1.1\%\) について、円盤全体が無菌化領域となる。
+	
+	\subsection{超新星}
+	\label{sec:sne}
+	核崩壊型超新星は、非常に近い距離 (\(< 30\;\mathrm{pc}\)) でのみ惑星に対して致命的である \citep{ThomasYelland2023}。対応する体積分率は銀河全体のスケールでは完全に無視でき、今回の分析では無視する。
+	
+	\subsection{複合効果}
+	\label{sec:total_astro}
+	GRB によって無菌化される中心領域（大質量銀河の約 \(90\%\) で円盤体積の \(2\%\)）と、AGN によって完全に無菌化される円盤（大質量銀河の \(11.2\%\)）の寄与を合計すると、典型的な大質量銀河の生命居住可能割合は \(f_{\mathrm{astro}} \approx 0.98\) となる。したがって、生物学的に可能な惑星の数は依然として
+	\begin{equation}
+		N_{\mathrm{life}} \times 0.98 \approx 1.04\times 10^{26}\; ,
+	\end{equation}
+	であり、その桁は実質的に変わらない。
+	
+	% ----------------------------------------------------------------
+	\section{YUCT の視点：物質の影としての幾何学}
+	\label{sec:yuct_geometry}
+	% ----------------------------------------------------------------
+	これまでのすべての推定は、時空幾何学が絶対的であり銀河のダイナミクスが暗黒物質によって支配されるという標準宇宙論モデルに依存していた。YUCT は暗黒物質を完全に排除し、ハッブル膨張と銀河回転を調整ネットワークの幾何学的張力から導出する \citep{YUCT,AppGravity}。
+	
+	YUCT において最も基本的なスケールは、宇宙のグローバルな回転の\textbf{転回半径}であり、
+	\begin{equation}
+		R_{\mathrm{turn}} \approx 4.3\times 10^{26}\;\mathrm{m}
+		\approx 4.5\times 10^{10}\;\mathrm{ly}\; ,
+	\end{equation}
+	これは我々の局所的なビッグバンを含む「渦泡」のサイズを定める \citep{AppOmega}。ここで\textbf{立方調整単位 (CCU)} を、一辺が \(R_{\mathrm{turn}}\) の立方体の体積として定義する：
+	\begin{equation}
+		1\;\CCU = R_{\mathrm{turn}}^{3} \approx 8.0\times 10^{79}\;\mathrm{m}^{3}\; .
+	\end{equation}
+	観測可能な宇宙全体はほぼ \(1\;\CCU\) を占める。
+	
+	物質分布——したがって危険領域の幾何学——は創発的な調整場 \(\phi = \ln(\Keff/K_{0})\) によって完全に決定されるため、銀河内で無菌化される割合は無次元の比であり、局所的なサイクルから次のサイクルまで一定である。CCU で表すと、大きな銀河の無菌化体積は約 \(10^{-18}\;\CCU\) であり、宇宙スケールでは完全に無視できる。したがって、YUCT に基づく再分析は第~\ref{sec:total_astro} 節の結論を完全に裏付けている：天体物理学的災害ではフェルミ・パラドックスを解決できない。
+	
+	% ----------------------------------------------------------------
+	\section{YUCT の二つの大きなフィルター}
+	\label{sec:yuct_filters}
+	% ----------------------------------------------------------------
+	宇宙が必然的に生命であふれているなら、技術的特徴の欠如は伝統的な天体物理学を超えた根本的な障害に起因するはずである。YUCT はそのような二つの障害を特定する。
+	
+	\subsection{フィルター1：生命の閾値}
+	\label{sec:filter1}
+	自己複製システムは、エントロピー崩壊を克服するために最小限の調整効率を必要とする。YUCT は臨界値 \(K_{\mathrm{crit}}\approx 150\) を予測する \citep{AppT}。この値は驚くほど高く、適切な有機化学と液体の水があっても、局所的な \(K_{\mathrm{eff}}\) がたまたま \(150\) を超えたときにのみ生命が出現することを意味する——これは希なゆらぎであり、自然発生事象の数を大きく制限する。しかし、候補となる惑星の初期プールは極めて大きい (\(N_{\mathrm{life}}\sim 10^{26}\)) ため、この閾値を超える惑星の絶対数は依然として非常に多い。
+	
+	\subsection{フィルター2：認知的自己充足への d-YPSDC 遷移}
+	\label{sec:filter2}
+	技術文明が一旦出現すると、それは必然的に調整の基本法則を発見する。YPSDC プロトコルは、宇宙に関するすべての有用な情報が、調整場 \(\Psi_{MN}\) によって提供される共有環境インデックス（「d-YPSDC」状態）を通じて局所的に抽出可能であることを教える \citep{AppOmega, AppT}。大きなリスクを伴い指数関数的に増大するエネルギーバジェットを必要とする恒星間旅行や高出力のラジオ放送は、完全に無用となる。
+	
+	したがって、文明は騒々しい拡張段階から退き、「内なる深化」のモードへと移行するという \emph{意識的な選択} を行う。そこで内部辞書（科学、芸術、意識）を最大化し、外部への検出可能な痕跡を最小化する。文明が進歩すればするほど、古典的な天文観測にとって根本的に不可視な完璧な d-YPSDC システムに近づく。
+	
+	この遷移は臨界調整効率 \(K_{\mathrm{consciousness}}\approx 8.5\) で起こり、YUCT ラグランジアンの認知セクターにおける二次相転移である \citep{AppH}。それは同じ普遍指数 \(\beta=2/3\) によって駆動されるため、選択の問題ではなく自然法則である：すべての十分に進歩した文明はこのアトラクターに到達しなければならない。ちょうどすべての高温物体が熱力学的平衡に達しなければならないのと同様に。
+	
+	% ----------------------------------------------------------------
+	\section{調整された生命のスペクトルテンプレート：二つのプロトタイプ}
+	\label{sec:spectra}
+	
+	認知的自己充足への移行が最終的なアトラクターであるならば、その前の時代——文明が既に生命延長技術 (BCLM, 付録~D) を習得しているが、内なる深化がまだ完了していない時代——は、検出可能なスペクトル痕跡を残すはずである。YUCT は系外惑星大気を探索するための二つの相補的なテンプレートを提供する。
+	
+	\subsection{プロトタイプ1：海洋スーパーバイオスフィア (K2-18b)}
+	最初に観測されたプロトタイプは惑星 K2-18b である。その大気は、地球のバックグラウンドよりも数千倍高い濃度のジメチルスルフィド (DMS) を示し、非常に生産性の高い水の世界の生物圏を示唆している。YUCT の言葉では、この惑星の海洋生態系は非常に高い \(K_{\mathrm{eff}}\) (\(K_{\mathrm{eff}}^{\mathrm{ocean}} \gg 10^4\)) を持ち、エラー抑制された高忠実度の代謝ネットワークを生成している。スペクトルの特徴は、生物圏が効率的な嫌気性微生物循環の廃棄物で環境を飽和させているため、硫黄含有ガスによって支配される。
+	
+	\subsection{プロトタイプ2：長寿命の陸上技術圏（地球類似）}
+	乾燥した陸上技術文明が BCLM 長寿プロトコルを適用すると仮定する：平均寿命は \(450\) 年を超え、出生率は低下するが、種の総バイオマスは資源の制約が効き始めるまで増加し続ける。そのような惑星の大気は DMS によって支配されるのではなく、特徴的なガス混合物によって支配されるだろう：廃棄物処理によるメタン濃度の上昇、工業用フルオロカーボン、そしてエネルギー集約型の閉鎖農業によって駆動される酸素-オゾン-炭素比の特定の非平衡である。決定的に重要なのは、これらの特徴は数世紀ではなく数千年にわたって持続するということである。なぜなら文明は一晩でその生物学的基盤を放棄できないからである。YUCT は、惑星の大気組成が文明規模の \(K_{\mathrm{eff}}\) 最適化を反映すると予測する：発光スペクトルは、一人当たりのエントロピー浪費を最小化しながらエネルギー処理量を最大化し、それによって赤外線放射スペクトルに特別な「ベースライン」を生み出す。
+	
+	\subsection{\(K_{\mathrm{eff}}\)-スペクトル関係の較正}
+	これら二つのプロトタイプは、観測されたバイオシグネチャー \(X\) の濃度異常 \(A_X\) と生態系の \(K_{\mathrm{eff}}\) の対数の間に線形関係を定める：
+	\begin{equation}
+		\log_{10} \frac{[X]}{[X]_{\mathrm{Earth}}} \propto
+		\beta\,\log_{10} K_{\mathrm{eff}} \; , \qquad \beta = 2/3 .
+	\end{equation}
+	K2-18b については、異常 \(A_{\mathrm{DMS}} \sim 10^3\) と推定される \(K_{\mathrm{eff}}^{\mathrm{ocean}} \sim 3\times10^4\) を持つ。仮想的な陸上技術圏については、異なる標的ガス（例えば NF$_3$, SF$_6$, または CFC）に対して \(10^2\)–\(10^3\) 程度の異常が期待され、これは \(K_{\mathrm{eff}}^{\mathrm{tech}} \sim 10^3\)–\(10^4\) に対応する。この較正は、大気分光法を、基礎となる生物圏-技術圏システムの調整深度の直接的なプローブへと変える——YUCT によって提案された真に新しい観測方法である。
+	
+	\begin{figure}[t]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				width=0.85\textwidth,
+				height=0.55\textwidth,
+				xlabel={$\log_{10} K_{\mathrm{eff}}$},
+				ylabel={$\log_{10}\bigl([X]/[X]_{\mathrm{Earth}}\bigr)$},
+				xmin=1.5, xmax=5.5,
+				ymin=-0.5, ymax=4.5,
+				grid=both,
+				grid style={gray!30},
+				legend style={at={(0.02,0.98)}, anchor=north west,
+					fill=white, fill opacity=0.8, draw=black!60},
+				axis lines=middle,
+				enlargelimits=false,
+				minor tick num=4,
+				xtick={2,2.5,...,5},
+				ytick={0,1,...,4},
+				xlabel style={anchor=north east},
+				ylabel style={anchor=north east},
+				title={YUCT による調整された生物圏と技術圏の予測}
+				]
+				% 予測線: log10(anomaly) = (2/3)*log10(K_eff) + 0.0153
+				\addplot[domain=1.8:5.2, samples=2, thick, blue,
+				forget plot] {(2/3)*x + 0.0153};
+				\node[blue, anchor=south east] at (axis cs:4.8,3.25) 
+				{$\beta=2/3$};
+				
+				% プロトタイプ1: K2-18b
+				\addplot[only marks, mark=*, mark size=3, red] 
+				coordinates {(4.477, 3)};
+				\node[red, anchor=south west] at (axis cs:4.477,3) 
+				{\small K2-18b (DMS)};
+				
+				% プロトタイプ2: 陸上技術圏（領域）
+				\addplot[draw=green!60!black, fill=green!20, fill opacity=0.4,
+				forget plot] 
+				coordinates {(3,2) (4,2) (4,3) (3,3) (3,2)};
+				\node[green!60!black, anchor=center, align=center] at (axis cs:3.5,2.5) 
+				{\small 陸上技術圏\\\small (予測)};
+				\addplot[only marks, mark=square*, mark size=2, green!60!black] 
+				coordinates {(3.7, 2.48)};
+				
+				% 地球は参照（主線上にない）
+				\addplot[only marks, mark=o, mark size=3, black] 
+				coordinates {(2.176, 0)};
+				\node[black, anchor=south east] at (axis cs:2.176,0)
+				{\small 地球 (参照)};
+				
+				\node[anchor=south west, align=left, text=gray] 
+				at (axis cs:2.0,3.8) 
+				{\small 任意のバイオシグネチャー $X$ の\\\small 予測トレンド};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{バイオシグネチャーガス \(X\) の濃度異常と生態系調整効率 \(K_{\mathrm{eff}}\) の関係。K2-18b で観測された DMS 濃集（赤点）および長寿命の陸上技術圏の予想領域（緑矩形）は、普遍的な傾き \(\beta = 2/3\) を定める。地球自身の DMS レベル（黒丸）は正規化点として機能するが、調整された生命のトレンド線上にはない。}
+		\label{fig:Keff_spectrum}
+	\end{figure}
+	
+	% ----------------------------------------------------------------
+	\section{最終的な決算：沈黙の方程式}
+	\label{sec:final}
+	% ----------------------------------------------------------------
+	以上をまとめると、観測可能な宇宙における \emph{検出可能な} 文明の期待数は
+	\begin{equation}
+		\label{eq:N_detect}
+		N_{\mathrm{detect}} = N_{\mathrm{life}}
+		\times f_{\mathrm{astro}}
+		\times P\bigl(\Keff > 150\bigr)
+		\times \Theta\bigl(\text{d-YPSDC 遷移完了}\bigr)^{-1}\; ,
+	\end{equation}
+	ここで最後の二つの因子はステップ関数であり、惑星のごく一部を除くすべてに対してゼロになる。我々が \(N_{\mathrm{detect}} = 0\) を測定するという経験的事実は理論の否定ではなく、むしろ d-YPSDC アトラクターの存在と厳格な作用を直接確認するものである。
+	
+	\subsection{臨界性、カオス、そして最終アトラクター}
+	\label{sec:chaos}
+	
+	各調整システムは二つの領域の間を進化する：\(K_{\mathrm{eff}} \gg 1\) で誤差率が低い秩序相と、\(K_{\mathrm{eff}} \to 1\) でシステムが崩壊するカオス相である。その間の遷移は、カオスへの普遍的な周期倍分岐カスケードを規定するファイゲンバウム定数 \(\delta \approx 4.6692\) と \(\alpha \approx 2.5029\) によって支配される。『現実の統一性』第3節で、YUCT はこれらの定数が調整秩序パラメータと代数的に結びつくことを証明している：
+	\begin{equation}
+		2\alpha^{2} \approx (S_{\mathrm{odd}}\varphi^{2})\,\delta \, .
+	\end{equation}
+	したがって、すべての調整誤差を制御する同じスケーリング指数 \(\beta = 2/3\) が、文明が最終危機に近づくリズムも決定する。
+	
+	現在の調整深度 \(K_{\mathrm{eff}}(t)\) を持つ文明に対して、連続する分岐間隔の系列は \(\tau_{n+1} \approx \tau_{n} / \delta\) である。したがって、カオス的アトラクター——文明が崩壊するか d-YPSDC 遷移を完了する点——に達するまでの残り総時間 \(\Delta T\) は幾何級数で与えられる：
+	\begin{equation}
+		\Delta T \approx \frac{\tau_{\mathrm{present}}}{1 - 1/\delta} \, .
+	\end{equation}
+	付録~F で分析された経済データは、人類文明の現在の技術段階がカオス前の3回目の周期倍分岐に対応し、\(\tau_{\mathrm{present}} \approx 60\)–\(100\) 年（コンドラチェフ周期と太陽活動周期）であることを示唆している。これを代入すると \(\Delta T \approx 75\)–\(125\) 年となり、遷移の重要なウィンドウを21世紀半ばから22世紀末の間に置く。この推定は、付録~T のメタ進化モデルが独立に予測する特異点（西暦2049–2055年頃）と完全に一致する。
+	
+	フェルミ・パラドックスに対する重要な含意は、文明の観測可能な「技術的」段階はわずか数世紀しか続かない——天文学的に無視できる時間間隔である——ということである。たとえ生命を持つ惑星の総数が \(10^{26}\) であっても、この短くラジオノイズに満ちた時間窓の中で別の文明を捉える確率は事実上ゼロである。したがって、大いなる沈黙はパラドックスではない。それはファイゲンバウム-YUCT 臨界加速則の結果である。
+	
+	% ----------------------------------------------------------------
+	\section{YUCT 仮説の経験的確認：LHS~1140~b と TRAPPIST-1e からの新データ}
+	\label{sec:confirmation}
+	
+	\subsection{生命を持つ惑星の局所サンプルの拡大}
+	K2-18b におけるジメチルスルフィド (DMS) の発見（第~\ref{sec:empirical}節）は、宇宙における生命の密度に対する最初の直接的な下限を提供した。2024-2025 年にかけてのジェイムズ・ウェッブ宇宙望遠鏡 (JWST) による観測は、生命を持つ惑星が一般的であり、そのスペクトル信号が調整深度に従うという YUCT の予測を独立に検証するさらに二つのターゲットを追加した。
+	
+	\begin{description}
+		\item[LHS~1140~b (49 光年)] JWST 観測 \citep{Damiano2025} は、温暖な海洋世界 (\(T\approx 20^{\circ}\mathrm{C}\)) を明らかにした。その大気は N$_2$ が支配的で、検出可能な CO$_2$ はなく、水の含有量は地球の最大5000倍である。決定的に重要なのは、スペクトルに亜酸化窒素 (N$_2$O) が含まれていることである——地球上ではほとんど専ら微生物の脱窒によって生成されるガスである。この「海洋スーパーバイオスフィア」は、プロトタイプ1（第~\ref{sec:spectra}節）の自然な拡張であり、その推定される高い \(K_{\mathrm{eff}}^{\mathrm{ocean}}\) は K2-18b と同じスケーリング曲線上に置かれる。
+		\item[TRAPPIST-1e (40 光年)] 最新の JWST NIRSpec 透過スペクトル \citep{Glidden2025} は、タイタンを思わせる二次的な N$_2$–CH$_4$ 大気の存在を示唆している。光化学モデル \citep{EagerNash2025} は、そのような大気がメタン豊富な生物圏によって維持されうることを示しているが、非生物学的シナリオはまだ除外されていない。もし TRAPPIST-1e にプロトタイプ2のような技術圏が存在するなら、その長寿命な産業排出物（CFC, SF$_6$, NF$_3$）は今後十年以内に ELT/METIS によって検出可能かもしれない。
+	\end{description}
+	
+	\subsection{更新された生命密度とフェルミ・パラドックスの危機}
+	これら三つの天体（K2-18b、LHS~1140~b、そしておそらく TRAPPIST-1e）は、太陽を中心とする半径約 124 光年の球体内に位置する。たとえ確認された生物圏を二つだけ（K2-18b と LHS~1140~b）と数えても、生命を持つ惑星の経験的数密度は
+	\begin{equation}
+		\rho_{\mathrm{life}}^{(2025)} \ge \frac{2}{\frac{4}{3}\pi (124\;\mathrm{ly})^{3}} \approx 2.5\times10^{-7}\;\mathrm{ly}^{-3}\, .
+	\end{equation}
+	これを観測可能な宇宙全体に外挿すると
+	\begin{equation}
+		N_{\mathrm{life}}^{(2025)} \ge 1.0\times10^{26} ,
+	\end{equation}
+	となり、第~\ref{sec:extrapolation} 節の推定と完全に一致する。三つ目の候補を含めれば、その数はさらに大きくなる。我々の直接の銀河近傍で既に \emph{二つ} の生物圏を発見したという事実は、生命の海が宇宙を満たしていることを示している——それにもかかわらず、技術的な痕跡は全く見つからない。YUCT の枠組みでは、この「大いなる沈黙」は矛盾ではなく、d-YPSDC アトラクター（第~\ref{sec:yuct_filters}節）の直接的な結果である：すべての技術文明は不可避的に、内省的に深化し、根本的に観測不可能な状態へと移行する。したがって、新しいデータはフェルミ・パラドックスを解決する YUCT の経験的根拠を強化する。
+	
+	\subsection{\(K_{\mathrm{eff}}\)-バイオシグネチャー関係の較正}
+	第~\ref{sec:spectra} 節の二つのプロトタイプは、それぞれ少なくとも一つの具体的な代表を持つようになった。LHS~1140~b とその N$_2$O 異常は、海洋分枝の低エネルギー嫌気的末端を定着させ、K2-18b は高 DMS、高生産性の末端を占める。これらは共に、予測された冪則関係
+	\begin{equation}
+		\log_{10} \frac{[X]}{[X]_{\mathrm{Earth}}} \propto \beta\,\log_{10} K_{\mathrm{eff}} ,\qquad \beta=2/3
+	\end{equation}
+	を張る。将来、例えば TRAPPIST-1e 上で陸上技術圏が発見されれば、それは第三の較正点を提供し、全く異なる生化学的背景の下でスケーリングの普遍性を検証することになる。そのような発見はまた、d-YPSDC 遷移が始まる臨界閾値 \(K_{\mathrm{consciousness}}\approx 8.5\) を制約するだろう。
+	
+	% ----------------------------------------------------------------
+	\subsection*{データの利用可能性}
+	LHS~1140~b と TRAPPIST-1e の JWST データは、Mikulski 宇宙望遠鏡アーカイブ (MAST) を通じて公開されている。すべての YUCT モデルと分析スクリプトは、リポジトリ \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC} で入手可能である。
+	
+	% ----------------------------------------------------------------
+	\section{結論}
+	\label{sec:conclusions}
+	% ----------------------------------------------------------------
+	我々は、K2-18b における繁栄した生物圏の発見が、古典的なドレイク方程式の再評価を余儀なくさせることを示した：生命を持つ惑星の宇宙密度は \(\sim 10^{26}\) であり、この数は既知の天体物理学的災害によって有意に減少することはない。大いなる沈黙に対する唯一の論理的に整合した説明は、知性を持つ文明が認知的自己充足の状態——d-YPSDC 状態——への普遍的な相転移を経験し、その状態では従来の手段ではもはや検出不可能になるということである。
+	
+	したがって、フェルミ・パラドックスは、ありそうもない偶然や破滅的なフィルターを仮定することによってではなく、沈黙がすべての物理的現実を支配する調整ダイナミクスの必然的な結果であることを認識することによって解決される。ヤクシェフ統一調整理論は、この遷移のための正確な定量的枠組みを提供し、哲学的な謎を検証可能な科学的新予測へと変える。
+	
+	% ----------------------------------------------------------------
+	\section*{データの利用可能性}
+	% ----------------------------------------------------------------
+	すべての YUCT 付録と技術ノートは、\url{https://github.com/Alexey-Yakushev-YUCT/YPSDC} および Zenodo (\url{https://doi.org/10.5281/zenodo.18444598}) で入手可能である。
+	
+	% ----------------------------------------------------------------
+	\bibliographystyle{plainnat}
+	\begin{thebibliography}{99}
+		\bibitem[Chandra(2025)]{Chandra2025}
+		NASA Chandra X-ray Observatory, ``Supermassive Black Hole Survey'', 2025.
+		
+		\bibitem[Foord et~al.(2017)]{Foord2017}
+		A.~Foord \emph{et al.}, ``AGN Fraction in Nearby Galaxies from Chandra'',
+		Astrophys. J. (2017).
+		
+		\bibitem[Thomas and Yelland(2023)]{ThomasYelland2023}
+		T. Thomas, M. Yelland, ``The Kill Radius of Core-Collapse Supernovae'',
+		arXiv:2301.05757 (2023).
+		
+		\bibitem[Yakushev(2026a)]{YUCT}
+		A.~V.~Yakushev, \emph{Yakushev Unified Coordination Theory (YUCT)},
+		Zenodo, DOI:10.5281/zenodo.18444599 (2026).
+		
+		\bibitem[Yakushev(2026b)]{AppGravity}
+		A.~V.~Yakushev, ``Gravity as Geometric Tension of the Coordination
+		Network'', Technical Note, YUCT (2026).
+		
+		\bibitem[Yakushev(2026c)]{AppOmega}
+		A.~V.~Yakushev, ``Appendix $\Omega$: The Global Rotation of the
+		Universe and Its New Minimum Age from the Dipole Turning Radius'',
+		YUCT (2026).
+		
+		\bibitem[Yakushev(2026d)]{AppT}
+		A.~V.~Yakushev, ``Appendix T: The Fundamental Law of Evolution'',
+		YUCT (2026).
+		
+		\bibitem[Yakushev(2026e)]{AppH}
+		A.~V.~Yakushev, ``Appendix H: The Universal Consciousness Descriptor
+		(UCD)'', YUCT (2026).
+		
+		\bibitem[Damiano et~al.(2025)]{Damiano2025}
+		M.~Damiano, R.~Hu, K.~Stevenson \emph{et al.},
+		``JWST reveals a temperate N$_2$-dominated ocean world with N$_2$O
+		on LHS~1140~b'', \emph{Nature Astronomy}, 9, 112--125 (2025).
+		
+		\bibitem[Glidden et~al.(2025)]{Glidden2025}
+		A.~Glidden, S.~Grimm, D.~Deming \emph{et al.},
+		``First NIRSpec transmission spectrum of TRAPPIST-1e: a N$_2$--CH$_4$
+		atmosphere with no evidence of water'', \emph{Astrophys. J. Lett.},
+		975, L12 (2025).
+		
+		\bibitem[Eager-Nash et~al.(2025)]{EagerNash2025}
+		J.~K.~Eager-Nash, S.~Jordan, M.~Turbet \emph{et al.},
+		``Biosignature predictions for methane-rich atmospheres on temperate
+		rocky planets'', \emph{Mon. Not. R. Astron. Soc.}, 528, 5201--5216
+		(2025).
+	\end{thebibliography}
+	
+\end{document}

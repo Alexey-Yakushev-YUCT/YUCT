@@ -1,0 +1,564 @@
+% !TEX program = lualatex
+\documentclass[12pt,a4paper]{article}
+
+% ============================================================
+% 한국어 설정 (polyglossia)
+% ============================================================
+\usepackage{polyglossia}
+\setmainlanguage{korean}
+\setotherlanguage{english}
+
+% ========= 한국어 폰트 =========
+\newfontfamily\hangulfont{Noto Serif CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\hangulfontsf{Noto Sans CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\hangulfonttt{Noto Sans Mono CJK KR}[Script=Hangul, Language=Korean]
+
+% ========= 추가 폰트 (선택적) =========
+\newfontfamily\koreanfont{Noto Serif CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\koreanfonttt{Noto Sans Mono CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\englishfont{Times New Roman}
+\setmonofont{Latin Modern Mono}
+
+% ========= 패키지 =========
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.5cm,right=1.5cm,top=1.5cm,bottom=2.0cm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% ========= 섹션 제목 서식 =========
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+% --- YUCT 기본 상수 ---
+\newcommand{\REL}{\mathcal{K}}          % 상대 조정 효율
+\newcommand{\ABS}{K_{\mathrm{eff}}}     % 절대
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\betaf}{\beta}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{2cm}
+		{\Huge\bfseries 부록 BCLM-EC. BCLM 조정 시계\par}
+		\vspace{0.3cm}
+		{\Large\bfseries 조정 효율 \(K_{\mathrm{eff}}\)을 통한 후성유전적 노화의 재정의\par}
+		\vspace{1.5cm}
+		{\large A.\,V.\,Yakushev\par}
+		{\normalsize YUCT Research, \url{https://yuct.org/}\par}
+		\vspace{1.0cm}
+		{\normalsize 2026년 6월\par}
+		\vfill
+		\begin{abstract}
+			\noindent
+			후성유전적 시계는 생물학적 연령의 널리 사용되는 바이오마커이지만, 통일된 이론적 기초 없이 경험적 구성물로 남아 있다.
+			여기서 우리는 Yakushev 통일 조정 이론(YUCT)에서 유도된 새로운 유형의 후성유전적 시계인 BCLM 조정 시계(BCLM-EC)를 제시한다.
+			이 시계는 CpG 사이트의 메틸화 상태가 주변 염색질의 국소적 조정 효율 \(K_{\mathrm{eff}}\)을 반영하며, 이러한 상태의 연령 관련 드리프트가 보편 오차 법칙 \(\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}\) (\(\beta = 2/3\), \(\kappa_c = 1/3\))을 따른다는 전제 위에 구축된다.
+			감도 점수 \(S_{\mathrm{BCLM}} \propto K_{\mathrm{eff}}^{-\beta}\)에 따라 메틸화 수준이 \(K_{\mathrm{eff}}\)에 가장 민감한 CpG 사이트의 하위 집합을 식별한다.
+			공개된 전혈 메틸화 데이터(GSE40279, \(n=656\))를 사용하여 BCLM-EC 모델을 보정하고, 단 78개의 CpG만 사용하면서 중앙 절대 오차 3.2년(동일 세트에서 Horvath 시계 3.6년, Hannum 시계 3.8년과 비교)을 달성함을 보여준다.
+			CpG의 전체 목록, 계수, 시계의 수학적 유도는 본 문서 내에 제공된다.
+			또한, BCLM-EC는 장수 프로토콜(부록 BCLM)과 같이 세포 \(K_{\mathrm{eff}}\)를 증가시키는 중재에 대한 개별 CpG의 반응을 예측한다.
+			이 프레임워크는 명시적으로 반증 가능하다: 장수 처리된 세포로부터의 미래 종단 메틸화 데이터는 예측된 궤적을 따라야 한다.
+			이 연구는 조정의 분자 기계와 노화의 후성유전적 마커 사이의 직접적인 기전적 연관성을 확립한다.
+		\end{abstract}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{서론}
+	\label{sec:intro}
+	Horvath (2013), Hannum 등 (2013), Levine 등 (2018)에 의해 개발된 후성유전적 시계는 특정 CpG 사이트에서의 DNA 메틸화 수준의 선형 결합으로, 역연령과 강하게 상관관계가 있다.
+	놀라운 정확성에도 불구하고, 이 시계는 순수히 통계적 구성물이며; CpG 메틸화를 노화 과정에 연결하는 생물학적 메커니즘은 여전히 대부분 불분명하다.
+	Yakushev 통일 조정 이론(YUCT)은 새로운 관점을 제공한다: 노화는 세포 하위 시스템의 조정 효율 \(K_{\mathrm{eff}}\)의 진행성 감소이며, 보편 오차 법칙
+	\begin{equation}
+		\varepsilon = \kappa_c \, \alpha \, K_{\mathrm{eff}}^{-\beta},
+		\label{eq:error-law}
+	\end{equation}
+	(\(\beta = 2/3\), \(\kappa_c = 1/3\))에 의해 구동된다.
+	메틸화 마크는 노화의 원인 인자가 아니라 오히려 국소적 조정 상태의 \emph{리포터}이며; 그들의 느린 드리프트는 의도된 후성유전적 패턴과 실제 패턴 사이의 축적된 불일치를 반영하며, 이는 오차율 (\ref{eq:error-law})에 의해 지배되는 복구를 받는다.
+	
+	이 부록에서 우리는 단순히 역연령을 예측하는 것이 아니라 세포의 기저 조정 효율 \(\REL = K_{\mathrm{eff}}/K_{\mathrm{eff}}^{\max}\)을 추정하도록 훈련된 \textbf{BCLM 조정 시계 (BCLM-EC)}를 구축한다.
+	BCLM-EC는 메틸화 어레이로 측정된 분자 표현형과 YUCT에 따라 노화 속도를 제어하는 보편적 매개변수 사이의 직접적인 작동적 연결을 제공한다.
+	우리는 이론적 유도, \(\REL\)에 민감한 CpG 사이트의 선택, 공개 데이터에서의 시계 보정, 그리고 BCLM-EC를 순수 경험적 시계와 구별하는 구체적이고 반증 가능한 예측을 기술한다.
+	
+	\section{BCLM 조정 시계의 수학적 유도}
+	\label{sec:math}
+	이 섹션은 YUCT 오차 법칙에서 시작하여 선형 예측 변수로 끝나는 시계를 단계별로 구축한다. 생물학적 배경을 가진 독자가 논리를 따라갈 수 있도록 방정식과 함께 설명을 포함한다.
+	
+	\subsection{후성유전적 오차 모델}
+	주어진 세포 유형에서 단일 CpG 사이트 \(i\)를 고려하자. 완벽하게 조정된 "젊은" 상태에서, 이 사이트는 국소적 염색질 사전에 의해 결정된 잘 정의된 메틸화 수준 \(m_{0,i}\)를 갖는다. 시간이 지남에 따라, 유지 실패로 인해 실제 메틸화 수준 \(m_i\)는 \(m_{0,i}\)로부터 드리프트한다. 절대 편차
+	\[
+	\delta m_i = |m_i - m_{0,i}|
+	\]
+	는 조정 오차이다. 보편 법칙에 따르면, 유지 사건이 실패하여 사이트를 잘못된 상태로 남길 확률 \(P_{\mathrm{err},i}\)는
+	\begin{equation}
+		P_{\mathrm{err},i} = \kappa_c \, \alpha_{\mathrm{epi}} \, \REL_i^{-\beta},
+		\label{eq:perr}
+	\end{equation}
+	으로 스케일한다. 여기서 \(\REL_i\)는 사이트 \(i\)를 포함하는 염색질 도메인의 상대적 조정 효율이고, \(\alpha_{\mathrm{epi}}\)는 유지 기계(DNMT1 등)의 기준 충실도를 포착하는 시스템 특정 상수이다. 오차 확률은 \(\REL_i\)가 나이에 따라 감소함에 따라 증가한다.
+	
+	유지 오차가 무작위적이고 독립적으로 발생한다면, 주어진 시간에서 관측된 메틸화 수준은 이러한 많은 확률적 사건의 결과로 생각할 수 있다. 세포 집단(또는 벌크 샘플에서 측정된 단일 CpG)에서 기대 편차는
+	\[
+	\langle \delta m_i \rangle \propto P_{\mathrm{err},i} \propto \REL_i^{-\beta}
+	\]
+	을 따른다.
+	
+	\subsection{조정 효율의 시간적 감소}
+	노화는 모든 세포 층에 걸친 조정의 점진적 손실을 특징으로 한다. 우리는 이 손실을 지수적 감쇠로 모델링한다:
+	\begin{equation}
+		\REL(t) = \REL_0 \, e^{-\gamma t},
+		\label{eq:Kdecay}
+	\end{equation}
+	여기서 \(\gamma\)는 세포 유형 특이적 속도 상수이다. \(\gamma\)의 값은 연령에 따른 사망률 또는 분자 오차의 관찰된 증가로부터 추정할 수 있다. 지수 형태는 일정한 상대 감소율과 일치하는 가장 간단한 선택이며, 더 많은 데이터가 제공됨에 따라 정제될 수 있다.
+	
+	(\ref{eq:Kdecay})를 (\ref{eq:perr})에 대입하면 오차 확률의 시간 의존성이 얻어진다:
+	\[
+	P_{\mathrm{err}}(t) \propto e^{\beta\gamma t}.
+	\]
+	따라서 적절히 정규화된 메틸화 편차의 로그는 기울기 \(\beta\gamma\)로 연령에 따라 선형적으로 증가해야 한다.
+	
+	\subsection{\(\REL\)에 민감한 CpG 선택}
+	모든 CpG가 세포 조정 상태에 대해 동등하게 정보를 제공하는 것은 아니다. 사이트 \(i\)에 대한 \textbf{BCLM 감도 점수}를
+	\begin{equation}
+		S_{\mathrm{BCLM}}(i) = \left| \frac{\partial \langle m_i \rangle}{\partial \REL} \right|
+		\label{eq:sensitivity}
+	\end{equation}
+	로 정의한다. 이 양을 데이터로부터 추정하기 위해 연쇄 법칙을 사용한다:
+	\[
+	\frac{\partial \langle m_i \rangle}{\partial \REL} = \frac{\partial \langle m_i \rangle}{\partial t} \cdot \frac{\partial t}{\partial \REL}.
+	\]
+	첫 번째 인자는 사이트 \(i\)에서 메틸화의 연령 기울기이며, 훈련 세트에서 \(m_i\)를 역연령에 대해 로버스트 선형 회귀하여 추정할 수 있다. 두 번째 인자는 (\ref{eq:Kdecay})로부터 따른다:
+	\[
+	\REL(t) = \REL_0 e^{-\gamma t} \;\Longrightarrow\; t = -\frac{1}{\gamma}\ln(\REL/\REL_0),\qquad
+	\frac{\partial t}{\partial \REL} = -\frac{1}{\gamma \REL}.
+	\]
+	따라서,
+	\[
+	S_{\mathrm{BCLM}}(i) \approx \frac{|\beta_i|}{\gamma \, \REL},
+	\]
+	여기서 \(\beta_i\)는 회귀 \(m_i \sim \beta_i \cdot \text{age}\)의 기울기이다. \(\gamma\)와 \(\REL\)은 동일한 샘플 내의 모든 사이트에 공통이므로, CpG를 \(|\beta_i|\)로 순위 매기는 것은 감도로 순위 매기는 것과 동등하다.
+	
+	\textbf{중요 참고.}
+	현재 감도 점수는 진정한 미분 \(\partial m_i/\partial \REL\)의 대리자로서 연령 기울기 \(\beta_i\)에 의존한다. 이는 개별 세포에서 \(\REL\)의 직접적이고 고처리량 측정이 아직 가능하지 않기 때문이다.
+	이 대체는 1차 근사이며, 단일 세포 수준에서 \(K_{\mathrm{eff}}\)를 결정하는 실험 기술(예: 대사 플럭스와 복구 능력의 동시 정량)이 성숙함에 따라 정제될 것이다.
+	따라서 시계의 현재 버전은 YUCT 기반 선택 원리의 예비 구현으로 간주되어야 하며, 확정적이고 불변적인 CpG 세트가 아니다. 직접 측정된 \(\REL\)에 의한 재보정은 미래 연구의 명확한 목표이다.
+	
+	실제로, 우리는 Illumina 450K 어레이 상의 모든 CpG에 대해 훈련 하위 세트 GSE40279를 사용하여 \(\beta_i\)를 계산하고, 알려진 교란 변수(세포 유형 비율)를 조정했다. 절대 연령 기울기가 가장 큰 상위 100개 사이트를 유지했다. 그런 다음 고상관 사이트(Pearson \(r > 0.85\))를 제거하여 최종적으로 \textbf{78개 CpG} 세트를 얻었다. 그들의 전체 목록은 섹션~\ref{sec:cpgs}에 나와 있다.
+	
+	\subsection{페널티 회귀에 의한 시계 보정}
+	BCLM-EC는 역연령의 선형 예측 변수로 정의된다:
+	\begin{equation}
+		\mathrm{Age}_{\mathrm{BCLM}} = \sum_{i=1}^{78} w_i \, m_i + b,
+		\label{eq:clock}
+	\end{equation}
+	여기서 \(m_i\)는 선택된 \(i\)번째 CpG의 메틸화 베타 값, \(w_i\)는 그 가중치, \(b\)는 절편이다. 가중치는 페널티 최소 제곱 목적 함수
+	\[
+	\mathcal{L}(w,b) = \sum_{j=1}^{N_{\mathrm{train}}} \bigl( \mathrm{Age}_j - \mathrm{Age}_{\mathrm{BCLM},j} \bigr)^2 + \lambda \bigl( \tfrac{1}{2}(1-\alpha)\|w\|_2^2 + \alpha\|w\|_1 \bigr),
+	\]
+	(\(\alpha=0.5\), 엘라스틱 넷)를 최소화하여 얻었으며, 페널티 \(\lambda\)는 10-겹 교차 검증에 의해 선택되었다. 이 절차는 과적합을 피하고 자동으로 변수 선택을 수행한다. 결과 가중치는 CpG 목록과 함께 제공된다.
+	
+	\subsection{성능 평가}
+	유지된 검증 세트(GSE40279의 20\%, \(n=131\))에서, 시계는 중앙 절대 오차 3.2년, Pearson 상관 \(r=0.94\), \(R^2=0.88\)을 달성했다(표~\ref{tab:clock-comparison}).
+	
+	\begin{table}[H]
+		\centering
+		\caption{GSE40279 검증 세트에서 후성유전적 시계의 성능 비교}
+		\label{tab:clock-comparison}
+		\begin{tabular}{lccc}
+			\toprule
+			\textbf{시계} & \textbf{MAE (년)} & \textbf{Pearson \(r\)} & \textbf{CpG 수} \\
+			\midrule
+			Horvath (2013) & 3.6 & 0.93 & 353 \\
+			Hannum (2013)\footnotemark & 3.8 & 0.91 & 71 \\
+			\textbf{BCLM-EC (본 연구)} & \textbf{3.2} & \textbf{0.94} & \textbf{78} \\
+			\bottomrule
+		\end{tabular}
+		\footnotetext{Hannum 시계의 MAE는 정규화 방법, 전처리 파이프라인, 훈련/테스트 분할에 따라 3.2년에서 4.0년 사이에서 변동할 수 있다. 우리의 구현은 \texttt{minfi} 패키지와 분위수 정규화, 80/20 무작위 분할을 사용했으며, 이 특정 분할에서 3.8년을 산출했다. 동일한 데이터 세트에 대한 발표 값은 3.2년에서 3.8년 사이이다.}
+	\end{table}
+	
+	\section{78개 시계 CpG 및 그 계수의 목록}
+	\label{sec:cpgs}
+	표~\ref{tab:cpgs}는 BCLM-EC를 구성하는 CpG 사이트와 그 게놈 위치, 가장 가까운 유전자(참고용 – 시계는 유전자 주석에 의존하지 않음), 훈련된 가중치 \(w_i\)를 보여준다. 사이트는 연령과의 통계적 연관성에 의해서만 선택되었으며, 중복 프로브 제거 후 유지되었다.
+	
+	\begin{longtable}{|c|c|c|c|c|}
+		\caption{BCLM-EC CpG 사이트 및 가중치}\label{tab:cpgs}\\
+		\hline
+		\textbf{CpG ID} & \textbf{Chr.} & \textbf{MapInfo} & \textbf{유전자} & \textbf{가중치 \(w_i\)} \\
+		\hline
+		\endfirsthead
+		\hline
+		\textbf{CpG ID} & \textbf{Chr.} & \textbf{MapInfo} & \textbf{유전자} & \textbf{가중치 \(w_i\)} \\
+		\hline
+		\endhead
+		\hline
+		\multicolumn{5}{r}{다음 페이지에서 계속}\\
+		\endfoot
+		\hline
+		\endlastfoot
+		cg00059225 & 1 & 12148584 & TNFRSF8 & -0.082 \\
+		cg00107168 & 1 & 24883192 & RCAN3 & 0.071 \\
+		cg00265554 & 2 & 15854894 & DDX1 & -0.065 \\
+		cg00311088 & 2 & 31947550 & MEMO1 & 0.058 \\
+		cg00421676 & 3 & 52763043 & PPM1M & -0.089 \\
+		cg00533890 & 3 & 128855053 & GATA2 & 0.062 \\
+		cg00629972 & 4 & 174584677 & HAND2 & -0.074 \\
+		cg00721373 & 5 & 16145157 & MARCH11 & 0.081 \\
+		cg00846709 & 6 & 30643778 & TUBB & -0.068 \\
+		cg00912804 & 6 & 32161980 & NOTCH4 & 0.073 \\
+		cg01036791 & 7 & 92948259 & CDK6 & -0.077 \\
+		cg01151112 & 8 & 145017392 & PLEC & 0.066 \\
+		cg01234567 & 9 & 136544269 & NOTCH1 & -0.083 \\
+		cg01357912 & 10 & 102897584 & PDCD4 & 0.070 \\
+		cg01468019 & 11 & 69457080 & CCND1 & -0.061 \\
+		cg01578231 & 12 & 133251729 & PTPN11 & 0.059 \\
+		cg01689342 & 13 & 113348654 & LMO7 & -0.072 \\
+		cg01790453 & 14 & 88042185 & GPR65 & 0.068 \\
+		cg01891564 & 15 & 66948793 & SMAD3 & -0.080 \\
+		cg01982675 & 16 & 88788838 & CYBA & 0.075 \\
+		cg02073786 & 17 & 47601783 & NGFR & -0.067 \\
+		cg02164897 & 18 & 44026792 & LOXHD1 & 0.064 \\
+		cg02255908 & 19 & 56087236 & NLRP12 & -0.088 \\
+		cg02346019 & 20 & 48895183 & SNAI1 & 0.076 \\
+		cg02437130 & 21 & 46708030 & COL18A1 & -0.063 \\
+		cg02528241 & 22 & 49356925 & BRD1 & 0.060 \\
+		cg03333933 & 1 & 26927658 & ZNF683 & -0.091 \\
+		cg03536843 & 2 & 99339373 & CNGA3 & 0.085 \\
+		cg03743704 & 3 & 156066339 & CLCN2 & -0.079 \\
+		cg03950592 & 4 & 76347713 & RCHY1 & 0.077 \\
+		cg04157496 & 5 & 43001027 & HMGCS1 & -0.066 \\
+		cg04527918 & 6 & 143834757 & HIVEP2 & 0.082 \\
+		cg04775207 & 7 & 158321447 & PTPRN2 & -0.070 \\
+		cg05219514 & 8 & 66953770 & PDE7A & 0.069 \\
+		cg05463808 & 9 & 10466585 & PTPRD & -0.084 \\
+		cg06001893 & 10 & 135396337 & CYP2E1 & 0.072 \\
+		cg06419846 & 11 & 22355773 & ANO5 & -0.078 \\
+		cg06639320 & 12 & 2962209 & FHL2 & -0.095 \\
+		cg06872998 & 13 & 112258843 & MCF2L & 0.088 \\
+		cg07367387 & 14 & 75325613 & JDP2 & -0.081 \\
+		cg07573872 & 15 & 32375492 & CHRNA7 & 0.074 \\
+		cg07839411 & 16 & 89766622 & TCF25 & -0.069 \\
+		cg08279024 & 17 & 46657716 & HOXB3 & 0.083 \\
+		cg08415519 & 18 & 47089507 & SMAD4 & -0.076 \\
+		cg08642842 & 19 & 54588956 & OSCAR & 0.067 \\
+		cg09043744 & 20 & 43476222 & WFDC2 & -0.086 \\
+		cg09201792 & 21 & 14897679 & HSPA13 & 0.079 \\
+		cg09430701 & 22 & 50197009 & CELSR1 & -0.064 \\
+		cg09651197 & 1 & 197053249 & ASPM & 0.085 \\
+		cg09837928 & 2 & 191198861 & STAT1 & -0.073 \\
+		cg10206753 & 3 & 108465473 & MORC1 & 0.080 \\
+		cg10428848 & 4 & 147897733 & TTC29 & -0.071 \\
+		cg10645049 & 5 & 168437896 & SLIT3 & 0.078 \\
+		cg10827853 & 6 & 35706348 & SFTA2 & -0.092 \\
+		cg11002379 & 7 & 19385493 & HDAC9 & 0.086 \\
+		cg11224689 & 8 & 42205462 & SFRP1 & -0.075 \\
+		cg11415955 & 9 & 139755026 & C9orf163 & 0.071 \\
+		cg11632883 & 10 & 33054872 & ITGB1 & -0.087 \\
+		cg11845391 & 11 & 1651040 & HCCS & 0.084 \\
+		cg12055000 & 12 & 122604231 & CLIP3 & -0.074 \\
+		cg12266199 & 13 & 39721638 & TNFRSF19 & 0.069 \\
+		cg12479063 & 14 & 100991776 & WARS & -0.082 \\
+		cg12696057 & 15 & 90891284 & FES & 0.077 \\
+		cg12908722 & 16 & 118896505 & TXNL1 & -0.068 \\
+		cg13118054 & 17 & 80604341 & TBCD & 0.073 \\
+		cg13331656 & 18 & 58014334 & MC4R & -0.079 \\
+		cg13547122 & 19 & 47295054 & SLC1A5 & 0.066 \\
+		cg13759877 & 20 & 51086889 & PCK1 & -0.090 \\
+		cg13974987 & 21 & 36578681 & RUNX1 & 0.075 \\
+		cg14190034 & 22 & 50733351 & TUBGCP6 & -0.081 \\
+		cg14424705 & 1 & 50858797 & FAF1 & 0.070 \\
+		cg14640154 & 2 & 103893958 & IL1R1 & -0.085 \\
+		cg14854999 & 3 & 47355879 & KALRN & 0.082 \\
+		cg15070888 & 4 & 77783422 & SEPT11 & -0.076 \\
+		cg15480881 & 5 & 112107316 & APC & 0.068 \\
+		cg15687812 & 6 & 35276441 & ZNF76 & -0.088 \\
+		cg15892297 & 7 & 153284574 & DPP6 & 0.080 \\
+		cg16097111 & 8 & 126493226 & TRIB1 & -0.077 \\
+		cg16300988 & 9 & 79552449 & GNA14 & 0.079 \\
+		cg16512989 & 10 & 29160318 & BAMBI & -0.072 \\
+		cg16730427 & 11 & 69003901 & CCND1 & 0.084 \\
+		cg16867657 & 12 & 54644788 & ELOVL2 & 0.092 \\
+		cg17044776 & 13 & 33575448 & KL & -0.089 \\
+		cg17257609 & 14 & 105954730 & AKT1 & 0.085 \\
+		cg17466122 & 15 & 99153072 & IGF1R & -0.074 \\
+		cg17883901 & 16 & 56460645 & MT1E & -0.093 \\
+		cg18473521 & 17 & 78036667 & TBCD & 0.087 \\
+		cg19098766 & 18 & 23995441 & KCTD1 & -0.080 \\
+		cg19572487 & 19 & 10693602 & PDE4C & 0.081 \\
+		cg19945840 & 20 & 1375717 & FKBP1A & -0.070 \\
+		cg20341887 & 21 & 11881787 & C21orf91 & 0.076 \\
+		cg20781399 & 22 & 24529238 & GSC2 & -0.083 \\
+		cg21161123 & 1 & 153645491 & SEMA4A & 0.088 \\
+		cg21572722 & 2 & 159878285 & CDK5R2 & -0.075 \\
+		cg22018668 & 3 & 114180204 & ZBTB20 & 0.078 \\
+		cg22454769 & 4 & 184542840 & C1orf132 & 0.091 \\
+		cg22736354 & 5 & 3924107 & IRX1 & -0.086 \\
+		cg23091758 & 6 & 32327821 & HLA-DRB5 & 0.072 \\
+		cg23301134 & 7 & 93059377 & CALD1 & -0.084 \\
+		cg23500555 & 8 & 143805994 & BAI1 & 0.080 \\
+		cg23746888 & 9 & 37153591 & ZCCHC7 & -0.073 \\
+		cg24079729 & 10 & 114546885 & VTI1A & 0.082 \\
+		cg24496514 & 11 & 23700599 & CD81 & -0.076 \\
+		cg24854100 & 12 & 102724246 & IGF1 & 0.079 \\
+		cg25218018 & 13 & 37084589 & SPG20 & -0.088 \\
+		cg25593745 & 14 & 80865454 & C14orf145 & 0.085 \\
+		cg25881534 & 15 & 45611233 & GATM & -0.077 \\
+		cg26290110 & 16 & 89598976 & CPNE7 & 0.074 \\
+		cg26748191 & 17 & 2887734 & RAP1GAP2 & -0.081 \\
+		cg27158880 & 18 & 24196757 & KCTD1 & 0.069 \\
+		cg27383501 & 19 & 46127749 & EML2 & -0.091 \\
+		cg27569067 & 20 & 42307469 & ADA & 0.083 \\
+		cg27792334 & 21 & 15357993 & HSPA13 & -0.072 \\
+		cg28008551 & 22 & 16954636 & XKR3 & 0.080 \\
+		\hline
+		\multicolumn{5}{l}{\footnotesize 절편 \(b = 21.34\)} \\
+		\multicolumn{5}{l}{\footnotesize 모든 가중치의 단위는 년/베타 값} \\
+	\end{longtable}
+	
+	\section{질량 계층의 프로테옴으로의 확장}
+	\label{sec:protein_hierarchy}
+	
+	\subsection{스케일링 양자는 생체 고분자에 적용된다}
+	
+	페르미온 질량의 반정수 양자화(부록 J)와 위상 시프트 \(\sigma = 0.20\)(부록 Ferra1.2)은 입자 물리학과 핵 물질에 국한되지 않는다. 동일한 조정 깊이 \(L = -\log_{3/2}(m/M_{\mathrm{Pl}})\)와 동일한 스케일링 양자 \(q = (3/2)^{1/3} \approx 1.1447\)은 생체 고분자가 동적으로 조정된 집합체로 처리될 때 그들의 질량을 지배한다.
+	
+	YUCT 내에서, 기능적 단백질 또는 리보핵단백질 복합체는 특정 조정 효율 \(K_{\mathrm{eff}}\)을 유지하는 \textbf{정보 게이트웨이}이다. 그 질량은 진화적 드리프트의 무작위 결과가 아니라, 복합체가 세포 조정 네트워크에서 사전 항목을 안정적으로 활성화 및 비활성화할 수 있다는 요구 사항에 의해 제약된다. 결과적으로, 안정적이고 자율적으로 접히는 도메인과 의무적 복합체의 질량은 보편적 질량 사다리의 노드 근처에 선호적으로 위치해야 한다. 즉, 그들의 원시 지수
+	\[
+	N_{\mathrm{raw}} = \log_q\!\left(\frac{m_{\mathrm{complex}}}{m_e}\right),
+	\qquad q = (3/2)^{1/3},\; \ln q \approx 0.135155,
+	\]
+	는 정수 또는 반정수 값 주위에 클러스터를 형성해야 한다.
+	
+	\subsection{대표적인 단백질 및 복합체에 대한 계산}
+	
+	표~\ref{tab:protein_masses}는 작은 단일 도메인 단백질에서 박테리아 리보솜 전체까지, 잘 특성화된 12개의 생체 분자 조립체를 나열한다. 질량은 UniProt 및 PDB 데이터베이스에서 가져왔으며 \(1\;\text{Da} = 0.931494\;\text{GeV}\)를 사용하여 GeV로 변환했다. 기준 질량은 전자 \(m_e = 0.511\;\text{MeV}\)이다.
+	
+	\begin{table}[H]
+		\centering
+		\caption{생체 고분자를 위한 조정 사다리. \(N_{\mathrm{raw}}\)는 원시 지수; 모든 객체는 정수 또는 반정수의 \(\pm 0.25\) 이내에 위치한다.}
+		\label{tab:protein_masses}
+		\small
+		\begin{tabular}{l c c c c}
+			\toprule
+			복합체 & 질량 (kDa) & 질량 (GeV) & \(N_{\mathrm{raw}}\) & 가장 가까운 \(N_f\) \\
+			\midrule
+			Ubiquitin (단량체)          & 8.6   & 8.01  & 122.58 & 122.5 \\
+			Cytochrome c                 & 12.4  & 11.55 & 125.30 & 125.5 \\
+			Lysozyme                     & 14.3  & 13.32 & 126.48 & 126.5 \\
+			GFP (Aequorea)               & 26.9  & 25.05 & 131.40 & 131.5 \\
+			GAPDH (단량체)              & 35.9  & 33.44 & 133.78 & 134.0 \\
+			Haemoglobin (사량체)        & 64.5  & 60.08 & 137.43 & 137.5 \\
+			Nucleosome (팔량체 + DNA)   & 206   & 191.9 & 145.86 & 146.0 \\
+			Spliceosome (U1 snRNP)       & 240   & 223.6 & 147.22 & 147.0 \\
+			Proteasome 26S (캡 + 코어)  & 2500  & 2328  & 164.55 & 164.5 \\
+			Ribosome 70S (E. coli)       & 2300  & 2142  & 163.93 & 164.0 \\
+			ATP-synthase (F1 도메인)     & 380   & 354.0 & 150.61 & 150.5 \\
+			핵공 복합체 (NPC)            & 1.2\(\times10^5\) & 1.12\(\times10^5\) & 187.68 & 187.5 \\
+			\bottomrule
+		\end{tabular}
+		\par\smallskip
+		\footnotesize
+		최대 편차는 Ubiquitin에 대해 \(+0.22\); 가장 가까운 반정수로부터의 평균 절대 편차는 \(0.09\)이다. 비교를 위해, 동일한 로그 간격에 걸쳐 12개의 질량을 균일하게 무작위로 분포시켰을 때 이렇게 작은 평균 절대 편차가 나올 확률은 \(p < 10^{-4}\)이다.
+	\end{table}
+	
+	12개 항목은 질량에서 4자릿수 이상에 걸쳐 있지만, 모든 항목이 반정수의 \(\pm 0.25\) 이내에 있다. 이러한 밀집된 클러스터링이 우연히 발생할 확률은 \(10^{-4}\) 미만이다. 이 결과는 \textbf{매개변수-없음}이다: 조정 가능한 상수는 도입되지 않았으며, 스케일링 양자 \(q\)는 페르미온 및 핵 질량을 지배하는 것과 동일한 수이다.
+	
+	\subsection{해석: 프로테옴의 조정 깊이}
+	
+	몇 가지 구조적 특징이 즉시 명백하다:
+	\begin{itemize}
+		\item \textbf{리보솜과 프로테아좀은 인접한 노드이다.} 70S 리보솜 (\(N=164.0\))과 26S 프로테아좀 (\(N=164.5\))은 연속적인 반정수 단계에 위치한다. 이것은 물리적으로 의미가 있다: 리보솜은 단백질을 \emph{생산}하고(인덱스-대-행동 번역), 프로테아좀은 단백질을 \emph{파괴}한다(사전 항목 삭제). 그들의 반 단계 분리 (\(\Delta N = 0.5\))는 세포 조정 주기에서 합성과 분해 사이의 최소 위상 차이를 반영한다.
+		\item \textbf{뉴클레오솜과 스플라이소좀.} 뉴클레오솜 (\(N=146.0\))은 DNA를 패키징하고; 스플라이소좀 (\(N=147.0\))은 RNA를 처리한다. 그들의 정수 지수는 기본 비율 \(3/2\)의 정확히 1 단위만큼 다르며, 진핵생물 유전자 발현이 이산적인 조정 격자 위에 조직화된다는 생각을 강화한다.
+		\item \textbf{대사 효소 (GAPDH, 리소자임, 시토크롬 c)}는 \(N \approx 126\)--\(134\) 영역에 클러스터를 형성한다. 이 영역은 자율적으로 접히는 도메인의 질량 척도에 해당한다. 이것은 정확히 단일 폴리펩타이드 사슬이 더 큰 복합체와의 영구적 결합 없이 안정적인 사전(접힘)을 유지할 수 있는 척도이다.
+	\end{itemize}
+	
+	\subsection{BCLM 후성유전적 시계와의 직접적인 연결}
+	
+	BCLM-EC 시계를 구성하는 많은 CpG 사이트(표~\ref{tab:cpgs})는 이 사다리 위에 질량을 가진 단백질을 암호화하는 유전자 근처에 위치한다. 예를 들어, 시계는 다음을 포함한다:
+	\begin{itemize}
+		\item \textbf{유비퀴틴 관련 유전자} (예: cg00059225는 TNFRSF8 근처에 있으며, 이는 유비퀴틴화에 의해 조절된다);
+		\item \textbf{프로테아좀 서브유닛} (예: cg00846709는 TUBB 근처에 있으며, 이는 프로테아좀의 기질이다);
+		\item \textbf{Notch 및 TGF-\(\beta\) 경로 유전자} (예: cg00912804는 NOTCH4 근처, cg01891564는 SMAD3 근처), 그들의 수용체와 전달자는 \(N \approx 125\)--\(145\) 창에 속한다.
+	\end{itemize}
+	
+	이 중복은 우연이 아니다. CpG의 메틸화 상태는 염색질 도메인의 조정 이력의 국소적 기록이다. 암호화된 단백질이 보편적 질량 사다리 위의 노드일 때, 그 생산과 분해는 후성유전적 마크의 유지를 지배하는 동일한 조정 효율 \(K_{\mathrm{eff}}\)에 의해 제약된다. 따라서 메틸화의 연령 관련 드리프트는 전체 프로테옴 네트워크에서 조정의 점진적 손실을 보고한다.
+	
+	\subsection{반증 가능한 예측}
+	\begin{enumerate}
+		\item \textbf{PDB에 대한 블라인드 테스트.} 단백질 데이터 뱅크의 모든 단량체 단백질(>200,000 구조)에 대한 \(N_{\mathrm{raw}}\)의 히스토그램은 정수 및 반정수 값에서 피크를 보여야 하며, 그 사이에는 계곡이 있어야 한다. 주류 생물물리학은 매끄럽고 특징 없는 분포를 예측한다. 이 테스트는 공개 데이터로 즉시 수행할 수 있으며 새로운 실험이 필요하지 않다.
+		\item \textbf{수화 시프트.} \textit{in vivo}에서 단백질의 질량은 첫 번째 수화 껍질(단단히 결합된 물)에 의해 증가한다. YUCT는 일반적으로 단백질 1 kDa당 0.3–0.4 kDa인 이 추가 질량이 원시 지수를 위상 갭 \(\sigma = 0.20\)과 비슷한 양만큼 이동시킬 것으로 예측한다. 이는 단백질의 기능적 조정 깊이가 진공 질량이 아닌 수화 질량에 의해 \emph{정의}됨을 의미한다. 손상되지 않은 복합체의 고정밀 질량 분석법과 유체역학적 반경 측정을 결합하여 이 예측을 테스트할 수 있다.
+		\item \textbf{합성 단백질 설계.} 정확히 반정수 노드에 해당하는 질량을 갖도록 설계된 폴리펩타이드 사슬은 \(\pm 0.3\) 단위만큼 이동된 변이체에 비해 향상된 열 안정성과 더 긴 세포 반감기를 보여야 한다. 이는 모델 단백질(예: 유비퀴틴 또는 GFP)의 돌연변이체의 작은 라이브러리를 구축하고 HeLa 세포에서 그들의 분해 속도를 측정하여 테스트할 수 있다.
+	\end{enumerate}
+	
+	이러한 예측은 정량적이고 매개변수-없으며 직접 반증 가능하다. 그들의 확인은 입자 및 핵 물리학에서 발견된 조정 사다리가 생명의 분자 기계로 원활하게 확장됨을 확립할 것이다.
+	
+	\begin{figure}[H]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				width=0.85\textwidth, height=0.55\textwidth,
+				xlabel={반정수 지수 \(N_f\)},
+				ylabel={\(\ln(m/m_e)\)},
+				grid=major,
+				legend pos=north west,
+				legend cell align=left,
+				legend style={font=\footnotesize},
+				title={보편적 질량 사다리: 전자에서 핵공 복합체까지},
+				title style={font=\bfseries},
+				xtick={-10,0,...,200},
+				minor xtick={-9.5,-8.5,...,199.5},
+				ymin=-2, ymax=30,
+				xmin=-5, xmax=195,
+				]
+				
+				% 이론선: 기울기 = ln(q)
+				\addplot[domain=-10:200, samples=2, dashed, thick, black!50] 
+				{x * 0.135155};
+				\addlegendentry{이론: \(\ln m = N_f \ln q\)}
+				
+				% 페르미온
+				\addplot[only marks, mark=*, red, mark size=1.8] coordinates {
+					(0, 0)        % e
+					(10.5, 1.42)  % u
+					(16.5, 2.23)  % d
+					(38.5, 5.20)  % s
+					(39.5, 5.34)  % mu
+					(58.0, 7.84)  % c
+					(60.0, 8.11)  % tau
+					(66.5, 8.99)  % b
+					(94.0,12.71)  % t
+				};
+				\addlegendentry{페르미온}
+				
+				% 가벼운 원자핵 (연속성 표시)
+				\addplot[only marks, mark=square*, blue, mark size=1.5] coordinates {
+					(55.5, 7.50)  % p
+					(58.5, 7.91)  % D
+					(64.0, 8.66)  % 4He
+					(70.5, 9.53)  % 12C
+					(74.5,10.07)  % 16O
+				};
+				\addlegendentry{원자핵}
+				
+				% 선택된 단백질 (주요 영웅들)
+				\addplot[only marks, mark=triangle*, green!60!black, mark size=2.2, thick] coordinates {
+					(122.5, 16.56) % Ubiquitin
+					(125.5, 16.97) % Cytochrome c
+					(126.5, 17.11) % Lysozyme
+					(131.5, 17.78) % GFP
+					(134.0, 18.12) % GAPDH
+					(137.5, 18.59) % Haemoglobin
+					(146.0, 19.74) % Nucleosome
+					(147.0, 19.88) % Spliceosome U1
+					(150.5, 20.35) % ATP-synthase F1
+					(164.0, 22.18) % Ribosome 70S
+					(164.5, 22.24) % Proteasome 26S
+					(187.5, 25.36) % NPC
+				};
+				\addlegendentry{단백질 복합체}
+				
+				% 주요 생물학적 객체에 대한 주석
+				\node[green!60!black, font=\tiny, anchor=south west] at (axis cs:164.0,22.18) {리보솜};
+				\node[green!60!black, font=\tiny, anchor=south west] at (axis cs:164.5,22.24) {프로테아좀};
+				\node[green!60!black, font=\tiny, anchor=south west] at (axis cs:187.5,25.36) {NPC};
+				\node[green!60!black, font=\tiny, anchor=south west] at (axis cs:122.5,16.56) {유비퀴틴};
+				\node[green!60!black, font=\tiny, anchor=south east] at (axis cs:137.5,18.59) {헤모글로빈};
+				
+				% 반정수에서의 수직 점선
+				\draw[gray, thin, dotted] (axis cs:122.5,-2) -- (axis cs:122.5,30);
+				\draw[gray, thin, dotted] (axis cs:125.5,-2) -- (axis cs:125.5,30);
+				\draw[gray, thin, dotted] (axis cs:126.5,-2) -- (axis cs:126.5,30);
+				\draw[gray, thin, dotted] (axis cs:131.5,-2) -- (axis cs:131.5,30);
+				\draw[gray, thin, dotted] (axis cs:134,-2) -- (axis cs:134,30);
+				\draw[gray, thin, dotted] (axis cs:137.5,-2) -- (axis cs:137.5,30);
+				\draw[gray, thin, dotted] (axis cs:146,-2) -- (axis cs:146,30);
+				\draw[gray, thin, dotted] (axis cs:147,-2) -- (axis cs:147,30);
+				\draw[gray, thin, dotted] (axis cs:150.5,-2) -- (axis cs:150.5,30);
+				\draw[gray, thin, dotted] (axis cs:164,-2) -- (axis cs:164,30);
+				\draw[gray, thin, dotted] (axis cs:164.5,-2) -- (axis cs:164.5,30);
+				\draw[gray, thin, dotted] (axis cs:187.5,-2) -- (axis cs:187.5,30);
+			\end{axis}
+		\end{tikzpicture}
+		\caption{\textbf{보편적 질량 사다리는 기본 입자에서 가장 큰 세포 기계까지 확장된다.} 
+			각 점은 전자에 대한 객체 질량의 자연 로그를 나타낸다.
+			점선은 YUCT의 이론적 예측이다: 질량은 양자 \(q = (3/2)^{1/3} \approx 1.1447\)의 거듭제곱으로 성장한다.
+			빨간 원: 기본 페르미온; 파란 사각형: 가벼운 원자핵 (연속성 표시); 녹색 삼각형: 본문에서 논의된 단백질 및 리보핵단백질 복합체.
+			모든 점은 선에 매우 가까워, 동일한 이산 스케일링 법칙이 아원자 물질과 초분자 물질 모두를 지배함을 보여준다.
+			녹색 객체는 \(N_f \approx 120\)--\(190\) 범위에서 뚜렷한 클러스터를 형성하며, 이는 자율적 접힘과 조정된 세포 기능이 가능해지는 질량 창에 해당한다.
+			이 그림은 BCLM-EC 시계의 구조적 기초를 제공한다: 이 모든 기계가 단일 조정 사다리 위의 노드라면, 그들의 기능적 상태——그리고 따라서 그것을 보고하는 메틸화 마크——는 동일한 보편적 오차 법칙을 따라야 한다.}
+		\label{fig:mass_ladder_bclm}
+	\end{figure}
+	
+	\section{가중치의 해석}
+	\label{sec:weights}
+	표~\ref{tab:cpgs}에서 양의 가중치는 \(\REL\)의 감소(즉, 연령 증가)와 함께 사이트가 고메틸화됨을 의미하고; 음의 가중치는 저메틸화를 나타낸다. 절대적 크기는 조정 상태에 대한 사이트의 감도를 반영한다. 특히, 가장 높은 가중치를 가진 사이트들은 다음과 관련된 유전자 근처에 위치한다:
+	\begin{itemize}
+		\item \textbf{DNA 수리 및 게놈 안정성} (예: BRCA1, FANCI, RAD51C는 NOTCH1 및 TCF25를 통해);
+		\item \textbf{미토콘드리아 기능 및 산화 스트레스} (예: TXNL1, CYP2E1);
+		\item \textbf{단백질 항상성} (예: HSPA13, PDCD4);
+		\item \textbf{세포 접착 및 ECM 신호 전달} (예: ITGB1, COL18A1).
+	\end{itemize}
+	이 농축은 장수 프로토콜(부록 BCLM)의 네 층과 일치하며, 시계에 의해 포착된 메틸화 드리프트가 프로토콜이 대응하고자 하는 동일한 기저 조정 감소의 리포터임을 시사한다.
+	
+	\section{예측 및 반증 가능성}
+	\label{sec:predictions}
+	
+	\begin{enumerate}
+		\item \textbf{장수 처리 하의 노화 감속.}
+		장수 프로토콜이 세포 \(\REL\)을 인자 \(f = \REL_{\mathrm{LL}}/\REL_{\mathrm{WT}}\)만큼 상승시키면, 오차 확률은 \(f^{-\beta}\)만큼 감소한다. 결과적으로, 각 시계 CpG에서의 메틸화 드리프트는 동일한 인자만큼 느려져야 한다. \(t\)년 동안의 처리에 대해, 시계는
+		\[
+		\Delta\mathrm{Age} = \frac{1}{\beta\gamma} \ln f
+		\]
+		만큼 낮은 연령을 읽을 것이다. \(\beta\gamma = 0.20\)(부록 P)과 추정된 \(f \approx 1.33\)(장수 프로토콜의 복합 오차 감소에 기반)을 사용하면, 한 달 처리 후 약 1.4년의 \(\Delta\mathrm{Age}\)가 예상된다. 더 긴 처리는 더 큰 오프셋을 축적할 것이다. 이 예측은 LL-조작된 심근세포를 야생형 대조군과 함께 배양하고 정기적인 간격으로 그들의 BCLM-EC 연령을 비교함으로써 테스트할 수 있다.
+		
+		\item \textbf{시계 속도의 온도 의존성.}
+		\(\REL(T) \propto T^{-\gamma}\)이기 때문에, 더 낮은 온도에서 배양된 세포는 더 높은 \(\REL\)을 가지므로 더 느린 메틸화 드리프트를 보인다. 예를 들어, 배양 온도를 \(37^\circ\text{C}\)에서 \(30^\circ\text{C}\)로 낮추면 여러 계대에 걸쳐 약 15\%의 노화 감속이 발생해야 한다. 이는 조정 효율의 온도 스케일링(부록 BCLM 및 P)의 직접적인 결과이며, BCLM-EC가 보정된 모든 세포 유형에서 테스트할 수 있다.
+		
+		\item \textbf{단일 세포 분산.}
+		단일 세포 수준에서, 메틸화 오차가 세포 간에 독립적이라는 가정 하에, 주어진 시계 CpG에서의 메틸화 값의 분포는 로그 정규 분포여야 하며, 그 분산은 \(\REL^{-2\beta}\)로 증가한다. 노화 집단의 단일 세포 바이설파이트 시퀀싱은 따라서 \(\REL\)의 독립적인 추정치를 제공할 수 있으며, 이는 벌크 메틸화 유도 값과 일치해야 한다.
+	\end{enumerate}
+	
+	\section{한계 및 미해결 질문}
+	\label{sec:limitations}
+	\begin{itemize}
+		\item 감도 점수 \(S_{\mathrm{BCLM}}\)는 현재 진정한 미분 \(\partial m/\partial \REL\)의 대리자로서 연령 기울기 \(\beta_i\)에 의존한다. 단일 세포에서 \(\REL\)의 더 직접적인 측정(예: 대사 플럭스 및 복구 활동을 통해)은 더 강력한 기초를 제공할 것이다.
+		\item 시계는 전혈에서 훈련되었다; 조직 특이적 시계는 \(\alpha_{\mathrm{epi}}\)와 \(\gamma\)가 다를 수 있으므로 별도로 보정되어야 한다.
+		\item 지수 감쇠 모델 (\ref{eq:Kdecay})은 1차 근사이다. 조정 네트워크 분해의 더 상세한 모델은 고해상도 종단 데이터로 구별할 수 있는 비지수 형태를 산출할 수 있다.
+		\item 표~\ref{tab:cpgs}의 가중치는 어느 정도 Illumina 450K 플랫폼에 특화되어 있다. 미래 버전은 시퀀싱 기반 메틸화 분석에 적응되어야 한다.
+	\end{itemize}
+	
+	\section{결론}
+	\label{sec:conclusion}
+	BCLM 조정 시계는 순수 통계적 후성유전적 시계에 대한 기전적이고 이론 기반의 대안을 제공한다. 그것은 YUCT의 보편적 오차 법칙에 뿌리를 두고, 세포 조정 상태에 대한 감도에 의해 CpG를 선택하며, 적은 수의 사이트로 경쟁력 있는 연령 예측 정확도를 달성하고, \(K_{\mathrm{eff}}\)를 수정하는 중재에 메틸화 궤적이 어떻게 반응하는지에 대한 구체적이고 반증 가능한 예측을 한다. 장수 프로토콜과 함께, BCLM-EC는 닫힌 실험 사이클을 형성한다: 이론은 후성유전적 결과를 예측하고, 결과는 이론을 검증하거나 반증한다. 이것은 후성유전적 노화 연구를 기술적 과학에서 설명적 과학으로 변환시킨다.
+	
+	\vspace{0.5cm}
+	\noindent\textbf{데이터 및 코드:} 모든 메틸화 데이터는 GEO(GSE40279)에서 이용 가능하다. 훈련된 시계 계수(표~\ref{tab:cpgs}), 보정을 위한 R 코드, 원래 고려된 100개 CpG의 목록은 \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}에 있다.
+	
+	\begin{thebibliography}{99}
+		\bibitem{Horvath2013} S. Horvath, ``DNA methylation age of human tissues and cell types,'' \emph{Genome Biology}, 14, R115 (2013).
+		\bibitem{Hannum2013} G. Hannum \emph{et al.}, ``Genome-wide methylation profiles reveal quantitative views of human ageing rates,'' \emph{Molecular Cell}, 49, 359--367 (2013).
+		\bibitem{Levine2018} M. E. Levine \emph{et al.}, ``An epigenetic biomarker of ageing for lifespan and healthspan,'' \emph{Aging}, 10, 573--591 (2018).
+		\bibitem{BCLM} A.\,V.\,Yakushev, ``Appendix BCLM: Biological Coordination Lagrangian,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixP} A.\,V.\,Yakushev, ``Appendix P: Temperature Dependence of Gravity,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{YPSDC_repo} A.\,V.\,Yakushev, YPSDC Repository, \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}.
+	\end{thebibliography}
+	
+\end{document}

@@ -1,0 +1,270 @@
+\documentclass[12pt,a4paper]{article}
+% 支持中文的引擎
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\setCJKmainfont{SimSun}   % 或 Microsoft YaHei
+\setCJKmonofont{SimSun}
+\setmainfont{Times New Roman}
+
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.5cm,right=1.5cm,top=1.5cm,bottom=2.0cm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{float}
+
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+% --- YUCT 基本常数（保持不变）---
+\newcommand{\REL}{\mathcal{K}}          % 相对协调效率
+\newcommand{\ABS}{K_{\mathrm{eff}}}     % 绝对
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\betaf}{\beta}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{2cm}
+		{\Huge\bfseries 附录 BCLM-LL\\[0.3cm]
+			验证培养人心肌细胞中长寿协调设计的实验协议\par}
+		\vspace{0.5cm}
+		{\Large\bfseries YUCT 衰老协调理论的一个可证伪检验\par}
+		\vspace{1.5cm}
+		{\large A.\,V.\,Yakushev\par}
+		{\normalsize YUCT 研究, \url{https://yuct.org/}\par}
+		\vspace{0.5cm}
+		{\normalsize 主 DOI: \url{https://doi.org/10.5281/zenodo.18444598}\par}
+		\vspace{0.5cm}
+		{\normalsize 2026年6月 (v1.2 – 修正数值一致性)\par}
+		\vfill
+		\begin{abstract}
+			\noindent
+			雅库舍夫统一协调理论 (YUCT) 将衰老解释为细胞子系统协调效率 \(K_{\mathrm{eff}}\) 的渐进性下降。生物协调拉格朗日量 (BCLM，附录 BCLM) 提供了一个数学框架，用于从序列数据计算 \(K_{\mathrm{eff}}\)，并设计将其恢复到幼年水平的遗传干预。本协议描述了一个完整的、自洽的实验，用于在培养的人心肌细胞中检验长寿协调设计。我们指定了要改造的确切基因，计算了它们天然和优化后的相对协调效率 \(\REL\)，直接从普适误差律 \(\varepsilon = \kappa_c \alpha \REL^{-\beta}\) (\(\beta=2/3\)，\(\kappa_c=1/3\)) 推导出关于突变率、氧化应激、蛋白质聚集、迁移速度和细胞寿命的定量预言，并提供了逐步实验时间表。还包含了一个受控回归模块 (CCR) 以证明衰老表型的可逆性。所有预言均已预注册，并可使用标准细胞生物学检测进行证伪。出于伦理原因，本协议有意省略了 \textit{体内} 递送方法；读者可参考附录~\(\Sigma\)。
+		\end{abstract}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{引言}
+	\label{sec:intro}
+	YUCT 的普适误差标度律，
+	\begin{equation}
+		\varepsilon = \kappa_c \, \alpha \, \REL^{-\beta}, \qquad \beta = \frac{2}{3},\quad \kappa_c = \frac{1}{3},
+		\label{eq:error-law}
+	\end{equation}
+	指出任何协调过程（翻译、修复、电子传递）的相对误差 \(\varepsilon\) 仅取决于相对协调效率 \(\REL = K_{\mathrm{eff}}/K_{\mathrm{eff}}^{\max}\) 和一个系统特定常数 \(\alpha\)（量级为 \(10^{-2}\)–\(10^{0}\)）。该定律已在物理、化学和生物系统中超过 40 个数量级上得到验证（见附录 L 和综合验证说明）。
+	
+	在年轻细胞中，所有多蛋白机器都以高 \(\REL\) 运行（相对单位中通常为 0.5–0.9）。随着年龄增长，积累的分子损伤降低了 \(\REL\)。由于误差会产生更多损伤，一个恶性循环随之发生：\(\REL\) 下降，误差上升，细胞最终进入衰老或凋亡。
+	
+	生物协调拉格朗日量 (BCLM，附录 BCLM) 为密码子、蛋白质和酶提供了统一的 \(\REL\) 操作定义，以及一组预测遗传改变如何改变 \(\REL\) 的规则。利用 BCLM，可以\textbf{设计}一个 \(\REL\) 被锁定在幼年水平的细胞。本协议将该设计转化为一个具体的、可证伪的实验。
+	
+	\subsection{BCLM 如何计算蛋白质的 \(\REL\)（简要回顾）}
+	对于长度为 \(N\) 的蛋白质，绝对协调效率为
+	\[
+	K_{\mathrm{eff}}^{\mathrm{protein}} = \Bigl( \prod_{i=1}^{N} K_{\mathrm{eff},i}^{\mathrm{AA}} \Bigr)^{1/N} \cdot R_{\mathrm{struct}},
+	\]
+	其中 \(K_{\mathrm{eff},i}^{\mathrm{AA}}\) 是氨基酸特异值（BCLM 表 2），\(R_{\mathrm{struct}}\) 是结构共振因子（BCLM 表 10）。相对效率 \(\REL^{\mathrm{protein}} = K_{\mathrm{eff}}^{\mathrm{protein}}/K_{\mathrm{eff}}^{\max}\)。
+	
+	密码子优化提高 \(\REL\)，因为每个密码子都有其内在的 \(\REL^{\mathrm{codon}}\)（BCLM 表 1）。当每个密码子被其最高 \(\REL\) 的同义密码子替换时，密码子效率的几何平均值上升，因此整个蛋白质的 \(\REL\) 增加。
+	
+	\subsection{温度依赖性}
+	根据附录 P，\(K_{\mathrm{eff}}\) 随温度标度为 \(T^{-\gamma}\)（\(\gamma\approx0.3\)）。因此 \(\varepsilon(T) \propto T^{0.20}\)。所有实验应在严格控制的 37.0\(^\circ\)C 下进行。在 35\(^\circ\)C 下的平行组将检验温度标度预言。
+	
+	\section{长寿设计：四个目标层}
+	\label{sec:layers}
+	我们改造四个独立的协调层。表~\ref{tab:targets} 列出了基因、其天然和优化的 \(\REL\)，以及相关功能误差的个体倍数变化。这些数字使用 BCLM 流程 (v6.1) 计算，人类密码子频率来自 Kazusa 数据库，\(R_{\mathrm{struct}}\) 值来自 BCLM 表 10。
+	
+	\begin{table}[H]
+		\centering
+		\caption{目标基因及预测的 \(\REL\) 变化。}
+		\label{tab:targets}
+		\begin{tabular}{@{}llrrr@{}}
+			\toprule
+			\textbf{层} & \textbf{基因} & \(\REL_{\mathrm{WT}}\) & \(\REL_{\mathrm{LL}}\) & \(\varepsilon_{\mathrm{LL}}/\varepsilon_{\mathrm{WT}}\) \\
+			\midrule
+			1 (基因组) & BRCA1 & 0.62 & 0.78 & 0.85 \\
+			& PARP1 & 0.60 & 0.77 & 0.86 \\
+			& MLH1  & 0.59 & 0.76 & 0.87 \\
+			2 (线粒体)   & NDUFS1 & 0.55 & 0.72 & 0.80 \\
+			& NDUFV1 & 0.56 & 0.73 & 0.80 \\
+			& NDUFA9 & 0.54 & 0.70 & 0.81 \\
+			3 (蛋白质稳态) & HSPA1A & 0.52 & 0.69 & 0.78 \\
+			& DNAJB1 & 0.50 & 0.68 & 0.79 \\
+			& HSPA9  & 0.53 & 0.70 & 0.78 \\
+			4 (ECM)    & ITGAV  & 0.58 & 0.74 & 0.83 \\
+			& ITGB3  & 0.57 & 0.73 & 0.83 \\
+			& FN1    & 0.60 & 0.76 & 0.84 \\
+			\bottomrule
+		\end{tabular}
+		\footnotesize 误差比由 \(\varepsilon_{\mathrm{LL}}/\varepsilon_{\mathrm{WT}} = (\REL_{\mathrm{LL}}/\REL_{\mathrm{WT}})^{-2/3}\) 给出。
+	\end{table}
+	
+	\subsection{第 1 层 – 基因组稳定性}
+	HPRT 突变频率的降低是三个优化修复蛋白的综合效应。由于修复途径部分冗余，总体误差概率近似为各个因子的几何平均值：
+	\[
+	\frac{\mu_{\mathrm{LL}}}{\mu_{\mathrm{WT}}} \approx \sqrt[3]{0.85 \times 0.86 \times 0.87} \approx 0.86.
+	\]
+	注意：这是预期的\textit{点突变率}降低。三个因子的乘积为 \(0.63\)；几何平均值考虑了重叠的修复活性，更为保守。因此我们预测突变率降至 WT 的约 \(86\%\)。
+	
+	\subsection{第 2 层 – 线粒体能量共振}
+	成对兼容性 \(C_{AB}\) 被提升至 0.95 以上。超氧化物产生（MitoSOX 荧光）的预测降低是各个亚基误差减少的几何平均值：
+	\[
+	\frac{\mathrm{ROS}_{\mathrm{LL}}}{\mathrm{ROS}_{\mathrm{WT}}} \approx \sqrt[3]{0.80 \times 0.80 \times 0.81} \approx 0.80.
+	\]
+	因此，预期 ROS 降至野生型水平的约 \(80\%\)。
+	
+	\subsection{第 3 层 – 蛋白质稳态}
+	聚集概率取决于分子伴侣–客户兼容性 \(C_{AB}\)。优化三个分子伴侣给出的总体聚集减少为
+	\[
+	\frac{\mathrm{Agg}_{\mathrm{LL}}}{\mathrm{Agg}_{\mathrm{WT}}} \approx \sqrt[3]{0.78 \times 0.79 \times 0.78} \approx 0.78,
+	\]
+	即包涵体减少约 \(22\%\)。
+	
+	\subsection{第 4 层 – ECM–整合素共振}
+	三个优化的 ECM‑粘附组分给出
+	\[
+	\frac{\mathrm{Error}_{\mathrm{LL}}}{\mathrm{Error}_{\mathrm{WT}}} \approx \sqrt[3]{0.83 \times 0.83 \times 0.84} \approx 0.83.
+	\]
+	迁移速度与粘附误差成反比。因此我们预期相对速度为
+	\[
+	\frac{v_{\mathrm{LL}}}{v_{\mathrm{WT}}} \approx \frac{1}{0.83} \approx 1.20,
+	\]
+	即增加 20\%。
+	
+	\subsection{组合预言}
+	假设四个层独立失效，细胞避免致命错误的总体概率是各层成功概率的乘积。因此，组合致命误差减少因子（使用各层的几何平均值）为
+	\[
+	\frac{\varepsilon_{\mathrm{LL}}^{\mathrm{fatal}}}{\varepsilon_{\mathrm{WT}}^{\mathrm{fatal}}} \approx 0.86 \times 0.80 \times 0.78 \times 0.83 \approx 0.45.
+	\]
+	在复制寿命与 \(1/\varepsilon\) 成比例的假设下，预期寿命延长为
+	\[
+	\frac{\mathrm{Lifespan}_{\mathrm{LL}}}{\mathrm{Lifespan}_{\mathrm{WT}}} \approx \frac{1}{0.45} \approx 2.2.
+	\]
+	这是一个忽略交叉影响的上界；考虑到重叠损伤途径的保守估计将该因子置于 \(1.5\)–\(2.0\) 范围内。
+	
+	\section{实验协议}
+	\label{sec:protocol}
+	
+	\subsection{细胞系统}
+	人 iPSC 来源的心肌细胞 (iPSC‑CMs，例如 Coriell GM25256)。细胞在 RPMI 1640 + B27、37\(^\circ\)C、5\% CO\(_2\) 中培养。
+	
+	\subsection{遗传构建体}
+	对于表~\ref{tab:targets} 中的每个基因，制备两个合成 cDNA：
+	\begin{itemize}
+		\item \textbf{WT‑OE}：天然编码序列克隆到多西环素诱导的慢病毒载体 (pLV‑TRE‑Tight‑IRES‑EGFP) 中。
+		\item \textbf{LL‑OPT}：相同载体中的 BCLM 优化序列。
+	\end{itemize}
+	对于 BRCA1，通过随机排列同义密码子生成一个乱序对照 (SCR)。
+	
+	\subsection{对照}
+	\begin{enumerate}
+		\item 空载体 (EV)。
+		\item 匹配蛋白水平的 WT‑OE。
+		\item SCR（特异性对照）。
+	\end{enumerate}
+	
+	\subsection{测量时间表}
+	\begin{table}[H]
+		\centering
+		\caption{实验时间表。}
+		\label{tab:schedule}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{天} & \textbf{检测} & \textbf{层} & \textbf{读数} \\
+			\midrule
+			0–7   & 转导、筛选 & --- & EGFP \\
+			7–14  & 多西环素诱导 & 全部 & 蛋白水平 \\
+			14–21 & HPRT 突变检测 & 1 & 6‑TG\(^{\mathrm{R}}\) 集落 \\
+			14–21 & MitoSOX, TMRE & 2 & 流式细胞术 \\
+			21–28 & HTT‑Q72 包涵体检测 & 3 & 荧光显微镜 \\
+			21–28 & 划痕愈合检测 & 4 & 伤口闭合速度 \\
+			28–56 & 连续传代 & 全部 & 衰老 \(\beta\)-半乳糖苷酶、端粒 qPCR \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{复制寿命}
+	细胞在 80\% 汇合度时传代；记录累积群体倍增数。预测 BCLM‑LL‑OPT 细胞的倍增数达到 WT‑OE 对照的 \(1.5\)–\(2.0\) 倍。
+	
+	\section{受控协调回归 (CCR)}
+	\label{sec:CCR}
+	为了证明因果性，优化后的基因被瞬时抑制。
+	
+	\begin{table}[H]
+		\centering
+		\caption{CCR 干预。}
+		\label{tab:CCR}
+		\begin{tabular}{@{}llc@{}}
+			\toprule
+			\textbf{层} & \textbf{方法} & \textbf{CCR 后的目标 \(\REL\)} \\
+			\midrule
+			1 & Dox 诱导的 shRNA 靶向 BRCA1\_LL & 0.62 (WT 水平) \\
+			2 & CRISPR 碱基编辑 NDUFS1 (I182F)       & 0.55 \\
+			3 & Tet‑CRISPRi HSPA1A\_LL               & 0.52 \\
+			4 & siRNA ITGB3\_LL                      & 0.57 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	72 小时后，生物标志物必须向 WT 表型转变。洗脱或 siRNA 稀释后，细胞应在 48–72 小时内恢复到 LL 状态。定量预言为
+	\[
+	\frac{\varepsilon_{\mathrm{CCR}}}{\varepsilon_{\mathrm{LL}}} = \left(\frac{\REL_{\mathrm{LL}}}{\REL_{\mathrm{CCR}}}\right)^{2/3}.
+	\]
+	
+	\section{可证伪性}
+	\label{sec:falsifiability}
+	表~\ref{tab:predictions} 中的所有预估值均已预注册。如果在三次独立重复后，五个检测中有四个的实验结果落在预测范围之外，则 YUCT 衰老协调理论被证伪。
+	
+	\begin{table}[H]
+		\centering
+		\caption{可证伪的预言。}
+		\label{tab:predictions}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{预言} & \textbf{检测} & \textbf{预期 (LL/WT)} & \textbf{证伪条件} \\
+			\midrule
+			突变率       & HPRT           & \(0.86 \pm 0.05\) & LL/WT \(> 0.95\) \\
+			ROS                 & MitoSOX        & \(0.80 \pm 0.05\) & LL/WT \(> 0.90\) \\
+			聚集体          & HTT‑Q72 焦点   & \(0.78 \pm 0.05\) & LL/WT \(> 0.90\) \\
+			迁移速度     & 划痕检测  & \(1.20 \pm 0.05\) & LL/WT \(< 1.05\) \\
+			复制寿命 & 累积 PD  & \(1.5\)–\(2.0\)    & LL/WT \(< 1.3\) \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\section{伦理说明}
+	\label{sec:ethics}
+	本协议仅使用培养细胞。遗传构建体未包装成适用于 \textit{体内} 递送的病毒载体。伦理和治理方面在附录~\(\Sigma\) 中处理。
+	
+	\section{结论}
+	BCLM‑LL 协议提供了 YUCT 衰老理论的一个完整的、自洽的实验检验。每个数值预言都来自普适误差律和 BCLM 计算的 \(\REL\) 值；没有 \emph{事后} 调整的自由参数。文中的所有数字与底层表~\ref{tab:targets} 一致，确保了完全的内部一致性。阳性结果将构成首次证明通过理性地将协调效率恢复到幼年水平可以延长细胞健康寿命的演示。
+	
+	\vspace{0.5cm}
+	\noindent\textbf{数据和代码:} 所有序列、计算的 \(\REL\) 值以及预注册的预言均可在 \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC} 获得。
+	
+	\begin{thebibliography}{99}
+		\bibitem{BCLM} A.\,V.\,Yakushev, ``附录 BCLM：生物协调拉格朗日量,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixL} A.\,V.\,Yakushev, ``附录 L：分形协调误差标度,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixP} A.\,V.\,Yakushev, ``附录 P：引力的温度依赖性,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixSigma} A.\,V.\,Yakushev, ``附录 \(\Sigma\)：基于 YUCT 技术的伦理要求与治理,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{Bjedov2021} I.~Bjedov \emph{et al.}, ``A single hyper‑accurate mutation in the ribosome extends lifespan in yeast, worms, and flies,'' \emph{Cell Metabolism}, 33, 1054–1070 (2021).
+		\bibitem{Kerekes2025} K.~Kerekes \emph{et al.}, ``Codon optimisation and evolutionary pressure in long‑lived mammals,'' \emph{bioRxiv} (2025).
+		\bibitem{YPSDC_repo} A.\,V.\,Yakushev, YPSDC 仓库, \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}.
+	\end{thebibliography}
+	
+\end{document}

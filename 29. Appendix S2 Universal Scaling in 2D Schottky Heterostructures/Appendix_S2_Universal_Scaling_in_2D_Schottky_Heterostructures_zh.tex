@@ -1,0 +1,249 @@
+% !TeX program = xelatex
+\documentclass[12pt,a4paper]{article}
+\usepackage{fontspec}
+\setmainfont{Liberation Serif}   % 英文主字体
+\usepackage{xeCJK}
+\setCJKmainfont{Microsoft YaHei} % 中文主字体（可替换为 SimSun, Noto Sans CJK SC）
+\setCJKmonofont{Microsoft YaHei}
+
+\usepackage[english]{babel}      % 保留英文环境，不影响中文
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,arrows.meta,positioning,shapes.geometric}
+\usepackage{float}
+
+% YUCT 宏
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\df}{d_{\!f}}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{1cm}
+		{\Huge\bfseries 附录 S2：二维肖特基异质结中协调的分形维数与 \\ YUCT 标度指数 $\beta = 2/3$（$\approx 0.67$）的预测}\\[1cm]
+		{\large 阿列克谢·V·雅库舍夫}\\[0.3cm]
+		{\normalsize 雅库舍夫研究，\url{https://yuct.org/}}\\[1.5cm]
+		{\normalsize DOI：\texttt{10.5281/zenodo.18444598}}\\[0.5cm]
+		{\normalsize 2026年5月\\版本 1.0}\\[2cm]
+		
+		\begin{minipage}{0.9\textwidth}
+			\begin{abstract}
+				\noindent
+				Ang、Yang 和 Ang（Phys. Rev. Lett. 121, 056802, 2018）发现二维肖特基异质结中存在普适的电流-温度标度律：对于横向接触为 $\log(\mathcal{I}/T^{3/2}) \propto -1/T$，对于动量不守恒的垂直接触为 $\log(\mathcal{I}/T^{1}) \propto -1/T$。在本附录中，我们表明这两个指数都由控制输运的协调网络的有效分形维数 $d_f$ 决定。YUCT 普适误差标度律 $\varepsilon = \kappa_c\alpha K_{\mathrm{eff}}^{-\beta}$ 且 $\beta = 2/3 \approx 0.67$ 通过 $\beta = 2/d_f$ 与 $d_f$ 相关联。从实验电流标度我们提取出横向接触的 $d_f = 3$ 和垂直接触的 $d_f = 2$，它们分别给出 $\beta = 2/3$ 和 $\beta = 1$。该分析预测横向肖特基二极管中的相对电流涨落应遵循 $\varepsilon_{\mathrm{fluc}} \propto K_{\mathrm{eff}}^{-2/3}$，这是一个可以用标准噪声谱学检验的可证伪预测。这项工作将二维肖特基异质结纳入展现或预测将展现 YUCT 普适指数 $\beta = 2/3$（$0.67$）的系统家族中，将理论的范围扩展到固态纳米电子学。
+			\end{abstract}
+			\vspace{1cm}
+			\noindent\small\textbf{关键词：} YUCT，协调效率，普适标度，$\beta = 2/3$，0.67，肖特基异质结，二维材料，分形维数，KPZ 普适性。
+		\end{minipage}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{引言}
+	雅库舍夫统一协调理论（YUCT）假定任何协调过程都服从普适误差标度律
+	\begin{equation}
+		\varepsilon = \kappa_c \, \alpha \, \Keff^{-\beta},
+		\qquad \beta = 2/3 \approx 0.67,\;\; \kappa_c = 1/3,
+		\label{eq:yuct-law}
+	\end{equation}
+	其中 $\Keff$ 是协调效率，$\alpha$ 是系统特定的前因子。该定律已在从化学键到宇宙学涨落的系统中得到验证（附录 L、M、E、F、G、V）。
+	
+	Ang、Yang 和 Ang \cite{Ang2018} 推导了基于二维材料的肖特基异质结的普适电流-温度标度律：
+	\begin{align}
+		\text{横向接触：}&\quad \log\Bigl(\frac{\mathcal{I}}{T^{3/2}}\Bigr) \propto -\frac{1}{T},
+		\label{eq:ang-lat}\\
+		\text{垂直接触（$k_\parallel$ 不守恒）：}&\quad \log\Bigl(\frac{\mathcal{I}}{T^{1}}\Bigr) \propto -\frac{1}{T}.
+		\label{eq:ang-vert}
+	\end{align}
+	指数 $\beta_{\mathrm{IV}} = 3/2$ 和 $1$ 与具体的二维材料无关，反映了电流路径的几何形状。
+	
+	在本附录中，我们证明指数 $\beta_{\mathrm{IV}}$ 不是一个独立的数字，而是由控制输运的协调网络的有效分形维数 $d_f$ 决定的。从实验值 $\beta_{\mathrm{IV}}$ 我们提取 $d_f$，然后从 $d_f$ 预测协调误差指数 $\beta_{\mathrm{err}} = 2/d_f$。对于横向接触，这给出 $\beta_{\mathrm{err}} = 2/3$，正是 YUCT 普适值。由此预测得出的涨落标度构成了理论的一个可证伪检验。
+	
+	\section{肖特基势垒的 YPSDC 字典}
+	在 YPSDC（雅库舍夫同步分布式协调协议）的语言中，横向肖特基异质结是一个协调系统，其组成部分如下：
+	\begin{itemize}
+		\item \textbf{字典 $\mathcal{D}$：} 二维平面中能量 $\epsilon > \Phi_B$ 且波矢 $\mathbf{k}$ 满足面内色散关系 (\ref{eq:dispersion}) 的单电子态的集合。
+		\item \textbf{索引 $\kappa$：} 将电子激发到字典中的热能 $k_B T$。
+		\item \textbf{共振 $R$：} 在通过势垒传输过程中切向动量 $k_y$ 的守恒。
+	\end{itemize}
+	协调动作是成功的热电子发射，电子同时满足能量条件 $\epsilon > \Phi_B$ 和动量条件 $k_x > 0$（指向势垒）。这种协调的效率决定了反向饱和电流。
+	
+	\section{电流的实验标度与协调效率}
+	
+	对于一般各向同性的二维色散关系
+	\begin{equation}
+		\epsilon(\mathbf{k}) = \sum_n c_n |\mathbf{k}|^n,
+		\label{eq:dispersion}
+	\end{equation}
+	Ang 等人证明，活性通道的数量（能对电流做出贡献的通道）普适地标度为
+	\begin{equation}
+		N_{\mathrm{ch}} \propto T^{1/2}.
+		\label{eq:Nch}
+	\end{equation}
+	势垒以上热可及的总状态数正比于 $T$（来自玻尔兹曼尾部）。因此，成功协调的状态的比例为
+	\begin{equation}
+		\Keff(T) = \frac{N_{\mathrm{ch}}}{N_{\mathrm{tot}}} \propto T^{-1/2},
+		\label{eq:keff-T}
+	\end{equation}
+	它作为该过程的协调效率。测量的电流则取形式
+	\begin{equation}
+		\mathcal{I} = \mathcal{I}_0 \, \Keff(T)^{-3} \, e^{-\Phi_B/k_B T},
+		\label{eq:I-via-keff}
+	\end{equation}
+	这重现了实验定律 (\ref{eq:ang-lat})。
+	
+	适合噪声测量的 $\Keff$ 的操作性定义为
+	\begin{equation}
+		\Keff = \frac{I}{I_0},
+		\label{eq:keff-operational}
+	\end{equation}
+	其中 $I$ 是测量电流，$I_0$ 是如果没有协调限制时会流过的参考电流。$I_0$ 可以通过将垂直接触的高温行为（其中 $\Keff(T) \propto T^{-0}$ 渐近）外推到测量温度，或者通过使用具有相同势垒高度的三维肖特基二极管的独立校准来获得。这个操作性定义允许直接从电流-电压特性确定 $\Keff$，而无需依赖理论标度 (\ref{eq:keff-T})。
+	
+	\section{协调网络的分形维数}
+	
+	YUCT 的一个核心结果（附录 L）是误差标度指数由协调网络的分形维数 $d_f$ 决定：
+	\begin{equation}
+		\beta_{\mathrm{err}} = \frac{2}{d_f}.
+		\label{eq:beta-df}
+	\end{equation}
+	在热窗口中活性协调通道的密度携带着网络的几何特征。在各向同性的 $d_f$ 维空间中，在温度 $T$ 下可及的状态密度按 $T^{d_f/2 - 1}$ 标度。对于横向肖特基势垒，动量守恒（$\cos\theta$ 因子）的额外运动学约束将有效指数降低一个单位，因此动力学指数变为
+	\begin{equation}
+		\beta_{\mathrm{IV}} = \frac{d_f}{2}.
+		\label{eq:bIV-df}
+	\end{equation}
+	\textbf{方程 (\ref{eq:bIV-df}) 是一个由电流路径与分形维数为 $d_f$ 的协调网络之间的几何相似性所驱动的假设。目前尚未从微观 YUCT 作用量进行严格推导；因此该关系应被视为一个导致可检验预测（第 \ref{sec:predictions} 节）并邀请未来理论研究的猜想。}
+	
+	方程 (\ref{eq:beta-df}) 和 (\ref{eq:bIV-df}) 结合起来给出基本关系
+	\begin{equation}
+		\boxed{\beta_{\mathrm{IV}} \cdot \beta_{\mathrm{err}} = 1}.
+		\label{eq:relation}
+	\end{equation}
+	
+	从实验值 $\beta_{\mathrm{IV}} = 3/2$ 我们得到
+	\begin{equation}
+		d_f = 2\beta_{\mathrm{IV}} = 3, \qquad
+		\beta_{\mathrm{err}} = \frac{2}{d_f} = \frac{2}{3} \approx 0.67.
+	\end{equation}
+	因此，测量的电流标度确定了一个有效分形维数为 $d_f = 3$ 的协调网络，这反过来意味着任何协调误差的度量（例如相对电流涨落）应遵循指数为 $2/3$ 的 YUCT 幂律。这是一个\textbf{预测}而非事后解释，因为在这些系统上尚未进行涨落测量。
+	
+	对于 $k_\parallel$ 不守恒的垂直接触，角度限制消失，$\beta_{\mathrm{IV}} = 1$，因此 $d_f = 2$，$\beta_{\mathrm{err}} = 1$。YUCT 预测此类接触中的电流涨落将按 $\Keff^{-1}$ 标度，与 $2/3$ 定律不同。
+	
+	\section{对电流涨落的预测}
+	\label{sec:predictions}
+	将 YUCT 误差律 (\ref{eq:yuct-law}) 应用于协调效率 (\ref{eq:keff-T}) 对横向肖特基二极管中的低频电流噪声功率 $S_I$ 做出定量预测：
+	\begin{equation}
+		\frac{S_I}{I^2} \propto \Keff^{-2/3} \propto T^{1/3}.
+		\label{eq:noise-pred}
+	\end{equation}
+	使用方程 (\ref{eq:keff-operational}) 中 $\Keff = I/I_0$ 的操作性定义，噪声标度可重写为
+	\begin{equation}
+		\frac{S_I}{I^2} = C \, \left(\frac{I}{I_0}\right)^{-2/3} + \text{常数},
+		\label{eq:noise-operational}
+	\end{equation}
+	其中 $C$ 是材料特定的常数，量级为 1，加法常数考虑了不可约的热噪声。这种形式可以直接在标准噪声谱实验中获得：$I$ 和 $I_0$ 从 $I$–$V$ 特性测量，$S_I$ 作为偏压的函数在固定温度下记录。预测是 $S_I/I^2$ 对 $(I/I_0)^{-2/3}$ 作图应为线性，且斜率与温度无关。这是一个严格的、可证伪的检验，不需要拟合指数。
+	
+	\section{讨论：标度指数的统一}
+	
+	$3/2$ 指数的出现并非肖特基二极管独有，而是指向更深层的组织原理，这从其独立出现在 Kardar–Parisi–Zhang（KPZ）表面生长的普适类中 \cite{KPZ} 得到印证。在 KPZ 中，动力学指数 $z = 3/2$ 控制着生长界面的分形粗糙化。YUCT 为这些现象提供了统一的解释。\textbf{生长前沿可以被概念化为一个 $d_f = 3$ 维的协调网络，其中动力学指数 $\beta_{\mathrm{IV}} = d_f/2 = 3/2$ 自然地由我们猜想的方程 (\ref{eq:bIV-df}) 产生。}因此，KPZ 指数和肖特基指数不仅仅是类似；它们是同一个底层 YUCT 误差律 $\varepsilon \propto \Keff^{-2/3}$ 在完全不同的物理实现中的两种动力学表现。\textbf{这种联系目前是一个假设，需要进一步的理论工作将 YUCT 拉格朗日量与 KPZ 方程直接联系起来。}
+	
+	为了使 KPZ 预测更加具体，我们可以明确地将 $\Keff$ 与生长界面中饱和关联模式的比例等同起来。在横向尺寸为 $L$ 的 KPZ 界面的饱和区，宽度 $W(L,t)$ 趋近于稳态值 $W_{\text{sat}}(L) \simeq \sqrt{\langle h^2 \rangle} \propto L^{\alpha}$，其中 $\alpha = 1/2$。涨落幅度 $\delta W = W(t) - W_{\text{sat}}$ 由活性（未饱和）模式的数量控制。我们建议将 $\Keff$ 等同于 $1 - \nu_{\text{unsat}}/\nu_{\text{tot}}$，即已进入相关稳态阶段的模式比例。那么 YUCT 预测
+	\begin{equation}
+		\frac{\delta W}{W_{\text{sat}}} \propto \Keff^{-2/3},
+		\label{eq:kpz-prediction}
+	\end{equation}
+	其中 $\Keff$ 可以通过宽度的随时间衰减估计为 $\Keff \approx 1 - (dW/dt)_{\text{norm}}$。这一预测可以在数值模拟和高分辨率动力学粗糙化实验（例如电沉积、分子束外延）中得到检验。
+	
+	这种统一暗示了一个普适性层级，如图 \ref{fig:hierarchy} 所示：
+	\begin{itemize}
+		\item \textbf{第一级（YUCT）：} 基本协调误差律 $\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-2/3}$ 在最深层运作，独立于具体的基底。
+		\item \textbf{第二级（输运）：} 对于二维肖特基异质结中的电子输运，动力学指数 $\beta_{\mathrm{IV}}$ 作为分形维数 $d_f$ 的函数以 $\beta_{\mathrm{IV}} = d_f/2$（假设）出现。
+		\item \textbf{第三级（生长）：} 在属于 KPZ 类的表面生长现象中，相同的动力学指数作为动力学临界指数 $z = 3/2$ 出现，反映了生长界面的 $d_f = 3$ 性质（解释）。
+	\end{itemize}
+	因此，$3/2$ 指数不是特定材料的偶然，而是 $d_f = 3$ 协调过程的几何标志。
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[
+			node distance=1.8cm,
+			box/.style={rectangle, draw=blue!60, fill=blue!10, rounded corners, 
+				text width=3.5cm, align=center, font=\small},
+			arrow/.style={->, >=stealth, thick}
+			]
+			\node[box, fill=red!15, draw=red!50!black] (yuct) 
+			{\textbf{第一级（YUCT）}\\[2pt]
+				$\varepsilon = \kappa_c\alpha K_{\mathrm{eff}}^{-2/3}$\\
+				（基本误差律）};
+			\node[box, right=of yuct] (transport) 
+			{\textbf{第二级（输运）}\\[2pt]
+				$\beta_{\mathrm{IV}} = d_f/2$\\
+				（肖特基异质结）};
+			\node[box, right=of transport] (growth) 
+			{\textbf{第三级（生长）}\\[2pt]
+				$z = 3/2$\\
+				（KPZ 表面粗糙化）};
+			\draw[arrow] (yuct) -- (transport);
+			\draw[arrow] (transport) -- (growth);
+		\end{tikzpicture}
+		\caption{普适性的层级结构。YUCT 协调误差律（第一级）决定了有效分形维数 $d_f$ 以及在电子输运（第二级）和表面生长（第三级）中观察到的动力学指数。虚线箭头表示假设。}
+		\label{fig:hierarchy}
+	\end{figure}
+	
+	这一观点得到了越来越多的实验证据的支持，即肖特基界面的分形维数直接影响器件特性 \cite{FractalSchottky}。在这些研究中，分形维数是外部施加的几何属性（粗糙度）。在 YUCT 中，理想横向接触的 $d_f = 3$ 维度是\emph{涌现}的——即使几何粗糙度趋近于零，它也从协调网络本身的动力学中产生。因此，外部施加的 $d_f$ 调制了一个已经存在的内部协调网络，为设计基于协调的器件提供了一条有前景的途径。
+	
+	\section{跨越 50 个数量级的普适性}
+	表 \ref{tab:universal-beta} 收集了来自各个 YUCT 附录的系统，这些系统的误差标度指数已被经验确定或预测为 $\beta = 2/3$。横向肖特基异质结和 KPZ 生长界面被添加为根据提取的分形维数 $d_f = 3$ 预测相同指数的系统。该表涵盖了超过 50 个数量级的相关能量（或长度）尺度。
+	
+	\begin{table}[H]
+		\centering
+		\caption{展现或预测将展现 YUCT 普适误差指数 $\beta = 2/3$（$0.67$）的系统。}
+		\label{tab:universal-beta}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{系统} & \textbf{可观测量} & \textbf{状态} & \textbf{参考} \\
+			\midrule
+			化学键（873 种）      & $E \propto r^{-0.67}$               & 已证实  & 附录 C \\
+			DNA 复制错误    & $\varepsilon \propto \Keff^{-0.67}$ & 已证实  & 附录 E \\
+			代谢标度（简单）& $B \propto M^{0.67}$               & 已证实  & 附录 D，E.7 \\
+			GDP 波动 vs. 太阳   & $\sigma_{\mathrm{GDP}} \propto W^{-0.67}$ & 已证实 & 附录 F \\
+			CMB 温度涨落    & $\delta T/T \propto \Keff^{-0.67}$ & 已证实  & 附录 M \\
+			引力波       & $\delta\tau/\tau \propto M^{-0.67}$& 已证实  & 附录 G，V \\
+			\textbf{横向肖特基} & $S_I/I^2 \propto T^{1/3}$          & \textbf{预测} & 本工作 \\
+			\textbf{KPZ 界面}\textsuperscript{*} & 宽度涨落 $\propto \Keff^{-2/3}$& \textbf{预测} & 本工作，\cite{KPZ}\\
+			\bottomrule
+		\end{tabular}
+		
+		\vspace{0.3cm}
+		{\footnotesize \textsuperscript{*}对于 KPZ 生长界面，$K_{\mathrm{eff}}$ 的定义必须类比输运情况来构造，例如作为相关体积内相关自由度的比例。这一预测假设了这样的构造，仍有待检验。}
+	\end{table}
+	
+	\section{结论}
+	Ang 等人报道的电流-温度标度指数 $\beta_{\mathrm{IV}} = 3/2$ 和 $1$ 是控制二维异质结中热电子输运的协调网络的有效分形维数的动力学表现。通过 YUCT 关系 $\beta_{\mathrm{IV}} = d_f/2$（假设）和 $\beta_{\mathrm{err}} = 2/d_f$，实验数据得出横向接触的 $d_f = 3$，这预测了协调误差指数 $\beta_{\mathrm{err}} = 2/3$（$\approx 0.67$）。这一可通过电流噪声谱学检验的预测将 YUCT 普适标度律的范围扩展到固态纳米电子学领域。相同的分形维数和指数自然地出现在 KPZ 表面生长中，暗示了非平衡现象之间深刻的几何统一性。YUCT 为这种统一提供了基本原理，尽管理论与肖特基动力学关系以及 KPZ 方程之间的联系仍然是假设，有待进一步研究。本文为这两种情况提供了 $\Keff$ 的操作性定义，以便于实验检验。
+	
+	\begin{thebibliography}{99}
+		\bibitem{Ang2018} Y.~S.~Ang, H.~Y.~Yang, and L.~K.~Ang,
+		Phys. Rev. Lett. \textbf{121}, 056802 (2018).
+		\bibitem{KPZ} M.~Kardar, G.~Parisi, Y.-C.~Zhang,
+		Phys. Rev. Lett. \textbf{56}, 889 (1986).
+		\bibitem{FractalSchottky} S.~Zeybek, M.~Biber, A.~Türüt,
+		Appl. Surf. Sci. \textbf{253}, 3881 (2007). [关于分形维数对肖特基二极管影响的代表性研究。]
+		\bibitem{Yakushev2026} A.~V.~Yakushev, \emph{Yakushev Unified Coordination Theory (YUCT)}, Zenodo (2026).
+		\bibitem{AppendixL} A.~V.~Yakushev, “附录 L：分形协调误差标度”，载于 \emph{YUCT} (2026).
+		\bibitem{AppendixM} A.~V.~Yakushev, “附录 M：YUCT 宇宙学”，载于 \emph{YUCT} (2026).
+		\bibitem{AppendixE} A.~V.~Yakushev, “附录 E：协调遗传学”，载于 \emph{YUCT} (2026).
+		\bibitem{AppendixF} A.~V.~Yakushev, “附录 F：YUCT 在经济学中的应用”，载于 \emph{YUCT} (2026).
+		\bibitem{AppendixG} A.~V.~Yakushev, “附录 G：量子引力问题的解决”，载于 \emph{YUCT} (2026).
+		\bibitem{AppendixV} A.~V.~Yakushev, “附录 V：时间作为协调熵”，载于 \emph{YUCT} (2026).
+	\end{thebibliography}
+	
+\end{document}

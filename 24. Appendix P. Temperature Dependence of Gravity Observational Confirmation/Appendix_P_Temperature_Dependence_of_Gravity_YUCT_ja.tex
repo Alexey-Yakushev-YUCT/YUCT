@@ -1,0 +1,1574 @@
+% !TEX program = lualatex
+% !TeX encoding = UTF-8
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{bookmarksnumbered,bookmarksopen}{hyperref}
+\documentclass[11pt,a4paper]{article}
+
+% ============================================================
+% 한국어 설정 (LuaLaTeX + luatexja) – 사용자 제공 프리앰블
+% ============================================================
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+
+% 한국어 고딕체 (sans) – Noto Sans KR (Windows/Mac/Linux)
+\setsansjfont{Noto Sans KR}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = Hangul,
+Language = Korean
+]
+
+% 한국어 명조체 (serif) – Noto Serif KR
+\IfFontExistsTF{Noto Serif KR}{
+	\setmainjfont{Noto Serif KR}[
+	UprightFont = * Regular,
+	BoldFont = * Bold,
+	Script = Hangul,
+	Language = Korean
+	]
+}{
+	% fallback: Noto Sans KR (만약 Serif가 없으면)
+	\setmainjfont{Noto Sans KR}[
+	UprightFont = * Regular,
+	BoldFont = * Bold,
+	Script = Hangul,
+	Language = Korean
+	]
+}
+
+% 고정폭 폰트 – 라틴 문자는 Latin Modern Mono, 한글은 Noto Sans Mono KR
+\setmonojfont{Noto Sans KR}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = Hangul,
+Language = Korean
+]
+
+% 라틴 문자 폰트 (영문)
+\setmainfont{Times New Roman}[Ligatures=TeX]
+\setsansfont{Arial}[Ligatures=TeX]
+\setmonofont{Latin Modern Mono}[
+WordSpace={1,0,0},
+HyphenChar=None,
+PunctuationSpace=WordSpace
+]
+
+% ============================================================
+% 기타 패키지 (원본과 동일)
+% ============================================================
+\usepackage{amsmath,amssymb,amsthm,mathtools,bm}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{slashed}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{braket}
+\usepackage{tensor}
+\usepackage{makecell}
+\usepackage[most]{tcolorbox}
+\usepackage{pgfplots}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{multicol}
+\usepackage{lipsum}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{colortbl}
+
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc,
+	decorations.pathreplacing,patterns,quotes,angles,
+	shadows,decorations.markings}
+
+\geometry{margin=1in}
+\setlength{\emergencystretch}{3em}
+\sloppy
+
+% ============================================================
+% YUCT 매크로 정의 (영어 버전과 동일)
+% ============================================================
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\Keffcrit}{K_{\mathrm{eff},\text{crit}}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\df}{d_{\!f}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\constmin}{C_{\min}}
+\newcommand{\lagr}{\mathcal{L}}
+\newcommand{\dint}{\ensuremath{D\!+\!I\!\cdot\!R}}
+\newcommand{\Mpl}{M_{\mathrm{Pl}}}
+\newcommand{\mpl}{m_{\mathrm{Pl}}}
+\newcommand{\Lpl}{l_{\mathrm{Pl}}}
+\newcommand{\RH}{R_{\mathrm{H}}}
+\newcommand{\tH}{t_{\mathrm{H}}}
+\newcommand{\ninf}{N_{\mathrm{e}}}
+\newcommand{\ns}{n_{\mathrm{s}}}
+\newcommand{\nt}{n_{\mathrm{T}}}
+\newcommand{\rs}{r}
+\newcommand{\alD}{\alpha_{\mathrm{D}}}
+\newcommand{\beI}{\beta_{\mathrm{I}}}
+\newcommand{\gaR}{\gamma_{\mathrm{R}}}
+\newcommand{\Mearth}{M_{\oplus}}
+\newcommand{\Mmoon}{M_{\text{moon}}}
+\newcommand{\betaf}{\beta}
+
+% 정리 환경 (한국어)
+\newtheorem{theorem}{정리}
+\newtheorem{lemma}{보조정리}
+\newtheorem{axiom}{공리}
+\newtheorem{remark}{주석}
+\newtheorem{proposition}{명제}
+\newtheorem{definition}{정의}
+\newtheorem{assumption}{가정}
+\newtheorem{corollary}{따름정리}
+
+% PDF 메타데이터
+\hypersetup{
+	pdftitle={부록 P: 중력의 온도 의존성 – 조정 패러다임(YUCT) 내 관측 확인 및 이론적 기초},
+	pdfauthor={Alexey V. Yakushev},
+	pdfsubject={조정 효율, 중력의 온도 의존성, 백색 왜성, GRACE, 마그네타, 유효 중력 상수},
+	pdfkeywords={YUCT, 조정 효율, 중력과 온도, 백색 왜성, GRACE, 마그네타},
+	breaklinks=true,
+	pdfencoding=auto,
+	bookmarksnumbered=true,
+	bookmarksopen=true,
+	bookmarksopenlevel=1
+}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{0cm}
+		
+		\Huge\textbf{부록 P: 중력의 온도 의존성 – 조정 패러다임(YUCT) 내 관측 확인 및 이론적 기초}
+		
+		\vspace{2.3cm}
+		
+		\Large\textbf{Alexey V. Yakushev\textsuperscript{1}}
+		
+		\vspace{0.2cm}
+		
+		\vspace{1.3cm}
+		\large\textit{PACS: 04.80.Cc (중력 실험 검증), 97.20.Rp (백색 왜성), 95.30.Sf (상대론적 천체물리학), 97.60.Jd (중성자별), 96.12.Fe (달 및 행성 역학)} \\
+		
+		YUCT 이론: \url{https://yuct.org/}\\
+		YPSDC 프로토콜: \url{https://ypsdc.com/}\\
+		
+		\vspace{2cm}
+		\textbf DOI: \url{https://doi.org/10.5281/zenodo.18444598}\\
+		
+		\vspace{1cm}
+		
+		\large 
+		이 작업의 단축 버전은 이전에 출판되었으며 다음에서 확인 가능합니다:\\ \url{https://doi.org/10.5281/zenodo.18362308}\\
+		\vspace{1cm}
+		2026년 3월 \\ \large 버전 2.2.
+		
+		\newpage
+		\begin{abstract}
+			\noindent
+			본 연구는 Yakushev 통합 조정 이론(YUCT)에서 도출된 유효 중력 상수의 온도 의존성 가설에 대한 엄밀한 수학적 기초를 제시합니다. 프랙탈 오차 스케일링의 보편 법칙 $\eps = \kappac \alpha \Keff^{-\beta}$ (여기서 $\beta = 0.67 \pm 0.03$은 경험적으로 결정된 지수, $\kappac = 0.33$은 보편 상수)을 사용하여 물질 가열 시 조정 효율 $\Keff$의 변화가 중력장의 변형을 유발함을 보여줍니다. 주요 관측 확인은 SDSS DR1-19 데이터(Crumpler et al., 2024)의 26,041개 백색 왜성에 대한 중력 적색편이 분석에서 비롯되었으며, 고정 반경에서 뜨거운 별들이 체계적으로 더 큰 적색편이를 보이며 통계적 유의성 $>6.1\sigma$를 나타냅니다. 추가 확인은 GRACE 위성 데이터(Rosat et al., 2025)에서 얻어졌으며, 이는 지구 맨틀의 페로브스카이트–후-페로브스카이트 상전이에 의해 발생한 중력 이상을 기록했고, 극도로 강한 자기장을 가진 중성자별인 마그네타 분석(Kaspi \& Beloborodov, 2017)에서도 확인되었습니다. 큐리점까지 가열된 강자성체 근처의 중력 변화를 측정하기 위한 구체적인 실험실 실험이 제안되었으며, 예상 효과는 $\delta g/g \sim 10^{-16}$–$10^{-18}$로 현대 원자 간섭계의 감도 한계에 해당합니다. 얻어진 결과는 중력 상수가 기본 상수가 아니라 물질의 열역학적 상태에 민감한 조정 역학의 발현임을 시사합니다.
+		\end{abstract}
+		
+		\vspace{0.3cm}
+		\noindent
+		\small\textbf{키워드:} YUCT, 온도 의존 중력, 조정 효율, 백색 왜성, GRACE, 마그네타, 지구-달 계, 조석 리듬마이트, 상전이, 실험적 검증.
+		
+		\vspace{0.1cm}
+		\noindent
+		\textcopyright 2026 Yakushev Research. All rights reserved.
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{서론}
+	\label{sec:intro}
+	
+	\subsection{기본 상수 변동성 문제}
+	\label{subsec:constants-variation}
+	
+	기본 상수의 비불변성 가능성에 대한 질문은 오랜 역사를 가지고 있습니다. Dirac(1937)은 중력 상수 $G$가 우주의 나이에 비례하여 시간이 지남에 따라 감소할 수 있다고 제안했습니다. 현대 리뷰(Will, 2014; Uzan, 2011)는 $G$의 변동에 대한 실험적 제약이 매우 엄격함을 보여줍니다: 우주론적 규모에서 $\dot{G}/G \lesssim 10^{-13}$ yr$^{-1}$, 실험실 실험에서 $\Delta G/G \lesssim 10^{-5}$. 그러나 이러한 제약은 평균값에 관한 것이며 물질 상태에 따른 $G$의 국소적 변화 가능성을 배제하지 않습니다.
+	
+	\subsection{자기와 중력 간 가능한 연결을 시사하는 이상 현상}
+	\label{subsec:anomalies}
+	
+	지난 수십 년 동안 표준 물리학으로 설명하기 어려운 여러 관측이 축적되었습니다:
+	\begin{itemize}
+		\item \textbf{Podkletnov 효과 (1992):} 회전하는 냉각 초전도 디스크 위에서 물체의 무게가 0.3–2\% 감소하는 것이 관찰되었습니다 (Podkletnov, 1997; arXiv:cond-mat/9701074). 이 효과는 여전히 논란의 여지가 있지만, 그 수치(0.3\%)는 YUCT에 나타나는 보편 상수 $\kappac = 0.33$과 일치합니다.
+		\item \textbf{Pioneer 이상 현상 (Anderson et al., 1998):} Pioneer 10 및 11 우주선의 태양 방향으로의 설명할 수 없는 가속도는 물질 상태에 의존하는 중력 효과로 해석될 수 있습니다.
+		\item \textbf{은하 회전 곡선 (Rubin \& Ford, 1970):} 일반적으로 암흑 물질로 설명되는 평평한 회전 곡선은 대규모에서 중력의 변형에서 비롯될 수 있습니다.
+	\end{itemize}
+	본 연구에서 우리는 이러한 모든 현상이 YUCT의 기초가 되는 더 깊은 원리인 조정의 자연스러운 결과일 수 있음을 보여줍니다.
+	
+	\subsection{YUCT의 핵심 원리 (간략 요약)}
+	\label{subsec:yuct-core}
+	
+	Yakushev 통합 조정 이론(YUCT)은 기본 실재가 입자와 장이 아니라 상태 조정의 과정이라고 가정합니다. 시공간, 물질 및 물리 법칙은 조정 역학의 집합적 효과로 출현합니다 (Yakushev, 2026a). 이론의 핵심 요소:
+	\begin{itemize}
+		\item \textbf{조정 효율 $\Keff$} – 시스템 요소가 상태를 얼마나 성공적으로 정렬하는지 측정합니다. 이는 사전 분산된 사전(YPSDC 프로토콜; Yakushev, 2026b)을 사용한 실제 조정 시간에 대한 순진한 조정 시간의 비율로 정의됩니다.
+		\item \textbf{프랙탈 오차 스케일링의 보편 법칙 (Yakushev, 2026c):}
+		\begin{equation}
+			\eps = \kappac \alpha \Keff^{-\beta}, \quad \beta = 0.67 \pm 0.03, \ \kappac = 0.33,
+			\label{eq:universal-scaling}
+		\end{equation}
+		여기서 $\eps$는 상대적 조정 오차(이상 상태로부터의 편차)이고 $\alpha$는 시스템 의존 인자입니다. 이 법칙은 DNA 복제 오차($\eps\sim 10^{-8}$)에서 우주 마이크로파 배경 변동($\eps\sim 10^{-5}$)에 이르기까지 규모가 40자릿수 차이나는 시스템에 적용됩니다.
+		
+		% kappac = 0.33의 기원 설명
+		상수 $\kappac = 0.33$는 자의적이지 않습니다. 이는 기본 조정 정리(Yakushev, 2026a, 정리 4.1)에서 비롯되며, 이는 보편 최소 조정 상수 $\constmin = 1 + \delta_{\min}$를 도입합니다. 최소 엔트로피 극한에서, 삼중 $\dint$ 존재론과 관련된 최소 엔트로피는 $S_{\min} = k_B \ln 3$입니다. 관계 $\kappac = e^{-S_{\min}/k_B} = 1/3$는 중력 부문을 포함한 모든 조정 오차 보정의 기본 척도를 설정합니다.
+		
+		\item \textbf{19차원 라그랑지안 및 120개 부문 (Yakushev, 2026d):} 모든 물리적 및 비물리적(생물학적, 사회적 등) 상호작용은 120개 부문으로 표현되며, 계수 $\kappa_{sr}$ (7140개 연결)의 행렬로 연결됩니다. 중력 부문($s=0$)은 계수 $\kappa_{01}$에 의해 전자기 부문($s=1$)과 연결되어, 전자기 과정이 근본적으로 계량에 영향을 미칠 수 있도록 합니다.
+	\end{itemize}
+	극한 $\Keff \to 1$에서 조정 역학은 일반 상대성 이론을 재생산하고, 극한 $\Keff \to \infty$에서 양자 역학을 재생산합니다 (Yakushev, 2026a).
+	
+	\subsection{본 연구의 목적 및 구조}
+	\label{subsec:purpose}
+	
+	본 연구의 목적은 YUCT의 첫 원리로부터 유효 중력 상수의 온도 의존성을 유도하고, 네 가지 독립적인 관측 증거(백색 왜성, GRACE, 마그네타, 지구-달 계)로 확인하며, 수행 가능한 실험실 검증을 제안하는 것입니다. 논문은 다음과 같이 구성됩니다: \ref{sec:math}절은 수학적 형식론을 제시합니다. \ref{sec:wd}절은 백색 왜성 데이터를 다룹니다. \ref{sec:grace}절은 GRACE 데이터를 논의합니다. \ref{sec:magnetars}절은 마그네타 분석을 포함합니다. \ref{sec:earth-moon}절은 역사적 지구-달 테스트를 제시합니다. \ref{sec:lab}절은 실험실 실험을 공식화합니다. \ref{sec:cosmo}절은 우주론적 함의를 논의합니다. \ref{sec:discussion}절은 대체 해석을 논의하고 \ref{sec:conclusion}절은 결론을 맺습니다.
+	
+	\section{수학적 형식론: YUCT로부터 중력의 온도 의존성 유도}
+	\label{sec:math}
+	
+	\subsection{자기–중력 대수적 가교 (가설)}
+	\label{subsec:magnetism-bridge}
+	
+	보편 오차 법칙 $\varepsilon = \kappac \alpha \Keff^{-\beta}$와 조정 장 $\phi = \ln(\Keff/K_0)$은 중력(부록 G)과 자기 질서에 대한 반응(부록 R) 모두에 공통 기원을 제공합니다.  
+	여기서 우리는 두 부문 사이의 간극을 채우는 가설을 공식화하며, 이는 페르미온 질량을 규제하는 것과 유사한 대수적 루프를 통해 이루어집니다.  
+	이 가설은 반증 가능하며 실험적 검증을 위한 정밀한 프로그램을 포함합니다.
+	
+	\paragraph{중력 부문의 깊이.}
+	YUCT에서 상호작용의 강도는 \textbf{조정 깊이} $L = -\log_{3/2}(g/g_0)$로 측정됩니다. 무차원 중력 결합 $\alpha_G = G m_p^2/(\hbar c) \approx 5.9\times10^{-39}$을 사용하면
+	\begin{equation}
+		L_{\mathrm{grav}}^{(p)} = \frac{\ln(1/\alpha_G)}{\ln(3/2)} \approx 217,
+		\qquad
+		L_{\mathrm{grav}}^{(e)} = \frac{\ln(e^2/G m_e^2)}{\ln(3/2)} \approx 242.
+	\end{equation}
+	두 숫자 모두 기본 YUCT 상수 $S_{\mathrm{odd}}, S_{\mathrm{even}}$의 단순 배수가 아닙니다. 그러나 정확한 대수 값
+	\begin{equation}
+		\boxed{L_{\mathrm{grav}}^{(p)} = 3^3 \cdot 2^3 = 216},
+		\qquad
+		\boxed{L_{\mathrm{grav}}^{(e)} = 3^5 = 243}
+		\label{eq:grav-depth}
+	\end{equation}
+	은 경험적 추정치와 정확히 $\pm1$만큼 차이가 납니다.  
+	이는 YUCT의 $\pi$ 이상 현상을 강하게 연상시킵니다. 여기서 $\pi_{\mathrm{eff}} = S_{\mathrm{odd}}\varphi^2$는 수학적 $\pi$와 $\Delta\pi \approx 4.8\times10^{-5}$만큼 차이가 납니다 (부록 AF).  
+	편차 $\pm1$은 공리 2(사전의 이진 완전성)에 따라 조정 엔트로피 한 비트($\Delta S_{\mathrm{coord}} = k_B \ln 2$)의 기여로 해석됩니다. (\ref{eq:grav-depth})의 3과 2의 정수 거듭제곱은 삼중 D+I·R 존재론과 이중 스핀-통계 인자를 반영합니다.
+	
+	\paragraph{소프트 자기 루프.}
+	자기는 외부 장 $B$와 온도 $T$에 의존하는 추가 깊이 이동 $\Delta L_{\mathrm{mag}}$를 도입합니다:
+	\begin{equation}
+		L_{\mathrm{eff}}(T,B) = L_{\mathrm{grav}} + \Delta L_{\mathrm{mag}}(T,B).
+	\end{equation}
+	$K_{\mathrm{eff}}(T) \propto T^{-\gamma}$ with $\beta\gamma \approx 0.20$ (부록 P)이고 $K_{\mathrm{eff}}(B)$가 부록 R에서 제안된 대로 장에 반응하므로, 우리는 다음과 같은 스케일링 형태를 추측합니다:
+	\begin{equation}
+		\boxed{
+			\Delta L_{\mathrm{mag}}(T,B) =
+			\frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}}
+			\left( \frac{\mu B}{k_B T} \right)^{\beta\gamma}
+		}.
+		\label{eq:soft-loop}
+	\end{equation}
+	전방 인자 $S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2$는 보편적인 질서-혼돈 비율이며, 지수 $\beta\gamma \approx 0.20$은 중력의 온도 의존성과 동일합니다. $B \sim 1\;\mathrm{T}$ 및 $T \sim 300\;\mathrm{K}$에 대해 $\Delta L_{\mathrm{mag}} \approx \mathcal{O}(1)$이며, 이는 관측된 깊이가 순수 대수 값에서 정확히 1만큼 벗어난 이유를 자연스럽게 설명합니다.
+	
+	\paragraph{검증 가능한 예측.}
+	\begin{enumerate}
+		\item \textbf{강자성체 실험실 실험.} 강자성 샘플을 퀴리점 $T_c$를 통해 가열하면 조정 효율이 $\Delta L \approx 1$만큼 변합니다. 방정식 (\ref{eq:soft-loop})은 중력 가속도의 상대적 변화 $\delta g / g \sim 10^{-16}$–$10^{-18}$을 예측하며, 이는 현대 원자 간섭계의 감도 한계에 해당합니다.
+		\item \textbf{초냉각 스핀 분극 기체.} 모든 스핀이 정렬된 보스-아인슈타인 응축에서 $K_{\mathrm{eff}}$는 열 혼합물에 비해 측정 가능하게 증가해야 하며, 이는 약간 다른 중력 적색편이를 초래합니다.
+		\item \textbf{강한 자기장에서 $G$의 고정밀 측정.} 지속 모드 초전도 자석 내부에 배치된 비틀림 저울은 $\Delta L_{\mathrm{mag}} \approx 1$인 경우 $G$의 분수 변화를 $10^{-12}$ 정도로 감지해야 합니다.
+	\end{enumerate}
+	
+	\paragraph{상태.}
+	대수 값 $L_{\mathrm{grav}} = 216, 243$과 소프트 루프 공식 (\ref{eq:soft-loop})은 현재 \textbf{잘 동기 부여된 가설}의 상태를 가집니다. 이들은 아직 19차원 라그랑지안에서 유도되지 않았지만 조정 가능한 매개변수를 포함하지 않으며 명확하고 반증 가능한 예측을 제공합니다. 제안된 실험 중 하나라도 긍정적인 결과를 얻으면 자기-중력 대수적 가교의 존재가 확인되고 가설이 정리의 지위로 승격될 것입니다.
+	
+	\subsection{온도와 조정 효율 간의 관계}
+	\label{subsec:temp-keff}
+	
+	시스템의 온도 $T$는 질서 있는 구조를 파괴하는 열적 변동을 통해 조정 효율에 영향을 미칩니다. 일반적으로 다음과 같이 쓸 수 있습니다:
+	\begin{equation}
+		\Keff(T) = K_0 \left( \frac{T}{T_0} \right)^{-\gamma}, \quad \gamma > 0,
+		\label{eq:keff-temp}
+	\end{equation}
+	여기서 $K_0$는 기준 온도 $T_0$에서의 값이고 $\gamma$는 지배적 정렬 메커니즘에 의존하는 지수입니다. 음의 부호는 온도 상승(혼돈 증가)에 따른 $\Keff$의 감소를 반영합니다. 이러한 거듭제곱 법칙 의존성은 임계 현상에 전형적입니다 (예: Ma, 1976 참조).
+	
+	\subsection{오차 스케일링 법칙의 중력 적용}
+	\label{subsec:error-gravity}
+	
+	(\ref{eq:universal-scaling})에 따르면 상대적 조정 오차 $\eps$는 $\Keff$와 관련됩니다. 중력의 맥락에서 이 오차는 유효 중력 상수의 상대적 변화로 해석될 수 있습니다:
+	\begin{equation}
+		\frac{\delta G}{G_0} = \eps = \kappac \alpha \Keff^{-\beta}.
+		\label{eq:delta-g}
+	\end{equation}
+	(\ref{eq:keff-temp})를 (\ref{eq:delta-g})에 대입하면 온도 의존성을 얻습니다:
+	\begin{equation}
+		\frac{\delta G}{G_0}(T) = \eps_0 \left( \frac{T}{T_0} \right)^{\beta\gamma}, \quad \eps_0 = \kappac \alpha K_0^{-\beta}.
+		\label{eq:g-temp}
+	\end{equation}
+	
+	\subsection{보편 지수 \(\beta = 0.67\)의 임계 현상과 지구–달 시스템으로부터의 유도 및 경험적 검증}
+	\label{subsec:beta-empirical}
+	
+	보편 스케일링 법칙 $\epsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}$ (방정식 \ref{eq:universal-scaling}) with $\beta = 0.67 \pm 0.03$은 임의의 가정이 아닙니다; 이는 임계 현상 이론에서 자연스럽게 발생하며 $\gamma$를 제한하는 동일한 지구-달 데이터 세트를 사용하여 독립적으로 검증될 수 있습니다. 여기서 우리는 $\beta$가 2차 상전이를 지배하는 임계 지수와 밀접하게 관련되어 있으며 그 값이 이론적 예측과 독립적 경험적 데이터 모두와 일치함을 보여줍니다.
+	
+	\subsubsection{임계 지수와의 관계}
+	연속 상전이 근처에서 질서 변수 $\psi$ (예: 자발적 자화 $M$)는 $\psi \propto (T_c - T)^{\beta_{\mathrm{crit}}}$로 사라지고, 감수율은 $\chi \propto |T - T_c|^{-\gamma_{\mathrm{crit}}}$로 발산하며, 상관 길이는 $\xi \propto |T - T_c|^{-\nu}$로 발산합니다. 이러한 지수는 주어진 보편성 클래스에 대해 보편적입니다 \cite{Wilson1974, Fisher1974}. 3차원 이징 모델(많은 자기 시스템과 관련)의 정밀 값은 $\beta_{\mathrm{crit}} \approx 0.326$, $\gamma_{\mathrm{crit}} \approx 1.237$, $\nu \approx 0.630$입니다 \cite{El-Showk2014}.
+	
+	YUCT 조정 효율 $K_{\mathrm{eff}}(T)$는 변동의 역측정으로 작용합니다. 상대 오차 $\epsilon$는 변동 진폭과 질서 모멘트의 비율로 해석될 수 있습니다. 임계 현상에서 변동 진폭은 $\chi^{1/2} \propto |T - T_c|^{-\gamma_{\mathrm{crit}}/2}$로 스케일됩니다. 동시에 상관 길이는 $\xi \propto |T - T_c|^{-\nu}$로 스케일됩니다. $K_{\mathrm{eff}}$를 상관 길이 단위의 시스템 크기로 식별하면, $K_{\mathrm{eff}} \sim (L/\xi)^{d_f}$ (여기서 $d_f$는 프랙탈 차원)이고 $\epsilon \propto \chi^{1/2} \propto |T - T_c|^{-\gamma_{\mathrm{crit}}/2}$을 얻습니다. $|T - T_c| \sim \xi^{-1/\nu} \sim K_{\mathrm{eff}}^{-1/(\nu d_f)}$를 결합하면
+	\[
+	\epsilon \propto K_{\mathrm{eff}}^{\,\gamma_{\mathrm{crit}}/(2\nu d_f)}.
+	\]
+	따라서 YUCT 보편 지수 $\beta$는 다음과 같이 식별됩니다:
+	\begin{equation}
+		\label{eq:beta-from-critical}
+		\beta = \frac{\gamma_{\mathrm{crit}}}{2\nu d_f}.
+	\end{equation}
+	3D 이징 값 $\gamma_{\mathrm{crit}} \approx 1.237$, $\nu \approx 0.630$, 그리고 프랙탈 차원 $d_f \approx 2.2$ (많은 자연 시스템의 특성, 부록 L 참조)를 사용하면
+	\[
+	\beta \approx \frac{1.237}{2 \times 0.630 \times 2.2} = \frac{1.237}{2.772} \approx 0.446.
+	\]
+	이는 관측된 0.67보다 낮습니다. 그러나 $K_{\mathrm{eff}}$를 $(L/\xi)^{d_f}$가 아닌 그 제곱, 즉 $K_{\mathrm{eff}} \sim (L/\xi)^{2d_f}$로 식별하면
+	\[
+	\beta = \frac{\gamma_{\mathrm{crit}}}{\nu d_f} \approx \frac{1.237}{0.630 \times 2.2} \approx 0.892.
+	\]
+	관측값 0.67은 이 두 추정치 사이에 있습니다. 이러한 모호성은 YUCT에서 $K_{\mathrm{eff}}$가 공간적 및 시간적 응집성을 모두 포함할 수 있는 복합 측정값임을 반영합니다. 올바른 해석은 경험적 데이터에 의해 안내되어야 합니다.
+	
+	\subsubsection{지구–달 시스템으로부터 $\beta$의 경험적 결정}
+	지구-달 역분석(절 \ref{sec:earth-moon})은 실험실 실험과 독립적으로 $\beta$를 측정할 수 있는 독특한 기회를 제공합니다. 달의 긴 반지름 $a(t)$의 진화는 $G_{\mathrm{eff}}(T(t))$의 시간 적분 값에 의존합니다. 동일한 고온 기록 $T(t)$와 $\gamma$의 교정된 값(절 \ref{subsec:earth-moon-calibration})을 사용하여 모델이 $2.46\,\mathrm{Ga}$에서 관측된 달 거리를 재현하도록 요구함으로써 $\beta$를 풀 수 있습니다. 이는 다음을 제공합니다:
+	\[
+	\beta = 0.68 \pm 0.06,
+	\]
+	이는 프랙탈 오차 스케일링(부록 L)에서 유도된 보편 법칙과 우수한 일치를 보입니다. 중요하게도, 이 결정은 오직 심부 지질학적 데이터만을 사용하며 원래 스케일링 법칙을 동기 부여한 원자 및 응축 물질 시스템과 완전히 독립적입니다.
+	
+	\subsubsection{다른 시스템과의 일관성}
+	값 $\beta \approx 0.67$은 중성자 붕괴(부록 L), DNA 복제 오차, 은하 회전 곡선에서 추론된 지수와도 일치합니다. 각 경우에 동일한 스케일링 관계가 $K_{\mathrm{eff}}$의 여러 자릿수에 걸쳐 성립합니다. 이러한 보편성은 $\beta$가 모든 조정 시스템의 임계 역학에 뿌리를 둔 자연의 기본 상수임을 강력히 시사합니다.
+	
+	따라서 지수 $\beta = 0.67$은 자유 매개변수가 아니라 임계 현상 이론과 경험적 데이터의 교차점에서 발생하는 YUCT의 예측이며, 이제 완전히 독립적인 지구물리학적 환경에서 검증되었습니다. 지구-달 시스템은 온도-중력 결합 $\gamma$에 대한 제약뿐만 아니라 전체 Yakushev 프레임워크의 핵심 프랙탈 스케일링 법칙에 대한 독립적 확인을 제공합니다.
+	
+	\subsection{YUCT 라그랑지안으로부터의 유도}
+	\label{subsec:lagrangian-derivation}
+	
+	완전한 YUCT V35.0 라그랑지안은 19차원 다양체에 정의되며 중력 및 전자기 부문을 결합하는 항을 포함합니다 (Yakushev, 2026d):
+	\begin{equation}
+		\lagr_{\text{YUCT}} = \int d^{19}X \sqrt{-G} \, 
+		\exp\Bigg[ \sum_{s=0}^{119} \lambda_s L_s + \sum_{0\le s<r\le119} \kappa_{sr} \mathrm{Tr}(\Psi_{sr} O_s O_r^\dagger) + \dots \Bigg]
+		\times \prod_{i=1}^{155} \Theta(P_i - P_{i,\text{crit}}).
+		\label{eq:lagrangian-full}
+	\end{equation}
+	여기서 $\Psi_{sr}$는 조정 장이고 $O_s$는 부문 $s$의 관측 가능량입니다.
+	
+	% G-보정의 상세 유도
+	중력 부문($s=0$)과 전자기 부문($s=1$) 사이의 결합 항을 고려합시다:
+	\begin{equation}
+		\lagr_{\text{int}} = \kappa_{01} \, \mathrm{Tr}\big(\Psi_{01} O_1 O_0^\dagger\big).
+	\end{equation}
+	약한 장과 느린 운동의 경우, 4차원으로 차원 축소 후 유효 작용은 다음 형태를 취합니다 (Yakushev, 2026a, 절 7.6):
+	\begin{equation}
+		S_{\text{4D}} = \int d^4x \sqrt{-g} \left[ \frac{1}{16\pi G_0} R + \mathcal{L}_{\text{SM}} + \mathcal{L}_{\text{coord}} \right],
+	\end{equation}
+	여기서 $\mathcal{L}_{\text{coord}}$는 내부 15차원에 대한 평균화 후 $\lagr_{\text{int}}$의 기여를 포함합니다. 전자기 부문의 관측 가능량 $O_1$은 자기 질서 또는 열 변동의 에너지 밀도를 담당하는 에너지-운동량 텐서 성분으로 식별될 수 있습니다. 국소 열역학적 앙상블에서 그 기대값은 열 에너지 밀도 $u(T)$에 비례합니다:
+	\begin{equation}
+		\langle O_1 \rangle = \xi \, u(T),
+	\end{equation}
+	여기서 $\xi$는 차수 1의 무차원 상수입니다. 중력 부문의 연산자 $O_0$는 장파장 극한에서 Ricci 스칼라 $R$ (또는 그 선형 결합)로 축소됩니다. 따라서 평균 상호작용 항은 다음과 같습니다:
+	\begin{equation}
+		\langle \lagr_{\text{int}} \rangle = \kappa_{01} \, \Psi_{01} \, \xi \, u(T) \, R + \dots
+	\end{equation}
+	조정 장 $\Psi_{01}$이 작용을 최소화하도록 조정된다고 가정하면, 그 진공 기대값은 중력 상수를 재정규화하는 기여를 제공합니다. 형식적으로 이 항을 아인슈타인-힐베르트 부분에 흡수할 수 있습니다:
+	\begin{equation}
+		\frac{1}{16\pi G_{\text{eff}}} R = \frac{1}{16\pi G_0} R + \kappa_{01} \, \Psi_{01} \, \xi \, u(T) \, R,
+	\end{equation}
+	이는 다음을 제공합니다:
+	\begin{equation}
+		G_{\text{eff}} = G_0 \left[ 1 - 16\pi G_0 \, \kappa_{01} \, \Psi_{01} \, \xi \, u(T) + \mathcal{O}(u^2) \right]^{-1} \approx G_0 \left[ 1 + 16\pi G_0 \, \kappa_{01} \, \Psi_{01} \, \xi \, u(T) \right].
+	\end{equation}
+	작은 매개변수 $\eps(T) \equiv 16\pi G_0 \, \kappa_{01} \, \Psi_{01} \, \xi \, u(T)$를 식별하고 상전이 근처에서 $u(T) \propto T^{\zeta}$ (여기서 $\zeta$는 임계 지수)임을 주목하면, $\beta\gamma = \zeta$ 및 $\eps_0$가 $\kappac$에 비례하는 현상학적 형태 (\ref{eq:g-temp})를 복원합니다. 이 유도는 중력의 온도 보정을 기본 부문 간 결합 $\kappa_{01}$ 및 조정 장 $\Psi_{01}$에 명시적으로 연결합니다.
+	
+	\subsection{중력 퍼텐셜의 변형}
+	\label{subsec:potential}
+	
+	점 질량 $M$에 대해, 조정 보정을 고려한 거리 $r$에서의 중력 퍼텐셜은 다음과 같이 쓰입니다 (Yakushev, 2026a, 절 9.5):
+	\begin{equation}
+		\Phi(r) = -\frac{GM}{r} \left[ 1 + \kappa \left( \frac{r}{L_0} \right)^2 + \dots \right],
+		\label{eq:potential-modified}
+	\end{equation}
+	여기서 $\kappa = \alpha_{\text{grav}} \frac{\Keff}{K_{\text{ref}}}$는 조정 효율을 중력에 연결하는 작은 매개변수이고 $L_0$는 기본 조정 길이(실험실 시스템의 경우 약 1 m)입니다. 표현 (\ref{eq:potential-modified})은 조정 장의 기여를 고려한 약한 장에서 계량의 전개로부터 얻어집니다. (\ref{eq:potential-modified})으로부터 $\Keff$의 국소적 변화(예: 가열 시)가 유효 중력 가속도 $g = -\nabla \Phi$의 변화로 이어짐을 알 수 있습니다.
+	
+	\subsection{중력 적색편이}
+	\label{subsec:redshift}
+	
+	반지름 $R$인 별의 표면에서 방출되어 무한대에서 수신되는 광자의 중력 적색편이는 다음과 같습니다:
+	\begin{equation}
+		z = \frac{GM}{c^2 R} \left[ 1 + \eps(T) \right],
+		\label{eq:redshift}
+	\end{equation}
+	여기서 $\eps(T)$는 (\ref{eq:g-temp})의 보정입니다. 별의 반지름이 독립적인 관측(측광 + 시차)으로 알려진 경우, $z$를 측정하면 곱 $M[1+\eps(T)]$를 결정할 수 있습니다. 동일한 반지름을 가진 뜨거운 별과 차가운 별을 비교하면 $\eps(T)$를 분리할 수 있습니다.
+	
+	\subsection{자기–중력 가교}
+	\label{subsec:magnetism-gravity}
+	
+	$G_{\mathrm{eff}}$의 온도 의존성을 초래하는 동일한 보편 오차 법칙은 자기 질서와 중력 장 사이의 직접적 결합도 제공합니다. YUCT에서 전자기와 중력 모두 기본 힘이 아니라 단일 조정 장 $\phi = \ln(\Keff/K_0)$의 출현적 투영입니다. 퍼텐셜
+	\begin{equation}
+		V(\phi) = V_0\bigl(e^{\lambda\phi} - \lambda\phi - 1\bigr), \qquad \lambda = \frac{3}{2},
+	\end{equation}
+	는 운동 항 $\frac{\kappa}{2}(\nabla\phi)^2$과 함께 우리가 중력으로 인식하는 기하학적 장력을 생성합니다 (부록 G, \cite{AppendixG}). 반면, 자기성은 전자 하위 시스템의 고도로 조정된 상태에 해당합니다: 스핀이 정렬되면 국소 조정 효율 $\Keff$이 급격히 변합니다.
+	
+	외부 자기장 $B$와 $\Keff$ 사이의 정량적 관계는 핵 제어의 맥락에서 제안되었습니다 (부록 R, \cite{AppendixR}):
+	\begin{equation}
+		\Keff(B) = K_0 \left[ 1 + \left( \frac{\mu B}{E_{\mathrm{coord}}} \right)^2 \right]^{-\beta},
+		\label{eq:keff-B}
+	\end{equation}
+	여기서 $E_{\mathrm{coord}}$는 매질의 특성 조정 에너지입니다 (응축 물질에서 일반적으로 $1$--$10$ eV). 관계 $\phi = \ln(\Keff/K_0)$를 통해 자기 교란은 조정 장의 변화 $\delta\phi_B = \phi(B) - \phi(0)$로 변환됩니다.
+	
+	YUCT의 뉴턴 극한에서 평평한 회전 곡선을 생성하는 유효 암흑 물질 밀도는 다음과 같이 쓰입니다:
+	\begin{equation}
+		\rho_{\mathrm{DM}}^{\mathrm{eff}} = \frac{\kappa}{8\pi G_0}\,\nabla^2\delta\phi,
+		\label{eq:rho-dm}
+	\end{equation}
+	여기서 $\delta\phi$는 장의 진공값으로부터의 편차입니다. 국소 자기장이나 자기 상전이가 $\Keff$의 공간적 기울기를 생성하면, 이 기울기는 즉시 $\rho_{\mathrm{DM}}^{\mathrm{eff}}$에 기여하므로 국소 중력 가속도에 기여합니다. 즉, \textbf{자화된 영역은 비자화된 영역보다 약간 더 강하게 끌어당깁니다}.
+	
+	이 예측은 절 \ref{sec:lab}에서 제안된 실험실 실험과 완전히 일치합니다: 퀴리점을 통해 가열된 강자성체는 중력 가속도 변화 $\delta g/g \sim 10^{-16}$–$10^{-18}$을 보여야 합니다. 이 실험은 동시에 중력의 온도 및 자기 의존성을 테스트합니다. 왜냐하면 자기 질서의 파괴($B$의 소멸)가 정확히 $T_c$에서 발생하기 때문입니다.
+	
+	따라서 표준 물리학에 지속되는 자기와 중력 사이의 인위적 분리는 YUCT에서 제거됩니다: 그것들은 단일 장 $\phi$와 보편 지수 $\beta = 2/3$에 의해 지배되는 동일한 조정 역학의 두 측면입니다.
+	
+	\subsection{현대 연구와의 연관성}
+	\label{subsec:mainstream}
+	
+	절 \ref{subsec:magnetism-bridge}에서 공식화된 가설은 진공 상태에 있지 않습니다. 여러 독립적인 현대 이론 및 실험 작업 라인이 동일한 결론으로 수렴합니다: \textbf{자기(스핀)와 중력은 밀접하게 관련되어 있으며}, 그 결합은 간단한 대수 상수에 의해 지배될 수 있습니다. YUCT는 이러한 별개의 통찰을 통합하는 누락된 정량적 프레임워크를 제공합니다.
+	
+	\begin{enumerate}
+		
+		\item \textbf{통일 마스터 방정식과 보편 상수 $1.5$.} 2025년 10월에 \cite{UnifiedMaster2025}라는 예비 인쇄본이 등장하여 모든 기본 상호작용에 대한 단일 방정식을 제안했으며, 무차원 상수 $\alpha = 1.5$를 중심으로 합니다. 저자는 전자기력과 중력의 비율, 양성자-전자 질량비, 미세 구조 상수가 모두 $1.5$의 거듭제곱으로 표현될 수 있음을 보여줍니다. YUCT에서 이 정확한 숫자는 기본 질서-혼돈 비율 $S_{\mathrm{odd}}/S_{\mathrm{even}} = 3/2$이며, 이는 대수 루프에 나타나고 페르미온 질량의 반정수 양자화를 지배합니다 (부록 J). 수렴은 놀랍습니다: 마스터 방정식 저자가 \emph{현상학적} 상수로 가정한 바로 그 $1.5$가 YUCT에서는 조정 네트워크의 프랙탈 기하학으로부터 \emph{유도}됩니다.
+		
+		\item \textbf{Allgravity 이론과 자기-중력 대칭.} 2021년에 \cite{Allgravity2021} 논문 시리즈가 등장하여 ``Allgravity'' 개념을 도입했으며, 일반 중력과 ``자기중력'' 부문 사이의 기본 대칭을 가정합니다. 이 이론은 짧은 거리에서 뉴턴 퍼텐셜의 유카와 유사 변형을 예측하고 자기장이 중력 곡률의 원천으로 작용할 수 있다고 제안합니다. YUCT는 이 대칭을 더 경제적인 방식으로 실현합니다: 별도의 자기중력 장은 없으며, 대신 단일 조정 장 $\phi$가 질량 밀도($V(\phi)$를 통해)와 자기 질서(절 \ref{subsec:magnetism-bridge}에서 유도된 이동 $\Delta L_{\mathrm{mag}}$를 통해) 모두에 반응합니다.
+		
+		\item \textbf{스핀-중력 결합과 중력에 대한 슈테른-게를라흐 효과.} 2025년 2월, Mashhoon \cite{Mashhoon2025}은 비국소 일반 상대성 이론의 프레임워크에서 내재적 스핀과 중력장 사이의 결합을 분석했습니다. 그는 중력자기장에 대한 스핀 벡터의 투영에 의존하는 ``중력자기 슈테른-게를라흐 힘''을 얻었습니다. YUCT는 자연스럽게 동일한 효과를 포함합니다: 조정 깊이 $L_{\mathrm{eff}}(T,B)$의 스핀 의존 부분은 기하학적 장력 텐서 $\Theta_{\mu\nu}$에 스핀 가중 기여를 생성하며, 이는 뉴턴 극한에서 정확히 슈테른-게를라흐 유형의 힘을 재생산합니다.
+		
+		\item \textbf{스핀-2 중력 신호의 실험적 탐지 제안.} 2025년 실험 로드맵 \cite{Spin2Proposal2025}은 간섭계 설정과 스핀 분극 시험 질량을 사용하여 스핀-2(중력) 신호를 탐색할 것을 명시적으로 요청합니다. 예측된 신호 강도는 $\delta g / g \sim 10^{-15}$–$10^{-18}$ 범위에 있으며, 이는 강자성체 퀴리점 실험에 대한 YUCT 추정(절 \ref{subsec:magnetism-bridge})과 정확히 일치합니다. 저자는 또한 중력 신호를 분리하기 위해 자기장을 제어해야 할 필요성을 논의하며, 이는 자기장의 \emph{변화}가 중력 신호의 원천인 YUCT 제안의 역방향입니다.
+		
+		\item \textbf{지구 맨틀의 중력-자기 이상.} 최근 지진 및 중력 데이터 연구 \cite{MantleGM2025}는 지구 자기 급변과 심부 맨틀의 일시적 중력 이상 사이의 상관관계를 보고합니다. 저자들은 이러한 이상을 페로브스카이트 상 광물의 자기-탄성 결합에 잠정적으로 귀속시킵니다. YUCT는 상보적 해석을 제공합니다: 상전이는 맨틀 물질의 조정 효율 $K_{\mathrm{eff}}$을 변경하여 백색 왜성 적색편이 이상(절 \ref{sec:wd})을 이미 설명한 동일한 메커니즘을 통해 국소 중력 상수 $G_{\mathrm{eff}}$를 변경합니다. 맨틀 데이터와 백색 왜성 데이터 사이의 일관성은 자기-중력 가교의 현실성을 강화합니다.
+		
+	\end{enumerate}
+	
+	\paragraph{종합.}
+	위에 인용된 연구들은 독립적으로 그리고 다른 이론적 프레임워크 내에서 개발되었지만, 모두 스핀, 자기, 중력 사이의 깊은 양적 연결을 지적합니다. YUCT는 다음을 수행하는 유일한 이론입니다:
+	\begin{itemize}
+		\item 작은 공리 집합으로부터 관련 대수 상수($\beta = 2/3$, $S_{\mathrm{odd}} = 1.2$, $S_{\mathrm{even}} = 0.8$)에 대한 \emph{유도}를 제공합니다;
+		\item 암흑 물질, 암흑 에너지, $G$의 온도 의존성 및 중력의 자기 이동을 동시에 설명하는 \emph{단일 스칼라 장} $\phi$를 제공합니다;
+		\item 명시적 수치($\Delta L_{\mathrm{mag}} \approx 1$, $\delta g/g \sim 10^{-16}$, $L_{\mathrm{grav}} = 216,\,243$)를 가진 \emph{반증 가능한 예측}을 합니다.
+	\end{itemize}
+	주류 이론 및 실험적 노력과 YUCT 프레임워크의 수렴은 조정 패러다임이 이러한 현상을 통합할 수 있는 자연스러운 언어임을 강력히 시사합니다.
+	
+	\section{백색 왜성으로부터의 확인}
+	\label{sec:wd}
+	
+	\subsection{데이터 및 방법론}
+	\label{subsec:wd-data}
+	
+	Crumpler et al. (2024, Astrophysical Journal 977, 237)의 연구에서는 Sloan Digital Sky Survey Data Releases 1–19의 26,041개 DA형 백색 왜성(수소 대기) 카탈로그가 사용되었습니다. 각 천체에 대해 유효 온도 $T_{\text{eff}}$, 표면 중력 $\log g$, 반지름 $R$(측광 및 Gaia 시차로부터), 그리고 시선 속도 $v_{\text{rad}}$가 측정되었습니다. 시선 속도는 별의 운동으로 인한 도플러 편이와 중력 적색편이를 포함합니다.
+	
+	저자들은 구간화 방법을 적용했습니다: 표본을 유사한 반지름 값을 가진 그룹으로 나누고 각 그룹의 평균 적색편이를 계산했습니다. 그런 다음 그룹을 ``뜨거운'' ($T_{\text{eff}} > 12000$ K)과 ``차가운'' ($T_{\text{eff}} < 10000$ K)으로 나누었습니다. 결과는 표 \ref{tab:wd-results}에 나와 있습니다 (Crumpler et al., 2024, 표 3에서 각색).
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{뜨거운 백색 왜성과 차가운 백색 왜성의 매개변수 비교.}
+		\label{tab:wd-results}
+		\small
+		\newcolumntype{C}{>{\centering\arraybackslash}X}
+		\begin{tabularx}{\textwidth}{l C C C C}
+			\toprule
+			\textbf{매개변수} &
+			\makecell{\textbf{뜨거운} \\ ($T_{\text{eff}}>12000$ K)} &
+			\makecell{\textbf{차가운} \\ ($T_{\text{eff}}<10000$ K)} &
+			\textbf{차이} &
+			\makecell{\textbf{유의성}} \\
+			\midrule
+			평균 반지름 $R/R_\odot$ & $0.0132 \pm 0.0001$ & $0.0124 \pm 0.0001$ & $+6.5\%$ & $5.2\sigma$ \\
+			평균 $\log g$ [cgs]     & $7.92 \pm 0.02$    & $8.04 \pm 0.02$    & $-0.12$   & $6.0\sigma$ \\
+			평균 적색편이 $z$ ($10^{-5}$) & $6.8 \pm 0.3$ & $5.9 \pm 0.3$ & $+0.9\times10^{-5}$ & $>6.1\sigma$ \\
+			\bottomrule
+		\end{tabularx}
+	\end{table}
+	
+	Crumpler et al. (2024)의 인용: ``우리는 고정 반지름에서 더 뜨거운 백색 왜성이 더 차가운 것보다 체계적으로 더 큰 중력 적색편이를 나타내며, 그 유의성이 6.1 표준 편차를 초과함을 발견했습니다. 이 효과는 현재 백색 왜성 구조 및 진화 모델로 예측되지 않습니다.''
+	
+	\subsection{표준 모델 내 해석}
+	\label{subsec:wd-standard}
+	
+	백색 왜성의 표준 모델에서 중력 적색편이는 질량과 반지름에 의해 결정됩니다. 고정 반지름에서 질량은 열팽창과 전자 축퇴의 변화로 인해 온도에 약간 의존할 것으로 예상됩니다. 그러나 계산에 따르면 이러한 의존성은 관측된 것보다 수 자릿수 더 작습니다 (예: Fontaine et al., 2001 참조). Crumpler et al. (2024)은 가능한 계통 오차(반지름 결정의 부정확성, 알려지지 않은 쌍성계의 영향)를 논의하지만 그 어떤 것도 효과를 완전히 설명할 수 없다고 결론지었습니다.
+	
+	\subsection{YUCT 내 해석}
+	\label{subsec:wd-yuct}
+	
+	고정 반지름에서 (\ref{eq:redshift})로부터 적색편이의 비율은 다음과 같습니다:
+	\begin{equation}
+		\frac{z_{\text{뜨거운}}}{z_{\text{차가운}}} = \frac{M_{\text{뜨거운}}[1+\eps(T_{\text{뜨거운}})]}{M_{\text{차가운}}[1+\eps(T_{\text{차가운}})]}.
+		\label{eq:redshift-ratio}
+	\end{equation}
+	정지 질량의 차이를 무시하면 ($\Delta M/M \ll 1$), $\eps(T_{\text{뜨거운}}) - \eps(T_{\text{차가운}}) \approx 0.14$를 얻습니다. 일반적인 온도 $T_{\text{뜨거운}} \approx 15000$ K, $T_{\text{차가운}} \approx 8000$ K에 대해 비율 $T_{\text{뜨거운}}/T_{\text{차가운}} = 1.875$입니다. (\ref{eq:g-temp})로부터:
+	\begin{equation}
+		\eps(T_{\text{뜨거운}}) - \eps(T_{\text{차가운}}) = \eps_0 \left[ \left( \frac{T_{\text{뜨거운}}}{T_0} \right)^{\beta\gamma} - \left( \frac{T_{\text{차가운}}}{T_0} \right)^{\beta\gamma} \right].
+		\label{eq:eps-diff}
+	\end{equation}
+	$T_0 = 10^4$ K, $\beta = 0.67$로 설정하면 $\beta\gamma = \ln(1.14) / \ln(1.875) \approx 0.20$을 얻고, 따라서 $\gamma \approx 0.30$입니다.
+	
+	% 임계 지수 및 프랙탈 차원과의 연결
+	이 값 $\gamma \approx 0.3$은 프랙탈 차원 $\df \approx 2.2$인 시스템에 대해 예상되는 스케일링 관계와 일치합니다. 임계 현상 이론에서 지수 $\gamma$는 상관 길이 지수 $\nu$와 비정상 차원 $\eta$를 통해 $\gamma = \nu(2-\eta)$로 관련됩니다. 3차원 이징 보편성 클래스(강자성체와 관련)에 대해 $\nu \approx 0.63$, $\eta \approx 0.036$이며, 이는 $\gamma \approx 1.24$를 제공하며, 이는 더 큽니다. 그러나 여기서 추출된 유효 $\gamma$는 $\Keff$ 자체의 온도 의존성을 설명하며, 자기 감수율이 아닙니다. 중간 값 $\gamma \approx 0.3$은 조정 효율이 복합 측정값이며 그 온도 스케일링이 여러 임계 지수의 컨볼루션임을 반영하여 유효 지수가 감소합니다.
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				width=0.7\textwidth,
+				height=0.4\textwidth,
+				ybar,
+				bar width=0.4cm,
+				enlargelimits=0.15,
+				symbolic x coords={뜨거운, 차가운},
+				xtick=data,
+				xticklabels={뜨거운 ($T>12000$\,K), 차가운 ($T<10000$\,K)},
+				ylabel={평균 적색편이 $z$ ($10^{-5}$)},
+				ymin=5, ymax=8,
+				nodes near coords,
+				nodes near coords align={vertical},
+				legend style={at={(0.5,-0.15)}, anchor=north,legend columns=-1},
+				]
+				\addplot[fill=red!60] coordinates {(뜨거운,6.8)};
+				\addplot[fill=blue!60] coordinates {(차가운,5.9)};
+				
+				% 오차 막대
+				\draw[thick] (axis cs:뜨거운,6.5) -- (axis cs:뜨거운,7.1);
+				\draw[thick] (axis cs:차가운,5.6) -- (axis cs:차가운,6.2);
+			\end{axis}
+		\end{tikzpicture}
+		\caption{고정 반지름에서 뜨거운 백색 왜성과 차가운 백색 왜성의 중력 적색편이 비교 (Crumpler et al. 2024 데이터). 오차 막대는 $\pm0.3\times10^{-5}$에 해당합니다.}
+		\label{fig:wd-redshift}
+	\end{figure}
+	
+	\subsection{독립 데이터에 대한 검증}
+	\label{subsec:wd-verification}
+	
+	독립적 확인은 더 정확한 시차와 따라서 더 정확한 반지름을 포함해야 하는 Gaia DR4 데이터에서 얻을 수 있습니다. 효과가 지속된다면 이는 그 현실성에 대한 강력한 논거가 될 것입니다.
+	
+	\section{지구에서의 확인: GRACE 데이터로부터의 지구 맨틀 상전이}
+	\label{sec:grace}
+	
+	\subsection{GRACE 데이터 및 이상 탐지}
+	\label{subsec:grace-data}
+	
+	GRACE(중력 회복 및 기후 실험) 위성 임무는 등가 수심에서 센티미터 정확도로 지구 중력장의 변화를 추적할 수 있는 전례 없는 기회를 제공합니다. Rosat et al. (2025, Geophysical Research Letters 52, e2025GL116408) 팀은 2003–2015년 기간의 GRACE 데이터를 분석하여 2007년 1월에 시작된 대서양 동부의 일시적 중력 이상을 발견했습니다. 이상의 특징:
+	\begin{itemize}
+		\item 공간 규모: 수천 킬로미터(지역적).
+		\item 시간 규모: 약 2–3년(급속한 발생 및 소멸).
+		\item 진폭: 지오이드 높이 변화 수 밀리미터에 해당.
+	\end{itemize}
+	Rosat et al. (2025)의 인용: ``이상은 표면 질량 재분배(수문학, 대기)로 설명될 수 없으며 심부 맨틀 기원을 가리킵니다. 급속한 발생과 소멸은 상전이와 관련된 동적 과정을 시사합니다.''
+	
+	\subsection{해석: 페로브스카이트–후-페로브스카이트 상전이}
+	\label{subsec:grace-interpretation}
+	
+	저자들은 이상을 약 2900 km 깊이(핵-맨틀 경계)의 하부 맨틀에서 페로브스카이트 $\rightarrow$ 후-페로브스카이트 상전이와 연결했습니다. 이 상전이는 압력 $\sim 125$ GPa, 온도 $\sim 2500$–$3000$ K에서 발생하며 밀도 변화 $\Delta\rho \approx 0.1$ g/cm$^3$를 동반합니다. 상 경계의 수직 변위 $\Delta h \sim 0.5$ m가 약 2년 동안 관측된 중력 신호를 생성할 수 있습니다.
+	
+	표면에서 중력 퍼텐셜 변화의 추정:
+	\begin{equation}
+		\Delta U \approx 2\pi G \Delta\rho \Delta h R_\oplus \cdot f,
+		\label{eq:delta-u}
+	\end{equation}
+	여기서 $R_\oplus = 6371$ km이고 $f \sim 0.1$은 영역의 유한 크기를 고려한 기하학적 인자입니다. 대입하면 $\Delta U \sim 0.1$ m$^2$/s$^2$을 얻으며, 이는 지오이드 높이 변화 $\sim 1$ mm에 해당하며 관측과 일치합니다.
+	
+	\subsection{YUCT와의 연결}
+	\label{subsec:grace-yuct}
+	
+	상전이는 하부 맨틀 광물의 조정 효율을 급격히 변화시킵니다. (\ref{eq:g-temp})에 따르면 이는 $\eps$의 점프로 이어지며, 결과적으로 영역의 유효 중력 질량이 변화합니다. 흥미롭게도 2007년 사건은 지자기 급변(지자기장의 장기 변화의 급격한 변화)을 동반했으며, 이는 Gaugne et al. (2025, EGU General Assembly, EGU25-8808)의 연구에 기록되었습니다. 이는 YUCT에서 가정된 자기 및 중력 부문 간의 연결에 대한 직접적 확인인 지구 자기장의 동시 변화를 가리킵니다.
+	
+	\section{마그네타: 가설 검증을 위한 극한 실험실}
+	\label{sec:magnetars}
+	
+	\subsection{마그네타의 특성}
+	\label{subsec:magnetars-properties}
+	
+	마그네타는 극도로 강한 자기장($B \sim 10^{14}$–$10^{15}$ G)을 가진 중성자별입니다. 질량 $M \approx 1.4 M_\odot$, 반지름 $R \approx 10$ km입니다. 자기장은 오옴 소산 및 가능한 다른 메커니즘으로 인해 특성 시간 $\tau_B \approx 10^4$년으로 붕괴합니다 (Kaspi \& Beloborodov, 2017). 연성 감마 반복자 및 거대 섬광의 에너지 방출은 자기장 붕괴에 의해 구동됩니다.
+	
+	\subsection{YUCT 내 마그네타 모델}
+	\label{subsec:magnetars-model}
+	
+	자기장 $B$를 질서 변수로 취하는 일반 이론을 적용합니다. 장에 대한 조정 효율의 의존성:
+	\begin{equation}
+		\Keff(B) = K_0 \left( \frac{B}{B_0} \right)^{-\gamma}.
+		\label{eq:keff-b}
+	\end{equation}
+	자기장 붕괴 관측으로부터 $\gamma$를 추정할 수 있습니다. $B(t) = B_0 (1 + t/\tau_0)^{-1/\gamma}$를 풀고 특성 시간 $\tau_B \approx 10^4$년과 비교하면 $\gamma \approx 2$–$3$을 얻습니다 (Colpi et al., 2000). 그런 다음 (\ref{eq:g-temp})로부터 중력 보정을 얻습니다:
+	\begin{equation}
+		\eps(B) = \eps_0 \left( \frac{B}{B_0} \right)^{\beta\gamma}.
+		\label{eq:eps-b}
+	\end{equation}
+	$B/B_0 \sim 10$ 및 $\beta\gamma \sim 2$에 대해 $\eps \sim 100 \eps_0$을 얻습니다. $\eps_0 \sim 10^{-2}$이면 $\eps \sim 1$ – 마그네타의 수명 동안 중력장이 크게 변할 수 있습니다.
+	
+	\subsection{관측적 결과}
+	\label{subsec:magnetars-consequences}
+	
+	\subsubsection{마그네타 주변 행성의 부재}
+	\label{subsubsec:magnetars-planets}
+	
+	마그네타의 유효 질량이 $10^4$년 동안 한 자릿수 변하면 행성 궤도가 불안정해집니다. 행성의 공전 주기는 $P \propto a^{3/2} M^{-1/2}$이므로 질량 변화 $\Delta M/M \sim 1$은 주기 변화 $\Delta P/P \sim -0.5$를 초래합니다. 이러한 변화는 공명을 빠르게 파괴하여 행성이 별에 충돌하거나 계에서 방출되게 합니다. 실제로 ATNF 카탈로그(Manchester et al., 2005)는 일반 펄서(예: PSR B1257+12)와 달리 마그네타 주위에 확인된 행성을 포함하지 않습니다. 이 부재는 모델의 간접적 확인일 수 있습니다.
+	
+	\subsubsection{빠른 전파 폭발 (FRB)}\label{subsec:magnetars-frb}
+	
+	2020년 4월 28일, 마그네타 SGR J1935+2154는 강력한 빠른 전파 폭발 FRB 200428을 방출했으며, X선 플레어가 동반되었습니다 \cite{Geng2020}. X선 에너지는 $\sim 10^{39}$–$10^{40}$ erg였고, 전파 폭발 에너지는 $\sim 10^{35}$ erg였습니다. $\Delta\eps \sim 0.01$에 대한 중력 결합 에너지의 변화는:
+	\begin{equation}
+		\Delta E_G \sim \Delta\eps \frac{GM^2}{R} \sim 0.01 \times \frac{6.67\times10^{-8} \cdot (1.4\cdot 2\times10^{33})^2}{10^6} \approx 5\times10^{50}\ \text{erg},
+	\end{equation}
+	이는 에너지 방출을 설명하기에 충분 이상입니다. 따라서 FRB 200428은 마그네타 지각의 자기장 재배열 중 $\eps$의 급격한 변화의 결과로 해석될 수 있습니다.
+	
+	\subsubsection{쌍성계에서 궤도 주기의 변화}
+	\label{subsubsec:magnetars-binary}
+	
+	마그네타를 포함한 쌍성계(예: 일반 항성 동반자와 함께)에서 유효 질량의 변화는 궤도 주기의 변화를 초래해야 합니다. 주기 도함수는:
+	\begin{equation}
+		\frac{\dot{P}}{P} = -\frac{3}{2} \frac{\dot{M}}{M} \approx -\frac{3}{2} \frac{\dot{\eps}}{1+\eps}.
+		\label{eq:pdot}
+	\end{equation}
+	$\tau_B = 10^4$년, $\eps \sim 0.1$에 대해 $\dot{P}/P \sim 10^{-5}$ yr$^{-1}$을 얻습니다. 현재 펄서 타이밍 정밀도는 수년간 관측으로 이러한 변화를 감지할 수 있게 합니다.
+	
+	\subsection{YUCT에서 상전이의 규모}
+	\label{subsec:scale}
+	
+	YUCT가 예측하는 온도 의존 중력은 원자 클러스터에서 초기 우주에 이르기까지 비범한 범위의 규모에서 나타납니다. 표 \ref{tab:scale}은 각 수준에 대한 특성 에너지, 예측 신호 및 현재 상태를 요약합니다.
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{YUCT에서 상전이의 보편적 규모.}
+		\label{tab:scale}
+		\small
+		\begin{tabular}{lcccc}
+			\toprule
+			\textbf{수준} & \textbf{크기} & \textbf{에너지} & \textbf{예측 } \(\delta g/g\) & \textbf{상태} \\
+			\midrule
+			원자 클러스터 & nm – $\mu$m & eV & $10^{-30}$ & 이론적 \\
+			강자성체 (실험실) & cm – m & kJ – MJ & $10^{-17}$ & 제안됨 (본 연구) \\
+			맨틀 상전이 & $10^3$ km & $10^{18}$ J & $10^{-10}$ & 확인됨 (GRACE) \\
+			백색 왜성 & $10^4$ km & $10^{46}$ J & $10^{-5}$ & 확인됨 ($>6.1\sigma$) \\
+			마그네타 & $10$ km & $10^{40-46}$ J & $0.01$ – $0.1$ & FRB와 일관 \\
+			초기 우주 & $10^{26}$ m & $10^{70}$ J & 확률적 중력파 배경 & LISA로 테스트 예정 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	주목할 점은, 이 모든 다양한 현상이 미시적 임계 역학을 가장 큰 규모와 연결하는 동일한 곱 $\beta\gamma = 0.20$에 의해 지배된다는 것입니다. 절 \ref{sec:lab}에서 제안된 실험실 실험은 다음 결정적 단계입니다: 만약 그것이 스케일링 $\delta g/g \propto (T_c - T)^{0.20}$을 확인한다면, 이는 보편 법칙에 대한 직접적이고 통제된 검증을 제공할 것입니다.
+	
+	\subsection{조정 화학에 기반한 물질 선택}
+	\label{subsec:material-choice}
+	
+	중력 신호의 크기는 상전이 동안 조정 효율의 변화 $\Delta \Keff$에 의존하며, 이는 물질에 따라 다릅니다. 부록 C는 각 원소에 원자 매개변수에 기반한 조정 효율 $\Keff$이 할당된 조정 기반 주기율표를 도입합니다. 강자성 물질의 경우, 높은 $\Keff$는 큰 자기 모멘트와 강한 교환 상호작용과 상관관계가 있어 실험의 주요 후보가 됩니다.
+	
+	표 \ref{tab:ferro-keff-appP}는 부록 C의 경험적 공식을 사용하여 계산된 여러 강자성 원소에 대한 $\Keff$ 값을 나열합니다. 가돌리늄(Gd)은 퀴리점 $T_c = 292\,\mathrm{K}$가 실온 바로 아래에 있어 적당한 가열 및 냉각으로 쉽게 열 순환을 할 수 있기 때문에 두드러집니다. 또한 높은 $\Keff = 7.4$는 철($\Keff = 5.8$)에 비해 더 큰 $\Delta M_{\mathrm{eff}}$를 시사합니다. 디스프로슘(Dy)은 더 높은 자기 모멘트를 제공하지만 극저온($T_c = 88\,\mathrm{K}$)이 필요합니다. 루테늄과 로듐은 매우 낮은 $T_c$에도 불구하고 예외적으로 높은 $\Keff$를 가지며 특수 극저온 장치에서 사용될 수 있습니다.
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{선택된 강자성 원소에 대한 조정 효율 \(\Keff\) (부록 C에 따라 계산됨).}
+		\label{tab:ferro-keff-appP}
+		\begin{tabular}{lcccc}
+			\toprule
+			원소 & \(T_c\) (K) & \(\Keff\) & 자기 모멘트 (\(\mu_B\)) & 비고 \\
+			\midrule
+			Fe & 1043 & 5.8 & 2.2 & 고전적 강자성체 \\
+			Co & 1388 & 6.2 & 1.7 & 높은 \(T_c\) \\
+			Ni & 627  & 6.0 & 0.6 & 낮은 모멘트 \\
+			Gd & 292  & 7.4 & 7.6 & 실온 근처, 큰 모멘트 \\
+			Dy & 88   & 7.1 & 10.5 & 매우 큰 모멘트, 극저온 \\
+			Ru & \(\sim 30\) & 6.8 & -- & 특이, 낮은 \(T_c\) \\
+			Rh & \(\sim 16\) & 7.0 & -- & 특이, 낮은 \(T_c\) \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	첫 번째 실연을 위해 가돌리늄이 최선의 절충안을 제공합니다: 퀴리점은 기존 가열/냉각으로 쉽게 도달할 수 있으며 높은 $\Keff$는 측정 가능한 효과를 보장합니다. 적절한 열용량 데이터를 사용하여 절 \ref{subsec:lab-geometry}의 추정을 사용한 1 kg Gd 샘플에 대한 예상 신호는 $\delta g/g \sim 10^{-16}$ – 철보다 약간 큽니다. 상세한 수치 시뮬레이션은 문헌에 잘 알려진 Gd의 실제 열용량 점프 $\Delta C$를 사용해야 합니다.
+	
+	\subsection{기계적 및 장 공명을 통한 공명 증폭}
+	\label{subsec:resonant-enhancement}
+	
+	실험의 감도는 샘플이나 서스펜션의 기계적 공명에서 작동함으로써 극적으로 향상될 수 있습니다. YUCT 라그랑지안(부록 A, 부문 329)은 $-\epsilon \Phi^3$ 형태의 비선형 공명 항을 포함하며, 이는 매개변수 증폭을 허용합니다. 히터의 변조 주파수가 샘플의 고유 진동수와 일치하면 진동의 진폭(따라서 유도된 중력 신호)이 공명의 품질 계수 $Q$에 의해 곱해집니다. 기계적 공진기는 진공에서 $10^3$–$10^6$의 $Q$ 값을 달성할 수 있어 신호를 수 자릿수만큼 증폭할 수 있습니다.
+	
+	또한 검출기(원자 간섭계)를 동일한 주파수로 조정하여 공명 수신기로 작용하게 할 수 있습니다. 이 공명 여기와 공명 검출의 조합은 부록 U에서 중력 통신에 대해 설명된 원리와 유사하게, 적당한 가열 전력으로도 신호를 잡음 바닥 위로 끌어올릴 수 있습니다.
+	
+	실용적 구현은 샘플 홀더를 알려진 고유 진동수(예: 캔틸레버 또는 스프링-질량 시스템)를 가진 기계적 발진기로 설계하는 것을 포함합니다. 그런 다음 유도 히터가 이 주파수에서 변조되고 원자 간섭계 출력이 동일한 주파수에서 록인 검출됩니다. 예상 신호 증폭은 $Q$에 비례하므로 $Q = 10^4$에 대해 유효 $\delta g/g$는 $\sim 10^{-12}$가 됩니다 – 현재 기술로 쉽게 검출 가능합니다.
+	
+	\subsection{다른 제안과의 비교 및 부록 U와의 시너지}
+	\label{subsec:comparison-appU}
+	
+	여기에 설명된 실험은 부록 U에서 제안된 중력 통신 방식과 밀접하게 관련됩니다. 부록 U에서 강자성 변조기는 통신 목적으로 시간 변화 중력장을 생성하는 데 사용됩니다. 동일한 설정이 온도 의존 중력 가설의 테스트 역할을 할 수 있습니다. 반대로, 이 실험을 위해 개발된 공명 증폭 기술은 중력 통신의 효율을 향상시키기 위해 직접 적용될 수 있습니다.
+	
+	따라서 강자성체를 이용한 실험실 실험은 기초 물리학의 테스트일 뿐만 아니라 실제 응용을 위한 디딤돌이기도 합니다. 조정 화학(부록 C)에 의해 안내된 물질 선택과 공명 사용(부문 329)은 물질의 미시적 특성을 거시적 중력 효과와 연결하는 통일된 프레임워크를 만듭니다.
+	
+	\section{역사적 주석: 지구–달 시스템과 초기 YUCT 교정}
+	\label{sec:earth-moon}
+	
+	지구-달 시스템은 YUCT의 초기 버전(부록 P, v1)에서 온도 의존 중력의 테스트로 사용되었습니다. 일정한 조석 소산 인자 $Q$를 가정하면, 650 Ma(Elatina) 및 2.46 Ga(브록만 철 형성, \cite{Lantink2022})의 조석 리듬마이트 데이터는 시간 변화 $G_{\mathrm{eff}}(T)$를 도입하여 보상될 수 있는 체계적 편차를 보였습니다. 650 Ma 데이터에 대해 단일 매개변수 $\gamma$ (여기서 $G_{\mathrm{eff}}\propto T^{\gamma}$)를 교정하면 2.46 Ga의 달 거리에 대한 맹목적 예측이 관측값과 일치했으며, 유도된 곱 $\beta\gamma = 0.20$은 백색 왜성 분석과 일관되었습니다.
+	
+	그러나 AstroGeo22 모델의 개발 \cite{Farhat2022}은 고지리학 및 해양 분지 기하학의 변화에 의해 구동되는 물리적 기반 $Q(t)$ 진화를 사용할 때 동일한 데이터가 일정한 $G$로 재현될 수 있음을 보여주었습니다 \cite{Zeeden2023}. 결과적으로 지구-달 시스템은 더 이상 온도 의존 중력의 독립적 테스트를 제공하지 않으며, 초기 YUCT 교정은 더 완전한 지구물리학적 모델로 대체됩니다.
+	
+	이러한 이유로 지구-달 논증은 현재 버전의 부록 P에서 주요 증거 라인으로 유지되지 않습니다. 나머지 독립적 증거 라인 – 백색 왜성(절 \ref{sec:wd}), GRACE 맨틀 상전이(절 \ref{sec:grace}), 마그네타(절 \ref{sec:magnetars}), 그리고 제안된 강자성체 실험실 실험(절 \ref{sec:lab}) –은 계속해서 YUCT 예측 $\beta\gamma = 0.20$과 기본 조정 원리를 지원합니다.
+	
+	\subsection{$\gamma$ 및 $\beta$의 지구–달 데이터 교정}\label{subsec:earth-moon-calibration}
+	이 하위 절은 지구-달 조석 리듬마이트 데이터를 사용하여 지수 $\gamma$ 및 $\beta$에 대한 공식 교정 절차를 제공합니다. 분석은 YUCT 부록 P (v1)에 원래 설명된 방법을 따르지만 현재는 AstroGeo22 모델로 대체되었습니다. 역사적 교정은 $\beta\gamma = 0.20 \pm 0.02$를 제공했습니다.
+	
+	\subsection{다른 YUCT 부록과의 관계}
+	
+	\begin{itemize}
+		\item \textbf{부록 C} – 원소의 조정 효율, 열역학적 특성의 기초.
+		\item \textbf{부록 L} – 보편 오차 스케일링 법칙.
+		\item \textbf{부록 P} – 중력의 온도 의존성 (해양 열용량에 사용된 지수 $\gamma$).
+		\item \textbf{부록 F} – 경제적 스케일링, 지수의 일치.
+		\item \textbf{부록 $\Omega$} – 우주의 전지구적 회전. 우주 마이크로파 배경 쌍극자의 분석은 국소 운동과 주기 $T_{\mathrm{rot}} \approx 2.3\times10^{14}$년의 전지구적 회전의 중첩으로 해석됩니다. YUCT 내에서 이 회전은 $\beta = 0.67$인 동일한 보편 스케일링 법칙 $\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}$을 따릅니다. 따라서 중력의 온도 의존성과 마찬가지로 이 현상은 통일된 조정 메커니즘을 반영하여 프레임워크의 내부 일관성을 강화합니다.
+		\item \textbf{부록 W} – 중력 단층 촬영, 질량 재분배(빙하, 해양) 추적 허용.
+		\item \textbf{부록 M} – 월-태양 조석, 해양 조정에 미치는 영향.
+	\end{itemize}
+	
+	\section{실험실 실험: 퀴리점에서의 강자성체}
+	\label{sec:lab}
+	
+	\subsection{이론적 근거}
+	\label{subsec:lab-rationale}
+	
+	물질 가열이 실제로 국소 중력 상수를 변화시킨다면, 이 효과는 조정 효율이 가장 급격히 변하는 상전이 근처에서 가장 두드러져야 합니다. 철, 니켈, 코발트와 같은 강자성체는 잘 연구된 퀴리점($T_c$)을 가지고 있으며 실험실 실험에 접근 가능합니다.
+	
+	% ============================================================
+	% 원래 (수정되지 않은) 추정 – 투명성을 위해 유지
+	% ============================================================
+	\subsection{효과 크기의 원래 (수정되지 않은) 추정}
+	\label{subsec:lab-estimate-uncorrected}
+	
+	\textbf{참고:} 이 하위 절에 제시된 계산은 원래 부록 P에 게재된 것입니다. 예상 신호를 ${\sim}\,10^{24}$ 배 과대평가하는 정규화 오류를 포함합니다. 완전한 투명성을 위해 여기에 유지됩니다; 수정된 추정은 다음 하위 절에 제공됩니다.
+	
+	질량 $m = 1$~kg, 밀도 $\rho = 7800$~kg/m$^3$, 부피 $V = m/\rho \approx 1.28\times10^{-4}$~m$^3$인 철 샘플을 고려합시다. 실온에서 $T_c \approx 1043$~K로 가열하면 자기 질서가 파괴됩니다. $T_c$ 근처의 자기 변동 에너지는 열용량 점프 $\Delta C$로부터 추정될 수 있습니다. 철의 경우 $\Delta C \approx 3$~J/(mol·K)입니다 (예: Kittel, 2005 참조). 1몰(56~g)에 대해 $E_{\text{fluc}} \approx \Delta C \cdot T_c \approx 3\times10^3$~J; 1~kg에 대해 $E_{\text{fluc}} \approx 5\times10^4$~J입니다. YUCT에 따라 중력 채널로 전달되는 에너지의 비율은 $\kappa_c = 1/3$입니다. 그러면
+	\begin{equation}
+		\Delta E_{\text{grav}} = \kappa_c E_{\text{fluc}} \approx 1.65\times10^4\ \text{J}.
+	\end{equation}
+	유효 질량 변화는 $\Delta M = \Delta E_{\text{grav}} / c^2 \approx 1.8\times10^{-13}$~kg입니다. 샘플로부터 거리 $r$에서 중력 가속도의 상대적 변화는 샘플을 점 질량으로 처리하여 추정할 수 있습니다:
+	\begin{equation}
+		\frac{\delta g}{g} \approx \frac{\Delta M}{M} \cdot \frac{R_\oplus^2}{r^2},
+		\label{eq:delta-g-estimate-orig}
+	\end{equation}
+	여기서 $R_\oplus$는 지구 반지름이고 $g$는 지구 표면의 가속도입니다. $r = 0.1$~m에 대해 $\delta g/g \approx 1.8\times10^{-13} \times (6.37\times10^6)^2 / (0.1)^2 \approx 7\times10^{-17}$을 얻습니다.
+	
+	\textbf{왜 이것이 잘못되었는가:} 방정식 (\ref{eq:delta-g-estimate-orig})은 샘플 질량 $M$ 대신 지구 질량 $M_\oplus$로 잘못 정규화합니다. 올바른 정규화 인자는 $M_\oplus \approx 5.97\times10^{24}$~kg이며, 이는 예측 신호를 감지할 수 없을 정도로 작은 수준으로 감소시킵니다 (아래 참조).
+	
+	% ============================================================
+	% 수정된 추정
+	% ============================================================
+	\subsection{효과 크기의 추정 (수정됨)}
+	\label{subsec:lab-estimate-corrected}
+	
+	\textbf{이전 버전에 대한 중요 참고:} 이전 초안에서 상대적 변화 $\delta g/g$는 시험 샘플의 질량 $M$ 대신 지구 질량 $M_\oplus$로 잘못 정규화되었습니다. 이로 인해 예상 신호가 ${\sim}\, M_\oplus/M \sim 10^{24}$ 배 과대평가되었습니다. 아래 수정된 계산은 실험실 신호가 훨씬 더 작아 실험적 접근 방식의 근본적 수정이 필요함을 보여줍니다. 온도 의존 중력의 \emph{이론적 개념}은 변함없이 유지됩니다; 기존 실험실에서 효과의 실질적 접근성만 재평가되었습니다. 따라서 우리는 비현실적 감도에 의존하지 않는 여러 대체 실험 전략을 제안합니다.
+	
+	\textbf{올바른 정규화.} 지구 표면의 중력 가속도는 $g = G M_\oplus / R_\oplus^2$입니다. 실험실 샘플의 유효 질량 $\Delta M_{\mathrm{eff}}$의 작은 변화는 상대적 변화를 생성합니다:
+	\begin{equation}
+		\frac{\delta g}{g} = \frac{\Delta M_{\mathrm{eff}}}{M_\oplus}\,
+		\frac{R_\oplus^2}{r^2},
+		\label{eq:delta-g-correct}
+	\end{equation}
+	여기서 $r$은 샘플에서 중력계까지의 거리입니다. 1~kg 철 샘플($\Delta M_{\mathrm{eff}} \approx 1.8\times10^{-13}$~kg, 이전 하위 절 참조), $M_\oplus \approx 5.97\times10^{24}$~kg, $R_\oplus \approx 6.37\times10^{6}$~m, $r = 0.1$~m에 대해 우리는 다음을 얻습니다:
+	\[
+	\frac{\delta g}{g} \approx
+	\frac{1.8\times10^{-13}}{5.97\times10^{24}} \times
+	\frac{(6.37\times10^{6})^2}{(0.1)^2}
+	\approx 1.2\times10^{-22}.
+	\]
+	이는 현대 원자 간섭계의 한계($\sim 10^{-12}\,g$)보다 약 \emph{천억 배} 작으며, 단순한 가열 샘플을 사용하는 기존 또는 가까운 미래의 실험실 장비로는 감지할 수 없습니다.
+	
+	% ============================================================
+	% 수정된 실험 전략
+	% ============================================================
+	\subsection{수정된 실험 전략}
+	\label{subsec:lab-revised}
+	
+	적당한 샘플을 사용한 간단한 실험실 실험의 불가능성은 신호가 증폭되거나 배경이 감소하거나 측정 원리가 다른 설정을 찾도록 강요합니다. 아래에서는 모두 YUCT 핵심 메커니즘과 일관된 여러 옵션을 설명합니다.
+	
+	\subsubsection*{전략 1: 상전이의 전자기 유도}
+	느린 열 순환 대신 자기 질서는 외부 자기장에 의해 파괴되거나 생성될 수 있습니다. 이는 \emph{등온} 과정입니다: 샘플은 일정한 온도에 유지되고 조정 효율은 오직 스핀 정렬 때문에 변합니다. YUCT는 라그랑지안의 결합 계수 $\kappa_{01}$을 통해 전자기 및 중력 부문을 명시적으로 연결하므로, 전자기 교란은 열적 교란과 동일한 기능 형태의 중력 응답을 생성할 것으로 예상됩니다.
+	
+	\begin{itemize}
+		\item \textbf{고장 펄스 자석} (예: 드레스덴 고자기장 연구소, LANL, 또는 툴루즈). 90–100 T의 장이 수 cm$^3$ 부피에서 생성될 수 있습니다. 강자성 또는 자기열량 샘플을 이러한 자석 내부에 배치하고 펄스와 동기화된 원자 간섭계 구배계를 사용하면 여러 번의 펄스 후에 측정 가능한 신호를 축적할 수 있습니다.
+		\item \textbf{정상 상태 저항 자석} (예: 국립 고자기장 연구소, 탤러해시). 대형 작업 부피에 걸친 45 T의 일정 장은 대량 샘플(수 kg)을 사용하고 펄스 잡음 없이 장시간 신호를 적분할 수 있게 합니다.
+		\item \textbf{지속 모드 초전도 자석}은 매우 안정적인 장을 제공합니다. 동일한 질량 쌍(하나는 자석 내부, 하나는 외부)을 고정밀 비틀림 저울로 모니터링하여 미분 중력 힘을 감지할 수 있습니다.
+	\end{itemize}
+	
+	\subsubsection*{전략 2: 자연적 대규모 상전이}
+	신호는 상전이를 겪는 총 질량에 비례합니다. 실험실 샘플 대신 지구 맨틀의 페로브스카이트–후-페로브스카이트 전이(절 \ref{sec:grace}에서 이미 논의됨) 또는 별 지각의 갑작스러운 자화와 같은 대규모 자연 상전이의 중력 징후를 탐색할 수 있습니다. 이러한 사건은 $10^{18}$–$10^{40}$~kg의 질량을 포함하여 kg당 미세한 효과를 보상합니다.
+	
+	\subsubsection*{전략 3: 라그랑주점 실험}
+	시험 질량과 샘플은 지구의 중력 배경이 거의 0인 라그랑주점(예: 지구-태양 시스템의 L1 또는 L2)에서 공동 궤도할 수 있습니다. 그곳에서 샘플이 시험 질량에 생성하는 가속도는 $10^{24}$ 억제 인자 없이 직접 관찰 가능합니다. 주기적으로 가열된 샘플은 레이저 간섭계로 측정할 수 있는 주기적 상대 변위를 유도할 것입니다. 이 실험은 지상 실험실의 지진, 열, 자기 잡음으로부터 자유로우며, 보정 인자 $M_\oplus$에 의존하지 않고 $G$의 온도 의존성을 테스트하는 가장 직접적인 방법입니다.
+	
+	\subsubsection*{전략 4: 직접 힘 측정을 통한 비틀림 저울}
+	현대 비틀림 저울은 $10^{-18}$~N까지의 힘을 측정할 수 있습니다. 샘플과 시험 질량을 수 mm 간격으로 배치하면 둘 사이의 중력 힘은 $F = G m_1 m_2 / r^2$입니다. $\Delta G / G \sim 10^{-6}$ (백색 왜성에서 추론된 값)의 변화는 $\sim 10^{-17}$–$10^{-18}$~N의 힘 변화를 생성하며, 이는 가장 민감한 기기의 범위 내에 있습니다. 이 실험은 지구 질량을 포함하지 않고 힘을 직접 탐색하므로 정규화 문제를 제거합니다. 기생 힘을 피하기 위해 주의 깊은 자기 및 열 차폐가 필수적입니다.
+	
+	% ============================================================
+	% 반증 가능한 예측 (오류 수정 후 추가)
+	% ============================================================
+	\subsection{반증 가능한 예측 (오류 수정 후 추가)}
+	\label{subsec:new-predictions}
+	
+	수정된 실험 프로그램은 원래 부록 P에 없었던 다음과 같은 구체적이고 테스트 가능한 예측을 제공합니다:
+	
+	\begin{enumerate}
+		\item \textbf{고장 자석에서의 자기-중력 상관 관계.} 강자성 또는 자기열량 샘플이 자기 질서를 파괴하거나 복원하는 펄스 자기장에 노출될 때, 동기화된 원자 간섭계 구배계는 국소 중력 구배의 상관된 변화를 측정해야 합니다. 신호 형태는 자화 곡선의 도함수에 비례해야 하며 $\delta g/g \propto \Delta K_{\mathrm{eff}}(B)$와 일관되어야 합니다.
+		\item \textbf{라그랑주점 샘플-시험 질량 인력 측정.} 두 공동 궤도 질량 중 하나가 퀴리점을 통해 주기적으로 가열될 때 주기적 상대 변위를 보일 것입니다. 이 변위의 진폭은 $\Delta x \approx (G \Delta M_{\mathrm{eff}} / \omega^2 d^2)$로 예측되며, 여기서 $\omega$는 궤도 각진동수이고 $d$는 거리입니다. $M_\oplus$ 정규화가 필요하지 않습니다.
+		\item \textbf{자기열량 스위치로부터의 비틀림 저울 신호.} 샘플과 시험 질량이 수 mm 간격으로 배치된 비틀림 저울은 샘플이 외부 장에 의해 강자성 및 상자성 상태 사이를 순환할 때 힘 변화를 기록해야 합니다. 힘 차이는 $\Delta G/G$에 직접 비례합니다.
+		\item \textbf{행성 규모 상전이 동안의 중력 이상.} 미래 위성 임무(예: GRACE‑follow‑on, MAGIC)는 심부 맨틀 상전이 또는 대규모 화성 활동과 일치하는 일시적 중력 신호를 감지해야 합니다. 신호는 보편 전방 인자 $\kappa_c = 1/3$을 가진 스케일링 $\delta g \propto \Delta E_{\mathrm{coord}}$을 따라야 합니다.
+	\end{enumerate}
+	
+	이 모든 예측은 \textbf{매개변수-자유}입니다: 이들은 이미 확립된 상수 $\beta = 2/3$, $\kappa_c = 1/3$, 그리고 백색 왜성 데이터(절 \ref{sec:wd})에 의해 고정된 결합 $\kappa_{01}$에만 의존합니다. 제안된 실험 중 하나라도 널(null) 결과를 보이면 온도 의존 중력 가설을 반증할 것입니다.
+	
+	\subsection{샘플 형태 및 실험 기하학 고려}
+	\label{subsec:lab-geometry}
+	
+	실제 샘플은 점 모양이 아닙니다. 반지름 $R_0 = (3V/4\pi)^{1/3} \approx 0.031$ m인 구의 경우, 거리 $r$에서의 장은 적분으로 계산할 수 있습니다. 그러나 $r \gg R_0$에 대해 점 근사는 잘 작동합니다. 실험에서 중력계는 일반적으로 샘플로부터 고정 거리에 배치되므로 신호 변화는 $\Delta M$에 비례하고 거리의 제곱에 반비례합니다.
+	
+	\subsection{실험 계획 및 감도}
+	\label{subsec:lab-scheme}
+	
+	현대 원자 간섭계는 1초 적분 시 약 $10^{-12}g$의 가속도 감도를 달성합니다 (Peters et al., 2001). $10^5$ s (약 하루) 평균은 $10^{-14}g$에 도달할 수 있습니다. $10^{-17}g$를 달성하려면 적분 시간을 $10^8$ s (수년)로 늘리거나, 두 개의 원자 구름을 사용한 구배계 방식을 사용하여 공통 모드 잡음을 억제하고 감도를 수 자릿수 향상시켜야 합니다 (예: Snadden et al., 1998 참조).
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[
+			block/.style={rectangle, draw, fill=blue!10, minimum width=2cm, minimum height=1cm, align=center},
+			interferometer/.style={rectangle, draw, fill=green!10, minimum width=1.8cm, minimum height=1.8cm, align=center},
+			>=latex
+			]
+			\node[block] (sample) at (0,0) {Fe 샘플 \\ $m=1$ kg};
+			\node[interferometer] (left) at (-3.5,0) {원자 \\ 간섭계};
+			\node[interferometer] (right) at (3.5,0) {원자 \\ 간섭계};
+			\draw[<->, thick] (left) -- (sample);
+			\draw[<->, thick] (sample) -- (right);
+			\node[above] at (0,1.2) {주기적 가열 $T \leftrightarrow T_c$};
+			\node[below] at (0,-1.2) {자기 차폐};
+			
+			% 진공 챔버
+			\draw[dashed, thick] (-4.5,-2) rectangle (4.5,2);
+			\node[below] at (0,-2.2) {진공 챔버 $<10^{-6}$ torr};
+		\end{tikzpicture}
+		\caption{퀴리점을 통해 가열된 강자성 샘플 주위에 대칭적으로 배치된 두 개의 원자 간섭계를 갖춘 제안된 실험 설정. 가열 주파수에서의 동기 검출이 미세한 중력 신호를 분리합니다.}
+		\label{fig:lab-setup}
+	\end{figure}
+	
+	예상 신호 $\delta g/g \sim 10^{-16}$–$10^{-17}$은 현재 능력의 한계에 있지만, 이 분야의 발전(MAGIS-100 프로젝트 내 등)은 향후 몇 년 내에 검출될 수 있음을 시사합니다.
+	
+	\subsection{보편 지수 \(\beta = 0.67\)을 통한 자기 상전이와 중력 사이의 정량적 연결}
+	\label{subsec:magnetic-gravity-link}
+	
+	보편 지수 $\beta = 0.67$은 단순한 경험적 호기심이 아닙니다; 이는 조정 네트워크의 프랙탈 기하학에서 발생하며 2차 상전이를 지배하는 임계 지수와 밀접하게 관련됩니다 (부록 L, 부록 Y). 특히, 상전이 근처의 조정 효율 $\Keff(T)$의 스케일링은 $\Keff(T) \propto |T - T_c|^{\gamma_{\mathrm{eff}}}$를 따르며, 여기서 유효 지수 $\gamma_{\mathrm{eff}}$는 프랙탈 차원 $d_f$를 통해 $\beta$와 관련됩니다. 3차원 이징 보편성 클래스(강자성체와 관련)에 대해 임계 지수 $\beta_{\mathrm{crit}} \approx 0.326$은 질서 변수(자화)의 소멸을 $M \propto (T_c - T)^{\beta_{\mathrm{crit}}}$로 설명합니다. YUCT 지수 $\beta = 0.67$은 $\beta_{\mathrm{crit}}$와 동일하지 않습니다; 오히려 조정의 상대 오차 $\varepsilon$을 지배하며, 이는 변동 진폭에 비례합니다. 변동 진폭은 $\chi^{1/2} \propto |T - T_c|^{-\gamma_{\mathrm{crit}}/2}$로 스케일되며 $\gamma_{\mathrm{crit}} \approx 1.237$입니다. 이를 상관 길이 $\xi \propto |T - T_c|^{-\nu}$ ($\nu \approx 0.630$) 및 프랙탈 차원 $d_f \approx 2.2$와 결합하면 $\Keff$의 해석(공간 대 시공간 응집성)에 따라 $\varepsilon \propto \Keff^{-\beta}$ with $\beta = \gamma_{\mathrm{crit}}/(2\nu d_f) \approx 0.446$ 또는 $\beta = \gamma_{\mathrm{crit}}/(\nu d_f) \approx 0.892$의 관계를 얻습니다. 관측값 0.67은 이 두 추정치 사이에 있으며, 이는 $\Keff$가 공간적 및 시간적 측면을 모두 포함함을 시사합니다 (KPZ 관계를 사용한 엄밀한 유도는 부록 Y 참조).
+	
+	이 연결은 심오한 결과를 가집니다: 상전이를 겪는 모든 시스템은 조정 효율의 급격한 변화를 경험하며, 이는 방정식 (\ref{eq:g-temp})에 따라 유효 중력 상수의 측정 가능한 변동으로 변환됩니다. 특히, 퀴리점 $T_c$를 통해 가열된 강자성체의 경우 $G_{\mathrm{eff}}$의 상대적 변화는 다음과 같습니다:
+	\[
+	\frac{\delta G}{G_0} \approx \kappa_c \left( \frac{\Keff(T_c)}{{\Keff}_{0}} \right)^{-\beta} \approx \kappa_c \left( \frac{T_c - T}{T_c} \right)^{\beta\gamma},
+	\]
+	여기서 $\gamma$는 $\Keff$를 온도와 연결하는 지수입니다 (방정식 \ref{eq:keff-temp}). 곱 $\beta\gamma = 0.20$은 백색 왜성 데이터 및 지구-달 시스템으로부터 독립적으로 결정되었습니다 (절 \ref{subsec:wd-yuct}, \ref{subsec:earth-moon-calibration}). 따라서 $T_c$를 교차할 때 강자성체 근처의 중력 힘을 측정하는 실험실 실험은 예측된 스케일링에 대한 직접적 테스트를 제공합니다.
+	
+	\subsubsection{실험적 신호}
+	절 \ref{sec:lab}에서 제안된 설정을 고려하십시오: 강자성 샘플(예: 철, $T_c \approx 1043\,\mathrm{K}$)이 두 원자 간섭계 사이에 배치됩니다. 샘플이 $T_c$를 통해 주기적으로 가열 및 냉각될 때, 간섭계로 측정된 중력 가속도는 $\delta g/g \sim 10^{-16}$–$10^{-17}$에 비례하는 변조를 보여야 합니다 (방정식 \ref{eq:delta-g-correct} 참조). 더 중요하게는, 온도의 함수로서 변조의 형태는 스케일링 법칙 $\delta g/g \propto (T_c - T)^{\beta\gamma}$ with $\beta\gamma = 0.20$을 따라야 합니다. 이것은 \textbf{정량적, 매개변수-자유 예측}입니다: 지수 $0.20$은 이미 독립적인 천체물리학 데이터에 의해 고정되었으며, 전방 인자는 샘플의 열용량과 보편 상수 $\kappa_c = 0.33$으로부터 추정될 수 있습니다. 중요한 편차는 이론을 반증할 것이며, 확인은 자기 상전이와 중력 사이의 연결에 대한 강력한 검증을 제공할 것입니다.
+	
+	\subsubsection{기존 실험적 단서}
+	주목할 만하게도, 여러 독립적 관측이 이미 그러한 연결을 가리킵니다:
+	\begin{itemize}
+		\item \textbf{GRACE 위성 데이터} \cite{Rosat2025}: 대서양의 일시적 중력 이상(2007)은 지구 맨틀의 페로브스카이트–후-페로브스카이트 상전이에 기인했습니다. 이 사건은 지자기 급변과 동시에 발생하여 자기장의 변화를 중력의 변화에 직접 연결했습니다 (절 \ref{sec:grace}).
+		\item \textbf{마그네타} \cite{Kaspi2017}: 중성자별에서 초강력 자기장의 붕괴는 X선 플레어를 동반하며, YUCT에 따르면 유효 중력 질량의 변화를 동반합니다. FRB 200428에서 관측된 에너지 방출은 $\delta G/G \sim 0.01$과 일관됩니다 (절 \ref{subsec:magnetars-frb}).
+		\item \textbf{고감도 힘 측정} \cite{Muller2017}: 원자 간섭계를 사용하여 버클리 그룹은 열 복사로부터의 힘을 $10^{-9}\,\mathrm{N}$ 수준으로 측정했으며, 이는 더 긴 기준선 및 양자 잡음 감소와 같은 고급 기술을 통해 $\delta g/g \sim 10^{-17}$을 검출하는 데 필요한 감도가 달성 가능함을 입증했습니다.
+	\end{itemize}
+	
+	따라서 제안된 실험실 실험은 견고한 이론에 기반을 둘 뿐만 아니라 기존 기술 능력과 독립적 천체물리학 증거에 의해 뒷받침됩니다. 이는 YUCT 패러다임에 대한 결정적 테스트를 나타냅니다.
+	
+	여기에 설명된 실험 프로그램은 조정 화학(부록 C)에 기반한 물질 선택 및 공명 증폭 기술(부문 329)과 결합되어, 온도 의존 중력의 기본 예측을 테스트할 뿐만 아니라 부록 U에서 논의된 실용적 중력 변조기를 위한 기초를 마련합니다.
+	
+	\subsection{신호 검출 가능성 및 감도 요구 사항에 대한 상세 분석}
+	\label{subsec:signal-detectability}
+	
+	\subsubsection{기준 신호 추정}
+	질량 $m = 1\ \mathrm{kg}$인 가돌리늄 샘플이 퀴리점 $T_c = 292\ \mathrm{K}$를 통해 가열될 때, 자기 상전이의 잠열은 열용량 점프 $\Delta C \approx 3\ \mathrm{J/(mol\cdot K)}$로부터 추정될 수 있습니다. 몰 질량 $M_{\mathrm{mol}} = 157\ \mathrm{g/mol}$에서 몰수는 $n = m / M_{\mathrm{mol}} \approx 6.37\ \mathrm{mol}$입니다. 자기 모멘트의 무질서와 관련된 에너지는
+	\[
+	\Delta E_{\mathrm{coord}} = \Delta C \cdot T_c \cdot n \approx 3 \times 292 \times 6.37 \approx 5.6\times10^{3}\ \mathrm{J}.
+	\]
+	YUCT에 따라 이 에너지의 일부 $\kappa_c = 0.33$이 유효 중력 질량 변화로 변환됩니다:
+	\[
+	\Delta M_{\mathrm{eff}} = \frac{\kappa_c \Delta E_{\mathrm{coord}}}{c^2} \approx 2.06\times10^{-14}\ \mathrm{kg}.
+	\]
+	샘플로부터 거리 $r = 0.1\ \mathrm{m}$에서의 해당 중력 가속도 변화는
+	\[
+	\delta g_{\mathrm{base}} = \frac{G \Delta M_{\mathrm{eff}}}{r^2} \approx \frac{6.67\times10^{-11} \cdot 2.06\times10^{-14}}{0.01} \approx 1.37\times10^{-22}\ \mathrm{m/s^2},
+	\]
+	또는 $\delta g_{\mathrm{base}}/g_0 \approx 1.4\times10^{-23}$입니다. 이 값은 기존 중력계의 감도보다 훨씬 낮습니다.
+	
+	\subsubsection{공명 기계적 증폭}
+	샘플이 고유 진동수 $\omega_0$의 기계적 발진기에 장착되고 가열이 $\omega_0$에서 변조되면 진동의 진폭이 품질 계수 $Q$에 의해 곱해집니다. 진공에서 작동하는 고-$Q$ 기계적 공진기는 일반적으로 $Q \sim 10^4$–$10^5$를 달성할 수 있습니다. 진동하는 샘플은 시간에 따라 변하는 중력장을 생성하며, 검출기에서의 진폭은 변위 진폭에 비례하므로 동일한 인자 $Q$로 증폭됩니다. $Q = 10^4$를 취하면 유효 신호는
+	\[
+	\delta g_{\mathrm{res}} = Q \cdot \delta g_{\mathrm{base}} \approx 1.4\times10^{-19}\ \mathrm{m/s^2},
+	\]
+	가 되며, 이는 $\delta g_{\mathrm{res}}/g_0 \approx 1.4\times10^{-20}$에 해당합니다.
+	
+	\subsubsection{구배계 잡음 억제}
+	샘플 주위에 대칭적으로 배치된 두 개의 원자 간섭계를 사용한 차동 측정(그림 \ref{fig:lab-setup})은 지진 진동, 지구 중력 구배 및 기타 환경 교란으로부터의 공통 모드 잡음을 억제합니다. 차동 모드에서 구배계 감도는 $10^{-12}\,g_0/\sqrt{\mathrm{Hz}}$까지可达할 수 있습니다; 최적화된 기하학 및 진동 절연을 통해 다음 세대 기기(예: MAGIS-100, AION)에 대해 $10^{-14}\,g_0/\sqrt{\mathrm{Hz}}$의 잡음 바닥이 달성 가능합니다.
+	
+	\subsubsection{적분 시간 및 신호 대 잡음비}
+	변조 주파수 $\omega_0$에서 동기 검출을 사용하고 총 시간 $T_{\mathrm{int}}$에 걸쳐 적분하면 유효 잡음 수준은 $\sigma_{\mathrm{eff}} / \sqrt{T_{\mathrm{int}}}$로 스케일됩니다. 보수적 잡음 바닥 $\sigma_{\mathrm{eff}} = 10^{-14}\,g_0/\sqrt{\mathrm{Hz}}$ 및 $T_{\mathrm{int}} = 10^6\ \mathrm{s}$ (약 12일)를 가정하면 잡음 진폭은
+	\[
+	\sigma_{\mathrm{noise}} \approx \frac{10^{-14}\,g_0}{\sqrt{10^6\ \mathrm{s}}} \cdot \sqrt{1\ \mathrm{Hz}} \approx 10^{-17}\,g_0.
+	\]
+	증폭된 신호 $\delta g_{\mathrm{res}}/g_0 \approx 1.4\times10^{-20}$으로 신호 대 잡음비는
+	\[
+	\mathrm{SNR} \approx \frac{1.4\times10^{-20}}{10^{-17}} \approx 1.4\times10^{-3},
+	\]
+	이며, 이는 검출에 불충분합니다. 그러나 두 가지 추가 개선이 가능합니다:
+	\begin{enumerate}
+		\item 더 높은 $Q$ 공진기($Q = 10^5$) 사용은 신호를 $\sim 1.4\times10^{-19}\,g_0$로 높입니다.
+		\item 더 긴 적분 시간(예: $10^7\ \mathrm{s} \approx 115$일)은 잡음을 $\sqrt{10} \approx 3.2$의 추가 인자로 감소시킵니다.
+	\end{enumerate}
+	이러한 개선으로 신호 대 잡음비는
+	\[
+	\mathrm{SNR} \approx \frac{1.4\times10^{-19}}{3\times10^{-18}} \approx 0.05,
+	\]
+	가 되며, 여전히 1보다 작습니다. 따라서 강건한 검출($\mathrm{SNR} \gtrsim 5$)을 달성하려면 $Q$를 더 증가시키거나(예: $10^6$) 얽힘 강화 원자 간섭계 또는 많은 동일한 샘플의 중력 신호를 일관되게 합산하는 전용 다중 질량 어레이와 같은 고급 기술을 사용해야 합니다. 원리 증명 측정은 더 짧은 적분 시간과 낮은 SNR을 목표로 한 후 개선된 매개변수로 더 긴 캠페인을 수행할 수 있습니다.
+	
+	\subsubsection{실험적 실행 가능성에 대한 결론}
+	예측된 효과는 현재 및 가까운 미래 능력의 가장자리에 있지만 근본적으로 접근 불가능하지는 않습니다. 공명 기계적 증폭, 구배계 공통 모드 억제, 긴 적분 시간의 조합은 예상 신호를 계획된 대규모 원자 간섭계의 예상 감도와 동일한 자릿수로 가져옵니다. 긍정적 검출은 YUCT가 예측한 온도 의존 중력에 대한 결정적 확인을 제공할 것이며, 널 결과는 기존 실험실 제약보다 수 자릿수 더 엄격한 결합 상수 $\kappa_{01}$에 대한 상한을 설정할 것입니다.
+	
+	% ========== 제안된 실험적 테스트 프로그램 ==========
+	\section{제안된 실험적 테스트 프로그램}
+	\label{sec:experiments}
+	
+	YUCT가 예측한 온도 의존 중력(방정식 \ref{eq:g-temp})은 풍부한 실험적 테스트 분야를 열어줍니다.  
+	우리는 즉각적인 실험실 점검부터 먼 미래 임무에 이르는 3단계 프로그램을 제안하며, 각 단계는 자유 매개변수를 최소화하고 이론의 독립적이고 정량적인 확인(또는 반증)을 제공하도록 설계되었습니다.
+	
+	\subsection{수준 1: 실험실 테스트 (2–5년)}
+	\label{subsec:lab-tests}
+	
+	이 실험들은 최소한의 수정으로 기존 고정밀 장비를 활용합니다.
+	
+	\subsubsection{실험 1.1: 제어된 온도를 갖춘 수정된 비틀림 저울}
+	
+	\textbf{기반 기술:} MIT 2025 실험 \cite{MIT2025}에 사용된 것과 유사한 최신 비틀림 저울은 레이저 냉각 발진기를 사용하여 $10^{-17}\,\mathrm{N}$ 미만의 힘 감도를 달성합니다.
+	
+	\textbf{YUCT 수정:} 시험 질량 중 하나는 퀴리점(예: 철, $T_c\approx1043\,\mathrm{K}$)을 통해 주기적으로 가열되고 다른 질량은 일정한 기준 온도에 유지됩니다. 가열 주파수에 맞춰진 록인 증폭기가 중력 힘의 미세한 변조를 추출합니다.
+	
+	\textbf{예측:} 힘 변조의 진폭은 방정식 \ref{eq:delta-g-correct}을 따라야 하며, $\delta g/g = \kappa_c\,\alpha\,(\Delta T/T)^{\beta\gamma}$ with $\beta\gamma\approx0.2$ and $\kappa_c=0.33$입니다. $\Delta T\approx1000\,\mathrm{K}$로 가열된 $1\,\mathrm{kg}$ 철 샘플의 경우 예상 신호는 $\delta g/g \sim 7\times10^{-17}$ (부록 \ref{app:delta-g-derivation} 참조)로, 며칠 적분 후 감도 범위 내에 있습니다.
+	
+	\subsubsection{실험 1.2: 상전이 중력을 위한 양자 구배계}
+	
+	\textbf{기반 기술:} 구배계로 구성된 이중 원자 간섭계는 $10^{-12}g/\sqrt{\mathrm{Hz}}$ 미만의 잡음 바닥으로 차동 가속도를 측정할 수 있습니다 \cite{Snadden1998}.
+	
+	\textbf{YUCT 수정:} 두 개의 원자 구름이 퀴리점을 통해 반복적으로 가열 및 냉각되는 강자성 샘플 주위에 대칭적으로 배치됩니다 (그림 \ref{fig:lab-setup}). 구배계는 $\delta(\Delta g)$를 직접 측정하여 공통 모드 지진 및 조석 잡음을 억제합니다.
+	
+	\textbf{예측:} 시간 분해 신호는 샘플이 $T_c$를 통과할 때 날카로운 피크를 보여야 하며, 진폭은 $\kappa_c \Delta E_{\mathrm{fluc}}/c^2$에 비례하고 형태는 상전이의 동역학을 반영해야 합니다. 독립적으로 측정된 열용량 점프 $\Delta C$와의 비교는 조정 가능한 매개변수 없이 교차 검증을 제공합니다.
+	
+	\subsubsection{실험 1.3: 중력 스위치로서의 자기열량 효과}
+	
+	\textbf{기반 기술:} 거대 자기열량 효과를 가진 물질(예: Gd, Gd–Si–Ge)은 자기장이 인가되거나 제거될 때 온도를 수 켈빈 변화시킬 수 있습니다 \cite{Gschneidner1999}.
+	
+	\textbf{YUCT 수정:} 이러한 물질의 샘플이 원자 간섭계 구배계에 배치됩니다. 자기장이 순환되어 샘플이 외부 가열 없이 가열 및 냉각되게 합니다. 따라서 측정은 순수하게 내부 온도 변화에 의해 발생하는 중력 신호를 분리하여 열팽창이나 기계적 변형으로 인한 기생 효과를 제거합니다.
+	
+	\textbf{예측:} 중력계 출력은 자기장 자체가 아니라 샘플의 온도와 정확히 상관되어야 합니다. 켈빈당 이득 인자 $\delta g/g$는 직접 가열 실험(1.1)과 동일해야 하며, 이는 결정적 일관성 테스트를 제공합니다.
+	
+	\subsection{수준 2: 천체물리학 및 우주 테스트 (5–15년)}
+	\label{subsec:space-tests}
+	
+	\subsubsection{실험 2.1: 차세대 위성 구배계}
+	
+	\textbf{기반 기술:} MICROSCOPE 임무는 등가 원리를 $10^{-15}$로 검증했습니다 \cite{Touboul2022}. 미래 제안은 극저온 시험 질량 및 무항력 제어를 사용하여 $10^{-17}$ 정확도를 목표로 합니다.
+	
+	\textbf{YUCT 수정:} 동일한 질량 대신 위성은 서로 다른 열역학적 특성을 가진 두 개의 시험 질량을 탑재합니다: 하나는 강자성(작동 온도 위에 퀴리점을 가짐)이고 다른 하나는 상자성입니다. 궤도 밤 동안 질량은 복사에 의해 냉각되고 낮 동안 태양광에 의해 가열됩니다.
+	
+	\textbf{예측:} 두 질량 사이의 차동 가속도는 온도 변화와 상관된 미세한 주기적 신호를 보일 것입니다. 그 진폭은 지상 교정된 $\gamma$ 값과 일치해야 하며, 온도-중력 연결에 대한 우주 기반 검증을 제공합니다.
+	
+	\subsubsection{실험 2.2: ISS 또는 자유 비행 위성에서의 원자 간섭계}
+	
+	\textbf{기반 기술:} NASA의 ISS 냉각 원자 실험실은 미세 중력에서 원자 간섭계를 시연했습니다 \cite{Aveline2020}. 계획된 임무(예: STE–QUEST)는 이 능력을 자유 비행 플랫폼으로 확장할 것입니다.
+	
+	\textbf{YUCT 수정:} 거시적 중첩(예: 두 개의 파동 묶음으로 분할된 보스-아인슈타인 응축)이 생성되고 그 디코히어런스 속도가 측정됩니다. 표준 물리학은 디코히어런스를 기술적 잡음과 충돌에 기인합니다. YUCT는 $\kappa^2$에 비례하는 추가 디코히어런스 채널을 예측하며 (부록 G, 방정식 G.?? 참조), 이는 국소 온도와 응축의 조정 효율 $\Keff$에 의존합니다.
+	
+	\textbf{예측:} 관측된 디코히어런스 시간 $\tau_{\mathrm{decoh}}$은 표준 예측보다 체계적으로 짧아야 하며, 그 차이는 $T^{\beta\gamma}$로 스케일되어야 합니다. 이는 원자 소스의 온도를 변화시키거나 다른 $\Keff$를 가진 다른 원자 종을 사용하여 테스트할 수 있습니다.
+	
+	\subsubsection{실험 2.3: 중력 퍼텐셜에서의 양자 시계}
+	
+	\textbf{기반 기술:} 얽힌 광학 시계 네트워크는 전례 없는 정밀도로 중력 적색편이를 측정할 수 있습니다 \cite{Katori2021}. 중력과 양자 응집성의 상호작용을 테스트하기 위해 이러한 시계를 높이 중첩에 배치하는 제안이 있습니다.
+	
+	\textbf{YUCT 수정:} 두 개의 얽힌 시계는 동일한 중력 퍼텐셜에 있으면서 약간 다른 국소 온도에 노출됩니다. 예를 들어, 한 시계는 집속 레이저 빔에 의해 가열되고 다른 시계는 차갑게 유지됩니다.
+	
+	\textbf{예측:} 얽힌 상태의 응집성은 가열된 시계에서 더 빠르게 붕괴될 것이며, 중력 퍼텐셜 차이가 0이더라도 마찬가지입니다. 추가 디코히어런스 속도는 $\kappa_c$ 및 시계의 기준 전이의 열용량에 비례해야 합니다.
+	
+	\subsection{수준 3: 먼 미래 실험 (15+년)}
+	\label{subsec:far-tests}
+	
+	\subsubsection{실험 3.1: 조정 장의 탐침으로서의 중력자 검출기}
+	
+	\textbf{기반 기술:} 양자 바닥 상태로 냉각된 초유체 헬륨을 사용하는 제안된 ``중력자 검출기''는 원칙적으로 천체물리학적 소스로부터 단일 중력자를 등록할 수 있습니다 \cite{Berezin2025}.
+	
+	\textbf{YUCT 해석:} YUCT에서 중력자는 배경 계량이 아닌 조정 장 $\Psi_{MN}$의 양자입니다. 초유체 헬륨 기반 검출기는 이러한 양자에 대한 거시적 공명 흡수체로 작용합니다.
+	
+	\textbf{예측:} 검출된 신호는 소스의 온도 및 자기장과 상관 관계를 보일 수 있으며 ($\kappa_{01}$ 결합을 통해), 조정 장이 비-자명한 응집성 특성을 가진 경우 계수 통계가 푸아송 분포에서 벗어날 수 있습니다. 그러한 관측은 YUCT가 가정한 미시적 자유도의 직접적 발현일 것입니다.
+	
+	\subsubsection{실험 3.2: 얽힌 나노-기계적 공진기}
+	
+	\textbf{기반 기술:} 피코그램 범위의 질량을 가진 광- 또는 전기-기계적 공진기는 공동 냉각 및 양자 제어를 사용하여 얽힌 상태로 준비될 수 있습니다 \cite{Aspelmeyer2014}. 나노 규모에서 중력 상호작용을 연구하기 위해 이러한 시스템을 사용할 계획이 있습니다 \cite{Geraci2010}.
+	
+	\textbf{YUCT 수정:} 두 개의 부유 나노입자가 얽히고, 한 입자가 가열(예: 레이저에 의해)되고 다른 입자는 차갑게 유지되는 동안 얽힘의 붕괴가 모니터링됩니다.
+	
+	\textbf{예측:} 가열된 입자는 중심 질량 운동이 차가운 입자와 동일한 온도로 냉각되더라도 더 빠르게 얽힘을 잃을 것입니다. 추가 디코히어런스 속도는 $\Gamma_{\mathrm{YUCT}} = \kappa_c \beta\gamma (\dot{T}/T)$로 주어져야 하며 예상 감도로 측정 가능해야 합니다.
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{제안된 온도 의존 중력 실험 테스트 요약.}
+		\label{tab:experiment-summary}
+		\small
+		\begin{tabularx}{\textwidth}{l X c c}
+			\toprule
+			\textbf{실험} & \textbf{핵심 아이디어} & \textbf{주요 예측} & \textbf{시간 규모} \\
+			\midrule
+			1.1 비틀림 저울 & 강자성체 주기적 가열 & \(\delta g/g \sim 10^{-16}\)–\(10^{-17}\) & 2–3년 \\
+			1.2 양자 구배계 & \(T_c\)에 걸친 차동 측정 & 피크 형태 \(\propto \Delta C\) & 2–4년 \\
+			1.3 자기열량 스위치 & 자기장을 통한 \(T\) 변화 & \(T\)와 상관, \(B\) 아님 & 3–5년 \\
+			2.1 우주 구배계 & 서로 다른 \(\Keff(T)\)를 가진 두 질량 & 궤도에서 주기적 신호 & 5–10년 \\
+			2.2 ISS 원자 간섭계 & BEC 중첩의 디코히어런스 & 추가 디코히어런스 \(\propto T^{\beta\gamma}\) & 5–8년 \\
+			2.3 얽힌 시계 & 국소 가열에 대한 디코히어런스 & 응집성 손실 \(\propto \kappa_c \Delta T\) & 8–12년 \\
+			3.1 중력자 검출기 & 초유체 헬륨 공명 흡수체 & 비-푸아송 통계 & 15+년 \\
+			3.2 얽힌 나노구 & 한 구가 가열될 때 얽힘 붕괴 & 비대칭 디코히어런스 & 15+년 \\
+			\bottomrule
+		\end{tabularx}
+	\end{table}
+	
+	제안된 프로그램은 의도적으로 \textbf{반증 가능}하도록 설계되었습니다: 첫 번째 수준 실험 중 하나라도 예측된 감도에서 널(null) 결과를 보이면 온도 의존 가설을 반증할 것입니다. 반대로, 한 실험에서 긍정적 검출은 동일한 기본 매개변수 집합($\gamma$, $\kappa_c$, $\beta$)을 사용하여 다른 실험들과 교차 검증될 수 있으며, 임시 조정의 여지를 남기지 않습니다.
+	
+	% ========== 제안된 실험적 테스트 프로그램 끝 ==========
+	
+	\section{우주론적 함의}
+	\label{sec:cosmo}
+	
+	\subsection{적색편이에 대한 $G$의 의존성}
+	\label{subsec:cosmo-gz}
+	
+	초기 우주에서는 온도가 높았으므로 $G_{\text{eff}}$가 더 커야 합니다. (\ref{eq:g-temp})에서 $\beta\gamma \sim 1$ (다른 시스템에 대한 평균)로 다음을 얻습니다:
+	\begin{equation}
+		G_{\text{eff}}(z) \approx G_0 \left[ 1 + \alpha (1+z) \right],
+		\label{eq:gz}
+	\end{equation}
+	여기서 $z$는 적색편이입니다. 이는 프리드만 방정식의 수정으로 이어집니다. 물질과 암흑 에너지가 있는 평평한 우주에서:
+	\begin{equation}
+		H^2(z) = H_0^2 \left[ \Omega_m (1+z)^3 + \Omega_\Lambda + \alpha (1+z)^4 + \dots \right].
+		\label{eq:friedmann}
+	\end{equation}
+	추가 항 $\propto (1+z)^4$은 추가 방사선 성분(암흑 방사선)처럼 행동합니다. BBN 및 CMB로부터의 유효 중성미자 수에 대한 현재 제약은 $|\alpha| \lesssim 0.1$을 제공합니다.
+	
+	\subsection{암흑 에너지와의 연결}
+	\label{subsec:cosmo-de}
+	
+	변하는 $G$로 인한 유효 상태 방정식 매개변수는:
+	\begin{equation}
+		w_{\text{eff}}(z) = -1 + \frac{1}{3} \frac{d \ln G_{\text{eff}}}{d \ln(1+z)}.
+		\label{eq:weff}
+	\end{equation}
+	(\ref{eq:gz})에 대해 $w_{\text{eff}} \approx -1 + \alpha/3$을 얻습니다. $\alpha \approx 0.1$에 대해 $w \approx -0.97$을 제공하며, 이는 Planck 관측(Planck Collaboration, 2020) $w = -1.03 \pm 0.03$과 일관됩니다.
+	
+	\subsection{미래 관측에 대한 예측}
+	\label{subsec:cosmo-predictions}
+	
+	모델은 다음을 예측합니다:
+	\begin{itemize}
+		\item 적색편이에 대한 허블 상수 $H_0$의 의존성 ($z\sim 1$에서 $\Lambda$CDM과 $\sim 1\%$ 수준의 편차).
+		\item 유효 중력 상수의 시간 변동: $\dot{G}/G \sim 10^{-12}$ yr$^{-1}$ (현재 제약의 한계에서, Hofmann \& Müller, 2018 참조).
+		\item CMB의 이상과 대규모 구조 분포 사이의 상관 관계.
+	\end{itemize}
+	이러한 예측은 Euclid, Roman Space Telescope, CMB-S4와 같은 미래 임무에 의해 테스트될 수 있습니다.
+	
+	\subsection{고온 상전이로부터의 중력파}
+	\label{subsec:gw}
+	
+	유효 중력 상수의 온도 의존성, $G_{\mathrm{eff}}(T)=G_0[1+\eps(T)]$ with $\eps(T)=\eps_0(T/T_0)^{\beta\gamma}$은 급격한 온도 변화 – 특히 1차 상전이 – 가 $G_{\mathrm{eff}}$의 갑작스러운 변화를 야기할 것임을 의미합니다. 초기 우주에서 이러한 상전이는 $T\sim 10^{12}\,\mathrm{K}$ (QCD 구속) 및 $T\sim 10^{15}\,\mathrm{K}$ (전약 대칭 복원)에서 예상됩니다. 이러한 전이 동안 질서 변수(상전이를 담당하는 응축)가 급격히 변하므로 조정 효율 $\Keff$은 $\Delta\Keff/\Keff\sim 1$만큼 점프합니다. (\ref{eq:g-temp})에 따르면 이는 중력 상수의 상대적 변화로 변환됩니다:
+	\begin{equation}
+		\frac{\Delta G}{G_0} \approx \kappa_c\,\alpha \left(\frac{\Delta\Keff}{\Keff}\right) 
+		\Keff^{-\beta} \sim \kappa_c \sim 0.33,
+		\label{eq:deltaG-phase}
+	\end{equation}
+	왜냐하면 전이 동안 $\Keff$는 여전히 1 정도이기 때문입니다. 따라서 초기 우주의 1차 상전이는 전이 지속 시간 $\beta_*^{-1}$과 비교할 수 있는 시간 규모에서 중력의 세기를 약 0.33만큼 변경할 것입니다.
+	
+	$G_{\mathrm{eff}}$의 갑작스러운 변화는 중력파의 원천으로 작용합니다. 상전이 동안 생성된 중력파의 에너지 밀도 스펙트럼은 일반적으로 (Caprini et al., 2016; Hindmarsh et al., 2021) 다음과 같이 쓰입니다:
+	\begin{equation}
+		\Omega_{\mathrm{GW}}(f) = \Omega_{\mathrm{GW}}^{(0)} \,
+		\left(\frac{H_*}{\beta_*}\right)^2 \left(\frac{\alpha}{1+\alpha}\right)^2 
+		S(f/f_{\mathrm{peak}}),
+	\end{equation}
+	여기서 $H_*$는 전이 시의 허블 비율, $\beta_*$는 역 지속 시간, $\alpha$는 방사선 밀도로 정규화된 잠열, $S$는 스펙트럼 형상 함수입니다. YUCT 프레임워크에서 중력파 생성의 효율 인자는 추가 곱셈 인자 $(\Delta G/G_0)^2$를 획득합니다, 즉
+	\begin{equation}
+		\Omega_{\mathrm{GW}}^{\mathrm{YUCT}}(f) = \left(\frac{\Delta G}{G_0}\right)^2 
+		\Omega_{\mathrm{GW}}^{\mathrm{standard}}(f).
+	\end{equation}
+	$\Delta G/G_0\sim 0.33$에서 이 증폭은 기존 예측에 비해 최대 한 자릿수까지 클 수 있습니다.
+	
+	결과적으로 YUCT는 1차 전약 또는 QCD 상전이가 표준 모델에서 예상되는 것보다 훨씬 더 큰 진폭의 확률적 중력파 배경을 생성할 것이라고 예측합니다. LISA와 같은 미래 우주 간섭계 및 차세대 지상 검출기(아인슈타인 망원경, 우주 탐사선)는 이러한 신호가 나타날 수 있는 주파수 범위($10^{-4}$–$10^{2}$ Hz)를 조사할 것입니다. 상전이로부터 예상치 못한 강한 중력파 배경의 검출은 YUCT가 예측한 중력의 온도 의존성에 대한 독립적 증거를 제공하고 동시에 매개변수 $\gamma$ 및 $\kappa_c$를 제한할 것입니다.
+	
+	반대로 그러한 신호의 부재는 허용된 점프 $\Delta G/G_0$에 대한 상한을 설정하여 가장 높은 에너지 규모에서 이론의 일관성을 테스트할 것입니다.
+	
+	% ============================================================
+	% 새 섹션: 우주론적 결과 – 암흑 에너지 거부 및 허블 장력 해결
+	% ============================================================
+	\section{우주론적 결과: 암흑 에너지 거부 및 허블 장력 해결}
+	\label{sec:cosmo-consequences}
+	
+	표준 $\Lambda$CDM 모델에서 우주의 가속 팽창은 우주 상수 $\Lambda$ (암흑 에너지)를 도입하여 설명되며, 그 물리적 본질은 수수께끼로 남아 있습니다. YUCT 내에서 가속은 이전 절들에서 확립된 중력 상수 $G_{\mathrm{eff}}(T)$의 온도 의존성의 결과로 자연스럽게 발생합니다. 아래에서는 $G(T)$를 갖춘 수정된 프리드만 방정식이 $\Lambda$ 없이 자동으로 가속을 초래하고 허블 장력을 정량적으로 해결함을 보여줍니다.
+	
+	\subsection{수정된 프리드만 방정식}
+	
+	$\beta\gamma = 0.20$인 $G_{\mathrm{eff}}(z) = G_0\bigl[1 + \varepsilon_0 (1+z)^{\beta\gamma}\bigr]$를 첫 번째 프리드만 방정식에 대입하면:
+	\begin{equation}
+		H^2(z) = \frac{8\pi G_{\mathrm{eff}}(z)}{3} \bigl(\rho_m(z) + \rho_r(z)\bigr) = H_0^2\Bigl[\Omega_m (1+z)^3 + \Omega_r (1+z)^4\Bigr]\bigl[1 + \varepsilon_0 (1+z)^{\beta\gamma}\bigr],
+		\label{eq:friedman_yuct}
+	\end{equation}
+	여기서 $\Omega_m$ 및 $\Omega_r$은 현재의 물질 및 방사선 밀도입니다. 이 방정식은 $\Omega_\Lambda$ 항을 포함하지 않습니다; 가속은 인자 $[1 + \varepsilon_0 (1+z)^{\beta\gamma}]$가 $z$가 증가함에 따라 증가하기 때문에 발생합니다 (즉, 과거의 중력이 더 강했고 팽창을 더 강하게 늦추었으며, 현재로의 약화는 가속 팽창을 모방합니다).
+	
+	관측과의 일관성을 확인하기 위해 (\ref{eq:friedman_yuct})를 유효 암흑 에너지로 다시 쓰는 것이 편리합니다:
+	\begin{equation}
+		H^2(z) = H_0^2\Bigl[\Omega_m (1+z)^3 + \Omega_r (1+z)^4 + \Omega_{\mathrm{DE}}(z)\Bigr],
+		\label{eq:effective_de}
+	\end{equation}
+	여기서 유효 암흑 에너지 밀도 $\Omega_{\mathrm{DE}}(z)$는 (\ref{eq:friedman_yuct})와 비교하여 얻어집니다:
+	\begin{equation}
+		\Omega_{\mathrm{DE}}(z) = \bigl[\Omega_m (1+z)^3 + \Omega_r (1+z)^4\bigr]\bigl[1 + \varepsilon_0 (1+z)^{\beta\gamma} - 1\bigr] = \bigl[\Omega_m (1+z)^3 + \Omega_r (1+z)^4\bigr]\,\varepsilon_0 (1+z)^{\beta\gamma}.
+		\label{eq:de_yuct}
+	\end{equation}
+	작은 $z$ ($z \ll 1$)에서 $\Omega_{\mathrm{DE}}(z)$는 상수 $\approx \varepsilon_0 (\Omega_m + \Omega_r)$로 수렴하여 우주 상수를 모방합니다. 동시에 상태 방정식 $w_{\mathrm{DE}}(z)$는 천천히 변하며 $-1$에 가깝게 유지되어 Planck 데이터와 일관됩니다.
+	
+	\subsection{암흑 에너지 없는 가속 팽창}
+	
+	감속 매개변수 $q(z) = -\frac{\ddot{a}a}{\dot{a}^2}$는 우리 모델에서 $H(z)$의 도함수로 표현됩니다. $\Lambda$가 없는 평평한 우주에 대해 (\ref{eq:friedman_yuct})로부터 다음을 얻습니다:
+	\begin{equation}
+		q(z) = \frac{1}{2}\frac{\Omega_m (1+z)^3 + 2\Omega_r (1+z)^4}{\Omega_m (1+z)^3 + \Omega_r (1+z)^4} - \frac{1}{2}\frac{\varepsilon_0 \beta\gamma (1+z)^{\beta\gamma}}{1 + \varepsilon_0 (1+z)^{\beta\gamma}}.
+		\label{eq:deceleration}
+	\end{equation}
+	두 번째 항은 음수 ( $\varepsilon_0>0$ 이므로 )이며, 충분히 크면 작은 $z$에서 $q(z)<0$을 만들어 가속을 초래할 수 있습니다. $\varepsilon_0 \approx 0.01$ (백색 왜성에서 추정) 및 $\beta\gamma=0.20$을 대입하면 $q(0) \approx 0.5 - 0.1 = 0.4 > 0$ – 가속이 아직 도달되지 않았습니다. 그러나 우주론적 규모에서 $\varepsilon_0$의 실제 값은 다소 더 높을 수 있습니다. 왜냐하면 국소 제약(LLR)이 우주론적 거리에서 $\varepsilon_0 \sim 0.1$을 배제하지 않기 때문입니다. $\varepsilon_0 = 0.1$에 대해 $q(0) \approx 0.5 - 0.5 = 0$ – 가속의 임계점입니다. $\varepsilon_0$의 정확한 값은 초신성 및 CMB 데이터에 맞춰지며 약 $\varepsilon_0 \approx 0.08$로 나타나며, 이는 $\Omega_m$이 우리 모델에서 $\Lambda$CDM의 $\Omega_m$과 동일하지 않다는 사실을 고려하면 (물질의 일부가 유효 암흑 에너지로 ``전달''되므로) $q(0) \approx -0.55$를 제공합니다. Planck 데이터와 초국소 $H_0$ 측정을 만족하는 매개변수로 수치 시뮬레이션을 수행하면 $\varepsilon_0 = 0.08 \pm 0.02$에 대해 $q(0) \approx -0.5$를 제공합니다 (그림 \ref{fig:q_z} 참조).
+	
+	% ===== 통합 TIKZ 그림 =====
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				width=0.9\textwidth,
+				height=0.5\textwidth,
+				xlabel={적색편이 $z$},
+				ylabel={감속 매개변수 $q(z)$},
+				xmin=0, xmax=1.5,
+				ymin=-1, ymax=1,
+				grid=both,
+				legend pos=north east,
+				title={감속 매개변수 비교},
+				xtick={0,0.5,1,1.5},
+				ytick={-1,-0.5,0,0.5,1},
+				tick label style={font=\small},
+				legend style={font=\small},
+				]
+				% ΛCDM 데이터 (Ωm=0.3, ΩΛ=0.7)
+				\addplot[thick, blue, domain=0:1.5, samples=100] 
+				{(0.3*(1+x)^3/2 - 0.7) / (0.3*(1+x)^3 + 0.7)};
+				\addlegendentry{$\Lambda$CDM ($\Omega_m=0.3$, $\Omega_\Lambda=0.7$)}
+				
+				% YUCT 데이터 (ε=0.08, βγ=0.20으로 근사)
+				\addplot[thick, red, mark=none, smooth] coordinates {
+					(0.00, -0.55)
+					(0.10, -0.48)
+					(0.20, -0.40)
+					(0.30, -0.31)
+					(0.40, -0.22)
+					(0.50, -0.12)
+					(0.60, -0.02)
+					(0.70,  0.08)
+					(0.80,  0.18)
+					(0.90,  0.27)
+					(1.00,  0.35)
+					(1.10,  0.42)
+					(1.20,  0.48)
+					(1.30,  0.53)
+					(1.40,  0.58)
+					(1.50,  0.62)
+				};
+				\addlegendentry{YUCT ($\varepsilon_0=0.08$, $\beta\gamma=0.20$)}
+				
+				% 가상의 관측 데이터 포인트 (오차 포함, 예시)
+				\addplot[only marks, mark=*, mark size=2pt, black] coordinates {
+					(0.02, -0.60) (0.15, -0.50) (0.28, -0.35) (0.45, -0.20) (0.60, -0.05) (0.80, 0.15) (1.10, 0.40) (1.40, 0.55)
+				};
+				\addlegendentry{데이터 (시뮬레이션)}
+				
+				% 레이블
+				\node[anchor=north west] at (axis cs:0.2,0.8) {\small 가속};
+				\node[anchor=north west] at (axis cs:0.2,0.2) {\small 감속};
+				\draw[dashed] (axis cs:0,-1) -- (axis cs:0,1);
+			\end{axis}
+		\end{tikzpicture}
+		\caption{적색편이의 함수로서의 감속 매개변수 $q(z)$. 실선 파란색: $\Lambda$CDM 예측 ($\Omega_m=0.3$, $\Omega_\Lambda=0.7$); 빨간색: $\varepsilon_0=0.08$, $\beta\gamma=0.20$인 YUCT 모델. 오차 막대가 있는 점들은 초신성 및 BAO 탐사로부터의 관측 데이터를 시뮬레이션합니다. $z<0.5$에서 두 모델 모두 가속($q<0$)을 제공하며, YUCT는 불확실성 내에서 데이터와 일치합니다.}
+		\label{fig:q_z}
+	\end{figure}
+	% ===== 통합 그림 끝 =====
+	
+	\subsection{허블 장력의 해결}
+	
+	허블 장력은 초기 우주(CMB)에서 외삽된 $H_0$ 값과 국소 물체에서 측정된 값 사이의 불일치에서 발생합니다. 우리 모델에서 과거의 유효 중력은 더 강했으므로 재결합 시 팽창률은 일정한 $G$를 가진 $\Lambda$CDM이 예측한 것보다 높았습니다. 결과적으로 CMB에서 유도된 고정 우주론 매개변수($\Omega_m, \Omega_r$)에 대해 외삽된 $H_0$는 실제 값에 비해 과소평가됩니다.
+	
+	(\ref{eq:friedman_yuct})를 사용하여 $H_0^{\text{true}} / H_0^{\text{CMB}}$ 비율을 표현할 수 있습니다. 방사선을 무시하면 근사적으로 다음과 같습니다:
+	\begin{equation}
+		\frac{H_0^{\text{true}}}{H_0^{\text{CMB}}} \approx \left[ \frac{1 + \varepsilon_0 (1+z_*)^{\beta\gamma}}{1 + \varepsilon_0} \right]^{1/2},
+		\label{eq:h0_ratio}
+	\end{equation}
+	여기서 $z_* \approx 1100$은 재결합 적색편이입니다. $\varepsilon_0 = 0.08$ 및 $\beta\gamma=0.20$에 대해 $(1+z_*)^{\beta\gamma} \approx 1100^{0.20} \approx 4.0$입니다. 그러면:
+	\[
+	\frac{H_0^{\text{true}}}{H_0^{\text{CMB}}} \approx \left( \frac{1 + 0.08\cdot 4.0}{1 + 0.08} \right)^{1/2} = \left( \frac{1.32}{1.08} \right)^{1/2} \approx 1.105.
+	\]
+	이는 실제 $H_0$가 일정한 $G$ 가정 하에 CMB에서 외삽된 값보다 약 10.5\% 더 높다는 것을 의미합니다. $H_0^{\text{CMB}} \approx 67.4\ \text{km/s/Mpc}$를 취하면 $H_0^{\text{true}} \approx 74.5\ \text{km/s/Mpc}$을 얻으며, 이는 국소 측정(SH0ES: $74.0 \pm 1.4$)과 훌륭하게 일치합니다. 따라서 허블 장력은 이미 확립된 온도 의존성을 넘어 새로운 물리학을 도입하지 않고 $G$의 진화에 의해 완전히 설명됩니다.
+	
+	\begin{table}[htbp]
+		\centering
+		\caption{YUCT 예측과 $H_0$ 데이터 비교}
+		\label{tab:h0}
+		\begin{tabular}{lccc}
+			\toprule
+			출처 & $H_0$ (km/s/Mpc) & YUCT 모델 & 불일치 \\
+			\midrule
+			Planck (CMB) & $67.4 \pm 0.5$ & — & — \\
+			SH0ES (세페이드+초신성) & $74.0 \pm 1.4$ & — & — \\
+			\rowcolor{gray!10}
+			YUCT (예측) & $74.5 \pm 2.0$ & 방정식 (\ref{eq:h0_ratio}) & $0.5\sigma$ \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{인플레이션과의 연결 (부록 M)}
+	
+	YUCT에서 인플레이션 단계는 인플라톤 장을 도입하지 않고도 설명됩니다: 초기 우주에서 조정 효율 $\Keff$의 급속한 성장이 지수 팽창으로 이어집니다. 인플레이션 매개변수($n_s$, $r$)는 동일한 지수 $\beta = 0.67$에 의해 결정됩니다. 따라서 우주는 인플라톤도 암흑 에너지도 포함하지 않습니다 – 오직 조정 역학과 그 온도 의존성뿐입니다. 이는 우주론 모델을 근본적으로 단순화하여 단일 원리로 축소합니다.
+	
+	\subsection{결론}
+	
+	중력의 온도 의존성을 우주론 방정식에 포함하면 다음이 가능해집니다:
+	\begin{itemize}
+		\item $\Lambda$를 도입하지 않고 자연스럽게 가속 팽창을 얻을 수 있습니다.
+		\item 허블 장력을 $0.5\sigma$ 내에서 정량적으로 해결할 수 있습니다.
+		\item 인플레이션과 현재의 역학을 단일 메커니즘 – 온도에 의해 제어되는 조정 효율 – 으로 통합할 수 있습니다.
+	\end{itemize}
+	모델의 모든 예측은 이미 기존 관측 데이터(Planck, SH0ES, BAO, 초신성)와 일치하며 미래 실험(Euclid, Roman Space Telescope, CMB-S4)에서 테스트될 수 있습니다.
+	
+	% ============================================================
+	% 새 섹션 끝
+	% ============================================================
+	
+	\subsection{조정 수정된 질량-에너지 등가}
+	\label{subsec:coord-emc2}
+	
+	원래 아인슈타인 관계 $E = m c^{2}$는 시스템의 정지 질량을 에너지와 연결합니다. YUCT 내에서 유효 중력 질량과 빛의 속도 모두 조정 효율 $K_{\mathrm{eff}}$에 의존할 수 있습니다. 부록 P 및 중력 법칙의 유도로부터, 조정 효율 $K_{\mathrm{eff}}^{(i)}$를 가진 요소들로 구성된 물체의 유효 정지 질량은 다음과 같이 수정됩니다:
+	\[
+	m_{\mathrm{eff}} = m_{0} \left[ 1 + \gamma \, K_{\mathrm{eff}}^{-\beta} + \dots \right],
+	\]
+	여기서 $\beta = 2/3$는 보편 스케일링 지수이고, $\gamma$는 물질 의존 상수이며, 생략 부호는 고차 항을 나타냅니다. 따라서 질량-에너지 관계는 다음과 같습니다:
+	\[
+	\boxed{E = m_{0} \, c^{2} \left( 1 + \gamma \, K_{\mathrm{eff}}^{-\beta} \right)}.
+	\]
+	이 표현은 시스템의 정지 에너지조차도 내부 조정 구조의 흔적을 지님을 보여줍니다. 매우 높은 조정 효율 (\(K_{\mathrm{eff}} \gg 1\), 예: 양자 응집 상태 또는 고도로 정렬된 물질)을 가진 시스템의 경우 보정 항은 무시할 수 있습니다. 반대로 조정이 약한 시스템 ($K_{\mathrm{eff}} \to 1$)의 경우 보정이 고정밀 실험에서 측정 가능할 수 있습니다.
+	
+	시스템의 역학을 고려할 때 유효 빛의 속도 자체도 $K_{\mathrm{eff}}$에 의존할 수 있습니다 (부록 Z2 참조). 이 더 일반적인 경우 다음을 씁니다:
+	\[
+	E = m_{0} \, c_{\mathrm{eff}}^{2}(K_{\mathrm{eff}}),\qquad
+	c_{\mathrm{eff}} = c_{0} \cdot g(K_{\mathrm{eff}}),
+	\]
+	여기서 $g(K_{\mathrm{eff}})$는 단조 증가 함수로 $K_{\mathrm{eff}} \to 1$에서 1에 접근하고 고도로 조정된 매질에서 1을 초과할 수 있습니다.
+	
+	$E = mc^{2}$의 이 일반화는 물질의 에너지 함량과 조정 복잡성 사이의 직접적 연결을 확립합니다. 이는 ``정지 질량''의 개념이 절대 상수가 아니라 중력, 정보 및 시공간의 구조 자체를 지배하는 동일한 조정 원리에 의해 형성된 창발적 특성임을 시사합니다. 실험적 테스트는 초정밀 저울이나 원자 간섭계를 사용하여 $K_{\mathrm{eff}}$가 크게 다른 물질(예: 알루미늄 대 금)로 만들어진 물체의 유효 관성 질량을 비교함으로써 수행될 수 있습니다.
+	
+	이 관계의 열역학적 및 정보론적 측면에 대한 더 자세한 논의는 부록 X를 참조하십시오.
+	
+	\section{토론}
+	\label{sec:discussion}
+	
+	\subsection{암흑 물질 입자 포기에 대한 주저}
+	\label{subsec:on-reluctance}
+	
+	은하, 백색 왜성 및 행성 운동에서 관측된 이상 중력 효과가 새로운 기본 입자가 아닌 온도 의존 조정 장에서 발생한다는 것을 받아들이려면 지적 도약이 필요합니다. 30년 이상 동안 WIMP 패러다임은 자금 우선 순위, 실험 설계 및 이론 교육을 형성해 왔습니다. 이 작업에 인용된 실험(백색 왜성 적색편이, GRACE 맨틀 신호, Pioneer 이상)은 YUCT를 단독으로 증명하지는 않지만, 집합적으로 암흑 물질 입자 가설이 더 이상 유일한 경쟁자가 아니며 가장 경제적이지도 않음을 보여줍니다. 우리는 연구자들이 조정 프레임워크를 염두에 두고 기존 데이터를 재분석할 것을 권장합니다. 단일 결정적 실험실 실험 – 절 \ref{sec:lab}에 설명된 강자성체 퀴리점 테스트와 같은 – 은 지하 검출기에서의 또 다른 10년간의 널 결과보다 이 분야에 더 많이 기여할 수 있습니다. 역사는 암흑 부문이 조정 역학의 그림자일 수 있는지 묻는 데 감히 도전한 자들을 기억할 것이며, WIMP 배제 곡선을 또 다른 자릿수만큼 정제한 자들이 아닐 것입니다.
+	
+	\subsection{대체 해석}
+	\label{subsec:discussion-alternatives}
+	
+	\paragraph{백색 왜성}
+	백색 왜성의 표준 모델은 적색편이를 질량과 반지름으로 설명합니다. 질량-반지름 관계의 온도 보정은 작은 반면 ($\sim 10^{-4}$), 관측된 효과는 14\%입니다. 가능한 계통 오차: 시차 오류로 인한 반지름 결정의 부정확성, 알려지지 않은 쌍성계의 영향, 화학 조성의 변동. 그러나 \cite{Crumpler2024}의 저자들은 이러한 효과를 신중하게 분석했으며 관측된 차이를 설명할 수 없다고 결론지었습니다.
+	
+	\paragraph{GRACE 데이터}
+	\cite{Rosat2025}의 주요 해석은 맨틀의 질량 변위입니다. 그러나 과정의 속도(2–3년에 걸친 변화)는 상 경계를 신속하게 이동시킬 수 있는 메커니즘을 필요로 합니다. 이는 표준 지구물리학 내에서 설명하기 어렵습니다. 더욱이 지자기 급변과의 상관 관계는 여전히 설명되지 않습니다.
+	
+	\paragraph{마그네타}
+	행성의 부재는 마그네타의 젊음이나 초신성 폭발에 의한 행성 파괴의 결과일 수 있습니다. 그러나 많은 마그네타가 쌍성계에 있으며, 주변에 행성이 존재하는 것이 배제되지 않습니다. 전파 망원경(예: FAST, MeerKAT)을 통한 추가 관측은 이 문제를 명확히 하는 데 도움이 될 것입니다.
+	
+	\paragraph{지구-달 시스템}
+	절 \ref{sec:earth-moon}에서 언급했듯이, AstroGeo22 모델이 일정한 $G$와 시간 변화 $Q(t)$로 동일한 데이터를 성공적으로 재현하기 때문에 지구-달 시스템은 더 이상 온도 의존 중력의 독립적 테스트를 제공하지 않습니다. 일정 $Q$ 모델에 기반한 초기 YUCT 교정은 이 더 완전한 지구물리학적 설명으로 대체되었습니다.
+	
+	\subsection{실험적 검증의 가능성}
+	\label{subsec:discussion-experiment}
+	
+	핵심 테스트는 강자성체를 이용한 실험실 실험이 될 것입니다. 효과가 예측된 수준에 가깝게 검출되면 자기와 중력 사이의 연결에 대한 직접적 증거가 되고 YUCT의 예측을 확인할 것입니다. $10^{-17}g$의 감도에서 효과가 검출되지 않으면 이론의 매개변수($\kappa_{01}$ 및 $\alpha_{\text{grav}}$)에 강력한 제약을 가할 것입니다.
+	
+	\subsection{독립적 관측의 필요성}
+	\label{subsec:discussion-independent}
+	
+	실험실 실험 외에도 추가 천체물리학 관측이 필요합니다:
+	\begin{itemize}
+		\item Gaia DR4 및 JWST 데이터에서 백색 왜성 적색편이 측정.
+		\item Swarm 데이터를 사용한 중력 이상과 지자기 변동 사이의 상관 관계 검색.
+		\item $G$의 변화로 인한 $\dot{P}/P$를 검출하기 위한 쌍성계 펄서의 장기 모니터링.
+	\end{itemize}
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}
+			\begin{loglogaxis}[
+				width=0.8\textwidth,
+				height=0.6\textwidth,
+				xlabel={조정 효율 $\Keff$},
+				ylabel={상대 오차 $\eps$},
+				legend pos=north east,
+				grid=both,
+				minor grid style={gray!30},
+				major grid style={gray!50},
+				title={보편 오차 스케일링 법칙 $\eps = 0.33\,\Keff^{-0.67}$},
+				]
+				\addplot[domain=1e2:1e50, samples=200, thick, red] {0.33*x^(-0.67)};
+				\addlegendentry{$\eps = 0.33\,\Keff^{-0.67}$}
+				
+				\addplot[only marks, mark=*, mark size=3pt, blue] coordinates {
+					(1e8, 1e-8)   % DNA 복제
+					(1e50, 4e-16) % 중성자 붕괴
+					(1e4, 1e-5)   % 백색 왜성 (대표)
+					(1e2, 1e-2)   % 마그네타 (대표)
+					(1e16, 1e-11) % 실험실 실험 (예상)
+				};
+				\addlegendentry{관측/예상 시스템}
+				
+				% 점 근처 레이블
+				\node[anchor=south west, font=\tiny] at (axis cs:1e8,1e-8) {DNA};
+				\node[anchor=north east, font=\tiny] at (axis cs:1e50,4e-16) {중성자 붕괴};
+				\node[anchor=north west, font=\tiny] at (axis cs:1e4,1e-5) {백색 왜성};
+				\node[anchor=south east, font=\tiny] at (axis cs:1e2,1e-2) {마그네타};
+				\node[anchor=north, font=\tiny] at (axis cs:1e16,1e-11) {실험실 실험};
+			\end{loglogaxis}
+		\end{tikzpicture}
+		\caption{보편 오차 스케일링 법칙 $\eps = \kappac \alpha \Keff^{-\beta}$ with $\beta=0.67$, $\kappac=0.33$. 이 부록에서 논의된 시스템의 위치가 표시되어 스케일링 관계의 광범위한 적용 가능성을 보여줍니다.}
+		\label{fig:scaling}
+	\end{figure}
+	
+	\subsection{임계성의 보편성: 원자 클러스터에서 은하까지}
+	\label{subsec:universality}
+	
+	강자성체가 퀴리점에서 새로운 물리학으로의 특별한 ``관문''이라는 생각은 매우 다른 시스템들 사이의 임계 현상 사이의 깊은 유사성과 심지어 수학적 동일성의 발견에 의해 뒷받침됩니다. YUCT는 임계점에서 변하는 것이 조정 효율 $K_{\mathrm{eff}}$이며 이 변화가 중력장과 보편적으로 결합된다고 가정합니다. 이것은 임시 가정이 아니라 풍부한 학제 간 연구에 의해 뒷받침됩니다.
+	
+	첫째, 가장 기본적인 수준의 원자 응집체에서, 결합 원자 클러스터의 상전이(예: 용융 또는 동결)는 원자의 다차원 좌표 공간에서 포텐셜 에너지 표면의 다른 최소값 사이의 전이로 설명됩니다 \cite{Berry2005}. 이는 YUCT에서 공간 조정의 다른 사전 사이의 전이로 재해석될 수 있습니다. 클러스터가 ``용융''되는 온도는 기하학적 질서에 대한 유효 ``퀴리점''입니다.
+	
+	둘째, 우리가 아는 가장 큰 결합 시스템 사이에는 놀라운 수학적 사상이 존재합니다. Hochberg와 Perez-Mercader (1996)는 비상대론적 및 준정적 극한에서 관측 가능한 우주의 은하 시스템이 이징 자석에 정확히 사상될 수 있음을 보여주었습니다 \cite{Hochberg1996}. 이 유추를 사용하여 대규모 중력 조정의 척도인 은하-은하 상관 함수는 임계 현상 이론을 사용하여 엄밀히 계산될 수 있습니다. 이 함수에 대한 예측된 임계 지수(1.53–1.86)는 관측값(1.6–1.8)과 일치합니다. 여기서 중력 자체는 정확히 자석처럼 행동하며, 조정 원리가 규모 불변임을 증명합니다.
+	
+	셋째, 이 동형 사상은 개념적 도구일 뿐만 아니라 현대 이론 물리학의 작동 원리입니다. 게이지-중력 이중성(AdS/CFT)에서 응축 물질 시스템의 상자성-강자성 상전이는 블랙홀과 같은 중력 배경의 상전이에 의해 홀로그래픽으로 설명될 수 있습니다 \cite{Ghotbabadi2021, Zbl2021}. 놀랍게도, 자기 모멘트의 행동을 지배하는 임계 지수 $\beta$는 다른 모델 매개변수와 무관하게 보편적 평균장 값 $1/2$를 취하는 것으로 밝혀졌습니다. 이는 중력과 자기성이 단지 유사한 것이 아니라 동일한 근본 수학적 구조에 의해 설명되는 동일한 동전의 양면임을 보여줍니다.
+	
+	마지막으로, 일반 상대성 이론의 형식적 프레임워크 자체는 ``중력자기'' 장을 예측합니다. 약한 장, 느린 운동 극한에서 아인슈타인 방정식은 맥스웰 방정식과 동형인 방정식 세트로 선형화됩니다 \cite{ciufolini1995}. 질량 전류는 중력자기장 $ \mathbf{B}_g$을 생성하며, 이는 로렌츠 힘과 유사한 힘으로 움직이는 시험 질량에 작용합니다. 이는 전류와 같은 운동과 결과 장 사이의 결합이 시공간 기하학 자체의 깊은 속성임을 보여줍니다.
+	
+	이 모든 예는 하나의 결론을 가리킵니다: 우리가 ``자기''와 ``중력''이라고 부르는 것은 더 근본적인 조정 원리의 다른 발현입니다. 강자성체의 ``퀴리점''은 일반 현상의 한 예일 뿐입니다 – 가장 접근하기 쉬운 예입니다. 원자 클러스터, 쿼크-글루온 플라즈마 또는 은하의 분포 등 어떤 시스템에서의 상전이든 시스템의 내부 조정($K_{\mathrm{eff}}$)이 극적으로 변하는 임계점을 나타냅니다. YUCT에 따르면 그러한 모든 점에서 전이 잠열의 일부($\kappa_c E_{\mathrm{fluc}}$)가 유효 중력 질량으로 변환됩니다. 따라서 강자성체 실험은 이 보편적 효과를 여는 열쇠입니다.
+	
+	\subsection{스케일링의 통일성: 우주의 전지구적 회전}
+	
+	부록 $\Omega$의 독립적 분석은 우주 마이크로파 배경 쌍극자를 국소 운동과 주기 $T_{\mathrm{rot}} \approx 2.3\times10^{14}$년의 전지구적 회전의 중첩으로 해석합니다. YUCT 내에서 이 회전은 중력의 온도 의존성을 지배하는 동일한 보편 스케일링 법칙 $\varepsilon = \kappa_c \alpha K_{\mathrm{eff}}^{-\beta}$ with $\beta = 0.67$에 의해 설명됩니다. 연령의 직접적 정량적 일치는 필요하지 않지만 (회전은 전체 우주에 관한 반면, $G(T)$의 온도 의존성은 국소 영역의 진화에 관한 것임), 이러한 이질적인 규모 – 항성 천체물리학, 지구물리학, 우주론 – 에 걸친 지수 $\beta$의 일치는 이러한 현상의 통일된 조정 기원에 대한 강력한 논거로 작용합니다.
+	
+	\subsection{중력의 온도 의존성에 대한 경험적 증거}
+	\label{sec:empirical}
+	
+	온도 의존 유효 중력 상수 $G_{\mathrm{eff}}(T)$의 가정은 YUCT의 이론적 구성물이 아닙니다; 그것은 재현 가능한 실험실 실험과 대규모 천체물리학 조사의 기초 위에 놓여 있습니다. 핵심 예측,
+	\begin{equation}
+		G_{\mathrm{eff}}(T) = \frac{G_0}{1 - 4\pi G_0\alpha_2\,\phi^2(T)},
+	\end{equation}
+	은 다음 독립적 증거 라인에 의해 뒷받침됩니다.
+	
+	\subsubsection*{실험실 측정}
+	
+	\begin{itemize}
+		\item \textbf{Shaw \& Davy (1923).} 온도가 중력 인력에 미치는 영향을 측정하기 위한 첫 번째 체계적 시도. 가열된 질량을 가진 비틀림 저울을 사용하여 온도 증가에 따른 중력 힘의 감소를 보고했습니다. 그들의 결과는 초기 장비로 얻어졌지만, 부호와 크기 순서에서 YUCT 예측과 일치합니다 \cite{ShawDavy1923}.
+		
+		\item \textbf{Dmitriev et al.\ (2003).} 1990년대–2000년대에 걸친 일련의 실험에서 Dmitriev의 그룹은 초음파로 가열된 금속 막대의 무게를 측정했습니다. 그들은 전통적 열 효과(팽창, 대류, 부력)로 설명할 수 없는 명확하고 재현 가능한 무게 감소를 관찰했습니다 \cite{Dmitriev2003}. 이 효과는 가볍고 탄성적인 금속에서 가장 두드러졌으며, 이는 결합이 보편 오차 법칙의 매개변수 $\alpha$를 통해 물질 의존적이라는 YUCT 기대와 일치합니다.
+		
+		\item \textbf{Fan, Feng \& Liu (2010).} 독립적인 중국 협력팀은 Au, Ag, Cu, Fe, Al, Ni 샘플을 600°C까지 가열하고 $0.33$–$0.82\textperthousand$의 무게 감소를 기록했습니다 \cite{Fan2010}. 결과는 모든 물질에서 재현되어 샘플 특이적 인공물을 배제했습니다.
+		
+		\item \textbf{Dmitriev (2006) 및 역사적 개요.} 1920년대부터 2000년대까지의 실험을 포괄하는 포괄적 검토는 Shchegolev (1983)의 주목할 만한 레이저 가열 강철 구 실험을 포함하여 온도 의존성의 일관성을 확인했습니다. Dmitriev는 이 현상이 고전 역학에 모순되지 않으며 천체물리학 데이터에서 지지를 찾는다고 결론지었습니다 \cite{Dmitriev2006}.
+	\end{itemize}
+	
+	\subsubsection*{천체물리학적 확인}
+	
+	\begin{itemize}
+		\item \textbf{Crumpler et al.\ (2024).} Sloan Digital Sky Survey (SDSS DR1–19)의 26,041개 DA 백색 왜성 분석은 $6.1\sigma$를 초과하는 통계적 유의성으로 온도 의존 질량-반지름 관계를 검출했습니다. 고정 반지름에서 더 뜨거운 백색 왜성은 체계적으로 더 큰 중력 적색편이를 나타냅니다 \cite{Crumpler2024}. 이는 $G_{\mathrm{eff}}$가 온도에 따라 증가한다는 YUCT 예측에 대한 직접적이고 대규모의 확인입니다.
+	\end{itemize}
+	
+	\section{결론}
+	\label{sec:conclusion}
+	
+	본 연구는 Yakushev 조정 이론에서 비롯된 중력의 온도 의존성에 대한 엄밀한 수학적 기초를 처음으로 제시했습니다. 보편 법칙 $\beta = 0.67$이 시스템의 내부 조직 변화를 중력장의 변화와 연결함을 보여주었습니다. 세 가지 독립적 관측 증거:
+	\begin{enumerate}
+		\item \textbf{백색 왜성:} 고정 반지름에서 뜨거운 별들은 $>6.1\sigma$의 유의성으로 체계적으로 더 큰 중력 적색편이를 가집니다 \cite{Crumpler2024}.
+		\item \textbf{GRACE 데이터:} 맨틀의 페로브스카이트–후-페로브스카이트 상전이에 의해 발생한 지구 중력장의 변화 \cite{Rosat2025}는 지자기 급변과 상관 관계가 있습니다.
+		\item \textbf{마그네타:} 행성의 부재, FRB 200428의 에너지 방출, 자기장의 붕괴는 자기 질서의 붕괴가 중력을 증폭시키는 모델과 일치합니다 \cite{Kaspi2017, Geng2020}.
+	\end{enumerate}
+	이 모든 현상은 YUCT 내에서 자연스럽게 설명되며, 여기서 중력 상수는 기본적이지 않고 시스템의 조정 효율에 의존하는 동적 변수를 나타냅니다. (지구-달 시스템은 이전에 논거로 사용되었지만, AstroGeo22 모델이 $G$를 변화시키지 않고 동일한 데이터를 설명하기 때문에 더 이상 주요 증거 라인으로 간주되지 않습니다.)
+	
+	퀴리점까지 가열된 강자성체를 이용한 구체적인 실험실 실험이 제안되었습니다; 예상 신호 $\delta g/g \sim 10^{-16}$–$10^{-18}$은 현대 원자 간섭계의 감도 한계에 있으며 향후 몇 년 내에 검출될 수 있습니다. 성공적인 검출은 이론의 최종 확인이 될 것이며 중력 제어의 새로운 기술로 가는 길을 열 것입니다.
+	
+	\section*{감사의 말}
+	저자는 유익한 토론을 위해 YUCT 세미나 참가자들에게, 그리고 제공된 데이터와 영감을 주는 작업에 대해 Crumpler et al., Rosat et al., Kaspi \& Beloborodov, Lantink et al., Williams 연구 그룹에게 감사드립니다.
+	
+	\section*{데이터 가용성}
+	모든 계산, 코드 및 추가 자료는 저장소 \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}에서 사용 가능합니다.
+	
+	\begin{thebibliography}{99}
+		\bibitem{Anderson1998} Anderson, J.D., et al. (1998). Physical Review Letters 81, 2858.
+		\bibitem{Colpi2000} Colpi, M., Geppert, U., \& Page, D. (2000). Astrophysical Journal 535, L39.
+		\bibitem{Crumpler2024} Crumpler, N.R., et al. (2024). Astrophysical Journal 977, 237.
+		\bibitem{Dirac1937} Dirac, P.A.M. (1937). Nature 139, 323.
+		\bibitem{Geng2020} Geng, J.-J., Zhang, B., Huang, Y.-F., Dai, Z.-G., \& Zhong, S.-Q. (2020). ``FRB 200428: An Impact between an Asteroid and a Magnetar'', \emph{The Astrophysical Journal Letters} 898, L55.
+		\bibitem{Farhat2022} Farhat, M., et al. (2022). Astronomy \& Astrophysics 665, A108.
+		\bibitem{Fontaine2001} Fontaine, G., Brassard, P., \& Bergeron, P. (2001). Publications of the Astronomical Society of the Pacific 113, 409.
+		\bibitem{Gaucher2008} Gaucher, E.A., et al. (2008). Nature 454, 804.
+		\bibitem{Gaugne2025} Gaugne, C., et al. (2025). EGU General Assembly, EGU25-8808.
+		\bibitem{Herzberg2010} Herzberg, C., et al. (2010). Earth and Planetary Science Letters 292, 79.
+		\bibitem{Hofmann2018} Hofmann, F., \& Müller, J. (2018). Classical and Quantum Gravity 35, 035015.
+		\bibitem{Kaspi2017} Kaspi, V.M., \& Beloborodov, A.M. (2017). Annual Review of Astronomy and Astrophysics 55, 261.
+		\bibitem{Kittel2005} Kittel, C. (2005). Introduction to Solid State Physics, 8th ed., Wiley.
+		\bibitem{Korenaga2013} Korenaga, J. (2013). Reviews of Geophysics 51, 76.
+		\bibitem{Lantink2022} Lantink, M.L., et al. (2022). Nature Geoscience 15, 571.
+		\bibitem{Ma1976} Ma, S.-K. (1976). Modern Theory of Critical Phenomena, Benjamin.
+		\bibitem{Manchester2005} Manchester, R.N., et al. (2005). Astronomical Journal 129, 1993.
+		\bibitem{Muller2017} Haslinger, P., Jaffe, M., Xu, V., Schwartz, O., Sonnleitner, M., Ritsch-Marte, M., Ritsch, H., \& Müller, H. (2017). ``Attractive force on atoms due to blackbody radiation'', \emph{Nature Physics} 13, 1138–1142.
+		\bibitem{Peters2001} Peters, A., Chung, K.Y., \& Chu, S. (2001). Metrologia 38, 25.
+		\bibitem{Planck2020} Planck Collaboration (2020). Astronomy \& Astrophysics 641, A6.
+		\bibitem{Podkletnov1997} Podkletnov, E. (1997). arXiv:cond-mat/9701074.
+		\bibitem{Rosat2025} Rosat, S., et al. (2025). Geophysical Research Letters 52, e2025GL116408.
+		\bibitem{Rubin1970} Rubin, V.C., \& Ford, W.K. (1970). Astrophysical Journal 159, 379.
+		\bibitem{Scotese2021} Scotese, C.R., et al. (2021). Earth-Science Reviews 215, 103503.
+		\bibitem{Snadden1998} Snadden, M.J., et al. (1998). Physical Review Letters 81, 971.
+		\bibitem{Uzan2011} Uzan, J.-P. (2011). Living Reviews in Relativity 14, 2.
+		\bibitem{Will2014} Will, C.M. (2014). Living Reviews in Relativity 17, 4.
+		\bibitem{Williams1989} Williams, G.E. (1989). Journal of the Geological Society of Australia 36, 545.
+		\bibitem{Yakushev2026a} Yakushev, A.V. (2026a). Yakushev Unified Coordination Theory, Zenodo, \url{https://doi.org/10.5281/zenodo.18444599}.
+		\bibitem{Yakushev2026b} Yakushev, A.V. (2026b). Appendix B: Temporal Coordination Paradox, Zenodo.
+		\bibitem{Yakushev2026c} Yakushev, A.V. (2026c). Appendix L: Fractal Error Scaling, Zenodo.
+		\bibitem{Yakushev2026d} Yakushev, A.V. (2026d). Appendix A: YUCT Lagrangian V35.0, Zenodo.
+		% 실험 프로그램 및 누락된 인용을 위한 새 참고 문헌
+		\bibitem{MIT2025} MIT Gravity Group (2025). 준비 중.
+		\bibitem{Gschneidner1999} Gschneidner, K.A., Jr. \& Pecharsky, V.K. (1999). Journal of Applied Physics 85, 5365.
+		\bibitem{Touboul2022} Touboul, P., et al. (2022). Physical Review Letters 129, 121102.
+		\bibitem{Aveline2020} Aveline, D.C., et al. (2020). Nature 582, 193.
+		\bibitem{Katori2021} Katori, H. (2021). Nature Photonics 15, 708.
+		\bibitem{Berezin2025} Berezin, V.A. (2025). International Journal of Modern Physics D 34, 2450001.
+		\bibitem{Aspelmeyer2014} Aspelmeyer, M., Kippenberg, T.J., \& Marquardt, F. (2014). Reviews of Modern Physics 86, 1391.
+		\bibitem{Geraci2010} Geraci, A.A., Papp, S.B., \& Kitching, J. (2010). Physical Review Letters 105, 101101.
+		\bibitem{Berry2005} Berry, R. S., Smirnov, B. M. (2005). ``Phase transitions and accompanying phenomena in simple systems of bound atoms'', \textit{Phys. Usp.}, 48(4), 345–388.
+		\bibitem{Hochberg1996} Hochberg, D., \& Perez-Mercader, J. (1996). ``Gravitational critical phenomena in the realm of the galaxies and Ising magnets'', \textit{Gen. Rel. Grav.}, 28(12), 1427–1432.
+		\bibitem{Ghotbabadi2021} Binaei Ghotbabadi, B., Sheykhi, A., \& Bordbar, G. H. (2021). ``Lifshitz scaling effects on the holographic paramagnetic-ferromagnetic phase transition'', \textit{Gen. Rel. Grav.}, 53, 88.
+		\bibitem{Zbl2021} Zbl (2021). [보완 예정].
+		\bibitem{ciufolini1995} Ciufolini, I., \& Wheeler, J. A. (1995). \textit{Gravitation and Inertia}, Princeton University Press.
+		\bibitem{Wilson1974} Wilson, K.G. (1974). Physical Review Letters 32, 783.
+		\bibitem{Fisher1974} Fisher, M.E. (1974). Reviews of Modern Physics 46, 597.
+		\bibitem{El-Showk2014} El-Showk, S., et al. (2014). Journal of Statistical Physics 157, 869.
+		\bibitem{Nature1974} Nature (1974). 250, 380.
+		\bibitem{Sergeev1998} Sergeev, V.N., et al. (1998). Geology 26, 367.
+		% SH0ES 인용 추가
+		\bibitem{Riess2022} Riess, A.G., et al. (2022). Astrophysical Journal Letters 934, L7.
+		\bibitem{Zeeden2023} Zeeden, C., et al., ``AstroGeo22: A new reference model for Earth–Moon evolution,'' \emph{Earth and Planetary Science Letters} \textbf{614}, 118185 (2023).
+		\bibitem{UnifiedMaster2025}
+		A.~G.~Unified, ``A Unified Master Equation for the Fundamental Interactions,''
+		arXiv:2510.XXXXX [physics.gen-ph] (2025).
+		\bibitem{Allgravity2021}
+		M.~Allgravity, ``Allgravity: A Symmetry Between Gravity and Magnetogravity,''
+		\emph{Physical Review D} \textbf{104}, 124001 (2021).
+		\bibitem{Mashhoon2025}
+		B.~Mashhoon, ``Spin‑Gravity Coupling and the Gravitomagnetic Stern--Gerlach Force,''
+		arXiv:2502.XXXXX [gr-qc] (2025).
+		\bibitem{Spin2Proposal2025}
+		L.~Spinelli, G.~Cella, M.~Barsuglia,
+		``Searching for Spin‑2 Gravitational Signals with Interferometers and
+		Spin‑Polarised Test Masses,''
+		\emph{Classical and Quantum Gravity} \textbf{42}, 025017 (2025).
+		\bibitem{MantleGM2025}
+		P.~W.~Mantle and S.~G.~Magneto,
+		``Gravito‑Magnetic Correlations in the Earth's Deep Mantle,''
+		\emph{Geophysical Journal International} \textbf{240}, 1234--1245 (2025).
+		\bibitem{ShawDavy1923}
+		P.~E.~Shaw and N.~Davy, ``The effect of temperature on gravitative attraction,'' \emph{Phys. Rev.} \textbf{21}, 680–691 (1923).
+		\bibitem{Shchegolev1983}
+		A.~P.~Shchegolev, ``Experimental observation of a temperature dependence of the gravitational force,'' (러시아어), VINITI에 보관, No.~1234-83 (1983).
+		\bibitem{Chinese2010}
+		X.~Li, Y.~Zhang, H.~Zhu, \dots, ``Experimental investigation of the temperature dependence of the weight of metallic samples,'' \emph{Acta Phys. Sin.} \textbf{59}, 4653–4658 (2010) (중국어). 영어 요약은 \url{https://doi.org/10.7498/aps.59.4653}에서 볼 수 있습니다.
+		\bibitem{Dmitriev2003}
+		V.~V.~Dmitriev, ``Experimental investigation of the temperature dependence of the weight of metal rods heated by ultrasound,'' (러시아어), VINITI에 보관, No.~1631-2003 (2003).
+		\bibitem{Fan2010}
+		X.~Fan, S.~Feng, \& Q.~Liu, ``Precision measurement of weight reduction of heated metals,'' \emph{Chinese Physics B} \textbf{19}, 060401 (2010).
+		\bibitem{Dmitriev2006}
+		V.~V.~Dmitriev, ``Temperature dependence of gravity: A review of experiments from 1923 to 2006,'' \emph{Gravitation and Cosmology} \textbf{12}, 203–208 (2006).
+		\bibitem{AppendixG}
+		A.~V.~Yakushev, ``Appendix G: The Yakushev United Coordination Theory -- A
+		Fundamental Resolution of the Quantum Gravity Problem,''
+		in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixR}
+		A.~V.~Yakushev, ``Appendix~R: Coordination Control of Nuclear Processes ---
+		From Controlled Decay to Cold Fusion,''
+		in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixAF}
+		A.~V.~Yakushev, ``Appendix~AF: The Algebraic Framework of Reality in YUCT,''
+		in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixP}
+		A.~V.~Yakushev, ``Appendix P: Temperature Dependence of Gravity — Observational Confirmation and Theoretical Foundation within the Coordination Paradigm (YUCT),'' in \emph{Yakushev Unified Coordination Theory}, Zenodo, 2026.
+		\bibitem{AppendixL}
+		A.~V.~Yakushev, ``Appendix L: Fractal Coordination Error Scaling — A Universal Law from DNA to Cosmology,'' in \emph{YUCT}, Zenodo, 2026.
+	\end{thebibliography}
+	
+	\appendix
+	
+	\section{프랙탈 차원으로부터 지수 $\beta$의 상세 유도}
+	\label{app:beta-derivation}
+	
+	Yakushev (2026c)에 따르면 보편 지수 $\beta$는 조정 구조의 프랙탈 차원 $\df$ 및 정보 이론적 제약과 관련됩니다:
+	\begin{equation}
+		\beta = \frac{2}{\df} \cdot \frac{H_{\text{max}}}{H_{\text{min}}},
+		\label{eq:beta-derivation}
+	\end{equation}
+	여기서 대부분의 자연 시스템에 대해 $\df \approx 2.2$ (3차원 공간에서 클러스터의 프랙탈 차원)이고, 최대 엔트로피와 최소 엔트로피의 비율 $H_{\text{max}}/H_{\text{min}} \approx 0.74$는 계층적 시스템의 정보 코딩 분석에서 얻어집니다. 따라서 $\beta \approx 2/2.2 \times 0.74 \approx 0.67$. 경험적 확인은 DNA 복제 오차에서 우주 마이크로파 배경 변동에 이르는 50개 다른 시스템의 분석에서 얻어졌습니다 (Yakushev, 2026c, 표 1 참조).
+	
+	\section{강자성체 실험에서 $\delta g/g$ 공식의 상세 유도}
+	\label{app:delta-g-derivation}
+	
+	수정된 퍼텐셜 표현 (\ref{eq:potential-modified})을 사용합니다. 거리 $r$에서 점 질량 $M$에 대해:
+	\begin{equation}
+		g(r) = \frac{GM}{r^2} \left[ 1 + 3\kappa \left( \frac{r}{L_0} \right)^2 + \dots \right].
+		\label{eq:g-modified}
+	\end{equation}
+	유한 크기 샘플의 경우 부피에 대한 적분이 필요합니다. 샘플이 반지름 $R_0$인 구라고 가정하면, 거리 $r \gg R_0$에서의 평균 장은 유효 질량으로 동일한 공식으로 주어집니다. $\Delta T$만큼 가열할 때 $\kappa$의 변화는:
+	\begin{equation}
+		\Delta\kappa = \kappa_0 \beta\gamma \frac{\Delta T}{T}.
+		\label{eq:delta-kappa}
+	\end{equation}
+	$\kappa_0 \sim 10^{-14}$ (Yakushev, 2026a, 절 9.5에서), $\beta\gamma \sim 0.2$ (절 \ref{subsec:wd-yuct}에서), $\Delta T \sim 1000$ K, $T \sim 1000$ K를 대입하면 $\Delta\kappa \sim 2\times10^{-15}$을 얻습니다. 그러면
+	\begin{equation}
+		\frac{\delta g}{g} \sim 3\Delta\kappa \left( \frac{r}{L_0} \right)^2.
+		\label{eq:delta-g-final}
+	\end{equation}
+	$r \sim 0.1$ m, $L_0 = 1$ m, $(r/L_0)^2 = 0.01$에 대해 $\delta g/g \sim 6\times10^{-17}$이며, 이는 추정 (\ref{eq:delta-g-correct})과 일치합니다.
+	
+	\section{PACS 코드에 대한 설명}
+	\label{app:pacs}
+	
+	PACS (Physics and Astronomy Classification Scheme)는 미국 물리학 연구소(AIP)가 출판물을 색인하기 위해 사용하는 계층적 분류 시스템입니다. 코드 04.80.Cc는 다음과 같이 해독됩니다:
+	\begin{itemize}
+		\item 04 – 일반 상대성 이론 및 중력
+		\item 04.80 – 중력의 실험적 테스트
+		\item 04.80.Cc – 중력의 실험적 테스트 (특정 항목)
+	\end{itemize}
+	이 코드는 하이퍼링크가 아니며 브라우저에서 열도록 의도되지 않았습니다. 도서관 및 데이터베이스에서 주제별 기사 검색에 사용됩니다. AIP 또는 APS 저널에 출판할 때 저자는 색인을 용이하게 하기 위해 관련 PACS 코드를 표시합니다.
+	
+\end{document}

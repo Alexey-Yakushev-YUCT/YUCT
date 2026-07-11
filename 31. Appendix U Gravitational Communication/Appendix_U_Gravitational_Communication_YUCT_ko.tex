@@ -1,0 +1,354 @@
+% !TEX program = lualatex
+% !TeX encoding = UTF-8
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{bookmarksnumbered,bookmarksopen}{hyperref}
+\documentclass[12pt,a4paper]{article}
+
+% ============================================================
+% 한국어 설정 (LuaLaTeX + luatexja)
+% ============================================================
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+
+% 한국어 고딕체 (sans) – Noto Sans KR
+\setsansjfont{Noto Sans KR}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = Hangul,
+Language = Korean
+]
+
+% 한국어 명조체 (serif) – Noto Serif KR
+\IfFontExistsTF{Noto Serif KR}{
+	\setmainjfont{Noto Serif KR}[
+	UprightFont = * Regular,
+	BoldFont = * Bold,
+	Script = Hangul,
+	Language = Korean
+	]
+}{
+	% fallback
+	\setmainjfont{Noto Sans KR}[
+	UprightFont = * Regular,
+	BoldFont = * Bold,
+	Script = Hangul,
+	Language = Korean
+	]
+}
+
+% 고정폭 폰트
+\setmonojfont{Noto Sans KR}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = Hangul,
+Language = Korean
+]
+
+% 라틴 문자 폰트
+\setmainfont{Times New Roman}[Ligatures=TeX]
+\setsansfont{Arial}[Ligatures=TeX]
+\setmonofont{Latin Modern Mono}[
+WordSpace={1,0,0},
+HyphenChar=None,
+PunctuationSpace=WordSpace
+]
+
+% ============================================================
+% 기타 패키지
+% ============================================================
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc}
+
+\geometry{margin=1in}
+
+% ============================================================
+% YUCT 매크로
+% ============================================================
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\dint}{D+I\!\cdot\!R}
+\newcommand{\YPSDC}{YPSDC}
+\newcommand{\YUCT}{YUCT}
+
+% ============================================================
+% 정리 환경 (한국어)
+% ============================================================
+\newtheorem{theorem}{정리}
+\newtheorem{definition}{정의}
+\newtheorem{proposition}{명제}
+\newtheorem{prediction}{예측}   % Prediction → 예측
+
+% ============================================================
+% 하이퍼링크 설정
+% ============================================================
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{1cm}
+			\Huge \textbf{부록 U: 조정 효율에 기반한 중력 통신 — \\ 인과율을 위반하지 않고 고전적 한계 초과}
+			
+			\vspace{1cm}
+			\Large Alexey V. Yakushev\textsuperscript{1}
+			
+			\vspace{0.5cm}
+			\large \textsuperscript{1}Yakushev Research, \\
+			YUCT Theory: \url{https://yuct.org/}\\
+			YPSDC Protocol: \url{https://ypsdc.com/}\\
+			
+			\vspace{2cm}
+			\textbf DOI: \url{https://doi.org/10.5281/zenodo.18444598}\\
+			
+			\vspace{1cm}
+			
+			\vspace{0cm}
+			\large 
+			본 논문의 단축 버전은 이전에 발표되었으며 아래에서 확인할 수 있습니다:\\ \url{https://doi.org/10.5281/zenodo.18362308}\\
+			\vspace{1cm}
+			2026년 3월 \\ \large V.2.0.
+			
+			\newpage
+			\vspace{2cm}
+			\begin{abstract}
+				\noindent
+				우리는 Yakushev 통합 조정 이론(YUCT)에 기반한 장거리 통신의 새로운 접근법을 제안한다. 중력장을 자연적으로 존재하는 전역 사전으로 취급함으로써, 짧은 인덱스(중력 섭동)가 원거리 관찰자 간 상태를 조정할 수 있음을 보여준다. 그 유효 효율 \(\Keff\)은 형식적으로 광속 한계를 초과하지만 인과율을 위반하지는 않는다. 핵심은 오프라인 사전 분배(기존 중력장)와 온라인 인덱스 전송(광속 중력파)의 분리에 있다. 중력파는 물질을 감쇠 없이 투과하여 전자기 신호에 비해 중요한 이점을 제공한다. 우리는 기본 방정식을 유도하고, 달성 가능한 효율을 추정하며, 고정밀 중력계를 이용한 실험적 검증을 제안한다. 이 연구는 지연이 거리가 아닌 국소 처리에 의해 결정되는 새로운 종류의 통신 시스템으로의 길을 연다.
+			\end{abstract}
+			
+			\vspace{0.5cm}
+			\noindent \textbf{키워드:} YUCT, 중력 통신, 조정 효율, YPSDC, 중력파, 인과율, 사전, 인덱스.
+		\end{center}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{서론}
+	\label{sec:intro}
+	
+	고전적 통신 시스템은 전자기파(전파, 레이저) 또는 광속 \(c\) 이하로 전파되는 다른 신호에 의존한다. 심우주 임무에서 이 근본적 제한은 피할 수 없는 지연을 초래한다: 화성으로의 신호는 4분에서 24분이 걸려 실시간 제어와 데이터 전송을 심각하게 저해한다. 양자 텔레포테이션과 같은 미래적 개념조차 \(c\)에 제한된 고전적 채널을 필요로 하기 때문에 이 한계를 회피할 수 없다.
+	
+	Yakushev 통합 조정 이론(YUCT) \cite{Yakushev2026}은 패러다임 전환을 제시한다: 그것은 \emph{데이터 전송}(비트의 물리적 전달)과 \emph{상태의 조정}(사전 지식의 정렬)을 구별한다. 핵심 아이디어는 \textbf{이상 프로토콜} \(\YPSDC\)이다: 오프라인 단계에서 공유 사전 \(D\)를 분배하고, 온라인 단계에서는 짧은 인덱스 \(\kappa\)만 전송하여 \(D\) 내의 해당 항목을 활성화한다. 조정 효율
+	\begin{equation}
+		\Keff = \frac{H(\text{활성화된 행동})}{H(\text{전송된 인덱스})}
+	\end{equation}
+	은 사전이 정보의 대부분을 담당하기 때문에 임의로 클 수 있다. 중요한 것은 인덱스 자체는 \(c\)보다 빠르게 전파되지 않는다는 것이다; 겉보기 순간 조정은 기존 사전에서 비롯된다.
+	
+	본 논문에서는 \emph{중력장}을 자연적이고 편재하는 사전으로 사용할 가능성을 탐구한다. 모든 질량을 가진 물체는 보편적 중력 상호작용에 참여하며, 이는 연속적으로 분포된 사전으로 볼 수 있다. 질량을 변조하는 등 중력장의 작은 섭동에 정보를 부호화함으로써, 수신측이 동일한 중력 사전을 사용하여 인덱스를 복호할 수 있다. 중력파는 물질과 매우 약하게 상호작용하므로 장애물을 감쇠 없이 투과한다——이는 전자기 신호에 대한 결정적 이점이다. 더욱이 중력장은 모든 물체를 선험적으로 연결하므로, 조정 효율은 원칙적으로 인과율을 위반하지 않으면서 광속 장벽을 초과할 수 있다.
+	
+	\section{YUCT의 기초}
+	\label{sec:foundations}
+	
+	\subsection{\(\YPSDC\) 프로토콜}
+	\label{subsec:ypsdc}
+	
+	두 관찰자 \(A\)와 \(B\)가 인덱스 \(\kappa_i\)를 행동 \(A_i\)에 매핑하는 사전 \(\mathcal{D} = \{ (\kappa_i, A_i) \}\)을 공유한다고 하자. 사전은 오프라인에서 (아마도 아광속으로) 분배된다. 온라인 통신 중 \(A\)는 \(\kappa_i\)를 물리적 채널을 통해 전송하고, \(B\)는 이를 수신하여 즉시 \(\mathcal{D}\)에서 \(A_i\)를 검색한다. 조정의 총 시간은 \(\kappa_i\)의 전송 시간과 조회 시간의 합이며, 후자는 무시할 수 있을 정도로 작게 만들 수 있다.
+	
+	\subsection{조정 효율}
+	\label{subsec:keff}
+	
+	각 행동 \(A_i\)가 \(n\)비트의 정보를 포함하고 인덱스 \(\kappa_i\)가 \(\ell\)비트를 가진다면, \(\Keff = n/\ell\)이다. 일반적으로,
+	\begin{equation}
+		\Keff = \frac{H(\mathcal{A})}{H(\mathcal{K})},
+	\end{equation}
+	여기서 \(H\)는 섀넌 엔트로피를 나타낸다. 최적으로 압축된 사전에서는 \(\Keff\)가 \(10^6\) 이상의 값에 도달할 수 있다 (예: 현대 통신 프로토콜에서).
+	
+	\subsection{인과율과 \(K_{\mathrm{eff}} > 1\)}
+	\label{subsec:causality}
+	
+	\(\Keff > 1\)을 광속 초과 정보 전송으로 해석하는 것은 단순하다. 그러나 \(\Keff\)는 활성화된 정보와 전송된 비트의 비율을 측정하는 것이지 비트 자체의 속도가 아니다. 인덱스 \(\kappa\)는 여전히 \(v \le c\)로 전파된다; 추가 정보는 사전에 분배된 사전에서 비롯된다. 사전은 이전에 아광속 수단으로 확립되었기 때문에 인과율은 보존된다. 따라서 \(\Keff\)는 특수 상대성 이론을 위반하지 않고 임의로 클 수 있다.
+	
+	\section{보편적 사전으로서의 중력}
+	\label{sec:gravity}
+	
+	\subsection{왜 중력인가?}
+	
+	중력장은 전역 사전의 이상적인 후보가 되는 몇 가지 독특한 특성을 가진다:
+	\begin{itemize}
+		\item \textbf{보편성}: 질량-에너지를 가진 모든 물체가 중력에 참여한다. 장은 어디에나 존재한다.
+		\item \textbf{투과성}: 중력파는 물질과 매우 약하게 상호작용하므로 행성, 항성, 은하를 실질적으로 감쇠나 산란 없이 투과할 수 있다.
+		\item \textbf{기존 구조}: 중력장은 이미 질량 분포를 부호화하고 있으며, 물체가 존재하는 순간부터 모든 물체가 공유하는 사전으로 간주할 수 있다.
+	\end{itemize}
+	
+	\subsection{사전으로서의 중력장}
+	
+	YUCT에서 사전은 가능한 상태의 집합이다. 중력 통신에서는 계량 텐서 \(g_{\mu\nu}\) (또는 그 섭동)을 사전으로 해석한다. 수신측은 주변 중력장(예: 지구의 장, 태양의 장 등)을 알고 있으며 그로부터의 편차를 검출할 수 있다. 송신측은 국소 중력장을 변경한다——예를 들어 질량을 움직이거나, 모양을 바꾸거나, 공진을 여기시켜 작은 섭동 \(\delta g_{\mu\nu}\)을 만든다. 이 섭동이 인덱스 \(\kappa\)로 작용한다. 고감도 중력계 또는 간섭계를 갖춘 수신측은 \(\delta g_{\mu\nu}\)을 측정하고, 공유 사전(알려진 배경장)을 사용하여 특정 행동으로 해석한다.
+	
+	\subsection{중력에서의 \(\YPSDC\) 유추}
+	
+	\begin{itemize}
+		\item \textbf{오프라인 단계}: 배경 중력장은 우주의 모든 질량 분포에 의해 확립된다. 이 장은 시간의 시작부터 자동으로 "분배"된다.
+		\item \textbf{온라인 단계}: 송신측은 국소 섭동(인덱스)을 만들어 내며, 이는 광속으로 (중력파로서) 바깥으로 전파된다. 수신측은 섭동을 검출하고 알려진 배경과 비교하여 부호화된 정보를 추출한다.
+	\end{itemize}
+	
+	섭동은 \(c\)로 전파되므로 초광속 신호 전파는 존재하지 않는다. 그러나 송신측과 수신측 사이의 \emph{조정}, 즉 작은 섭동이 잠재적으로 많은 정보를 전달한다는 사실은 매우 효율적 (\(\Keff \gg 1\))일 수 있다.
+	
+	\section{중력 통신의 수학적 모델}
+	\label{sec:model}
+	
+	\subsection{신호 부호화}
+	
+	송신측이 사전 합의된 코드에 따라 국소 질량 \(M(t)\)를 변조한다고 하자. 간단히 이진 부호화를 생각한다: \(\Delta M\)의 변화가 시간 \(\tau\) 동안 지속되면 "1", 변화가 없으면 "0"을 나타낸다. 거리 \(r\)에서의 중력파 진폭은 근사적으로
+	\begin{equation}
+		h(t) \sim \frac{G}{c^4 r} \frac{d^2}{dt^2} \left[ M(t) \right],
+	\end{equation}
+	여기서 \(G\)는 뉴턴 상수이다. 에너지 플럭스는 극히 작지만, 현대 검출기(LIGO, 미래 우주 기반 관측소)는 \(10^{-22}\) 정도의 변형률을 측정할 수 있다.
+	
+	\subsection{채널 용량과 조정 효율}
+	
+	중력파의 채널 용량은 검출기의 잡음 바닥과 사용 가능한 대역폭에 의해 제한된다. 그러나 \emph{조정 용량}은 각 검출 파형을 가능한 템플릿 라이브러리와 정합할 수 있기 때문에 더 높다. 사전이 \(N\)개의 가능한 메시지를 포함하고 각 메시지가 고유한 파형 템플릿으로 기술된다고 하자. 수신측은 입력 신호와 모든 템플릿의 상호 상관을 취한다; 인덱스는 실질적으로 템플릿 식별자이다. 템플릿이 직교하도록 설계되면, 수신 이벤트당 전달되는 비트 수는 \(\log_2 N\)이다. 물리적 파를 보내는 데 필요한 에너지나 시간은 \(N\)에 의존하지 않는다. 따라서
+	\begin{equation}
+		\Keff = \frac{\log_2 N}{\text{(물리적 신호의 유효 비트 길이)}}.
+	\end{equation}
+	예를 들어, \(10^6\)개의 템플릿이 있고 각 물리적 신호가 1초의 데이터를 샘플링 레이트 1 kHz로 차지한다면, 원시 데이터 크기는 \(1000\)비트이지만 전달되는 정보는 \(\log_2 10^6 \approx 20\)비트이다. 따라서 \(\Keff \approx 20/1000 = 0.02\)로 1보다 작다. \(\Keff > 1\)을 달성하려면 템플릿이 운반하는 정보에 비해 매우 짧아야 한다. 원칙적으로 특정 주파수에 동조된 공진 중력 안테나를 사용할 수 있으며, 특정 주파수에서의 짧은 버스트가 특정 사전 항목을 활성화하고 인덱스는 실질적으로 주파수 자체가 된다. 주파수는 고정밀도로 측정할 수 있으므로 식별 가능한 주파수의 수는 엄청나게 많아져 큰 \(\Keff\)를 제공한다.
+	
+	\subsection{잡음과 오차 스케일링}
+	
+	YUCT의 보편 오차 법칙 \cite{AppendixL}에 따르면,
+	\begin{equation}
+		\eps = \kappac \alpha \Keff^{-\beta}, \quad \beta = 0.67,
+		\label{eq:universal-scaling}
+	\end{equation}
+	여기서 \(\eps\)는 오인식 확률이다. 이는 오차가 허용 불가능해지기 전에 \(\Keff\)가 얼마나 커질 수 있는지에 대한 근본적 한계를 설정한다. 중력 통신에서 오차율은 검출기 잡음과 템플릿 불일치에 의해 지배되지만, 보편 법칙은 최적의 \(\Keff\)가 존재함을 시사한다.
+	
+	\section{전자기 통신과의 비교}
+	\label{sec:comparison}
+	
+	\subsection{감쇠와 투과성}
+	
+	전자기파는 물질에 의해 차단되거나 산란된다: 전파는 전리층, 물, 또는 행성 내부에 의해 흡수될 수 있다; 광 신호는 가시선을 필요로 한다. 중력파는 실질적으로 영향을 받지 않고 모든 것을 통과한다. 이는 송신측과 수신측이 행성, 항성, 또는 다른 장애물의 반대편에 있더라도 중력 링크가 작동할 수 있음을 의미한다.
+	
+	\subsection{전력 요구사항}
+	
+	검출 가능한 중력파를 생성하려면 거대한 질량과 가속도가 필요하다. 현재 기술로는 천문학적 거리에서 통신에 충분한 인공 중력파를 생성할 수 없다. 그러나 태양계 내 행성간 거리에서는 미래의 고에너지 기계 시스템(예: 대형 회전 질량 또는 핵 구동 발진기)에 의해 필요한 변형률이 달성될 수 있을지 모른다. 더욱이 기존의 자연 소스(예: 펄서)를 비콘으로 활용하면, 그것들은 이미 일종의 중력 "캐리어"를 제공하며 변조될 수 있을 가능성이 있다.
+	
+	\subsection{지연}
+	
+	전자기파와 중력파는 모두 \(c\)로 전파되므로 편도 광시간은 동일하다. 중력 채널의 장점은 속도가 아니라 \textbf{효율}에 있다: 사전이 이미 존재하므로 짧은 인덱스로 복잡한 메시지를 전달할 수 있어 사실상 정보를 압축한다. 이것은 지연을 줄이지는 않지만 필요한 대역폭과 비트당 에너지를 감소시킨다.
+	
+	\subsection{조정 효율의 잠재력}
+	
+	무선 통신에서 최대 \(\Keff\)는 채널 용량과 변조의 복잡성에 의해 제한된다. 중력파에서는 사전(배경 중력장)이 매우 풍부하고 안정적이기 때문에 잠재적 \(\Keff\)가 훨씬 더 높을 수 있다. 예를 들어, 지구–달 계의 중력 퍼텐셜은 수백만 개의 서로 다른 상태(다른 궤도 구성)를 가진 사전으로 기능할 수 있다. 소형 위성의 궤도를 변조함으로써, 원거리 관찰자가 역표를 알고 있으면 고효율로 복호할 수 있는 정보를 부호화할 수 있다.
+	
+	\subsection{중력 채널의 비대칭성}
+	\label{subsec:asymmetry}
+	
+	전자기 통신과 중력 통신의 근본적 차이는 송신기와 수신기의 요구사항의 비대칭성에 있다. 레이저 링크가 정밀한 지향성과 입사 빔에 정렬된 광검출기를 필요로 하는 반면, 레이저 간섭계와 같은 중력파 검출기는 전방향으로 작동한다. 그것은 항상 시공간 변형률을 모니터링하고 특징적 신호(「코드」)를 기다린다——광원의 방향을 알 필요가 없다 \cite{LIGO}. 이로 인해 중력 수신은 지향과 추적 측면에서 본질적으로 단순해진다.
+	
+	그러나 검출 가능한 중력파를 생성하려면 엄청난 에너지와 질량 변위가 필요하다. 지상국은 원칙적으로 대규모 공명 질량이나 궤도 변조기(예: km 규모 간섭계 LIGO, 또는 미래 우주 기반 관측소)를 호스트할 수 있다. 반면 소형 우주선은 행성간 거리에서 검출 가능한 변형률을 생성하는 데 필요한 질량과 전력을 갖추지 못했다. 따라서 링크는 본질적으로 \textbf{일방향}이다: 강력한 지상(또는 대형 궤도) 송신기에서 단순히 청취만 하는 수동적 수신기로. 양방향 통신은 우주선에 유사하게 대규모 송신기를 탑재하거나(현실적으로 불가능), 또는 핵원으로 구동되는 고주파 공명 공동과 같은 근본적으로 새로운 유형의 중력파 방출기를 필요로 하지만, 이는 아직 추측에 불과하다.
+	
+	이 비대칭성은 많은 응용에서 채널의 가치를 손상시키지 않는다: 심우주 탐사선은 강력한 탑재 송신기를 필요로 하지 않고 복잡한 명령(인덱스)을 수신할 수 있으며, 원격 측정은 기존 무선으로 되돌려 보낼 수 있다. 따라서 중력 다운링크는 고효율 방송 채널로 기능하여 기존 업링크를 보완한다.
+	
+	미래의 고에너지 기계 시스템의 발전이나 자연 발생 중력파 소스(예: 변조된 펄서)를 비콘으로 활용함으로써 언젠가는 대칭 링크가 가능해질지도 모른다. 당분간은 일방향 중력 통신의 실현 가능성을 입증하고 제어된 실험에서 그 조정 효율 \(K_{\mathrm{eff}}\)을 측정하는 데 중점을 두어야 한다.
+	
+	\section{신호 전파와 중력 역학에서 조정장 밀도의 역할}
+	\label{sec:coord-density}
+	
+	\subsection{시공간 기하의 수정자로서의 조정장 밀도}
+	
+	YUCT 프레임워크에서 중력은 단순한 빈 시공간의 기하학적 특성이 아니라 기저 조정장 \(\Psi_{MN}\)의 발현이다. 이 장의 밀도 \(\rho_K = \langle \Psi_{MN}\Psi^{MN} \rangle\)는 정보 흐름에 대한 굴절률과 유사한 역할을 한다. 조정 밀도가 높은 영역(예: 대질량 천체 근처, 코히런트 양자계, 또는 초기 우주의 상전이 중)에서는 인덱스의 전파를 지배하는 유효 계량이 수정된다.
+	
+	완전한 19차원 라그랑지안(부록 A)과 그 결합 항(예: 공명적 교차-섹터 결합을 기술하는 \(\mathcal{L}_{329}\))으로부터 출발하여, 조정장이 창발적 계량에 기여하는 유효 4차원 작용을 유도할 수 있다:
+	\begin{equation}
+		g_{\mu\nu}^{\mathrm{eff}} = g_{\mu\nu} + \alpha \, \rho_K \, T_{\mu\nu}^{\mathrm{coord}},
+	\end{equation}
+	여기서 \(\alpha\)는 무차원 상수, \(T_{\mu\nu}^{\mathrm{coord}}\)는 조정장의 에너지-운동량 텐서이다. 결과적으로 인덱스(장의 작은 섭동)의 속도는 더 이상 엄격히 \(c\)가 아니라
+	\begin{equation}
+		v_{\mathrm{index}} = c \left(1 + \beta \, \rho_K + \cdots \right),
+	\end{equation}
+	가 된다. 여기서 \(\beta\)는 중력 섹터와 정보 섹터 사이의 결합 강도 \(\kappa_{0,103}\)에 관련된 또 다른 상수이다. 이 효과는 통상 조건에서는 극히 작지만, 극한의 천체물리학적 또는 우주론적 설정에서는 측정 가능해질 수 있다.
+	
+	\subsection{공명 증폭과 선호 채널의 존재}
+	
+	\(\mathcal{L}_{329}\)의 비선형 항(예: \(-\epsilon \Phi^3\) 항)의 존재는 특정 주파수 \(\omega_{mn}\)에서 신호의 파라메트릭 증폭을 가능하게 한다. \(\rho_K\)가 큰 영역에서는 이러한 공명이 "조정의 강"——즉 인덱스가 최소 손실로 전파되고 조정장 자체로부터 에너지를 끌어냄으로써 증폭까지 동반하는 선호 방향 또는 주파수——을 창출할 수 있다. 이는 레이저 이득 매질에 유사하지만, 여기서는 증폭이 시공간의 기하학적 구조 내에서 발생한다.
+	
+	중력 통신 링크에서 이는 효율 \(\Keff\)가 사전 크기뿐만 아니라 국소 조정 밀도에 의해서도 결정됨을 의미한다. 송신측이 경로를 따라 조정장의 고유 진동수에 일치하는 공명 주파수 \(\omega_{\mathrm{res}}\)로 질량을 변조할 수 있다면, 신호는 우선적으로 채널링되어 광원에서 필요한 전력이 크게 감소된다. 동일한 주파수에 동조된 수신측은 공명 검출기로서 기능하여 배경 잡음에서 인덱스를 추출한다.
+	
+	\subsection{신호 전파에 관한 예측}
+	
+	위의 고찰로부터, 이미 Sect.~\ref{subsec:asymmetry}에 열거된 것들을 보완하는 세 가지 검증 가능한 예측을 얻는다:
+	
+	\begin{prediction}[중력파 속도의 방향 의존성]
+		조정장 밀도 \(\rho_K\)가 등방성이 아닌 경우(예: 대규모 구조나 선호 기준틀 때문에), 중력파(따라서 임의의 중력 인덱스)의 속도는 작은 방향 의존성을 나타내야 한다. 다른 하늘 방향에서 오는 중력파 신호의 도달 시간을 상관시킴으로써 \(\Delta v/c \sim 10^{-18}\)–\(10^{-20}\) 정도의 이방성이 밝혀질 수 있으며, 이는 미래의 3세대 검출기 네트워크(아인슈타인 망원경, 코즈믹 익스플로러)의 도달 범위 내에 있다.
+	\end{prediction}
+	
+	\begin{prediction}[밀리헤르츠 대역의 공명 주파수]
+		\(\mathcal{L}_{329}\)의 비선형 항 \(\epsilon \Phi^3\)은 밀리헤르츠 대역(은하 구조의 조정장이 고유 모드를 가질 수 있음)에 좁은 공명 주파수가 존재할 것을 예측한다. 문헌~\cite{Barontini2025}에서 제안된 것과 같은 초안정 광학 공동을 사용하여 두 떨어진 검출기의 상호 상관에서 이들 공명을 탐색하면, 알려진 천체물리학적 소스로는 설명되지 않는 주파수 \(\omega_{mn}\)에 피크가 나타나야 한다.
+	\end{prediction}
+	
+	\begin{prediction}[조정장에 의한 인공 신호의 증폭]
+		인공 중력파 소스(예: 대형 회전 질량)가 국소 조정장(예: 지구–달 계)의 공명 주파수에 동조되어 있으면, 원거리 검출기에서의 수신 신호 강도는 표준 사중극 공식에 의한 예측을 인자 \(\sim Q\)만큼 초과해야 한다. 여기서 \(Q\)는 공명의 품질 인자(잠재적으로 \(10^3\)–\(10^6\))이다. 이는 조정장 증폭의 직접적 실증이 될 것이다.
+	\end{prediction}
+	
+	\subsection{보편 스케일링 법칙과의 연관}
+	
+	보편 오차 스케일링 법칙 \(\eps = \kappac\alpha\Keff^{-\beta}\) (식~\ref{eq:universal-scaling})은 인덱스의 전파에도 적용된다. \(\rho_K\)가 증강된 영역에서는 주어진 인덱스 길이에 대한 유효 \(\Keff\)가 증가하여 오차 확률이 감소한다. 이는 인과율을 위반하지 않고 매우 높은 조정 효율을 달성하기 위한 자연스러운 메커니즘을 제공한다: 사전은 이미 존재하고, 인덱스는 그 전달을 적극적으로 지원하는 매질을 통해 전파된다.
+	
+	\section{제안하는 실험적 검증}
+	\label{sec:experiment}
+	
+	\subsection{설치}
+	
+	지구상의 떨어진 장소, 예를 들어 1000 km 떨어진 두 곳에 고감도 중력계(예: 초전도 중력계 또는 원자 간섭계)를 설치한다. 한 장소에서 대형 질량(예: 수 톤의 진자)을 미리 정해진 패턴으로 변조한다. 중력 신호는 \(c\)로 전파되어 다른 장소에서 검출된다. 검출된 신호를 알려진 패턴과 상관시킴으로써 유효 조정 효율을 측정하고 이론적 예측과 비교할 수 있다.
+	
+	\subsection{예측되는 결과}
+	
+	비교적 단순한 사전(예: 진폭 코드의 집합)이라도 \(\Keff\)는 동일한 에너지 소비에 대한 고전적 한계를 초과할 것으로 예상된다. 실험은 보편 오차 법칙도 검증한다: 코드 수를 늘리면(\(\Keff\) 증가) 오차율은 \(\eps \propto \Keff^{-0.67}\)을 따라야 한다.
+	
+	\subsection{과제}
+	
+	주요 과제는 인공 중력파의 진폭이 극히 작다는 것이다. 1000 km 거리에서 1000톤의 질량이 1 Hz로 1 m 진폭으로 진동하면 변형률은 약 \(10^{-23}\) 정도이며, 이는 현재 검출 한계에 있다. 미래의 중력파 검출기(예: 아인슈타인 망원경)는 필요한 감도를 달성할 수 있을지도 모른다.
+	
+	\section{고찰}
+	\label{sec:discussion}
+	
+	YUCT에 기반한 중력 통신의 개념은 전통적 사고로부터 근본적 이탈을 제공한다. 기존 중력장을 사전으로 활용함으로써 인과율을 엄격히 지키면서 광속을 초과하는 것처럼 보이는 조정 효율을 달성할 수 있다. 실용적 구현은 막대한 기술적 장벽에 직면하지만, 이론적 틀은 건전하고 검증 가능하다.
+	
+	성공한다면, 그러한 시스템은 태양계 전체에 걸친 순간적인(사용자 관점에서) 통신을 가능하게 할 수 있다. 왜냐하면 지연은 거리가 아닌 인덱스의 생성과 검출 시간에 의해 지배되기 때문이다. 더욱이 중력파는 모든 물질을 투과하므로, 지하 깊은 곳이나 해양 아래를 포함한 어디에서든 통신이 가능해진다.
+	
+	\section{결론}
+	\label{sec:conclusion}
+	
+	우리는 Yakushev 통합 조정 이론에 기반한 중력 통신의 이론적 틀을 제시하였다. 중력장을 자연적으로 존재하는 전역 사전으로 취급함으로써, 짧은 인덱스(중력 섭동)가 원거리 관찰자 간 행동을 조정할 수 있음을 보였다. 그 효율 \(\Keff\)는 광속에 의해 제한되지 않는다. 인덱스 자체는 여전히 \(c\)로 전파되어 인과율을 보존한다. 중력파는 투과성과 보편성이라는 독특한 이점을 제공하여 미래 심우주 통신 시스템에 매력적이다. 우리는 기존 기술을 이용한 잠재적 실험적 검증을 개략하였다. 이 연구는 중력 물리학과 정보 이론 모두에 새로운 방향을 열어주며, 성간 통신의 미래에 깊은 영향을 미친다.
+	
+	\section*{감사의 말}
+	
+	저자는 YUCT 세미나 참가자들에게 유익한 토론에 감사드린다.
+	
+	\begin{thebibliography}{99}
+		
+		\bibitem{Yakushev2026}
+		A. V. Yakushev, \emph{Yakushev Unified Coordination Theory (YUCT)}, Zenodo, \url{https://doi.org/10.5281/zenodo.18444599} (2026).
+		
+		\bibitem{AppendixL}
+		A. V. Yakushev, \emph{Appendix L: Fractal Coordination Error Scaling — A Universal Law from DNA to Cosmology}, Zenodo (2026).
+		
+		\bibitem{AppendixA}
+		A. V. Yakushev, \emph{Appendix A: Practical Guide to Using YUCT V35.0 for Interdisciplinary Modeling and Predictions}, Zenodo (2026).
+		
+		\bibitem{LLR-IfE}
+		J. M. et al., "Lunar Laser Ranging: A Continuing Legacy of the Apollo Program", \emph{Science} \textbf{265}, 482–490 (1994).
+		
+		\bibitem{LIGO}
+		B. P. Abbott et al. (LIGO Scientific Collaboration), "Observation of Gravitational Waves from a Binary Black Hole Merger", \emph{Phys. Rev. Lett.} \textbf{116}, 061102 (2016).
+		
+		\bibitem{Barontini2025}
+		F. Barontini et al., "Detecting millihertz gravitational waves with optical cavities", \emph{Phys. Rev. Lett.} (to be published) (2025).
+		
+	\end{thebibliography}
+	
+\end{document}

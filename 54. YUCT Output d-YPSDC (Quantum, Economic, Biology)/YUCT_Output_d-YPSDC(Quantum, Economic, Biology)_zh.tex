@@ -1,0 +1,428 @@
+% !TeX program = lualatex
+\documentclass[11pt,a4paper]{article}
+
+% ========= Пакеты =========
+\usepackage[english, bidi=default, layout=counters]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.25cm,right=1.25cm,top=1.25cm,bottom=3.1cm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{siunitx}
+\usepackage{bm}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{fontspec}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,arrows.meta,positioning,shapes.geometric}
+
+% ========= Языки =========
+\babelprovide[import, main]{chinese-simplified}
+\babelprovide[import, onchar=ids fonts]{english}
+
+% ========= Шрифты =========
+\defaultfontfeatures{Ligatures=TeX}
+% Основной китайский шрифт (Noto Serif CJK SC, если установлен; иначе можно заменить на SimSun)
+\babelfont[chinese-simplified]{rm}[Renderer=Harfbuzz]{Noto Serif CJK SC}
+\babelfont[chinese-simplified]{sf}[Renderer=Harfbuzz]{Noto Sans CJK SC}
+\babelfont[chinese-simplified]{tt}[Renderer=Harfbuzz]{Noto Sans Mono CJK SC}
+
+% Латинские шрифты для английского текста
+\babelfont[english]{rm}{Times New Roman}
+\babelfont[english]{sf}{Arial}
+\babelfont[english]{tt}{Courier New}
+
+% ========= Цвета =========
+\definecolor{skyblue}{RGB}{0,102,204}
+\definecolor{darkblue}{RGB}{0,0,139}
+\definecolor{gold}{RGB}{255,215,0}
+
+% ========= Макросы YUCT =========
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\DeclareMathOperator{\Tr}{Tr}
+
+% ========= Форматирование заголовков =========
+\titleformat{\section}{\LARGE\bfseries\color{darkblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{darkblue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{1em}{}
+
+% ========= Колонтитулы =========
+\fancypagestyle{firstpage}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{-5pt}%
+	\renewcommand{\footrulewidth}{-5pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			{\small \textsuperscript{1}Yakushev Research, \url{https://yuct.org/}} \hfill
+			{\small YPSDC 协议: \url{https://ypsdc.com/}}\\[-2pt]
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			\textbf{雅库舍夫统一协调理论 2026} \hfill \thepage\\[10pt]
+		\end{minipage}%
+	}%
+}
+
+\fancypagestyle{plain}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[4pt]
+			\textbf{雅库舍夫统一协调理论 2026} \hfill \thepage\\[4pt]
+		\end{minipage}%
+	}%
+}
+
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+\raggedbottom
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+% ========= Заголовок (логотип YUCT) =========
+\newcommand{\makeheader}{%
+	\noindent
+	\begin{minipage}{0.17\textwidth}
+		\raggedright
+		{\sffamily\bfseries\color{skyblue}\fontsize{46}{46}\selectfont YUCT}%
+	\end{minipage}%
+	\hspace{30pt}
+	\begin{minipage}{0.32\textwidth}
+		\raggedright
+		{\sffamily\fontsize{11}{13}\selectfont 雅库舍夫\\ 统一\\ 协调理论}%
+	\end{minipage}%
+	\hfill
+	\begin{minipage}{0.38\textwidth}
+		\raggedleft
+		{\sffamily\bfseries 备忘录}\\
+		{\sffamily 2026年5月}\\
+		{\sffamily\footnotesize \url{https://yuct.org/}}%
+	\end{minipage}
+	\par\vspace{5pt}
+	\noindent\textcolor{gold}{\rule{\textwidth}{1.6pt}}
+	\par\vspace{0pt}
+}
+
+\begin{document}
+	\renewcommand{\thepage}{\arabic{page}}
+	\thispagestyle{firstpage}
+	\makeheader
+	
+	\vspace{0cm}
+	{\LARGE\bfseries 去中心化 YPSDC (d‑YPSDC)：\\ 通过共享环境指标实现无直接通信的协调 \par}
+	\vspace{0.2cm}
+	
+	{\large 阿列克谢·V·雅库舍夫\footnote{雅库舍夫研究所， \url{https://yuct.org/}}} \\
+	\vspace{0.0cm}
+	
+	{\color{darkblue}\textbf{\LARGE 摘要}} \par
+	{\large
+		\noindent
+		经典的YPSDC协议假设中心化拓扑：一个代理主动向另一个代理发送一个短索引，双方利用先验字典触发复杂的协调动作。然而，自然界和技术中广泛存在无需直接交换索引即可实现协调的系统。本文对\textbf{去中心化 YPSDC (d‑YPSDC)}进行形式化描述——一种所有代理同时从共享环境中读取同一索引，并使用预先分发的字典的协议。代理之间没有任何通信，但通过同步获取环境索引，仍可实现 \(K_{\mathrm{eff}} \gg 1\) 的协调效率。我们讨论了 d‑YPSDC 在生物学（群体行为）、经济学（市场对宏观经济指标的反应）、计算机科学（区块链预言机）以及基础物理（量子非定域性）中的体现。该模型暗示存在一个深层的\textbf{协调场}，作为索引的通用载体，并激活自然定律的共享字典。
+	}
+	
+	\vspace{0.1cm}
+	\noindent
+	{\color{darkblue}\textbf{关键词：}} YPSDC，去中心化，协调，环境指标，先验字典，协调场，量子纠缠，群体行为，智能合约。
+	
+	\vspace{0.5cm}
+	\noindent
+	\textcopyright\ 2026 雅库舍夫研究所。保留所有权利。
+	
+	\tableofcontents
+	\newpage
+	
+	\section{引言：从中心化 YPSDC 到去中心化协议}
+	
+	经典的 YPSDC 协议描述了两个或多个代理之间的协调：其中一个\textbf{主动发送一个短索引}，其他代理\textbf{接收}该索引并从共享的先验字典中激活一个复杂的条目 \cite{YUCT}。在这种方案中，总有一个明确的发送者，交互拓扑是“点对点”或“星形”的。
+	
+	对生物、社会和物理系统的观察揭示了一类广泛的现象，其中协调并不伴随着索引的直接交换。鸟群在没有可见领导者的情况下同时改变方向；金融市场在发布宏观经济数字时立即做出反应；纠缠的量子粒子在没有信号交换的情况下展现相关性。在所有这些情况下，协调得以实现是因为\textbf{所有代理同时从周围环境中读取同一个索引}，并依赖预先约定的字典。
+	
+	本文的目的是将这种机制正式命名为\textbf{去中心化 YPSDC (d‑YPSDC)}，讨论其数学结构，并证明它是经典协议在具有“公共载体”拓扑的系统中的自然推广。
+	
+	\section{d‑YPSDC 的形式模型}
+	
+	\subsection{组成部分}
+	
+	系统由以下部分组成：
+	
+	\begin{itemize}[leftmargin=*]
+		\item \(\mathcal{A} = \{A_1, A_2, \dots, A_N\}\) — 代理集合（观察者、细胞、动物、网络节点）。
+		\item \(\mathcal{D}\) — \textbf{先验字典}，所有代理共享，在离线阶段分发。字典是一组配对 \(\{ \kappa \to \text{动作} \}\)，其中 \(\kappa\) 是一个潜在的索引，\(\text{动作}\) 是协调后的行为。
+		\item \(\mathcal{E}\) — 环境状态空间。
+		\item \(S(t) \in \mathcal{E}\) — \textbf{环境索引}，对所有代理同时可用。环境并\emph{不是}主动发送者；它仅提供索引的物理载体。
+	\end{itemize}
+	
+	\subsection{协议}
+	
+	\begin{enumerate}[leftmargin=*, label=\textbf{第 \arabic* 阶段：}]
+		\item \textbf{离线字典分发。} 完整的字典 \(\mathcal{D}\) 以某种方式（遗传、文化或初始化步骤）分发给所有代理。
+		\item \textbf{在线索引读取。} 在时刻 \(t\)，环境生成索引 \(\kappa = S(t)\)，该索引无延迟地到达所有代理。
+		\item \textbf{激活。} 每个代理 \(A_i\) 独立地从字典中检索条目 \(\mathcal{D}(\kappa)\) 并执行指定的动作。代理之间不交换任何消息。
+	\end{enumerate}
+	
+	\subsection{协调效率}
+	
+	与经典 YPSDC 类似，协调效率定义为激发动作的熵与索引熵的比值：
+	\begin{equation}
+		\Keff^{\mathrm{(d)}} = \frac{H(\text{集体动作})}{H(\kappa)},
+		\label{eq:Keff_d}
+	\end{equation}
+	其中 \(H(\text{集体动作})\) 是整个群体同步行为的熵。由于索引非常短而动作可以任意复杂，\(\Keff^{\mathrm{(d)}}\) 可以非常大。
+	
+	\subsection{与经典 YPSDC 的拓扑差异}
+	
+	两者之间的本质差异如图~\ref{fig:topology} 所示。
+	
+	\begin{figure}[htbp]
+		\begin{otherlanguage}{english}
+			\centering
+			\begin{tikzpicture}[
+				agent/.style={circle, draw=blue!70, fill=blue!15, minimum size=1.2cm, font=\small},
+				dict/.style={rectangle, draw=green!50!black, fill=green!10, rounded corners, minimum width=3cm, minimum height=0.9cm, font=\small},
+				env/.style={rectangle, draw=orange!70, fill=orange!10, rounded corners, minimum width=3cm, minimum height=0.9cm, font=\small},
+				arrow/.style={->, >=stealth, thick},
+				dashedarrow/.style={->, >=stealth, thick, dashed},
+				]
+				
+				% ---- Классический YPSDC (сверху) ----
+				\begin{scope}[local bounding box=classic]
+					\node[dict] (dict1) at (0,0) {字典 \(\mathcal{D}\)};
+					\node[agent] (A1) at (-3, -2) {代理 A};
+					\node[agent] (A2) at (3, -2) {代理 B};
+					\draw[dashedarrow] (dict1) -- (A1) node[midway, left] {离线};
+					\draw[dashedarrow] (dict1) -- (A2) node[midway, right] {离线};
+					\draw[arrow] (A1) -- (A2) node[midway, above] {索引 \(\kappa\)};
+				\end{scope}
+				\node[above=0.2cm of classic.north, font=\bfseries] {经典 YPSDC（中心化拓扑）};
+				
+				% ---- d‑YPSDC (снизу) ----
+				\begin{scope}[local bounding box=decentr, yshift=-6cm]
+					\node[env] (env) at (0,1) {环境 \(S(t)\)};
+					\node[dict] (dict2) at (0,-0.5) {字典 \(\mathcal{D}\)};
+					\node[agent] (B1) at (-4, -2.5) {代理 1};
+					\node[agent] (B2) at (0, -2.5) {代理 2};
+					\node[agent] (B3) at (4, -2.5) {代理 3};
+					\draw[arrow] (env) -- (B1) node[midway, left] {\(\kappa\)};
+					\draw[arrow] (env) -- (B2) node[midway, right] {\(\kappa\)};
+					\draw[arrow] (env) -- (B3) node[midway, right] {\(\kappa\)};
+					\draw[dashedarrow] (dict2) -- (B1);
+					\draw[dashedarrow] (dict2) -- (B2);
+					\draw[dashedarrow] (dict2) -- (B3);
+					% Явное указание отсутствия связей между агентами
+					\draw[red, thick, dotted] (B1) -- (B2) node[midway, above, red] {无链接};
+					\draw[red, thick, dotted] (B2) -- (B3) node[midway, above, red] {无链接};
+				\end{scope}
+				\node[above=0.2cm of decentr.north, font=\bfseries] {d‑YPSDC（去中心化拓扑）};
+				
+			\end{tikzpicture}
+		\end{otherlanguage}
+		\caption{拓扑比较。在经典 YPSDC 中，代理 A 主动向代理 B 发送索引。在去中心化 d‑YPSDC 中，所有代理同时从环境读取同一索引，彼此之间不交换任何消息。}
+		\label{fig:topology}
+	\end{figure}
+	
+	\section{不同系统中 d‑YPSDC 的实例}
+	
+	\subsection{生物学：群体行为与“隐式共识”}
+	
+	在许多动物物种中观察到同步的集体行动（鱼群突然转向、鸟群同步起飞、地松鼠冻结），而无需个体间的特定声音或视觉信号。相反，所有个体\emph{同时}感知环境参数的变化——一阵风、捕食者的影子、光照变化——并根据先天（遗传）字典做出反应。
+	
+	先前讨论的人类头发例子也符合这一方案：头部长发可以充当非常灵敏的空气流动和温度探测器，使一群人无需言语交流即可同步感知天气变化。
+	
+	\subsection{经济与金融}
+	
+	关键经济指标（例如美国失业率）的发布会引发数百万市场参与者立即且一致的响应。交易者彼此之间不进行通信；他们使用共享的“字典”——交易算法、经济模型，或者仅仅是基于过去经验形成的预期。指标（指标的数值）由环境（信息终端）同时提供给所有人，市场作为一个整体移动。
+	
+	\subsection{区块链与智能合约}
+	
+	去中心化应用（dApps）通常依赖\textbf{预言机（Oracles）}——向区块链提供现实世界信息的外部数据源。智能合约充当分发给所有网络节点的字典。当预言机发布一个索引（例如时刻 \(t\) 的 ETH/USD 价格）时，所有节点无需额外共识即可同时激活合约的相应分支。这是数字环境中纯粹的 d‑YPSDC 应用。
+	
+	\subsection{量子纠缠}
+	
+	d‑YPSDC 最深刻的物理实现或许发生在量子力学中。考虑一对纠缠粒子。它们共享的波函数是一个字典，定义了可能测量结果之间的关联。当其中一个粒子被测量时，其结果可被视为第二个粒子\emph{同时}可访问的\textbf{环境索引}，这得益于量子场的非定域性质。第二个粒子“激活”关联状态，而无需接收任何经典信号。在 d‑YPSDC 框架内，这被解释为从共享物理介质（量子场）同步读取同一索引，无需粒子间传递信息。
+	
+	\section{本体论基础：物质即协调，几何为结果}
+	
+	YUCT 与标准场论的主要区别在于\textbf{协调场不存在于空的时空中}。相反，时空本身是更根本现实——一个协调元素网络——的次要涌现表现。这一假设有两个直接适用于去中心化 YPSDC 的主要推论。
+	
+	\textbf{1. 物质 = 协调。} “基本粒子”或“代理”的概念并非独立于协调过程。一个元素仅因其参与协调动作并可通过其字典定义而存在。在协调网络之外，没有物质；只剩下没有物理内容的纯形式数学点。在 d‑YPSDC 的语境中，这意味着读取环境索引的代理并非被动观察者——它们作为一致性行为单元的纯粹存在\emph{创造了}协调场 \(\Psi_{MN}\)，该场随后为它们提供索引。
+	
+	\textbf{2. 没有物质就没有几何。} 旋转盘悖论（文献中称为埃伦费斯特悖论）表明，空间几何不能\emph{先验}给定，而是由物质体的运动状态和内部内聚力决定。在 YUCT 中，这被推广为时空度规 \(g_{\mu\nu}(x)\) 是由协调相互作用平均产生的\emph{有效}量。在缺乏协调的地方（\(K_{\mathrm{eff}} \to 1\)），几何退化并失去其操作意义。在 d‑YPSDC 中，这体现在环境对索引的有效“传导性”取决于协调代理的密度和相干性，而非绝对空间的属性。
+	
+	因此，\textbf{传递索引的环境不是一个被动的容器，而是协调场本身，由物质代理涌现产生}。正是拥有共享字典的代理的存在“启动”了场 \(\Psi_{MN}\)，并赋予其使同步索引传递成为可能的结构。在代理缺失（或字典被破坏）时，场回归到无协调的对称状态，等同于经典时空的缺失。这与空间、时间和物质是单一协调过程不可分割的三个方面的图景完全一致。
+	
+	\section{YUCT 19维空间中 d‑YPSDC 的数学模型}
+	\label{sec:math-model}
+	
+	\subsection{19维协调场及其作用量}
+	
+	YUCT 的基本舞台是一个符号差为 \((+,-,\dots,-)\) 的 19 维伪黎曼流形 \(\mathcal{M}_{19}\)，其度规为 \(G_{MN}\)。它被解释为四维时空上的纤维丛：
+	\begin{equation}
+		\mathcal{M}_{19} = M_4 \times F_{15},
+	\end{equation}
+	其中 \(F_{15}\) 是协调自由度的紧致内部空间。核心场是\textbf{协调场} \(\Psi_{MN}(X)\)，它编码了分发的字典和索引的传输介质。其最简单的作用量具有形式
+	\begin{equation}
+		S_{19} = \frac{1}{2\kappa_{19}} \int d^{19}X \sqrt{-G}\, R(G) + \int d^{19}X \sqrt{-G}\, \mathcal{L}_{\mathrm{coord}},
+		\label{eq:S19}
+	\end{equation}
+	其中曲率 \(R(G)\) 提供背景几何，协调拉格朗日量为
+	\begin{equation}
+		\mathcal{L}_{\mathrm{coord}} = -\frac{1}{4} \Tr(\Psi_{MN}\Psi^{MN}) + \frac{1}{2} G^{MN}\,\partial_M \phi\,\partial_N \phi - V(\phi)
+		\label{eq:Lcoord}
+	\end{equation}
+	包含一个规范场 \(\Psi_{MN}\)（类似于协调相互作用的强度）和一个标量场 \(\phi = \ln(K_{\mathrm{eff}}/K_0)\)，用以确定局部协调效率。
+	
+	\subsection{引入代理和字典}
+	
+	代理 \(A_i\)，\(i=1,\dots,N\)，被表示为集中在 \(M_4\) 上的点源，并根据其字典形式在 \(F_{15}\) 上“展开”。每个代理拥有一个\textbf{字典函数} \(f_{\mathcal{D}}^{(i)}(\kappa)\)，将索引 \(\kappa \in \mathcal{E}\) 映射到所需动作。代理与场 \(\Psi_{MN}\) 的相互作用由下式给出
+	\begin{equation}
+		S_{\mathrm{int}} = \sum_{i=1}^{N} \int d\tau_i \left[ \frac{1}{2} m_i \dot a_i^2 - \lambda_i \bigl( a_i - f_{\mathcal{D}}^{(i)}(\kappa) \bigr)^2 \right],
+		\label{eq:Sint}
+	\end{equation}
+	其中 \(a_i\) 是实际执行的动作，\(\tau_i\) 是代理的固有时。此处的索引 \(\kappa\) 不是外部参数，而是场 \(\Psi_{MN}\)（或其到 \(M_4\) 的投影）在代理位置的值：
+	\begin{equation}
+		\kappa(x_i) = \int_{F_{15}} d^{15}Y \sqrt{-G^{(15)}}\, \mathcal{O}[\Psi_{MN}](x_i, Y),
+		\label{eq:kappa}
+	\end{equation}
+	其中 \(\mathcal{O}\) 是将协调场投影到索引空间的算子。在最简单的情况下，\(\mathcal{O}[\Psi] = \Tr(\Psi)\) 或简单地就是 \(\phi\)。
+	
+	\subsection{运动方程与索引传递}
+	
+	对 \(\Psi_{MN}\) 变分总作用量 \(S_{19} + S_{\mathrm{int}}\) 给出方程
+	\begin{equation}
+		D_M \Psi^{MN} = J^{N}_{\mathrm{coord}},
+		\label{eq:Psi-eq}
+	\end{equation}
+	其中 \(J^{N}_{\mathrm{coord}}\) 是所有代理的总协调流：
+	\begin{equation}
+		J^{N}_{\mathrm{coord}}(X) = \sum_{i=1}^{N} \int d\tau_i\, \frac{\delta^{(19)}(X - X_i(\tau_i))}{\sqrt{-G}}\, \frac{\partial \mathcal{L}_{\mathrm{int}}}{\partial (\partial_N \Psi)}.
+	\end{equation}
+	对于缓慢变化的场和固定的字典，有效方程约化为 \(M_4\) 上带源的波动方程：
+	\begin{equation}
+		\Box \phi - m_{\mathrm{eff}}^2 \phi = \sum_{i} g_i \delta^{(4)}(x - x_i),
+		\label{eq:phi-eq}
+	\end{equation}
+	其中 \(m_{\mathrm{eff}}^2 = V''(0)\)，耦合常数 \(g_i\) 正比于索引的“响度”。
+	
+	方程~(\ref{eq:phi-eq}) 在准静态近似下的解为
+	\begin{equation}
+		\phi(x) = \sum_i g_i \, G_{\mathrm{ret}}(x, x_i),
+	\end{equation}
+	其中 \(G_{\mathrm{ret}}\) 是有质量标量场的推迟格林函数。如果所有代理位于尺度远小于康普顿波长 \(\lambda_c = 1/m_{\mathrm{eff}}\) 的区域内，则 \(\phi(x)\) 在所有点 \(x_i\) 处实际上完全相同。这解释了所有代理\textbf{同步读取同一索引}的原因：由环境（即边界条件或宇宙背景）产生的索引通过 \(M_4\) 传播，并由于其长波长而对所有局部观察者表现为相同。
+	
+	因此，激活的同步性并不需要超光速信号：它是协调场 \(\phi\) 在群体尺度上充当均匀背景这一事实的自然结果。同时，每个代理只与场相互作用，而不与其他代理相互作用；没有发生直接的信息交换——这正是去中心化 YPSDC 的核心。
+	
+	\subsection{与协调效率 \(K_{\mathrm{eff}}\) 的联系}
+	
+	局部协调效率定义为字典的信息容量与索引长度之比。用场 \(\phi\) 表示为：
+	\begin{equation}
+		\Keff(x) = K_0 e^{\phi(x)},
+		\label{eq:Keff-field}
+	\end{equation}
+	其中 \(K_0 \approx 1\) 是真空（没有协调代理）中的背景值。环境索引的传递产生扰动 \(\delta\phi\)，从而在代理占据的区域
+	\begin{equation}
+		\Keff^{\mathrm{(d)}} = K_0 \exp\!\left( \sum_i g_i G_{\mathrm{ret}}(x, x_i) \right).
+	\end{equation}
+	对于位于体积 \(V \ll \lambda_c^3\) 内的 \(N\) 个相同代理，
+	\begin{equation}
+		\Keff^{\mathrm{(d)}} \approx K_0 \exp\!\left( \frac{N g}{4\pi} \frac{e^{-m_{\mathrm{eff}} r_0}}{r_0} \right),
+	\end{equation}
+	其中 \(r_0\) 是代理间的特征距离。由于 \(N g > 0\)（索引改善协调），对于大的 \(N\) 或强耦合 \(g\)，\(\Keff^{\mathrm{(d)}}\) 可以远大于 1。
+	
+	这直接表明\textbf{去中心化 YPSDC 在群体内部没有任何索引交换的情况下提供了 \(K_{\mathrm{eff}} \gg 1\)}。效率的增长完全归因于场 \(\phi\) 的几何：所有代理沉浸在共同的协调场中，当该场被外部索引激发时，同时激活它们的字典。
+	
+	\section{同一协议的两种模式：中心化与去中心化 YPSDC}
+	\label{sec:two-regimes}
+	
+	前面的例子和数学模型可能给人留下 d‑YPSDC 是一种本质上全新的协调协议的印象。事实并非如此。在本体论上，\textbf{只有一种 YPSDC 机制}：协调场 \(\Psi_{MN}\) 传递索引，所有代理仅与该场相互作用，激活共享的先验字典条目。“中心化”YPSDC 和“去中心化”d‑YPSDC 之间的区别纯粹是现象学的，反映了场方程中协调流 \(J^{N}_{\mathrm{coord}}\) 的主导来源（参见 \cite{YUCT} 的附录 A）。
+	
+	\subsection{两种模式}
+	\begin{enumerate}[leftmargin=*, label=\textbf{(\arabic*)}]
+		\item \textbf{中心化模式（经典 YPSDC）。} 流 \(J^{N}_{\mathrm{coord}}\) 由一个集中的代理（发送者）主导。该代理主动激发场，产生传播的扰动，到达一个或多个特定的接收者。此模式描述点对点或星形拓扑通信（例如 GSM 塔向手机广播，或 GMT 时间信号）。
+		
+		\item \textbf{去中心化模式（d‑YPSDC）。} 单个代理的集中流与缓慢变化的宇宙背景——\(\Psi_{MN}\) 的环境模式——相比可忽略不计。背景提供了对所有代理同时可用的索引。此模式描述量子纠缠、群体行为、群体感应、金融市场对宏观经济指标的反应，以及区块链预言机对智能合约的激活。
+	\end{enumerate}
+	
+	\subsection{两种模式间的转换}
+	无量纲参数
+	\[
+	\Theta = \frac{|J_{\mathrm{agent}}|}{|J_{\mathrm{env}}|},
+	\]
+	其中 \(J_{\mathrm{agent}}\) 是最强个体发送者产生的流，\(J_{\mathrm{env}}\) 是环境背景的有效流，控制着两种模式之间的转换：
+	\[
+	\begin{cases}
+		\Theta \gg 1 & \text{中心化模式（经典 YPSDC）}, \\
+		\Theta \ll 1 & \text{去中心化模式（d‑YPSDC）}, \\
+		\Theta \sim 1 & \text{混合行为}.
+	\end{cases}
+	\]
+	
+	\subsection{本体论地位}
+	d‑YPSDC \textbf{不需要额外的场、拉格朗日量的修改或对 YUCT 本体论原则的修正}。19 维作用量 \(S_{19}\) 和观察者场 \(\phi_1,\phi_2\)（附录 A）已经包含两种模式所需的一切。术语“d‑YPSDC”仅作为一种方便的现象学标签保留，用于描述在没有可识别主动发送者的情况下实现协调的广泛现象类别。
+	
+	这一澄清对于 YUCT 框架的逻辑完备性是必要的：该理论通过\textbf{应用于单一协调场}的\textbf{单一协议}描述了所有形式的协调——从明确的人类通信到量子力学的非定域关联。
+	
+	\subsection{示例：量子纠缠作为 d‑YPSDC}
+	
+	在量子情况下，字典是纠缠对的共享波函数 \(\Psi_{AB}\)。选择 (\ref{eq:kappa}) 中的算子 \(\mathcal{O}\) 使得索引 \(\kappa\) 与对第一个粒子的测量结果一致。然后方程 (\ref{eq:phi-eq}) 描述了该结果通过协调场 \(\phi\) 向第二个粒子的传播。由于场是无质量的，关联在同步激活的意义上即时产生，但无能量传递。这是 YUCT 中对贝尔不等式违反的几何解释。
+	
+	数学上，违反度 \(S\) 用效率表示为：
+	\begin{equation}
+		S = 2\sqrt{2} \frac{\Keff^{\mathrm{(d)}}}{\Keff^{\mathrm{(d)}} + 1},
+	\end{equation}
+	因此当 \(\Keff^{\mathrm{(d)}} \to \infty\)（理想字典）时达到最大量子值 \(2\sqrt{2}\)，而当 \(\Keff^{\mathrm{(d)}} \to 1\)（字典被破坏）时关联消失。
+	
+	该模型将生物学、经济学和量子物理学统一在公共方程 (\ref{eq:Psi-eq})–(\ref{eq:Keff-field}) 下，证明了协调场 \(\Psi_{MN}\) 和 d‑YPSDC 协议的普适性。
+	
+	\section{协调场作为索引的通用载体}
+	
+	如果 d‑YPSDC 对量子系统、生物群体和社会网络都有效，那么很自然地假设存在一个统一的\textbf{协调场}——一个普遍的介质：
+	
+	\begin{itemize}
+		\item 存储自然定律的“通用字典”（对称性、常数、运动方程）；
+		\item 将索引（测量结果、涨落、外部影响）同时传递给系统的所有元素；
+		\item 确保被观察为量子非定域性、集体行为或快速市场响应的同步激活。
+	\end{itemize}
+	
+	在这种背景下，经典通信（从一个代理向另一个代理传输信号）表现为\textbf{一种特殊情况}，当环境无法同时将索引传递给所有代理时（例如由于高噪声水平），迫使代理通过直接通信来中继索引。
+	
+	这一假设不与相对论冲突，因为没有能量或信息超光速传输：索引以不超过 \(c\) 的速度通过环境传播，并仅在到达其局部邻域后对所有代理可用。激活的同步性完全归因于共享字典和索引的同一性，而非超光速信号。
+	
+	\section{结论}
+	
+	我们提出了去中心化 YPSDC (d‑YPSDC) 的概念——一种协议，其中所有代理通过使用预先分发的先验字典同步读取共享环境索引来实现协调。该方案解释了从生物同步到量子非定域性的广泛现象，无需诉诸任何隐藏通信。
+	
+	d‑YPSDC 自然地引向\textbf{协调场}的概念，作为负责自然过程宇宙一致性的基本实体。基于 YUCT 19 维作用量的数学模型表明，去中心化协调源于场 \(\Psi_{MN}\) 的统一方程，且效率 \(K_{\mathrm{eff}}\) 随代理数量和耦合强度指数增长。对该场及其与量子理论和广义相对论联系的进一步形式化，构成了未来研究的计划。
+	
+	\begin{thebibliography}{9}
+		\begin{otherlanguage}{english}
+			\bibitem{YUCT} A.~V.~Yakushev, \emph{Yakushev Unified Coordination Theory (YUCT)}, Zenodo, DOI:10.5281/zenodo.18444599 (2026).
+			\bibitem{AppendixB} A.~V.~Yakushev, Appendix B: Temporal Coordination Paradox, in \emph{YUCT} (2026).
+			\bibitem{Blockchain} S.~Nakamoto, ``Bitcoin: A Peer-to-Peer Electronic Cash System'' (2008).
+			\bibitem{Ben-Jacob} E.~Ben-Jacob, ``Bacterial self-organization: co-enhancement of complexification and adaptability'', \emph{Physica A} (2003).
+			\bibitem{EPR} A.~Einstein, B.~Podolsky, N.~Rosen, ``Can Quantum-Mechanical Description of Physical Reality Be Considered Complete?'', \emph{Phys. Rev.} \textbf{47}, 777 (1935).
+		\end{otherlanguage}
+	\end{thebibliography}
+	
+\end{document}

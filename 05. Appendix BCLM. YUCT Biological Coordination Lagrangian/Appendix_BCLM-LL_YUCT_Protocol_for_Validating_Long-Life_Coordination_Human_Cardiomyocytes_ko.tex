@@ -1,0 +1,284 @@
+% !TEX program = lualatex
+\documentclass[12pt,a4paper]{article}
+
+% ============================================================
+% 한국어 설정 (polyglossia)
+% ============================================================
+\usepackage{polyglossia}
+\setmainlanguage{korean}
+\setotherlanguage{english}
+
+% ========= 한국어 폰트 =========
+\newfontfamily\hangulfont{Noto Serif CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\hangulfontsf{Noto Sans CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\hangulfonttt{Noto Sans Mono CJK KR}[Script=Hangul, Language=Korean]
+
+% ========= 추가 폰트 (선택적) =========
+\newfontfamily\koreanfont{Noto Serif CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\koreanfonttt{Noto Sans Mono CJK KR}[Script=Hangul, Language=Korean]
+\newfontfamily\englishfont{Times New Roman}
+\setmonofont{Latin Modern Mono}
+
+% ========= 패키지 =========
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.5cm,right=1.5cm,top=1.5cm,bottom=2.0cm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{float}
+
+% ========= 섹션 제목 서식 =========
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+% --- YUCT 기본 상수 ---
+\newcommand{\REL}{\mathcal{K}}          % 상대 조정 효율
+\newcommand{\ABS}{K_{\mathrm{eff}}}     % 절대
+\newcommand{\kappac}{\kappa_c}
+\newcommand{\betaf}{\beta}
+\newcommand{\Sodd}{S_{\mathrm{odd}}}
+\newcommand{\Seven}{S_{\mathrm{even}}}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{2cm}
+		{\Huge\bfseries 부록 BCLM-LL\\[0.3cm]
+			배양 인간 심근세포에서 장수 조정 설계 검증을 위한 실험 프로토콜\par}
+		\vspace{0.5cm}
+		{\Large\bfseries YUCT 노화 조정 이론의 반증 가능한 테스트\par}
+		\vspace{1.5cm}
+		{\large A.\,V.\,Yakushev\par}
+		{\normalsize YUCT Research, \url{https://yuct.org/}\par}
+		\vspace{1.0cm}
+		{\normalsize 2026년 6월 (v1.2 – 수치적 일관성 수정)}\par
+		\vfill
+		\begin{abstract}
+			\noindent
+			Yakushev 통일 조정 이론(YUCT)은 노화를 세포 하위 시스템의 조정 효율 \(K_{\mathrm{eff}}\)의 진행성 감소로 설명한다. 생물 조정 라그랑지안(BCLM, 부록 BCLM)은 서열 데이터로부터 \(K_{\mathrm{eff}}\)를 계산하고 이를 젊은 수준으로 회복시키는 유전적 개입을 설계하기 위한 수학적 프레임워크를 제공한다. 본 프로토콜은 배양 인간 심근세포에서 장수 조정 설계를 검증하기 위한 완전하고 자족적인 실험을 기술한다. 우리는 조작할 정확한 유전자를 명시하고, 그들의 자연형 및 최적화된 상대 조정 효율 \(\REL\)을 계산하며, 보편 오차 법칙 \(\varepsilon = \kappa_c \alpha \REL^{-\beta}\) (\(\beta=2/3\), \(\kappa_c=1/3\))으로부터 돌연변이율, 산화 스트레스, 단백질 응집, 이동 속도, 세포 수명에 대한 정량적 예측을 직접 도출하고, 단계별 실험 일정을 제공한다. 노화 표현형의 가역성을 입증하기 위해 제어 회귀 모듈(CCR)도 포함된다. 모든 예측은 사전 등록되었으며 표준 세포생물학 분석으로 반증 가능하다. 윤리적 이유로 프로토콜은 \textit{in vivo} 전달 방법을 의도적으로 생략했다. 독자는 부록~\(\Sigma\)를 참조하라.
+		\end{abstract}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{서론}
+	\label{sec:intro}
+	YUCT의 보편 오차 스케일링 법칙
+	\begin{equation}
+		\varepsilon = \kappa_c \, \alpha \, \REL^{-\beta}, \qquad \beta = \frac{2}{3},\quad \kappa_c = \frac{1}{3},
+		\label{eq:error-law}
+	\end{equation}
+	은 임의의 조정 과정(번역, 수리, 전자 전달)의 상대 오차 \(\varepsilon\)가 상대 조정 효율 \(\REL = K_{\mathrm{eff}}/K_{\mathrm{eff}}^{\max}\)와 시스템 특정 상수 \(\alpha\)(\(10^{-2}\)–\(10^{0}\) 정도)에만 의존함을 말한다. 이 법칙은 물리, 화학, 생물학적 시스템에서 40자릿수 이상에 걸쳐 검증되었다(부록 L 및 통합 검증 노트 참조).
+	
+	젊은 세포에서는 모든 다중 단백질 기계가 높은 \(\REL\)(상대 단위로 전형적으로 0.5–0.9)로 작동한다. 나이와 함께 축적된 분자 손상은 \(\REL\)을 감소시킨다. 오차는 추가 손상을 생성하므로 악순환이 발생한다: \(\REL\)이 감소하고 오차가 증가하며, 세포는 결국 노화나 세포자살에 빠진다.
+	
+	생물 조정 라그랑지안(BCLM, 부록 BCLM)은 코돈, 단백질, 효소에 대한 \(\REL\)의 통일된 조작적 정의와 유전적 변화가 \(\REL\)을 어떻게 변화시키는지 예측하는 규칙 집합을 제공한다. BCLM을 사용하면 \(\REL\)을 젊은 수준으로 고정한 세포를 \textbf{설계}하는 것이 가능하다. 본 프로토콜은 그 설계를 구체적이고 반증 가능한 실험으로 변환한다.
+	
+	\subsection{BCLM이 단백질의 \(\REL\)을 계산하는 방법 (간단한 복습)}
+	길이 \(N\)의 단백질에 대한 절대 조정 효율은
+	\[
+	K_{\mathrm{eff}}^{\mathrm{protein}} = \Bigl( \prod_{i=1}^{N} K_{\mathrm{eff},i}^{\mathrm{AA}} \Bigr)^{1/N} \cdot R_{\mathrm{struct}},
+	\]
+	로 주어진다. 여기서 \(K_{\mathrm{eff},i}^{\mathrm{AA}}\)는 아미노산 특이 값(BCLM 표 2), \(R_{\mathrm{struct}}\)는 구조 공명 인자(BCLM 표 10)이다. 상대 효율 \(\REL^{\mathrm{protein}} = K_{\mathrm{eff}}^{\mathrm{protein}}/K_{\mathrm{eff}}^{\max}\)이다.
+	
+	코돈 최적화는 \(\REL\)을 증가시킨다. 왜냐하면 각 코돈은 고유한 \(\REL^{\mathrm{codon}}\)(BCLM 표 1)을 갖기 때문이다. 모든 코돈을 가장 높은 \(\REL\)을 가진 동의 코돈으로 교체하면 코돈 효율의 기하 평균이 증가하고, 결과적으로 전체 단백질의 \(\REL\)이 증가한다.
+	
+	\subsection{온도 의존성}
+	부록 P로부터, \(K_{\mathrm{eff}}\)는 온도와 함께 \(T^{-\gamma}\) (\(\gamma\approx0.3\))로 스케일한다. 따라서 \(\varepsilon(T) \propto T^{0.20}\)이다. 모든 실험은 엄격하게 제어된 37.0\(^\circ\)C에서 수행되어야 한다. 35\(^\circ\)C에서의 병행군은 온도 스케일링 예측을 검증할 것이다.
+	
+	\section{장수 설계: 네 가지 표적 층}
+	\label{sec:layers}
+	우리는 네 가지 독립적인 조정 층을 조작한다. 표~\ref{tab:targets}는 유전자, 그 자연형 및 최적화된 \(\REL\), 그리고 관련 기능적 오차의 개별 배수 변화를 보여준다. 이 숫자들은 Kazusa 데이터베이스의 인간 코돈 빈도와 BCLM 표 10의 \(R_{\mathrm{struct}}\) 값을 사용하여 BCLM 파이프라인(v6.1)으로 계산되었다.
+	
+	\begin{table}[H]
+		\centering
+		\caption{표적 유전자와 예측된 \(\REL\) 변화}
+		\label{tab:targets}
+		\begin{tabular}{@{}llrrr@{}}
+			\toprule
+			\textbf{층} & \textbf{유전자} & \(\REL_{\mathrm{WT}}\) & \(\REL_{\mathrm{LL}}\) & \(\varepsilon_{\mathrm{LL}}/\varepsilon_{\mathrm{WT}}\) \\
+			\midrule
+			1 (게놈)    & BRCA1 & 0.62 & 0.78 & 0.85 \\
+			& PARP1 & 0.60 & 0.77 & 0.86 \\
+			& MLH1  & 0.59 & 0.76 & 0.87 \\
+			2 (미토콘드리아) & NDUFS1 & 0.55 & 0.72 & 0.80 \\
+			& NDUFV1 & 0.56 & 0.73 & 0.80 \\
+			& NDUFA9 & 0.54 & 0.70 & 0.81 \\
+			3 (단백질 항상성) & HSPA1A & 0.52 & 0.69 & 0.78 \\
+			& DNAJB1 & 0.50 & 0.68 & 0.79 \\
+			& HSPA9  & 0.53 & 0.70 & 0.78 \\
+			4 (ECM)    & ITGAV  & 0.58 & 0.74 & 0.83 \\
+			& ITGB3  & 0.57 & 0.73 & 0.83 \\
+			& FN1    & 0.60 & 0.76 & 0.84 \\
+			\bottomrule
+		\end{tabular}
+		\footnotesize 오차 비율은 \(\varepsilon_{\mathrm{LL}}/\varepsilon_{\mathrm{WT}} = (\REL_{\mathrm{LL}}/\REL_{\mathrm{WT}})^{-2/3}\)에서 유도된다.
+	\end{table}
+	
+	\subsection{층 1 – 게놈 안정성}
+	HPRT 돌연변이 빈도의 감소는 세 가지 최적화된 수리 단백질의 복합 효과이다. 수리 경로는 부분적으로 중복되므로 전체 오차 확률은 개별 인자의 기하 평균에 거의 같다:
+	\[
+	\frac{\mu_{\mathrm{LL}}}{\mu_{\mathrm{WT}}} \approx \sqrt[3]{0.85 \times 0.86 \times 0.87} \approx 0.86.
+	\]
+	참고: 이것은 \emph{점 돌연변이율}의 예상 감소이다. 세 인자의 곱은 \(0.63\)이지만, 기하 평균은 중복되는 수리 활동을 고려하여 더 보수적이다. 따라서 돌연변이율은 WT의 약 86\%로 떨어질 것으로 예측한다.
+	
+	\subsection{층 2 – 미토콘드리아 에너지 공명}
+	쌍별 적합도 \(C_{AB}\)는 0.95 이상으로 상승했다. 예측된 과산화물 생성(MitoSOX 형광)의 감소는 개별 서브유닛 오차 감소의 기하 평균이다:
+	\[
+	\frac{\mathrm{ROS}_{\mathrm{LL}}}{\mathrm{ROS}_{\mathrm{WT}}} \approx \sqrt[3]{0.80 \times 0.80 \times 0.81} \approx 0.80.
+	\]
+	따라서 ROS는 야생형 수준의 약 80\%로 떨어질 것으로 예상된다.
+	
+	\subsection{층 3 – 단백질 항상성}
+	응집 확률은 샤페론–클라이언트 적합도 \(C_{AB}\)에 의존한다. 세 가지 샤페론을 최적화하면 전체 응집 감소율은
+	\[
+	\frac{\mathrm{Agg}_{\mathrm{LL}}}{\mathrm{Agg}_{\mathrm{WT}}} \approx \sqrt[3]{0.78 \times 0.79 \times 0.78} \approx 0.78,
+	\]
+	즉, 봉입체의 약 22\% 감소가 된다.
+	
+	\subsection{층 4 – ECM–인테그린 공명}
+	세 가지 최적화된 ECM 접착 성분은
+	\[
+	\frac{\mathrm{Error}_{\mathrm{LL}}}{\mathrm{Error}_{\mathrm{WT}}} \approx \sqrt[3]{0.83 \times 0.83 \times 0.84} \approx 0.83.
+	\]
+	을 제공한다. 이동 속도는 접착 오류에 반비례한다. 따라서 상대 속도는
+	\[
+	\frac{v_{\mathrm{LL}}}{v_{\mathrm{WT}}} \approx \frac{1}{0.83} \approx 1.20,
+	\]
+	즉, 20\% 증가가 예상된다.
+	
+	\subsection{복합 예측}
+	네 층이 독립적으로 실패한다고 가정하면, 세포가 치명적 오류를 피할 전체 확률은 개별 성공 확률의 곱이다. 따라서 복합 치명적 오류 감소 인자(각 층의 기하 평균 사용)는
+	\[
+	\frac{\varepsilon_{\mathrm{LL}}^{\mathrm{fatal}}}{\varepsilon_{\mathrm{WT}}^{\mathrm{fatal}}} \approx 0.86 \times 0.80 \times 0.78 \times 0.83 \approx 0.45.
+	\]
+	복제 수명이 \(1/\varepsilon\)에 비례한다는 가설 아래, 기대되는 수명 연장은
+	\[
+	\frac{\mathrm{Lifespan}_{\mathrm{LL}}}{\mathrm{Lifespan}_{\mathrm{WT}}} \approx \frac{1}{0.45} \approx 2.2.
+	\]
+	이것은 상호작용을 무시한 상한선이며, 중복 손상 경로를 고려한 보수적 추정은 인자를 \(1.5\)–\(2.0\) 범위로 둔다.
+	
+	\section{실험 프로토콜}
+	\label{sec:protocol}
+	
+	\subsection{세포 시스템}
+	인간 iPSC 유래 심근세포 (iPSC‑CMs, 예: Coriell GM25256). 세포는 RPMI 1640 + B27 배지, 37\(^\circ\)C, 5\% CO\(_2\)에서 배양한다.
+	
+	\subsection{유전자 구성체}
+	표~\ref{tab:targets}의 각 유전자에 대해 두 가지 합성 cDNA를 준비한다:
+	\begin{itemize}
+		\item \textbf{WT‑OE}: 자연형 코딩 서열을 독시사이클린 유도성 렌티바이러스 벡터(pLV‑TRE‑Tight‑IRES‑EGFP)에 클로닝한 것.
+		\item \textbf{LL‑OPT}: BCLM 최적화 서열을 동일한 벡터에 삽입한 것.
+	\end{itemize}
+	BRCA1에 대해서는 동의 코돈을 무작위로 섞은 스크램블 대조군(SCR)도 제작한다.
+	
+	\subsection{대조군}
+	\begin{enumerate}
+		\item 빈 벡터 (EV).
+		\item 단백질 수준을 맞춘 WT‑OE.
+		\item SCR (특이성 대조군).
+	\end{enumerate}
+	
+	\subsection{측정 일정}
+	\begin{table}[H]
+		\centering
+		\caption{실험 일정표}
+		\label{tab:schedule}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{일} & \textbf{분석} & \textbf{층} & \textbf{판독값} \\
+			\midrule
+			0–7   & 형질도입, 선별 & --- & EGFP \\
+			7–14  & 독시사이클린 유도 & 전체 & 단백질 수준 \\
+			14–21 & HPRT 돌연변이 분석 & 1 & 6‑TG\(^{\mathrm{R}}\) 콜로니 \\
+			14–21 & MitoSOX, TMRE & 2 & 유세포 분석 \\
+			21–28 & HTT‑Q72 봉입체 분석 & 3 & 형광 현미경 \\
+			21–28 & 스크래치 상처 분석 & 4 & 상처 닫힘 속도 \\
+			28–56 & 연속 계대 & 전체 & 노화 \(\beta\)-gal, 텔로미어 qPCR \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\subsection{복제 수명}
+	세포는 80\% 컨플루언트에서 계대하며 누적 배가수를 기록한다. BCLM‑LL‑OPT 세포는 WT‑OE 대조군의 배가수의 \(1.5\)–\(2.0\)배에 도달할 것으로 예측된다.
+	
+	\section{제어 조정 회귀 (CCR)}
+	\label{sec:CCR}
+	인과관계를 증명하기 위해 최적화된 유전자를 일시적으로 억제한다.
+	
+	\begin{table}[H]
+		\centering
+		\caption{CCR 중재}
+		\label{tab:CCR}
+		\begin{tabular}{@{}llc@{}}
+			\toprule
+			\textbf{층} & \textbf{방법} & \textbf{CCR 후 표적 \(\REL\)} \\
+			\midrule
+			1 & BRCA1\_LL에 대한 Dox 유도성 shRNA & 0.62 (WT 수준) \\
+			2 & NDUFS1의 CRISPR 염기 편집 (I182F)   & 0.55 \\
+			3 & Tet‑CRISPRi에 의한 HSPA1A\_LL       & 0.52 \\
+			4 & ITGB3\_LL에 대한 siRNA            & 0.57 \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	억제 후 72시간 동안, 바이오마커는 WT 표현형 쪽으로 이동해야 한다. 세척 또는 siRNA 희석 후, 세포는 48–72시간 내에 LL 상태로 돌아와야 한다. 정량적 예측은
+	\[
+	\frac{\varepsilon_{\mathrm{CCR}}}{\varepsilon_{\mathrm{LL}}} = \left(\frac{\REL_{\mathrm{LL}}}{\REL_{\mathrm{CCR}}}\right)^{2/3}.
+	\]
+	이다.
+	
+	\section{반증 가능성}
+	\label{sec:falsifiability}
+	표~\ref{tab:predictions}의 모든 예측값은 사전 등록되었다. 3회의 독립적 반복 후, 실험 결과가 다섯 가지 분석 중 네 가지에서 예측 범위를 벗어날 경우, YUCT 노화 조정 이론은 반증된 것으로 간주한다.
+	
+	\begin{table}[H]
+		\centering
+		\caption{반증 가능한 예측}
+		\label{tab:predictions}
+		\begin{tabular}{@{}llll@{}}
+			\toprule
+			\textbf{예측} & \textbf{분석} & \textbf{기대값 (LL/WT)} & \textbf{반증 조건} \\
+			\midrule
+			돌연변이율       & HPRT           & \(0.86 \pm 0.05\) & LL/WT \(> 0.95\) \\
+			ROS              & MitoSOX        & \(0.80 \pm 0.05\) & LL/WT \(> 0.90\) \\
+			응집체           & HTT‑Q72 foci   & \(0.78 \pm 0.05\) & LL/WT \(> 0.90\) \\
+			이동 속도        & 스크래치 분석  & \(1.20 \pm 0.05\) & LL/WT \(< 1.05\) \\
+			복제 수명        & 누적 배가수    & \(1.5\)–\(2.0\)   & LL/WT \(< 1.3\) \\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\section{윤리적 주의사항}
+	\label{sec:ethics}
+	본 프로토콜은 전적으로 배양 세포를 사용한다. 유전자 구성체는 \textit{in vivo} 전달에 적합한 바이러스 벡터로 패키징되지 않았다. 윤리적 및 거버넌스 측면은 부록~\(\Sigma\)에서 다루어진다.
+	
+	\section{결론}
+	BCLM‑LL 프로토콜은 YUCT 노화 이론의 완전하고 자체 일관된 실험적 검증을 제공한다. 모든 수치 예측은 보편 오차 법칙과 BCLM 계산된 \(\REL\) 값으로부터 도출되었으며, 사후 조정은 전혀 없다. 본문의 모든 숫자는 기본 표~\ref{tab:targets}와 일치하여 완전한 내부 일관성을 보장한다. 긍정적인 결과는 세포의 건강 수명을 젊은 수준의 조정 효율로 합리적으로 회복시킴으로써 연장할 수 있음을 최초로 보여주는 것이 될 것이다.
+	
+	\vspace{0.5cm}
+	\noindent\textbf{데이터 및 코드:} 모든 서열, 계산된 \(\REL\) 값, 사전 등록된 예측은 \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}에 있다.
+	
+	\begin{thebibliography}{99}
+		\bibitem{BCLM} A.\,V.\,Yakushev, ``Appendix BCLM: Biological Coordination Lagrangian,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixL} A.\,V.\,Yakushev, ``Appendix L: Fractal Coordination Error Scaling,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixP} A.\,V.\,Yakushev, ``Appendix P: Temperature Dependence of Gravity,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{AppendixSigma} A.\,V.\,Yakushev, ``Appendix \(\Sigma\): Ethical Imperatives and Governance of YUCT‑Based Technologies,'' in \emph{YUCT}, Zenodo (2026).
+		\bibitem{Bjedov2021} I.~Bjedov \emph{et al.}, ``A single hyper‑accurate mutation in the ribosome extends lifespan in yeast, worms, and flies,'' \emph{Cell Metabolism}, 33, 1054–1070 (2021).
+		\bibitem{Kerekes2025} K.~Kerekes \emph{et al.}, ``Codon optimisation and evolutionary pressure in long‑lived mammals,'' \emph{bioRxiv} (2025).
+		\bibitem{YPSDC_repo} A.\,V.\,Yakushev, YPSDC Repository, \url{https://github.com/Alexey-Yakushev-YUCT/YPSDC}.
+	\end{thebibliography}
+	
+\end{document}

@@ -1,0 +1,428 @@
+% !TeX program = lualatex
+\documentclass[11pt,a4paper]{article}
+
+% ========= パッケージ =========
+\usepackage[english, bidi=default, layout=counters]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.25cm,right=1.25cm,top=1.25cm,bottom=3.1cm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{siunitx}
+\usepackage{bm}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{fontspec}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,arrows.meta,positioning,shapes.geometric}
+
+% ========= 言語 =========
+\babelprovide[import, main]{japanese}
+\babelprovide[import, onchar=ids fonts]{english}
+
+% ========= フォント =========
+\defaultfontfeatures{Ligatures=TeX}
+% 日本語フォント (Harano Aji Mincho/Gothic または IPAex フォントなど)
+\babelfont[japanese]{rm}[Renderer=Harfbuzz]{HaranoAjiMincho}
+\babelfont[japanese]{sf}[Renderer=Harfbuzz]{HaranoAjiGothic}
+\babelfont[japanese]{tt}[Renderer=Harfbuzz]{HaranoAjiGothic}
+
+% 欧文フォント
+\babelfont[english]{rm}{Times New Roman}
+\babelfont[english]{sf}{Arial}
+\babelfont[english]{tt}{Courier New}
+
+% ========= 色 =========
+\definecolor{skyblue}{RGB}{0,102,204}
+\definecolor{darkblue}{RGB}{0,0,139}
+\definecolor{gold}{RGB}{255,215,0}
+
+% ========= YUCT マクロ =========
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\DeclareMathOperator{\Tr}{Tr}
+
+% ========= 見出し書式 =========
+\titleformat{\section}{\LARGE\bfseries\color{darkblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{darkblue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{1em}{}
+
+% ========= ヘッダー/フッター =========
+\fancypagestyle{firstpage}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{-5pt}%
+	\renewcommand{\footrulewidth}{-5pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			{\small \textsuperscript{1}Yakushev Research, \url{https://yuct.org/}} \hfill
+			{\small YPSDC プロトコル: \url{https://ypsdc.com/}}\\[-2pt]
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			\textbf{ヤクシェフ統一コーディネーション理論 2026} \hfill \thepage\\[10pt]
+		\end{minipage}%
+	}%
+}
+
+\fancypagestyle{plain}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[4pt]
+			\textbf{ヤクシェフ統一コーディネーション理論 2026} \hfill \thepage\\[4pt]
+		\end{minipage}%
+	}%
+}
+
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+\raggedbottom
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+% ========= タイトル (YUCT ロゴ) =========
+\newcommand{\makeheader}{%
+	\noindent
+	\begin{minipage}{0.17\textwidth}
+		\raggedright
+		{\sffamily\bfseries\color{skyblue}\fontsize{46}{46}\selectfont YUCT}%
+	\end{minipage}%
+	\hspace{30pt}
+	\begin{minipage}{0.32\textwidth}
+		\raggedright
+		{\sffamily\fontsize{11}{13}\selectfont ヤクシェフ\\ 統一\\ コーディネーション理論}%
+	\end{minipage}%
+	\hfill
+	\begin{minipage}{0.38\textwidth}
+		\raggedleft
+		{\sffamily\bfseries メモ}\\
+		{\sffamily 2026年5月}\\
+		{\sffamily\footnotesize \url{https://yuct.org/}}%
+	\end{minipage}
+	\par\vspace{5pt}
+	\noindent\textcolor{gold}{\rule{\textwidth}{1.6pt}}
+	\par\vspace{0pt}
+}
+
+\begin{document}
+	\renewcommand{\thepage}{\arabic{page}}
+	\thispagestyle{firstpage}
+	\makeheader
+	
+	\vspace{0cm}
+	{\LARGE\bfseries 分散型 YPSDC (d‑YPSDC): \\ 共有環境指標による直接通信なきコーディネーション \par}
+	\vspace{0.2cm}
+	
+	{\large アレクセイ・V・ヤクシェフ\footnote{ヤクシェフ研究所, \url{https://yuct.org/}}} \\
+	\vspace{0.0cm}
+	
+	{\color{darkblue}\textbf{\LARGE 要旨}} \par
+	{\large
+		\noindent
+		古典的 YPSDC プロトコルは中央集権的トポロジーを仮定する。すなわち、一つのエージェントが短いインデックスを別のエージェントに能動的に送信し、両者は事前に共有された辞書を用いて複雑なコーディネーション動作を引き起こす。しかし、自然界や技術には、インデックスを直接交換することなくコーディネーションが達成されるシステムが広く存在する。本稿では、\textbf{分散型 YPSDC (d‑YPSDC)} を形式化する。これは、すべてのエージェントが共有環境から同時に同一のインデックスを読み取り、事前に配布された辞書を使用するプロトコルである。エージェント間には一切の通信が存在しないにもかかわらず、環境インデックスへの同期アクセスを通じて \(K_{\mathrm{eff}} \gg 1\) のコーディネーション効率が達成される。我々は、生物学（群れ行動）、経済学（マクロ経済指標への市場反応）、計算機科学（ブロックチェーンオラクル）、基礎物理学（量子非局所性）における d‑YPSDC の発現について論じる。このモデルは、自然法則の共有辞書を活性化するインデックスの普遍的運搬体として、深層の\textbf{コーディネーション場}の存在を示唆する。
+	}
+	
+	\vspace{0.1cm}
+	\noindent
+	{\color{darkblue}\textbf{キーワード:}} YPSDC, 分散型, コーディネーション, 環境指標, 事前辞書, コーディネーション場, 量子もつれ, 群れ行動, スマートコントラクト.
+	
+	\vspace{0.5cm}
+	\noindent
+	\textcopyright\ 2026 ヤクシェフ研究所. 全著作権所有.
+	
+	\tableofcontents
+	\newpage
+	
+	\section{序論：中央集権型 YPSDC から分散型プロトコルへ}
+	
+	古典的 YPSDC プロトコルは、二つ以上のエージェント間のコーディネーションを記述する。一つのエージェントが\textbf{短いインデックスを能動的に送信}し、他のエージェントがそれを受信して、共有された事前辞書から複雑なエントリを活性化する \cite{YUCT}。この方式では常に明確な送信者が存在し、相互作用トポロジーは「ポイントツーポイント」または「スター型」である。
+	
+	生物学的、社会的、物理的なシステムの観察から、インデックスの直接的な交換を伴わずにコーディネーションが行われる広範な現象群が明らかになっている。鳥の群れは目に見えるリーダーなしに同時に方向を変え、金融市場はマクロ経済数値の発表に即座に反応し、もつれた量子粒子は信号交換なしに相関を示す。これらすべての場合において、コーディネーションが成立するのは、\textbf{すべてのエージェントが周囲の環境から同じインデックスを同時に読み取り}、事前に合意された辞書に依存しているからである。
+	
+	本稿の目的は、このメカニズムを \textbf{分散型 YPSDC (d‑YPSDC)} として正式に定式化し、その数学的構造を議論し、「共通運搬体」トポロジーを持つシステムに対する古典的プロトコルの自然な一般化であることを示すことである。
+	
+	\section{d‑YPSDC の形式的モデル}
+	
+	\subsection{構成要素}
+	
+	システムは以下の構成要素からなる：
+	
+	\begin{itemize}[leftmargin=*]
+		\item \(\mathcal{A} = \{A_1, A_2, \dots, A_N\}\) — エージェント集合（観測者、細胞、動物、ネットワークノード）。
+		\item \(\mathcal{D}\) — \textbf{事前辞書}。全エージェントが共有し、オフライン段階で配布される。辞書は \(\{ \kappa \to \text{動作} \}\) のペアの集合であり、\(\kappa\) は潜在的インデックス、\(\text{動作}\) はコーディネーションされた行動である。
+		\item \(\mathcal{E}\) — 環境状態空間。
+		\item \(S(t) \in \mathcal{E}\) — \textbf{環境インデックス}。全エージェントが同時に利用可能。環境は能動的な送信者では\emph{なく}、単にインデックスの物理的運搬体を提供する。
+	\end{itemize}
+	
+	\subsection{プロトコル}
+	
+	\begin{enumerate}[leftmargin=*, label=\textbf{段階 \arabic*:}]
+		\item \textbf{オフライン辞書配布。} 完全な辞書 \(\mathcal{D}\) が何らかの方法（遺伝的、文化的、または初期化ステップ）で全エージェントに配信される。
+		\item \textbf{オンラインインデックス読取。} 時刻 \(t\) に環境がインデックス \(\kappa = S(t)\) を生成し、これは遅延なく全エージェントに到達する。
+		\item \textbf{活性化。} 各エージェント \(A_i\) は独立して辞書から \(\mathcal{D}(\kappa)\) エントリを検索し、指定された動作を実行する。エージェント間でメッセージは一切交換されない。
+	\end{enumerate}
+	
+	\subsection{コーディネーション効率}
+	
+	古典的 YPSDC と同様に、コーディネーション効率は引き起こされた動作のエントロピーとインデックスのエントロピーの比として定義される：
+	\begin{equation}
+		\Keff^{\mathrm{(d)}} = \frac{H(\text{集団動作})}{H(\kappa)},
+		\label{eq:Keff_d}
+	\end{equation}
+	ここで \(H(\text{集団動作})\) はグループ全体の同期行動のエントロピーである。インデックスは非常に短く、動作は任意に複雑でありうるため、\(\Keff^{\mathrm{(d)}}\) の値は非常に大きくなりうる。
+	
+	\subsection{古典的 YPSDC とのトポロジー的差異}
+	
+	二つの選択肢の根本的な違いは図~\ref{fig:topology} に示されている。
+	
+	\begin{figure}[htbp]
+		\begin{otherlanguage}{english}
+			\centering
+			\begin{tikzpicture}[
+				agent/.style={circle, draw=blue!70, fill=blue!15, minimum size=1.2cm, font=\small},
+				dict/.style={rectangle, draw=green!50!black, fill=green!10, rounded corners, minimum width=3cm, minimum height=0.9cm, font=\small},
+				env/.style={rectangle, draw=orange!70, fill=orange!10, rounded corners, minimum width=3cm, minimum height=0.9cm, font=\small},
+				arrow/.style={->, >=stealth, thick},
+				dashedarrow/.style={->, >=stealth, thick, dashed},
+				]
+				
+				% ---- 古典的 YPSDC (上) ----
+				\begin{scope}[local bounding box=classic]
+					\node[dict] (dict1) at (0,0) {辞書 \(\mathcal{D}\)};
+					\node[agent] (A1) at (-3, -2) {エージェント A};
+					\node[agent] (A2) at (3, -2) {エージェント B};
+					\draw[dashedarrow] (dict1) -- (A1) node[midway, left] {オフライン};
+					\draw[dashedarrow] (dict1) -- (A2) node[midway, right] {オフライン};
+					\draw[arrow] (A1) -- (A2) node[midway, above] {インデックス \(\kappa\)};
+				\end{scope}
+				\node[above=0.2cm of classic.north, font=\bfseries] {古典的 YPSDC（中央集権型トポロジー）};
+				
+				% ---- d‑YPSDC (下) ----
+				\begin{scope}[local bounding box=decentr, yshift=-6cm]
+					\node[env] (env) at (0,1) {環境 \(S(t)\)};
+					\node[dict] (dict2) at (0,-0.5) {辞書 \(\mathcal{D}\)};
+					\node[agent] (B1) at (-4, -2.5) {エージェント 1};
+					\node[agent] (B2) at (0, -2.5) {エージェント 2};
+					\node[agent] (B3) at (4, -2.5) {エージェント 3};
+					\draw[arrow] (env) -- (B1) node[midway, left] {\(\kappa\)};
+					\draw[arrow] (env) -- (B2) node[midway, right] {\(\kappa\)};
+					\draw[arrow] (env) -- (B3) node[midway, right] {\(\kappa\)};
+					\draw[dashedarrow] (dict2) -- (B1);
+					\draw[dashedarrow] (dict2) -- (B2);
+					\draw[dashedarrow] (dict2) -- (B3);
+					% エージェント間リンクなし
+					\draw[red, thick, dotted] (B1) -- (B2) node[midway, above, red] {リンクなし};
+					\draw[red, thick, dotted] (B2) -- (B3) node[midway, above, red] {リンクなし};
+				\end{scope}
+				\node[above=0.2cm of decentr.north, font=\bfseries] {d‑YPSDC（分散型トポロジー）};
+				
+			\end{tikzpicture}
+		\end{otherlanguage}
+		\caption{トポロジーの比較。古典的 YPSDC では、エージェント A がエージェント B に能動的にインデックスを送信する。分散型 d‑YPSDC では、全エージェントが環境から同じインデックスを同時に読み取り、互いにメッセージを交換しない。}
+		\label{fig:topology}
+	\end{figure}
+	
+	\section{様々なシステムにおける d‑YPSDC の事例}
+	
+	\subsection{生物学：群れ行動と「暗黙の合意」}
+	
+	多くの動物種において、個体別の特定の音声や視覚信号なしに同期した集団行動（魚群の突然の方向転換、鳥群の同期的離陸、ジリスの凍結）が観察される。代わりに、すべての個体が\emph{同時に}環境パラメータの変化（突風、捕食者の影、照度変化）を感知し、生得的（遺伝的）辞書に従って反応する。
+	
+	以前に議論された人間の髪の毛の例もこの方式に適合する。頭の長い髪は空気の流れや温度に対する非常に敏感な検出器として機能し、人々が言葉を交わさなくても天候の変化を同期的に感知することを可能にする。
+	
+	\subsection{経済と金融}
+	
+	主要な経済指標（例えば米国の失業率）の発表は、何百万人もの市場参加者の即時的かつ一貫した反応を引き起こす。トレーダーたちは互いに通信しない。彼らは共有された「辞書」（取引アルゴリズム、経済モデル、あるいは単に過去の経験から形成された期待）を使用する。インデックス（指標の数値）は環境（情報端末）によって全員に同時に提供され、市場は一つの実体のように動く。
+	
+	\subsection{ブロックチェーンとスマートコントラクト}
+	
+	分散型アプリケーション（dApps）はしばしば\textbf{オラクル（Oracles）}に依存する。オラクルはブロックチェーンに現実世界の情報を提供する外部データソースである。スマートコントラクトは全ネットワークノードに配布された辞書の役割を果たす。オラクルがインデックス（例えば時刻 \(t\) における ETH/USD 価格）を公開すると、全ノードは追加の合意なしにコントラクトの対応する分岐を同時に活性化する。これはデジタル環境における純粋な d‑YPSDC の応用である。
+	
+	\subsection{量子もつれ}
+	
+	d‑YPSDC の最も深遠な物理的実現は、おそらく量子力学において生じる。もつれた粒子対を考えよう。それらの共有された波動関数は、可能な測定結果間の相関を定義する辞書である。一方の粒子が測定されるとき、その結果は、量子場の非局所的性質のおかげで、第二の粒子が\emph{同時に}アクセスできる\textbf{環境インデックス}と見なすことができる。第二の粒子は古典的な信号を一切受信することなく、関連する状態を「活性化」する。d‑YPSDC の枠組み内では、これは共有された物理的媒体（量子場）から同じインデックスを同期的に読み取ることとして解釈され、粒子間の情報伝達は不要である。
+	
+	\section{存在論的基礎：物質はコーディネーション、幾何学は結果}
+	
+	YUCT と標準的な場の理論との主な違いは、\textbf{コーディネーション場が空の時空に存在するのではない}ということである。むしろ、時空それ自体が、より根源的な実在――コーディネーションされた要素のネットワーク――から二次的に創発したものである。この仮定は、分散型 YPSDC に直接適用される二つの主要な帰結を持つ。
+	
+	\textbf{1. 物質 = コーディネーション。} 「素粒子」や「エージェント」の概念は、コーディネーション過程から独立して存在するのではない。要素は、コーディネーション行為に参加し、その辞書を通じて定義されうる限りにおいてのみ存在する。コーディネーション・ネットワークの外側には物質は存在せず、物理的内容を欠いた純粋に形式的な数学的点のみが残る。d‑YPSDC の文脈では、これは環境インデックスを読み取るエージェントが受動的な観測者ではないことを意味する。一貫した単位として振る舞う彼らの純粋な存在そのものが\emph{コーディネーション場 \(\Psi_{MN}\) を創造し}、その場が今度は彼らにインデックスを提供するのである。
+	
+	\textbf{2. 物質なくして幾何学は存在しない。} 回転円板のパラドックス（文献ではエーレンフェストのパラドックスとして知られる）は、空間幾何学が\emph{アプリオリに}与えられることはできず、物質体の運動状態と内部凝集力によって決定されることを示している。YUCT において、これは時空計量 \(g_{\mu\nu}(x)\) がコーディネーション相互作用の平均化から生じる\emph{有効}量であるという主張に一般化される。コーディネーションが欠如している場所（\(K_{\mathrm{eff}} \to 1\)）では、幾何学は退化し、その操作的意味を失う。d‑YPSDC において、これは環境のインデックスに対する有効な「伝導性」が絶対空間の属性ではなく、コーディネーションされたエージェントの密度とコヒーレンスに依存するという事実に現れる。
+	
+	したがって、\textbf{インデックスを伝達する環境は受動的な容器ではなく、物質的エージェントから創発するコーディネーション場そのもの}である。共有された辞書を持つエージェントの存在が場 \(\Psi_{MN}\) を「オン」にし、同期的なインデックス伝達を可能にする構造を付与する。エージェントが存在しないとき（あるいは辞書が破壊されたとき）、場は古典的時空の不在に等しい非コーディネーション対称状態に戻る。これは、空間、時間、物質が単一のコーディネーション過程の不可分な三つの側面であるという描像と完全に一致する。
+	
+	\section{YUCT 19次元空間における d‑YPSDC の数学的モデル}
+	\label{sec:math-model}
+	
+	\subsection{19次元コーディネーション場とその作用}
+	
+	YUCT の基本的舞台は、符号 \((+,-,\dots,-)\) を持つ19次元擬リーマン多様体 \(\mathcal{M}_{19}\) であり、計量 \(G_{MN}\) を持つ。これは4次元時空上のファイバー束として解釈される：
+	\begin{equation}
+		\mathcal{M}_{19} = M_4 \times F_{15},
+	\end{equation}
+	ここで \(F_{15}\) はコーディネーション自由度のコンパクトな内部空間である。中核となる場は\textbf{コーディネーション場} \(\Psi_{MN}(X)\) であり、配布された辞書とインデックスの伝送媒体をエンコードする。その最も単純な作用は次の形を持つ：
+	\begin{equation}
+		S_{19} = \frac{1}{2\kappa_{19}} \int d^{19}X \sqrt{-G}\, R(G) + \int d^{19}X \sqrt{-G}\, \mathcal{L}_{\mathrm{coord}},
+		\label{eq:S19}
+	\end{equation}
+	ここで曲率 \(R(G)\) は背景幾何学を提供し、コーディネーション・ラグランジアンは
+	\begin{equation}
+		\mathcal{L}_{\mathrm{coord}} = -\frac{1}{4} \Tr(\Psi_{MN}\Psi^{MN}) + \frac{1}{2} G^{MN}\,\partial_M \phi\,\partial_N \phi - V(\phi)
+		\label{eq:Lcoord}
+	\end{equation}
+	であり、コーディネーション相互作用の強度に類似したゲージ場 \(\Psi_{MN}\) と、局所コーディネーション効率を決定するスカラー場 \(\phi = \ln(K_{\mathrm{eff}}/K_0)\) を含む。
+	
+	\subsection{エージェントと辞書の導入}
+	
+	エージェント \(A_i\), \(i=1,\dots,N\) は \(M_4\) に集中した点源として表現され、その辞書形式に従って \(F_{15}\) 上に「展開」される。各エージェントは、インデックス \(\kappa \in \mathcal{E}\) を所望の動作に写像する\textbf{辞書関数} \(f_{\mathcal{D}}^{(i)}(\kappa)\) を所有する。エージェントと場 \(\Psi_{MN}\) の相互作用は次の項で与えられる：
+	\begin{equation}
+		S_{\mathrm{int}} = \sum_{i=1}^{N} \int d\tau_i \left[ \frac{1}{2} m_i \dot a_i^2 - \lambda_i \bigl( a_i - f_{\mathcal{D}}^{(i)}(\kappa) \bigr)^2 \right],
+		\label{eq:Sint}
+	\end{equation}
+	ここで \(a_i\) は実際に実行された動作、\(\tau_i\) はエージェントの固有時である。ここでのインデックス \(\kappa\) は外部パラメータではなく、エージェント位置における場 \(\Psi_{MN}\)（またはその \(M_4\) への射影）の値である：
+	\begin{equation}
+		\kappa(x_i) = \int_{F_{15}} d^{15}Y \sqrt{-G^{(15)}}\, \mathcal{O}[\Psi_{MN}](x_i, Y),
+		\label{eq:kappa}
+	\end{equation}
+	ここで \(\mathcal{O}\) はコーディネーション場をインデックス空間に射影する演算子である。最も単純な場合、\(\mathcal{O}[\Psi] = \Tr(\Psi)\) または単に \(\phi\) である。
+	
+	\subsection{運動方程式とインデックス伝達}
+	
+	全作用 \(S_{19} + S_{\mathrm{int}}\) を \(\Psi_{MN}\) について変分すると、方程式
+	\begin{equation}
+		D_M \Psi^{MN} = J^{N}_{\mathrm{coord}},
+		\label{eq:Psi-eq}
+	\end{equation}
+	が得られる。ここで \(J^{N}_{\mathrm{coord}}\) は全エージェントの総コーディネーション流である：
+	\begin{equation}
+		J^{N}_{\mathrm{coord}}(X) = \sum_{i=1}^{N} \int d\tau_i\, \frac{\delta^{(19)}(X - X_i(\tau_i))}{\sqrt{-G}}\, \frac{\partial \mathcal{L}_{\mathrm{int}}}{\partial (\partial_N \Psi)}.
+	\end{equation}
+	ゆっくりと変化する場と固定された辞書に対して、有効方程式はソース付きの \(M_4\) 上の波動方程式に帰着する：
+	\begin{equation}
+		\Box \phi - m_{\mathrm{eff}}^2 \phi = \sum_{i} g_i \delta^{(4)}(x - x_i),
+		\label{eq:phi-eq}
+	\end{equation}
+	ここで \(m_{\mathrm{eff}}^2 = V''(0)\) であり、結合定数 \(g_i\) はインデックスの「大きさ」に比例する。
+	
+	方程式~(\ref{eq:phi-eq}) の準静的近似における解は
+	\begin{equation}
+		\phi(x) = \sum_i g_i \, G_{\mathrm{ret}}(x, x_i),
+	\end{equation}
+	であり、\(G_{\mathrm{ret}}\) は質量を持つスカラー場の遅延グリーン関数である。すべてのエージェントがコンプトン波長 \(\lambda_c = 1/m_{\mathrm{eff}}\) よりもはるかに小さい領域内に位置するならば、\(\phi(x)\) はすべての点 \(x_i\) で実質的に同一である。これは、すべてのエージェントが\textbf{同じインデックスを同期的に読み取る}理由を説明する。環境（すなわち境界条件または宇宙背景）から生じたインデックスは \(M_4\) を通じて伝播し、その長波長ゆえにすべての局所観測者にとって同一に見えるのである。
+	
+	したがって、活性化の同時性は超光速信号を必要としない。それは、コーディネーション場 \(\phi\) がグループのスケールで均質な背景として作用するという事実の自然な結果である。同時に、各エージェントは場とのみ相互作用し、他のエージェントとは相互作用しない。直接的な情報交換は発生しない――これこそが分散型 YPSDC の核心である。
+	
+	\subsection{コーディネーション効率 \(K_{\mathrm{eff}}\) との関連}
+	
+	局所コーディネーション効率は、辞書の情報容量とインデックス長の比として定義される。場 \(\phi\) を用いて表現すると：
+	\begin{equation}
+		\Keff(x) = K_0 e^{\phi(x)},
+		\label{eq:Keff-field}
+	\end{equation}
+	ここで \(K_0 \approx 1\) は真空（コーディネーションされたエージェントが存在しない場合）における背景値である。環境インデックスの伝達は摂動 \(\delta\phi\) を生み出し、エージェントが占める領域では
+	\begin{equation}
+		\Keff^{\mathrm{(d)}} = K_0 \exp\!\left( \sum_i g_i G_{\mathrm{ret}}(x, x_i) \right).
+	\end{equation}
+	体積 \(V \ll \lambda_c^3\) 内に位置する \(N\) 個の同一エージェントに対して、
+	\begin{equation}
+		\Keff^{\mathrm{(d)}} \approx K_0 \exp\!\left( \frac{N g}{4\pi} \frac{e^{-m_{\mathrm{eff}} r_0}}{r_0} \right),
+	\end{equation}
+	ここで \(r_0\) はエージェント間の特性距離である。\(N g > 0\) であるから（インデックスはコーディネーションを改善する）、\(\Keff^{\mathrm{(d)}}\) は大きな \(N\) または強い結合 \(g\) に対して 1 をはるかに超えることができる。
+	
+	これは、\textbf{分散型 YPSDC がグループ内でのインデックス交換なしに \(K_{\mathrm{eff}} \gg 1\) を提供する}ことを直接的に示している。効率の増大はもっぱら場 \(\phi\) の幾何学に起因する。すべてのエージェントは共通のコーディネーション場に浸されており、その場が外部インデックスによって励起されるとき、それらの辞書を同時に活性化する。
+	
+	\section{同一プロトコルの二つのレジーム：中央集権型 vs 分散型 YPSDC}
+	\label{sec:two-regimes}
+	
+	これまでの例と数学的モデルは、d‑YPSDC が根本的に新しいコーディネーション・プロトコルであるという印象を与えるかもしれない。そうではない。存在論的には、\textbf{唯一つの YPSDC メカニズム}のみが存在する。コーディネーション場 \(\Psi_{MN}\) がインデックスを伝達し、すべてのエージェントはこの場とのみ相互作用して、共有された事前辞書のエントリを活性化する。「中央集権型」YPSDC と「分散型」d‑YPSDC の区別は純粋に現象学的であり、場の方程式に現れるコーディネーション流 \(J^{N}_{\mathrm{coord}}\) の支配的な源泉を反映している（\cite{YUCT} の付録 A 参照）。
+	
+	\subsection{二つのレジーム}
+	\begin{enumerate}[leftmargin=*, label=\textbf{(\arabic*)}]
+		\item \textbf{中央集権型レジーム（古典的 YPSDC）。} 流れ \(J^{N}_{\mathrm{coord}}\) は一つの集中したエージェント（送信者）によって支配される。このエージェントは能動的に場を励起し、一つまたは複数の特定の受信者に到達する伝播摂動を生み出す。このレジームは、ポイントツーポイントまたはスター型トポロジーの通信（例えば、GSM 塔が携帯電話に放送する、または GMT の時報）を記述する。
+		
+		\item \textbf{分散型レジーム（d‑YPSDC）。} 個々のエージェントの集中した流れは、ゆっくりと変化する宇宙背景――\(\Psi_{MN}\) の環境モード――に比べて無視できる。背景は、すべてのエージェントが同時に利用できるインデックスを提供する。このレジームは、量子もつれ、群れ行動、クオラムセンシング、マクロ経済指標への金融市場の反応、ブロックチェーン・オラクルによるスマートコントラクトの活性化を記述する。
+	\end{enumerate}
+	
+	\subsection{二つのレジーム間の遷移}
+	無次元パラメータ
+	\[
+	\Theta = \frac{|J_{\mathrm{agent}}|}{|J_{\mathrm{env}}|},
+	\]
+	ここで \(J_{\mathrm{agent}}\) は最強の個別送信者によって生成される流れ、\(J_{\mathrm{env}}\) は環境背景の有効流れであり、二つのレジーム間の遷移を制御する：
+	\[
+	\begin{cases}
+		\Theta \gg 1 & \text{中央集権型レジーム（古典的 YPSDC）}, \\
+		\Theta \ll 1 & \text{分散型レジーム（d‑YPSDC）}, \\
+		\Theta \sim 1 & \text{混合的振る舞い}.
+	\end{cases}
+	\]
+	
+	\subsection{存在論的地位}
+	d‑YPSDC は、\textbf{追加の場、ラグランジアンの修正、または YUCT の存在論的原理の改訂を必要としない}。19次元作用 \(S_{19}\) と観測者場 \(\phi_1,\phi_2\)（付録 A）は、すでに両方のレジームに必要なすべてを含んでいる。「d‑YPSDC」という用語は、識別可能な能動的送信者なしにコーディネーションが達成される広範な現象クラスに対する便利な現象学的ラベルとしてのみ保持される。
+	
+	この明確化は、YUCT フレームワークの論理的完全性にとって必要である。この理論は、明示的な人間のコミュニケーションから量子力学の非局所的相関に至るまで、\textbf{単一のコーディネーション場}に適用された\textbf{単一のプロトコル}を通じて、あらゆる形態のコーディネーションを記述する。
+	
+	\subsection{例：量子もつれを d‑YPSDC として}
+	
+	量子的な場合、辞書はもつれた対の共有された波動関数 \(\Psi_{AB}\) である。(\ref{eq:kappa}) の演算子 \(\mathcal{O}\) を、インデックス \(\kappa\) が最初の粒子の測定結果と一致するように選ぶ。すると方程式 (\ref{eq:phi-eq}) は、この結果がコーディネーション場 \(\phi\) を介して第二の粒子へ伝播することを記述する。場は質量を持たないため、相関は同期的活性化の意味で即座に生じるが、エネルギー伝達はない。これが YUCT におけるベル不等式の破れに対する幾何学的解釈である。
+	
+	数学的には、破れの度合い \(S\) は効率で表現される：
+	\begin{equation}
+		S = 2\sqrt{2} \frac{\Keff^{\mathrm{(d)}}}{\Keff^{\mathrm{(d)}} + 1},
+	\end{equation}
+	したがって、\(\Keff^{\mathrm{(d)}} \to \infty\)（理想的な辞書）のときに最大量子値 \(2\sqrt{2}\) に達し、\(\Keff^{\mathrm{(d)}} \to 1\)（辞書の破壊）のときに相関が消失する。
+	
+	このモデルは、生物学、経済学、量子物理学を共通の方程式 (\ref{eq:Psi-eq})–(\ref{eq:Keff-field}) の下に統合し、コーディネーション場 \(\Psi_{MN}\) と d‑YPSDC プロトコルの普遍性を証明する。
+	
+	\section{インデックスの普遍的運搬体としてのコーディネーション場}
+	
+	d‑YPSDC が量子系、生物学的集団、社会的ネットワークに対して有効であるならば、統一された\textbf{コーディネーション場}――普遍的な媒体――の存在を仮定することは自然である：
+	
+	\begin{itemize}
+		\item 自然法則の「普遍的辞書」（対称性、定数、運動方程式）を格納する；
+		\item インデックス（測定結果、揺らぎ、外部の影響）をシステムの全要素に同時に伝達する；
+		\item 量子非局所性、集団行動、または迅速な市場反応として観測される同期的活性化を保証する。
+	\end{itemize}
+	
+	この文脈において、古典的通信（一つのエージェントから別のエージェントへの信号伝送）は、環境がすべてのエージェントにインデックスを同時に伝達できない場合（例えば、高いノイズレベルのため）、エージェントが直接通信によってインデックスを中継せざるを得ない\textbf{特殊なケース}として現れる。
+	
+	この仮説は相対性理論と矛盾しない。なぜなら、いかなるエネルギーや情報も超光速で伝達されることはないからである。インデックスは \(c\) を超えない速度で環境を介して伝播し、局所的近傍に到達した後にのみ、すべてのエージェントが利用可能となる。活性化の同時性は、もっぱら共有された辞書とインデックスの同一性に起因し、超光速信号によるものではない。
+	
+	\section{結論}
+	
+	我々は、分散型 YPSDC (d‑YPSDC) の概念を提示した。これは、すべてのエージェントが事前に配布された事前辞書を用いて、共有された環境インデックスを同期的に読み取ることによってコーディネーションが達成されるプロトコルである。この方式は、生物学的同期から量子非局所性に至る広範な現象を、いかなる隠れた通信にも訴えることなく説明する。
+	
+	d‑YPSDC は、自然過程の宇宙的一貫性に責任を持つ根本的実体としての\textbf{コーディネーション場}の概念へと自然に導く。YUCT の19次元作用に基づく数学的モデルは、分散型コーディネーションが場 \(\Psi_{MN}\) の統一方程式から生じ、効率 \(K_{\mathrm{eff}}\) がエージェント数と結合強度に伴って指数関数的に増大することを示している。この場と、量子論および一般相対性理論との関連についての更なる形式化が、将来の研究課題を構成する。
+	
+	\begin{thebibliography}{9}
+		\begin{otherlanguage}{english}
+			\bibitem{YUCT} A.~V.~Yakushev, \emph{Yakushev Unified Coordination Theory (YUCT)}, Zenodo, DOI:10.5281/zenodo.18444599 (2026).
+			\bibitem{AppendixB} A.~V.~Yakushev, Appendix B: Temporal Coordination Paradox, in \emph{YUCT} (2026).
+			\bibitem{Blockchain} S.~Nakamoto, ``Bitcoin: A Peer-to-Peer Electronic Cash System'' (2008).
+			\bibitem{Ben-Jacob} E.~Ben-Jacob, ``Bacterial self-organization: co-enhancement of complexification and adaptability'', \emph{Physica A} (2003).
+			\bibitem{EPR} A.~Einstein, B.~Podolsky, N.~Rosen, ``Can Quantum-Mechanical Description of Physical Reality Be Considered Complete?'', \emph{Phys. Rev.} \textbf{47}, 777 (1935).
+		\end{otherlanguage}
+	\end{thebibliography}
+	
+\end{document}

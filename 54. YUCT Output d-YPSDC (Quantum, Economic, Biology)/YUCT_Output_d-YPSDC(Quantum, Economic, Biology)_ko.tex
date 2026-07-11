@@ -1,0 +1,428 @@
+% !TeX program = lualatex
+\documentclass[11pt,a4paper]{article}
+
+% ========= 패키지 =========
+\usepackage[english, bidi=default, layout=counters]{babel}
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\usepackage{geometry}
+\geometry{left=1.25cm,right=1.25cm,top=1.25cm,bottom=3.1cm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{siunitx}
+\usepackage{bm}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage{fontspec}
+\usepackage{parskip}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,arrows.meta,positioning,shapes.geometric}
+
+% ========= 언어 =========
+\babelprovide[import, main]{korean}
+\babelprovide[import, onchar=ids fonts]{english}
+
+% ========= 글꼴 =========
+\defaultfontfeatures{Ligatures=TeX}
+% 한국어 글꼴 (Noto Serif CJK KR, 설치되어 있지 않으면 NanumMyeongjo 등으로 변경)
+\babelfont[korean]{rm}[Renderer=Harfbuzz]{Noto Serif CJK KR}
+\babelfont[korean]{sf}[Renderer=Harfbuzz]{Noto Sans CJK KR}
+\babelfont[korean]{tt}[Renderer=Harfbuzz]{Noto Sans Mono CJK KR}
+
+% 영어 텍스트용 라틴 글꼴
+\babelfont[english]{rm}{Times New Roman}
+\babelfont[english]{sf}{Arial}
+\babelfont[english]{tt}{Courier New}
+
+% ========= 색상 =========
+\definecolor{skyblue}{RGB}{0,102,204}
+\definecolor{darkblue}{RGB}{0,0,139}
+\definecolor{gold}{RGB}{255,215,0}
+
+% ========= YUCT 매크로 =========
+\newcommand{\Keff}{K_{\mathrm{eff}}}
+\DeclareMathOperator{\Tr}{Tr}
+
+% ========= 제목 서식 =========
+\titleformat{\section}{\LARGE\bfseries\color{darkblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{darkblue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\itshape}{\thesubsubsection}{1em}{}
+
+% ========= 머리글/바닥글 =========
+\fancypagestyle{firstpage}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{-5pt}%
+	\renewcommand{\footrulewidth}{-5pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			{\small \textsuperscript{1}Yakushev Research, \url{https://yuct.org/}} \hfill
+			{\small YPSDC 프로토콜: \url{https://ypsdc.com/}}\\[-2pt]
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[5pt]
+			\textbf{야쿠셰프 통합 조정 이론 2026} \hfill \thepage\\[10pt]
+		\end{minipage}%
+	}%
+}
+
+\fancypagestyle{plain}{%
+	\fancyhf{}%
+	\renewcommand{\headrulewidth}{0pt}%
+	\renewcommand{\footrulewidth}{0pt}%
+	\fancyfoot[C]{%
+		\begin{minipage}[t]{\textwidth}
+			\centering
+			\textcolor{gold}{\rule{\textwidth}{1.6pt}}\\[4pt]
+			\textbf{야쿠셰프 통합 조정 이론 2026} \hfill \thepage\\[4pt]
+		\end{minipage}%
+	}%
+}
+
+\pagestyle{plain}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+\raggedbottom
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+% ========= 제목 (YUCT 로고) =========
+\newcommand{\makeheader}{%
+	\noindent
+	\begin{minipage}{0.17\textwidth}
+		\raggedright
+		{\sffamily\bfseries\color{skyblue}\fontsize{46}{46}\selectfont YUCT}%
+	\end{minipage}%
+	\hspace{30pt}
+	\begin{minipage}{0.32\textwidth}
+		\raggedright
+		{\sffamily\fontsize{11}{13}\selectfont 야쿠셰프\\ 통합\\ 조정 이론}%
+	\end{minipage}%
+	\hfill
+	\begin{minipage}{0.38\textwidth}
+		\raggedleft
+		{\sffamily\bfseries 메모}\\
+		{\sffamily 2026년 5월}\\
+		{\sffamily\footnotesize \url{https://yuct.org/}}%
+	\end{minipage}
+	\par\vspace{5pt}
+	\noindent\textcolor{gold}{\rule{\textwidth}{1.6pt}}
+	\par\vspace{0pt}
+}
+
+\begin{document}
+	\renewcommand{\thepage}{\arabic{page}}
+	\thispagestyle{firstpage}
+	\makeheader
+	
+	\vspace{0cm}
+	{\LARGE\bfseries 탈중앙화 YPSDC (d‑YPSDC): \\ 공유 환경 지표를 통한 직접 통신 없는 조정 \par}
+	\vspace{0.2cm}
+	
+	{\large 알렉세이 V. 야쿠셰프\footnote{야쿠셰프 연구소, \url{https://yuct.org/}}} \\
+	\vspace{0.0cm}
+	
+	{\color{darkblue}\textbf{\LARGE 초록}} \par
+	{\large
+		\noindent
+		고전적 YPSDC 프로토콜은 중앙 집중형 토폴로지를 가정합니다: 한 에이전트가 짧은 인덱스를 다른 에이전트에게 능동적으로 전송하고, 두 에이전트 모두 사전에 공유된 사전을 사용하여 복잡한 조정 동작을 촉발합니다. 그러나 자연과 기술에는 인덱스를 직접 교환하지 않고도 조정이 이루어지는 시스템이 널리 존재합니다. 본 메모에서는 \textbf{탈중앙화 YPSDC (d‑YPSDC)}를 공식화합니다. 이는 모든 에이전트가 공유된 환경에서 동시에 동일한 인덱스를 읽고, 미리 배포된 사전을 사용하는 프로토콜입니다. 에이전트 간에는 어떤 통신도 없지만, 환경 인덱스에 대한 동기적 접근을 통해 \(K_{\mathrm{eff}} \gg 1\)의 조정 효율을 달성할 수 있습니다. 우리는 d‑YPSDC가 생물학(군집 행동), 경제학(거시경제 지표에 대한 시장 반응), 컴퓨터 과학(블록체인 오라클), 그리고 기초 물리학(양자 비국소성)에서 어떻게 나타나는지 논의합니다. 이 모델은 자연 법칙의 공유 사전을 활성화하는 인덱스의 보편적 운반체로서 심층적인 \textbf{조정장}의 존재를 시사합니다.
+	}
+	
+	\vspace{0.1cm}
+	\noindent
+	{\color{darkblue}\textbf{키워드:}} YPSDC, 탈중앙화, 조정, 환경 지표, 사전 사전, 조정장, 양자 얽힘, 군집 행동, 스마트 계약.
+	
+	\vspace{0.5cm}
+	\noindent
+	\textcopyright\ 2026 야쿠셰프 연구소. 모든 권리 보유.
+	
+	\tableofcontents
+	\newpage
+	
+	\section{서론: 중앙 집중형 YPSDC에서 탈중앙화 프로토콜로}
+	
+	고전적 YPSDC 프로토콜은 두 명 이상의 에이전트 간의 조정을 설명합니다: 한 에이전트가 \textbf{짧은 인덱스를 능동적으로 전송}하고, 다른 에이전트들은 이를 \textbf{수신}하여 공유된 사전 사전에서 복잡한 항목을 활성화합니다 \cite{YUCT}. 이러한 방식에는 항상 명확한 발신자가 있으며, 상호작용 토폴로지는 "점대점" 또는 "별형"입니다.
+	
+	생물학적, 사회적, 물리적 시스템에 대한 관찰은 인덱스의 직접적인 교환 없이도 조정이 이루어지는 광범위한 현상 부류를 보여줍니다. 새 떼는 눈에 보이는 지도자 없이 동시에 방향을 바꾸고, 금융 시장은 거시경제 수치 발표에 즉각 반응하며, 얽힌 양자 입자는 신호 교환 없이 상관관계를 나타냅니다. 이 모든 경우에서 조정은 \textbf{모든 에이전트가 주변 환경에서 동일한 인덱스를 동시에 읽고}, 사전에 합의된 사전에 의존하기 때문에 가능합니다.
+	
+	본 메모의 목적은 이 메커니즘을 \textbf{탈중앙화 YPSDC (d‑YPSDC)}로 공식적으로 명명하고, 그 수학적 구조를 논의하며, "공통 운반체" 토폴로지를 가진 시스템에 대한 고전적 프로토콜의 자연스러운 일반화임을 보여주는 것입니다.
+	
+	\section{d‑YPSDC의 형식적 모델}
+	
+	\subsection{구성 요소}
+	
+	시스템은 다음과 같은 구성 요소로 이루어집니다:
+	
+	\begin{itemize}[leftmargin=*]
+		\item \(\mathcal{A} = \{A_1, A_2, \dots, A_N\}\) — 에이전트 집합 (관찰자, 세포, 동물, 네트워크 노드).
+		\item \(\mathcal{D}\) — \textbf{사전 사전}, 모든 에이전트가 공유하며 오프라인 단계에서 배포됩니다. 사전은 \(\{ \kappa \to \text{동작} \}\) 쌍의 집합으로, \(\kappa\)는 잠재적 인덱스이고 \(\text{동작}\)은 조정된 행동입니다.
+		\item \(\mathcal{E}\) — 환경 상태 공간.
+		\item \(S(t) \in \mathcal{E}\) — \textbf{환경 인덱스}, 모든 에이전트가 동시에 사용할 수 있습니다. 환경은 능동적 발신자가 \emph{아니며}, 단지 인덱스의 물리적 운반체를 제공할 뿐입니다.
+	\end{itemize}
+	
+	\subsection{프로토콜}
+	
+	\begin{enumerate}[leftmargin=*, label=\textbf{단계 \arabic*:}]
+		\item \textbf{오프라인 사전 배포.} 완전한 사전 \(\mathcal{D}\)가 어떤 방식(유전적, 문화적, 또는 초기화 단계)으로든 모든 에이전트에게 전달됩니다.
+		\item \textbf{온라인 인덱스 읽기.} 시간 \(t\)에 환경이 인덱스 \(\kappa = S(t)\)를 생성하고, 이는 지연 없이 모든 에이전트에게 도달합니다.
+		\item \textbf{활성화.} 각 에이전트 \(A_i\)는 사전에서 \(\mathcal{D}(\kappa)\) 항목을 독립적으로 검색하고 지정된 동작을 실행합니다. 에이전트 간에는 어떤 메시지도 교환되지 않습니다.
+	\end{enumerate}
+	
+	\subsection{조정 효율}
+	
+	고전적 YPSDC와 유사하게, 조정 효율은 촉발된 동작의 엔트로피와 인덱스 엔트로피의 비율로 정의됩니다:
+	\begin{equation}
+		\Keff^{\mathrm{(d)}} = \frac{H(\text{집단 동작})}{H(\kappa)},
+		\label{eq:Keff_d}
+	\end{equation}
+	여기서 \(H(\text{집단 동작})\)은 전체 그룹의 동기화된 행동의 엔트로피입니다. 인덱스는 매우 짧은 반면 동작은 임의로 복잡할 수 있으므로, \(\Keff^{\mathrm{(d)}}\) 값은 매우 클 수 있습니다.
+	
+	\subsection{고전적 YPSDC와의 토폴로지적 차이}
+	
+	두 대안의 근본적인 차이는 그림~\ref{fig:topology}에 나와 있습니다.
+	
+	\begin{figure}[htbp]
+		\begin{otherlanguage}{english}
+			\centering
+			\begin{tikzpicture}[
+				agent/.style={circle, draw=blue!70, fill=blue!15, minimum size=1.2cm, font=\small},
+				dict/.style={rectangle, draw=green!50!black, fill=green!10, rounded corners, minimum width=3cm, minimum height=0.9cm, font=\small},
+				env/.style={rectangle, draw=orange!70, fill=orange!10, rounded corners, minimum width=3cm, minimum height=0.9cm, font=\small},
+				arrow/.style={->, >=stealth, thick},
+				dashedarrow/.style={->, >=stealth, thick, dashed},
+				]
+				
+				% ---- 고전적 YPSDC (위) ----
+				\begin{scope}[local bounding box=classic]
+					\node[dict] (dict1) at (0,0) {사전 \(\mathcal{D}\)};
+					\node[agent] (A1) at (-3, -2) {에이전트 A};
+					\node[agent] (A2) at (3, -2) {에이전트 B};
+					\draw[dashedarrow] (dict1) -- (A1) node[midway, left] {오프라인};
+					\draw[dashedarrow] (dict1) -- (A2) node[midway, right] {오프라인};
+					\draw[arrow] (A1) -- (A2) node[midway, above] {인덱스 \(\kappa\)};
+				\end{scope}
+				\node[above=0.2cm of classic.north, font=\bfseries] {고전적 YPSDC (중앙 집중형 토폴로지)};
+				
+				% ---- d‑YPSDC (아래) ----
+				\begin{scope}[local bounding box=decentr, yshift=-6cm]
+					\node[env] (env) at (0,1) {환경 \(S(t)\)};
+					\node[dict] (dict2) at (0,-0.5) {사전 \(\mathcal{D}\)};
+					\node[agent] (B1) at (-4, -2.5) {에이전트 1};
+					\node[agent] (B2) at (0, -2.5) {에이전트 2};
+					\node[agent] (B3) at (4, -2.5) {에이전트 3};
+					\draw[arrow] (env) -- (B1) node[midway, left] {\(\kappa\)};
+					\draw[arrow] (env) -- (B2) node[midway, right] {\(\kappa\)};
+					\draw[arrow] (env) -- (B3) node[midway, right] {\(\kappa\)};
+					\draw[dashedarrow] (dict2) -- (B1);
+					\draw[dashedarrow] (dict2) -- (B2);
+					\draw[dashedarrow] (dict2) -- (B3);
+					% 에이전트 간 링크 없음 표시
+					\draw[red, thick, dotted] (B1) -- (B2) node[midway, above, red] {연결 없음};
+					\draw[red, thick, dotted] (B2) -- (B3) node[midway, above, red] {연결 없음};
+				\end{scope}
+				\node[above=0.2cm of decentr.north, font=\bfseries] {d‑YPSDC (탈중앙화 토폴로지)};
+				
+			\end{tikzpicture}
+		\end{otherlanguage}
+		\caption{토폴로지 비교. 고전적 YPSDC에서는 에이전트 A가 에이전트 B에게 능동적으로 인덱스를 전송합니다. 탈중앙화 d‑YPSDC에서는 모든 에이전트가 환경으로부터 동일한 인덱스를 동시에 읽고 서로 메시지를 교환하지 않습니다.}
+		\label{fig:topology}
+	\end{figure}
+	
+	\section{다양한 시스템에서의 d‑YPSDC 사례}
+	
+	\subsection{생물학: 군집 행동과 "암묵적 합의"}
+	
+	많은 동물 종에서 개체별 특정 소리나 시각 신호 없이 동기화된 집단 행동(물고기 떼의 갑작스러운 방향 전환, 새 떼의 동시 이륙, 땅다람쥐의 동결)이 관찰됩니다. 대신 모든 개체는 \emph{동시에} 환경 매개변수의 변화(돌풍, 포식자의 그림자, 조도 변화)를 감지하고 선천적(유전적) 사전에 따라 반응합니다.
+	
+	앞서 논의된 인간 머리카락의 예도 이 방식에 적합합니다. 머리의 긴 머리카락은 공기 흐름과 온도에 대한 매우 민감한 감지기 역할을 하여, 사람들이 말을 주고받지 않고도 날씨 변화를 동기적으로 감지할 수 있게 합니다.
+	
+	\subsection{경제 및 금융}
+	
+	주요 경제 지표(예: 미국 실업률)의 발표는 수백만 시장 참여자의 즉각적이고 일관된 반응을 촉발합니다. 트레이더들은 서로 통신하지 않습니다. 그들은 공유된 "사전"(트레이딩 알고리즘, 경제 모델, 또는 단순히 과거 경험으로 형성된 기대)을 사용합니다. 인덱스(지표의 수치)는 환경(정보 단말기)에 의해 모든 이에게 동시에 제공되며, 시장은 하나의 실체처럼 움직입니다.
+	
+	\subsection{블록체인과 스마트 계약}
+	
+	탈중앙화 애플리케이션(dApp)은 종종 \textbf{오라클(Oracles)}에 의존합니다. 오라클은 블록체인에 현실 세계 정보를 제공하는 외부 데이터 소스입니다. 스마트 계약은 모든 네트워크 노드에 배포된 사전의 역할을 합니다. 오라클이 인덱스(예: \(t\) 시점의 ETH/USD 가격)를 게시하면, 모든 노드는 추가적인 합의 없이 계약의 해당 분기를 동시에 활성화합니다. 이는 디지털 환경에서 순수한 d‑YPSDC 적용 사례입니다.
+	
+	\subsection{양자 얽힘}
+	
+	d‑YPSDC의 가장 심오한 물리적 구현은 아마도 양자역학에서 발생할 것입니다. 얽힌 입자 쌍을 생각해 보십시오. 그들의 공유된 파동 함수는 가능한 측정 결과들 사이의 상관관계를 정의하는 사전입니다. 한 입자가 측정될 때, 그 결과는 양자장의 비국소적 특성 덕분에 두 번째 입자가 \emph{동시에} 접근할 수 있는 \textbf{환경 인덱스}로 간주될 수 있습니다. 두 번째 입자는 어떤 고전적 신호도 수신하지 않고 연관된 상태를 "활성화"합니다. d‑YPSDC 프레임워크 내에서 이는 공유된 물리적 매체(양자장)로부터 동일한 인덱스를 동기적으로 읽는 것으로 해석되며, 입자 간 정보 전달은 필요하지 않습니다.
+	
+	\section{존재론적 기초: 물질은 조정, 기하학은 결과}
+	
+	YUCT와 표준 장 이론의 주요 차이점은 \textbf{조정장이 빈 시공간에 존재하지 않는다}는 것입니다. 오히려 시공간 자체는 더 근본적인 실재, 즉 조정된 요소들의 네트워크로부터 이차적으로 출현한 것입니다. 이 가정은 탈중앙화 YPSDC에 직접 적용되는 두 가지 주요 결과를 낳습니다.
+	
+	\textbf{1. 물질 = 조정.} "기본 입자" 또는 "에이전트"라는 개념은 조정 과정과 독립적이지 않습니다. 요소는 조정 행위에 참여하고 그 사전을 통해 정의될 수 있는 한에서만 존재합니다. 조정 네트워크 외부에는 물질이 없으며, 물리적 내용이 없는 순수한 형식적 수학 점들만 남습니다. d‑YPSDC의 맥락에서 이는 환경 인덱스를 읽는 에이전트들이 수동적인 관찰자가 아니라는 것을 의미합니다. 일관된 단위로 행동하는 그들의 순수한 존재 자체가 \emph{조정장 \(\Psi_{MN}\)을 창조}하고, 이 장은 다시 그들에게 인덱스를 제공합니다.
+	
+	\textbf{2. 물질 없이는 기하학도 없다.} 회전 원판 역설(문헌에서는 에렌페스트 역설로 알려짐)은 공간 기하학이 \emph{선험적으로} 주어질 수 없으며, 물질체의 운동 상태와 내부 응집력에 의해 결정된다는 것을 보여줍니다. YUCT에서 이는 시공간 계량 \(g_{\mu\nu}(x)\)이 조정 상호작용의 평균화에서 발생하는 \emph{유효}량이라는 주장으로 일반화됩니다. 조정이 결여된 곳(\(K_{\mathrm{eff}} \to 1\))에서는 기하학이 퇴화하고 그 작동적 의미를 상실합니다. d‑YPSDC에서 이는 환경의 인덱스에 대한 유효 "전도성"이 절대 공간의 속성이 아니라 조정된 에이전트들의 밀도와 결맞음에 의존한다는 사실로 나타납니다.
+	
+	따라서 \textbf{인덱스를 전달하는 환경은 수동적인 용기가 아니라, 물질적 에이전트들로부터 출현하는 조정장 그 자체입니다}. 공유된 사전을 가진 에이전트들의 존재가 장 \(\Psi_{MN}\)을 "켜고", 동기화된 인덱스 전달을 가능하게 하는 구조를 부여합니다. 에이전트가 없을 때(또는 사전이 파괴될 때) 장은 고전적 시공간의 부재와 동등한 비조정 대칭 상태로 되돌아갑니다. 이는 공간, 시간, 물질이 단일 조정 과정의 분리할 수 없는 세 측면이라는 그림과 완전히 일치합니다.
+	
+	\section{YUCT 19차원 공간에서 d‑YPSDC의 수학적 모델}
+	\label{sec:math-model}
+	
+	\subsection{19차원 조정장과 그 작용}
+	
+	YUCT의 기본 무대는 부호 \((+,-,\dots,-)\)를 갖는 19차원 유사 리만 다양체 \(\mathcal{M}_{19}\)이며, 계량 \(G_{MN}\)을 가집니다. 이는 4차원 시공간 위의 파이버 다발로 해석됩니다:
+	\begin{equation}
+		\mathcal{M}_{19} = M_4 \times F_{15},
+	\end{equation}
+	여기서 \(F_{15}\)는 조정 자유도의 컴팩트한 내부 공간입니다. 핵심 장은 \textbf{조정장} \(\Psi_{MN}(X)\)이며, 이는 배포된 사전과 인덱스의 전송 매체를 인코딩합니다. 가장 단순한 작용은 다음과 같은 형태를 가집니다:
+	\begin{equation}
+		S_{19} = \frac{1}{2\kappa_{19}} \int d^{19}X \sqrt{-G}\, R(G) + \int d^{19}X \sqrt{-G}\, \mathcal{L}_{\mathrm{coord}},
+		\label{eq:S19}
+	\end{equation}
+	여기서 곡률 \(R(G)\)는 배경 기하학을 제공하고, 조정 라그랑지안은
+	\begin{equation}
+		\mathcal{L}_{\mathrm{coord}} = -\frac{1}{4} \Tr(\Psi_{MN}\Psi^{MN}) + \frac{1}{2} G^{MN}\,\partial_M \phi\,\partial_N \phi - V(\phi)
+		\label{eq:Lcoord}
+	\end{equation}
+	이며, 조정 상호작용의 강도와 유사한 게이지 장 \(\Psi_{MN}\)과 국소 조정 효율을 결정하는 스칼라 장 \(\phi = \ln(K_{\mathrm{eff}}/K_0)\)을 포함합니다.
+	
+	\subsection{에이전트와 사전의 도입}
+	
+	에이전트 \(A_i\), \(i=1,\dots,N\)는 \(M_4\)에 집중된 점 소스로 표현되며, 그들의 사전 형태에 따라 \(F_{15}\) 위에 "펼쳐집니다". 각 에이전트는 인덱스 \(\kappa \in \mathcal{E}\)를 원하는 동작에 매핑하는 \textbf{사전 함수} \(f_{\mathcal{D}}^{(i)}(\kappa)\)를 소유합니다. 에이전트와 장 \(\Psi_{MN}\)의 상호작용은 다음 항으로 주어집니다:
+	\begin{equation}
+		S_{\mathrm{int}} = \sum_{i=1}^{N} \int d\tau_i \left[ \frac{1}{2} m_i \dot a_i^2 - \lambda_i \bigl( a_i - f_{\mathcal{D}}^{(i)}(\kappa) \bigr)^2 \right],
+		\label{eq:Sint}
+	\end{equation}
+	여기서 \(a_i\)는 실제 실행된 동작이고 \(\tau_i\)는 에이전트의 고유 시간입니다. 여기서 인덱스 \(\kappa\)는 외부 매개변수가 아니라, 에이전트 위치에서의 장 \(\Psi_{MN}\) (또는 그 \(M_4\)로의 사영)의 값입니다:
+	\begin{equation}
+		\kappa(x_i) = \int_{F_{15}} d^{15}Y \sqrt{-G^{(15)}}\, \mathcal{O}[\Psi_{MN}](x_i, Y),
+		\label{eq:kappa}
+	\end{equation}
+	여기서 \(\mathcal{O}\)는 조정장을 인덱스 공간으로 사영하는 연산자입니다. 가장 간단한 경우 \(\mathcal{O}[\Psi] = \Tr(\Psi)\) 또는 단순히 \(\phi\)입니다.
+	
+	\subsection{운동 방정식과 인덱스 전달}
+	
+	전체 작용 \(S_{19} + S_{\mathrm{int}}\)를 \(\Psi_{MN}\)에 대해 변분하면 방정식
+	\begin{equation}
+		D_M \Psi^{MN} = J^{N}_{\mathrm{coord}},
+		\label{eq:Psi-eq}
+	\end{equation}
+	을 얻으며, 여기서 \(J^{N}_{\mathrm{coord}}\)는 모든 에이전트의 총 조정 흐름입니다:
+	\begin{equation}
+		J^{N}_{\mathrm{coord}}(X) = \sum_{i=1}^{N} \int d\tau_i\, \frac{\delta^{(19)}(X - X_i(\tau_i))}{\sqrt{-G}}\, \frac{\partial \mathcal{L}_{\mathrm{int}}}{\partial (\partial_N \Psi)}.
+	\end{equation}
+	천천히 변하는 장과 고정된 사전에 대해, 유효 방정식은 소스가 있는 \(M_4\) 위의 파동 방정식으로 축소됩니다:
+	\begin{equation}
+		\Box \phi - m_{\mathrm{eff}}^2 \phi = \sum_{i} g_i \delta^{(4)}(x - x_i),
+		\label{eq:phi-eq}
+	\end{equation}
+	여기서 \(m_{\mathrm{eff}}^2 = V''(0)\)이고, 결합 상수 \(g_i\)는 인덱스의 "세기"에 비례합니다.
+	
+	방정식~(\ref{eq:phi-eq})의 준정적 근사에서 해는
+	\begin{equation}
+		\phi(x) = \sum_i g_i \, G_{\mathrm{ret}}(x, x_i),
+	\end{equation}
+	이며, \(G_{\mathrm{ret}}\)는 질량을 가진 스칼라 장의 지연 그린 함수입니다. 모든 에이전트가 콤프턴 파장 \(\lambda_c = 1/m_{\mathrm{eff}}\)보다 훨씬 작은 영역 내에 위치한다면, \(\phi(x)\)는 모든 점 \(x_i\)에서 실질적으로 동일합니다. 이는 모든 에이전트가 \textbf{동일한 인덱스를 동기적으로 읽는} 이유를 설명합니다: 환경(즉, 경계 조건 또는 우주 배경)에서 발생한 인덱스는 \(M_4\)를 통해 전파되며, 그 긴 파장으로 인해 모든 국소 관찰자에게 동일하게 나타납니다.
+	
+	따라서 활성화의 동시성은 초광속 신호를 필요로 하지 않습니다: 이는 조정장 \(\phi\)가 그룹 규모에서 균질한 배경으로 작용한다는 사실의 자연스러운 결과입니다. 동시에, 각 에이전트는 장과만 상호작용하며 다른 에이전트와는 상호작용하지 않습니다. 직접적인 정보 교환은 발생하지 않습니다 — 이것이 바로 탈중앙화 YPSDC의 핵심입니다.
+	
+	\subsection{조정 효율 \(K_{\mathrm{eff}}\)와의 연결}
+	
+	국소 조정 효율은 사전의 정보 용량과 인덱스 길이의 비율로 정의됩니다. 장 \(\phi\)로 표현하면:
+	\begin{equation}
+		\Keff(x) = K_0 e^{\phi(x)},
+		\label{eq:Keff-field}
+	\end{equation}
+	여기서 \(K_0 \approx 1\)은 진공(조정된 에이전트가 없을 때)에서의 배경 값입니다. 환경 인덱스의 전달은 섭동 \(\delta\phi\)를 생성하여, 에이전트들이 차지하는 영역에서
+	\begin{equation}
+		\Keff^{\mathrm{(d)}} = K_0 \exp\!\left( \sum_i g_i G_{\mathrm{ret}}(x, x_i) \right).
+	\end{equation}
+	부피 \(V \ll \lambda_c^3\) 내에 위치한 \(N\)개의 동일한 에이전트에 대해,
+	\begin{equation}
+		\Keff^{\mathrm{(d)}} \approx K_0 \exp\!\left( \frac{N g}{4\pi} \frac{e^{-m_{\mathrm{eff}} r_0}}{r_0} \right),
+	\end{equation}
+	여기서 \(r_0\)는 에이전트 간의 특성 거리입니다. \(N g > 0\)이므로(인덱스가 조정을 향상시킴), \(\Keff^{\mathrm{(d)}}\)는 큰 \(N\) 또는 강한 결합 \(g\)에 대해 1을 훨씬 초과할 수 있습니다.
+	
+	이는 \textbf{탈중앙화 YPSDC가 그룹 내에서 인덱스 교환 없이 \(K_{\mathrm{eff}} \gg 1\)을 제공함}을 직접적으로 보여줍니다. 효율의 증가는 전적으로 장 \(\phi\)의 기하학에 기인합니다: 모든 에이전트는 공통 조정장에 잠겨 있으며, 이 장이 외부 인덱스에 의해 여기될 때 그들의 사전을 동시에 활성화합니다.
+	
+	\section{동일 프로토콜의 두 체제: 중앙 집중형 vs 탈중앙화 YPSDC}
+	\label{sec:two-regimes}
+	
+	앞선 예시들과 수학적 모델은 d‑YPSDC가 근본적으로 새로운 조정 프로토콜이라는 인상을 줄 수 있습니다. 그렇지 않습니다. 존재론적으로 \textbf{단 하나의 YPSDC 메커니즘만} 존재합니다: 조정장 \(\Psi_{MN}\)이 인덱스를 전달하고, 모든 에이전트는 이 장과만 상호작용하여 공유된 사전 사전 항목을 활성화합니다. "중앙 집중형" YPSDC와 "탈중앙화" d‑YPSDC의 구별은 순전히 현상학적이며, 장 방정식에 나타나는 조정 흐름 \(J^{N}_{\mathrm{coord}}\)의 지배적 출처를 반영합니다(참조 \cite{YUCT}의 부록 A).
+	
+	\subsection{두 체제}
+	\begin{enumerate}[leftmargin=*, label=\textbf{(\arabic*)}]
+		\item \textbf{중앙 집중형 체제 (고전적 YPSDC).} 흐름 \(J^{N}_{\mathrm{coord}}\)는 하나의 집중된 에이전트(발신자)에 의해 지배됩니다. 이 에이전트는 능동적으로 장을 여기시켜, 하나 이상의 특정 수신자에게 도달하는 전파 섭동을 생성합니다. 이 체제는 점대점 또는 별형 토폴로지 통신(예: GSM 타워가 휴대폰으로 방송, 또는 GMT 시간 신호)을 설명합니다.
+		
+		\item \textbf{탈중앙화 체제 (d‑YPSDC).} 개별 에이전트들의 집중된 흐름은 천천히 변하는 우주 배경, 즉 \(\Psi_{MN}\)의 환경 모드에 비해 무시할 수 있습니다. 배경은 모든 에이전트가 동시에 사용할 수 있는 인덱스를 제공합니다. 이 체제는 양자 얽힘, 군집 행동, 정족수 감지, 거시경제 지표에 대한 금융 시장의 반응, 그리고 블록체인 오라클에 의한 스마트 계약의 활성화를 설명합니다.
+	\end{enumerate}
+	
+	\subsection{두 체제 간의 전환}
+	무차원 매개변수
+	\[
+	\Theta = \frac{|J_{\mathrm{agent}}|}{|J_{\mathrm{env}}|},
+	\]
+	여기서 \(J_{\mathrm{agent}}\)는 가장 강한 개별 발신자에 의해 생성된 흐름이고, \(J_{\mathrm{env}}\)는 환경 배경의 유효 흐름이며, 두 체제 간의 전환을 제어합니다:
+	\[
+	\begin{cases}
+		\Theta \gg 1 & \text{중앙 집중형 체제 (고전적 YPSDC)}, \\
+		\Theta \ll 1 & \text{탈중앙화 체제 (d‑YPSDC)}, \\
+		\Theta \sim 1 & \text{혼합 행동}.
+	\end{cases}
+	\]
+	
+	\subsection{존재론적 지위}
+	d‑YPSDC는 \textbf{추가적인 장, 라그랑지안의 수정, 또는 YUCT의 존재론적 원리의 개정을 필요로 하지 않습니다}. 19차원 작용 \(S_{19}\)와 관찰자 장 \(\phi_1,\phi_2\)(부록 A)는 이미 두 체제 모두에 필요한 모든 것을 포함하고 있습니다. "d‑YPSDC"라는 용어는 식별 가능한 능동적 발신자 없이 조정이 달성되는 광범위한 현상 부류를 위한 편리한 현상학적 레이블로만 유지됩니다.
+	
+	이 설명은 YUCT 프레임워크의 논리적 완결성을 위해 필요합니다: 이 이론은 명시적인 인간 의사소통에서 양자역학의 비국소적 상관관계에 이르기까지 \textbf{단일 조정장}에 적용된 \textbf{단일 프로토콜}을 통해 모든 형태의 조정을 설명합니다.
+	
+	\subsection{예: 양자 얽힘을 d‑YPSDC로}
+	
+	양자적 경우, 사전은 얽힌 쌍의 공유된 파동 함수 \(\Psi_{AB}\)입니다. (\ref{eq:kappa})의 연산자 \(\mathcal{O}\)를 인덱스 \(\kappa\)가 첫 번째 입자에 대한 측정 결과와 일치하도록 선택합니다. 그러면 방정식 (\ref{eq:phi-eq})은 이 결과가 조정장 \(\phi\)를 통해 두 번째 입자로 전파되는 것을 설명합니다. 장이 질량이 없으므로, 상관관계는 동기적 활성화의 의미에서 즉각적으로 발생하지만, 에너지 전달은 없습니다. 이것이 YUCT에서 벨 부등식 위반에 대한 기하학적 해석입니다.
+	
+	수학적으로, 위반 정도 \(S\)는 효율로 표현됩니다:
+	\begin{equation}
+		S = 2\sqrt{2} \frac{\Keff^{\mathrm{(d)}}}{\Keff^{\mathrm{(d)}} + 1},
+	\end{equation}
+	따라서 \(\Keff^{\mathrm{(d)}} \to \infty\)(이상적인 사전)일 때 최대 양자 값 \(2\sqrt{2}\)에 도달하고, \(\Keff^{\mathrm{(d)}} \to 1\)(사전 파괴)일 때 상관관계가 사라집니다.
+	
+	이 모델은 생물학, 경제학, 양자 물리학을 공통 방정식 (\ref{eq:Psi-eq})–(\ref{eq:Keff-field}) 아래 통합하여, 조정장 \(\Psi_{MN}\)과 d‑YPSDC 프로토콜의 보편성을 입증합니다.
+	
+	\section{인덱스의 보편적 운반체로서의 조정장}
+	
+	d‑YPSDC가 양자 시스템, 생물학적 집단, 사회적 네트워크에 유효하다면, 통합된 \textbf{조정장}—보편적 매질—의 존재를 가정하는 것이 자연스럽습니다:
+	
+	\begin{itemize}
+		\item 자연 법칙의 "보편적 사전"(대칭성, 상수, 운동 방정식)을 저장합니다;
+		\item 인덱스(측정 결과, 요동, 외부 영향)를 시스템의 모든 요소에 동시에 전달합니다;
+		\item 양자 비국소성, 집단 행동, 또는 빠른 시장 반응으로 관찰되는 동기화된 활성화를 보장합니다.
+	\end{itemize}
+	
+	이러한 맥락에서, 고전적 통신(한 에이전트에서 다른 에이전트로의 신호 전송)은 환경이 모든 에이전트에게 인덱스를 동시에 전달할 수 없을 때(예: 높은 소음 수준으로 인해), 에이전트들이 직접 통신을 통해 인덱스를 중계해야 하는 \textbf{특수한 경우}로 나타납니다.
+	
+	이 가설은 상대성 이론과 충돌하지 않습니다. 왜냐하면 어떤 에너지나 정보도 초광속으로 전달되지 않기 때문입니다. 인덱스는 \(c\)를 초과하지 않는 속도로 환경을 통해 전파되며, 국소적 근방에 도달한 후에야 모든 에이전트가 사용할 수 있게 됩니다. 활성화의 동시성은 전적으로 공유된 사전과 인덱스의 동일성에 기인하며, 초광속 신호에 의한 것이 아닙니다.
+	
+	\section{결론}
+	
+	우리는 탈중앙화 YPSDC (d‑YPSDC)의 개념을 제시했습니다. 이는 모든 에이전트가 미리 배포된 사전 사전을 사용하여 공유된 환경 인덱스를 동기적으로 읽음으로써 조정이 달성되는 프로토콜입니다. 이 방식은 생물학적 동기화에서 양자 비국소성에 이르는 광범위한 현상을 어떤 숨겨진 통신에 호소하지 않고 설명합니다.
+	
+	d‑YPSDC는 자연스럽게 자연 과정의 우주적 일관성을 담당하는 근본적 실체로서 \textbf{조정장}의 개념으로 이어집니다. YUCT 19차원 작용에 기반한 수학적 모델은 탈중앙화 조정이 장 \(\Psi_{MN}\)의 통합 방정식에서 비롯되며, 효율 \(K_{\mathrm{eff}}\)가 에이전트 수와 결합 강도에 따라 지수적으로 증가함을 보여줍니다. 이 장과 양자 이론 및 일반 상대성 이론과의 연결에 대한 추가적인 형식화는 미래 연구의 과제를 구성합니다.
+	
+	\begin{thebibliography}{9}
+		\begin{otherlanguage}{english}
+			\bibitem{YUCT} A.~V.~Yakushev, \emph{Yakushev Unified Coordination Theory (YUCT)}, Zenodo, DOI:10.5281/zenodo.18444599 (2026).
+			\bibitem{AppendixB} A.~V.~Yakushev, Appendix B: Temporal Coordination Paradox, in \emph{YUCT} (2026).
+			\bibitem{Blockchain} S.~Nakamoto, ``Bitcoin: A Peer-to-Peer Electronic Cash System'' (2008).
+			\bibitem{Ben-Jacob} E.~Ben-Jacob, ``Bacterial self-organization: co-enhancement of complexification and adaptability'', \emph{Physica A} (2003).
+			\bibitem{EPR} A.~Einstein, B.~Podolsky, N.~Rosen, ``Can Quantum-Mechanical Description of Physical Reality Be Considered Complete?'', \emph{Phys. Rev.} \textbf{47}, 777 (1935).
+		\end{otherlanguage}
+	\end{thebibliography}
+	
+\end{document}

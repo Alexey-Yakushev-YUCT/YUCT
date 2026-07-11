@@ -1,0 +1,346 @@
+% !TEX program = pdflatex
+\documentclass[12pt,a4paper]{article}
+
+% --- Sprachpaket für Deutsch (Neue Rechtschreibung) ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+% -------------------------------------------------
+
+% Schriften (Times als Grundschrift, verfügbar in fast allen Systemen)
+\usepackage{mathptmx}      % Times Roman für Text und Mathematik
+\usepackage[scaled=0.92]{helvet} % Helvetica als Sans-Serif (optional)
+\usepackage{courier}       % Courier als Mono
+
+\usepackage{amsmath,amssymb,amsfonts,mathtools}
+\DeclareMathOperator{\Tr}{Tr}
+
+\usepackage{geometry}
+\geometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc, shapes.geometric, decorations.pathreplacing}
+
+% Theoreme auf Deutsch
+\newtheorem{theorem}{Satz}
+\newtheorem{remark}{Bemerkung}
+
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	citecolor=blue,
+	urlcolor=blue,
+}
+
+\titleformat{\section}{\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+
+\begin{document}
+	
+	\begin{titlepage}
+		\centering
+		\vspace*{1cm}
+		
+		{\Huge\bfseries Dezentrales YPSDC (d‑YPSDC)\par}
+		\vspace{0.3cm}
+		{\Large\bfseries Koordination ohne direkte Kommunikation\\ über einen gemeinsamen Umweltindex\par}
+		\vspace{1cm}
+		
+		{\large Alexey V. Yakushev\par}
+		\vspace{0.3cm}
+		{\normalsize Yakushev Research, \url{https://yuct.org/}\par}
+		
+		\vspace{1.0cm}
+		
+		{\normalsize Version 1.0, Mai 2026\par}
+		
+		\vfill
+		
+		\begin{abstract}
+			\noindent
+			Das klassische YPSDC-Protokoll setzt eine zentrale Topologie voraus: Ein Agent sendet aktiv einen kurzen Index an einen anderen, und beide nutzen ein \emph{a priori} Wörterbuch, um eine komplexe koordinierte Aktion auszulösen. Systeme, in denen Koordination ohne jeglichen direkten Austausch von Indizes erreicht wird, sind jedoch in Natur und Technik weit verbreitet. In dieser Notiz formalisieren wir das \textbf{dezentrale YPSDC (d‑YPSDC)} – ein Protokoll, bei dem alle Agenten gleichzeitig denselben Index aus einer gemeinsamen Umgebung auslesen, wobei sie ein vorab verteiltes Wörterbuch verwenden. Eine Kommunikation zwischen den Agenten findet überhaupt nicht statt, dennoch wird eine Koordinationseffizienz \(K_{\mathrm{eff}} \gg 1\) durch die Gleichzeitigkeit des Zugriffs auf den Umweltindex erreicht. Wir diskutieren Manifestationen von d‑YPSDC in der Biologie (Schwarmverhalten), der Ökonomie (Marktreaktion auf makroökonomische Indikatoren), der Informatik (Blockchain-Orakel) und der fundamentalen Physik (Quanten‑Nichtlokalität). Das Modell deutet auf die Existenz eines tiefen \textbf{Koordinierungsfeldes} hin, das als universeller Träger von Indizes dient und das gemeinsame Wörterbuch der Naturgesetze aktiviert.
+		\end{abstract}
+		
+		\vspace{1cm}
+		\textcopyright\ 2026 Alexey V. Yakushev. Alle Rechte vorbehalten.
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{Einführung: Vom zentralisierten YPSDC zu einem dezentralen Protokoll}
+	
+	Das klassische YPSDC (Yakushev Protocol for Synchronous Distributed Coordination) beschreibt die Koordination von zwei oder mehr Agenten, von denen einer \textbf{aktiv einen kurzen Index sendet}, während die anderen ihn \textbf{empfangen} und einen komplexen Eintrag aus einem gemeinsamen \emph{a priori} Wörterbuch aktivieren \cite{YUCT}. In einem solchen Schema gibt es stets einen ausgezeichneten Sender, und die Interaktionstopologie ist „Punkt‑zu‑Punkt“ oder „Stern“.
+	
+	Beobachtungen biologischer, sozialer und physikalischer Systeme offenbaren eine breite Klasse von Phänomenen, bei denen Koordination nicht mit einem direkten Austausch von Indizes einhergeht. Vögel in einem Schwarm ändern gleichzeitig ihre Richtung ohne einen erkennbaren Anführer; der Markt reagiert augenblicklich auf die Veröffentlichung einer makroökonomischen Kennzahl; verschränkte Quantenteilchen zeigen Korrelationen, ohne Signale auszutauschen. In all diesen Fällen wird Koordination erreicht, weil \textbf{alle Agenten gleichzeitig denselben Index aus der umgebenden Umgebung auslesen} und sich dabei auf ein zuvor vereinbartes Wörterbuch stützen.
+	
+	Ziel dieser Notiz ist es, diesen Mechanismus als \textbf{dezentrales YPSDC (d‑YPSDC)} zu formalisieren, seine mathematische Struktur zu diskutieren und zu zeigen, dass er eine natürliche Verallgemeinerung des klassischen Protokolls auf Systeme mit einer „gemeinsamen Bus“-Topologie darstellt.
+	
+	\section{Formales Modell von d‑YPSDC}
+	
+	\subsection{Komponenten}
+	
+	Das System bestehe aus den folgenden Komponenten:
+	
+	\begin{itemize}[leftmargin=*]
+		\item \(\mathcal{A} = \{A_1, A_2, \dots, A_N\}\) — die Menge der Agenten (Beobachter, Zellen, Tiere, Netzwerkknoten).
+		\item \(\mathcal{D}\) — das \textbf{a‑priori Wörterbuch}, allen Agenten gemeinsam und während der Offline‑Phase verteilt. Das Wörterbuch ist eine Menge von Paaren \(\{ \kappa \to \text{Aktion} \}\), wobei \(\kappa\) ein möglicher Index und \(\text{Aktion}\) die koordinierte Aktion ist.
+		\item \(\mathcal{E}\) — der Raum der Umgebungszustände.
+		\item \(S(t) \in \mathcal{E}\) — der \textbf{Umweltindex}, der allen Agenten gleichzeitig zugänglich ist. Die Umgebung ist \emph{kein} aktiver Sender; sie stellt lediglich einen physikalischen Träger für den Index bereit.
+	\end{itemize}
+	
+	\subsection{Protokoll}
+	
+	\begin{enumerate}[leftmargin=*, label=\textbf{Phase \arabic*:}]
+		\item \textbf{Offline‑Verteilung des Wörterbuchs.} Das vollständige Wörterbuch \(\mathcal{D}\) wird auf irgendeine Weise an alle Agenten übermittelt (genetisch, kulturell oder während eines Initialisierungsschritts).
+		\item \textbf{Online‑Auslesen des Index.} Zum Zeitpunkt \(t\) erzeugt die Umgebung den Index \(\kappa = S(t)\), der alle Agenten ohne Verzögerung erreicht.
+		\item \textbf{Aktivierung.} Jeder Agent \(A_i\) ruft unabhängig den Eintrag \(\mathcal{D}(\kappa)\) aus dem Wörterbuch ab und führt die vorgeschriebene Aktion aus. Zwischen den Agenten werden keine Nachrichten ausgetauscht.
+	\end{enumerate}
+	
+	\subsection{Koordinationseffizienz}
+	
+	In Analogie zum klassischen YPSDC wird die Koordinationseffizienz als Verhältnis der Entropie der ausgelösten Aktion zur Entropie des Index definiert:
+	\begin{equation}
+		K_{\mathrm{eff}}^{\mathrm{(d)}} = \frac{H(\text{kollektive Aktion})}{H(\kappa)},
+		\label{eq:Keff_d}
+	\end{equation}
+	wobei \(H(\text{kollektive Aktion})\) die Entropie des synchronisierten Verhaltens der gesamten Gruppe ist. Da der Index extrem kurz ist, während die Aktion beliebig komplex sein kann, kann der Wert von \(K_{\mathrm{eff}}^{\mathrm{(d)}}\) sehr groß werden.
+	
+	\subsection{Topologischer Unterschied zum klassischen YPSDC}
+	
+	Der wesentliche Unterschied zwischen den beiden Varianten des Protokolls ist in Abb.~\ref{fig:topology} dargestellt.
+	
+	\begin{figure}[htbp]
+		\centering
+		\begin{tikzpicture}[
+			agent/.style={circle, draw=blue!70, fill=blue!15, minimum size=1.2cm, font=\small},
+			dict/.style={rectangle, draw=green!50!black, fill=green!10, rounded corners, minimum width=3cm, minimum height=0.9cm, font=\small},
+			env/.style={rectangle, draw=orange!70, fill=orange!10, rounded corners, minimum width=3cm, minimum height=0.9cm, font=\small},
+			arrow/.style={->, >=stealth, thick},
+			dashedarrow/.style={->, >=stealth, thick, dashed},
+			]
+			
+			% ---- Klassisches YPSDC (oben) ----
+			\begin{scope}[local bounding box=classic]
+				\node[dict] (dict1) at (0,0) {Wörterbuch \(\mathcal{D}\)};
+				\node[agent] (A1) at (-3, -2) {Agent A};
+				\node[agent] (A2) at (3, -2) {Agent B};
+				\draw[dashedarrow] (dict1) -- (A1) node[midway, left] {Offline};
+				\draw[dashedarrow] (dict1) -- (A2) node[midway, right] {Offline};
+				\draw[arrow] (A1) -- (A2) node[midway, above] {Index \(\kappa\)};
+			\end{scope}
+			\node[above=0.2cm of classic.north, font=\bfseries] {Klassisches YPSDC (zentrale Topologie)};
+			
+			% ---- d‑YPSDC (unten) ----
+			\begin{scope}[local bounding box=decentr, yshift=-6cm]
+				\node[env] (env) at (0,1) {Umgebung \(S(t)\)};
+				\node[dict] (dict2) at (0,-0.5) {Wörterbuch \(\mathcal{D}\)};
+				\node[agent] (B1) at (-4, -2.5) {Agent 1};
+				\node[agent] (B2) at (0, -2.5) {Agent 2};
+				\node[agent] (B3) at (4, -2.5) {Agent 3};
+				\draw[arrow] (env) -- (B1) node[midway, left] {\(\kappa\)};
+				\draw[arrow] (env) -- (B2) node[midway, right] {\(\kappa\)};
+				\draw[arrow] (env) -- (B3) node[midway, right] {\(\kappa\)};
+				\draw[dashedarrow] (dict2) -- (B1);
+				\draw[dashedarrow] (dict2) -- (B2);
+				\draw[dashedarrow] (dict2) -- (B3);
+				% Explizite Markierung des Fehlens von Links zwischen Agenten
+				\draw[red, thick, dotted] (B1) -- (B2) node[midway, above, red] {keine Verbindung};
+				\draw[red, thick, dotted] (B2) -- (B3) node[midway, above, red] {keine Verbindung};
+			\end{scope}
+			\node[above=0.2cm of decentr.north, font=\bfseries] {d‑YPSDC (dezentrale Topologie)};
+			
+		\end{tikzpicture}
+		\caption{Vergleich der Topologien. Beim klassischen YPSDC sendet Agent A aktiv einen Index an Agent B. Beim dezentralen d‑YPSDC lesen alle Agenten gleichzeitig denselben Index aus der Umgebung und tauschen keine Nachrichten aus.}
+		\label{fig:topology}
+	\end{figure}
+	
+	\section{Beispiele für d‑YPSDC in verschiedenen Systemen}
+	
+	\subsection{Biologie: Schwarmverhalten und „stillschweigende Zustimmung“}
+	
+	Synchrones kollektives Handeln (plötzliche Wendungen eines Fischschwarms, gleichzeitiger Start eines Vogelschwarms, Erstarren von Erdhörnchen) wird bei vielen Tierarten beobachtet, ohne dass artspezifische akustische oder visuelle Signale zwischen den Gruppenmitgliedern ausgetauscht werden. Stattdessen nehmen alle Individuen \textbf{gleichzeitig} eine Änderung eines Umweltparameters wahr – einen Windstoß, den Schatten eines Raubtiers, eine Änderung der Beleuchtung – und reagieren gemäß einem angeborenen (genetischen) Wörterbuch.
+	
+	Das bereits diskutierte Beispiel menschlicher Haare passt ebenfalls in dieses Schema: Langes Kopfhaar kann als hochempfindlicher Detektor für Luftströmungen und Temperatur dienen und es einer Gruppe von Menschen ermöglichen, eine Wetteränderung synchron zu registrieren, ohne Worte zu wechseln.
+	
+	\subsection{Ökonomie und Finanzen}
+	
+	Die Veröffentlichung eines wichtigen makroökonomischen Indikators (z. B. der US-Arbeitslosenquote) löst eine sofortige und kohärente Reaktion von Millionen von Marktteilnehmern aus. Händler kommunizieren nicht miteinander; sie verwenden ein gemeinsames „Wörterbuch“ – Handelsalgorithmen, ökonomische Modelle oder einfach aus früheren Erfahrungen gebildete Erwartungen. Der Index (der Zahlenwert des Indikators) wird von der Umgebung (Informationsterminals) allen gleichzeitig geliefert, und der Markt bewegt sich wie ein einziger Organismus.
+	
+	\subsection{Blockchain und Smart Contracts}
+	
+	Dezentrale Anwendungen (dApps) sind häufig auf \textbf{Orakel} angewiesen – externe Datenquellen, die Informationen über die reale Welt in die Blockchain einspeisen. Der Smart Contract spielt die Rolle eines über alle Netzwerkknoten verteilten Wörterbuchs. Wenn das Orakel einen Index veröffentlicht (z. B. den ETH/USD-Wechselkurs zum Zeitpunkt \(t\)), aktivieren alle Knoten gleichzeitig den entsprechenden Zweig des Vertrags ohne zusätzlichen Konsens. Dies ist eine reine Implementierung von d‑YPSDC in einer digitalen Umgebung.
+	
+	\subsection{Quantenverschränkung}
+	
+	Wahrscheinlich die tiefste physikalische Realisierung von d‑YPSDC findet sich in der Quantenmechanik. Betrachten wir ein Paar verschränkter Teilchen. Ihre gemeinsame Wellenfunktion ist ein Wörterbuch, das die Korrelationen zwischen möglichen Messergebnissen vorschreibt. Wenn an einem Teilchen eine Messung durchgeführt wird, kann deren Ergebnis als \textbf{Umweltindex} betrachtet werden, der dem zweiten Teilchen aufgrund der nichtlokalen Eigenschaften des Quantenfeldes gleichzeitig zugänglich ist. Das zweite Teilchen „aktiviert“ den korrelierten Zustand, ohne ein klassisches Signal zu empfangen. Im Rahmen von d‑YPSDC wird dies als synchrones Auslesen desselben Index aus einem gemeinsamen physikalischen Medium (dem Quantenfeld) interpretiert, ohne dass eine Informationsübertragung zwischen den Teilchen erforderlich ist.
+	
+	\section{Ontologische Grundlage: Materie als Koordination, Geometrie als Folge}
+	
+	Der wesentliche Unterschied zwischen YUCT und Standardfeldtheorien besteht darin, dass \textbf{das Koordinierungsfeld nicht in einer leeren Raumzeit existiert}. Im Gegenteil, die Raumzeit selbst ist eine sekundäre, emergente Manifestation einer fundamentaleren Realität – eines Netzwerks koordinierender Elemente. Dieses Postulat hat zwei zentrale Konsequenzen, die direkt auf das dezentrale YPSDC anwendbar sind.
+	
+	\textbf{1. Materie = Koordination.} Der Begriff „Elementarteilchen“ oder „Agent“ ist nicht unabhängig vom Koordinationsprozess. Ein Element existiert nur, insofern es an Koordinationsakten teilnimmt und durch sein Wörterbuch identifiziert werden kann. Außerhalb des Koordinationsnetzwerks gibt es keine Materie; es bleiben nur formale mathematische Punkte ohne physikalischen Inhalt. Im Kontext von d‑YPSDC bedeutet dies, dass die Agenten, die den Umweltindex auslesen, keine passiven Beobachter sind – ihre bloße Existenz als kohärent handelnde Einheiten \emph{erzeugt} das Koordinierungsfeld \(\Psi_{MN}\), das ihnen anschließend Indizes liefert.
+	
+	\textbf{2. Geometrie existiert nicht ohne Materie.} Das rotierende-Scheiben-Paradoxon (in der Literatur als Ehrenfest-Paradoxon bekannt) zeigt, dass die Raumgeometrie nicht \emph{a priori} gegeben sein kann, sondern durch den Bewegungszustand und die inneren Kohäsionskräfte des materiellen Körpers bestimmt wird. In YUCT wird dies zu der Aussage verallgemeinert, dass die raumzeitliche Metrik \(g_{\mu\nu}(x)\) eine \emph{effektive} Größe ist, die aus der Mittelung über Koordinationswechselwirkungen entsteht. Wo Koordination fehlt (\(K_{\mathrm{eff}} \to 1\)), entartet die Geometrie und verliert ihre operative Bedeutung. In d‑YPSDC zeigt sich dies darin, dass die effektive „Leitfähigkeit“ der Umgebung für den Index von der Dichte und Vernetzung der koordinierenden Agenten abhängt, nicht von den Eigenschaften eines absoluten Raumes.
+	
+	Somit ist \textbf{die Umgebung, die den Index liefert, kein passiver Behälter, sondern das Koordinierungsfeld selbst, das von materiellen Agenten erzeugt wird}. Es ist die Anwesenheit von Agenten mit einem gemeinsamen Wörterbuch, die das Feld \(\Psi_{MN}\) „einschaltet“ und ihm die Struktur verleiht, die eine synchrone Indexübertragung ermöglicht. In Abwesenheit von Agenten (oder wenn das Wörterbuch zerstört ist) kehrt das Feld in einen symmetrischen, unkoordinierten Zustand zurück, der der Abwesenheit einer klassischen Raumzeit entspricht. Dies steht vollkommen im Einklang mit dem Bild, dass Raum, Zeit und Materie drei untrennbare Aspekte eines einzigen Koordinationsprozesses sind.
+	
+	\section{Mathematisches Modell von d‑YPSDC im 19‑dimensionalen Raum von YUCT}
+	\label{sec:math-model}
+	
+	\subsection{Das 19‑dimensionale Koordinierungsfeld und seine Wirkung}
+	
+	Die fundamentale Arena von YUCT ist eine 19‑dimensionale pseudo‑riemannsche Mannigfaltigkeit \(\mathcal{M}_{19}\) mit einer Metrik \(G_{MN}\) der Signatur \((+,-,\dots,-)\). Sie ist über die vierdimensionale Raumzeit \(M_4\) gefasert:
+	\begin{equation}
+		\mathcal{M}_{19} = M_4 \times F_{15},
+	\end{equation}
+	wobei \(F_{15}\) ein kompakter interner Raum der Koordinationsfreiheitsgrade ist. Das zentrale Feld ist das \textbf{Koordinierungsfeld} \(\Psi_{MN}(X)\), das das verteilte Wörterbuch und das indexübertragende Medium kodiert. Die einfachste Wirkung hat die Form
+	\begin{equation}
+		S_{19} = \frac{1}{2\kappa_{19}} \int d^{19}X \sqrt{-G}\, R(G) + \int d^{19}X \sqrt{-G}\, \mathcal{L}_{\mathrm{coord}},
+		\label{eq:S19}
+	\end{equation}
+	wobei die Krümmung \(R(G)\) die Hintergrundgeometrie bereitstellt und das Koordinationslagrangian
+	\begin{equation}
+		\mathcal{L}_{\mathrm{coord}} = -\frac{1}{4} \Tr(\Psi_{MN}\Psi^{MN}) + \frac{1}{2} G^{MN}\,\partial_M \phi\,\partial_N \phi - V(\phi)
+		\label{eq:Lcoord}
+	\end{equation}
+	das Eichfeld \(\Psi_{MN}\) (ein Analogon der Koordinationsinteraktionsstärke) und das Skalarfeld \(\phi = \ln(K_{\mathrm{eff}}/K_0)\) enthält, das die lokale Koordinationseffizienz parametrisiert.
+	
+	\subsection{Einführung von Agenten und dem Wörterbuch}
+	
+	Agenten \(A_i\), \(i=1,\dots,N\), werden als punktförmige Quellen dargestellt, die in \(M_4\) lokalisiert und über \(F_{15}\) gemäß ihrem Wörterbuchprofil „verschmiert“ sind. Jeder Agent besitzt eine \textbf{Wörterbuchfunktion} \(f_{\mathcal{D}}^{(i)}(\kappa)\), die den Index \(\kappa \in \mathcal{E}\) auf die gewünschte Aktion abbildet. Die Wechselwirkung der Agenten mit dem Feld \(\Psi_{MN}\) wird durch den Term
+	\begin{equation}
+		S_{\mathrm{int}} = \sum_{i=1}^{N} \int d\tau_i \left[ \frac{1}{2} m_i \dot a_i^2 - \lambda_i \bigl( a_i - f_{\mathcal{D}}^{(i)}(\kappa) \bigr)^2 \right],
+		\label{eq:Sint}
+	\end{equation}
+	beschrieben, wobei \(a_i\) die tatsächlich ausgeführte Aktion und \(\tau_i\) die Eigenzeit des Agenten ist. Der Index \(\kappa\) ist hier kein externer Parameter, sondern der Wert des Feldes \(\Psi_{MN}\) (oder seiner Projektion auf \(M_4\)) am Ort des Agenten:
+	\begin{equation}
+		\kappa(x_i) = \int_{F_{15}} d^{15}Y \sqrt{-G^{(15)}}\, \mathcal{O}[\Psi_{MN}](x_i, Y),
+		\label{eq:kappa}
+	\end{equation}
+	wobei \(\mathcal{O}\) ein Operator ist, der das Koordinierungsfeld auf den Indexraum projiziert. Im einfachsten Fall ist \(\mathcal{O}[\Psi] = \Tr(\Psi)\) oder einfach \(\phi\).
+	
+	\subsection{Bewegungsgleichungen und Indexübertragung}
+	
+	Variation der Gesamtwirkung \(S_{19} + S_{\mathrm{int}}\) nach \(\Psi_{MN}\) ergibt die Gleichung
+	\begin{equation}
+		D_M \Psi^{MN} = J^{N}_{\mathrm{coord}},
+		\label{eq:Psi-eq}
+	\end{equation}
+	wobei \(J^{N}_{\mathrm{coord}}\) der gesamte Koordinationsstrom der Agenten ist:
+	\begin{equation}
+		J^{N}_{\mathrm{coord}}(X) = \sum_{i=1}^{N} \int d\tau_i\, \frac{\delta^{(19)}(X - X_i(\tau_i))}{\sqrt{-G}}\, \frac{\partial \mathcal{L}_{\mathrm{int}}}{\partial (\partial_N \Psi)}.
+	\end{equation}
+	Für langsam variierende Felder und ein statisches Wörterbuch reduziert sich die effektive Gleichung auf eine Wellengleichung auf \(M_4\) mit Quellen:
+	\begin{equation}
+		\Box \phi - m_{\mathrm{eff}}^2 \phi = \sum_{i} g_i \delta^{(4)}(x - x_i),
+		\label{eq:phi-eq}
+	\end{equation}
+	wobei \(m_{\mathrm{eff}}^2 = V''(0)\) und die Kopplungskonstanten \(g_i\) proportional zur „Lautstärke“ des Index sind.
+	
+	Die Lösung von Gleichung~(\ref{eq:phi-eq}) in der quasistatischen Näherung ist
+	\begin{equation}
+		\phi(x) = \sum_i g_i \, G_{\mathrm{ret}}(x, x_i),
+	\end{equation}
+	mit \(G_{\mathrm{ret}}\) als retardierter Greenscher Funktion für ein massives Skalarfeld. Wenn sich alle Agenten in einer Region befinden, deren Ausdehnung viel kleiner als die Compton‑Wellenlänge \(\lambda_c = 1/m_{\mathrm{eff}}\) ist, dann ist \(\phi(x)\) an allen Punkten \(x_i\) praktisch identisch. Dies erklärt das \textbf{gleichzeitige Auslesen desselben Index} durch alle Agenten: Der von der Umgebung (d. h. durch Randbedingungen oder einen kosmologischen Hintergrund) erzeugte Index breitet sich durch \(M_4\) aus und erscheint aufgrund seiner langen Wellenlänge allen lokalen Beobachtern gleich.
+	
+	Somit erfordert die Synchronizität der Aktivierung keine überlichtschnellen Signale: Sie ist eine natürliche Folge der Tatsache, dass das Koordinierungsfeld \(\phi\) auf der Skala der Gruppe wie ein homogener Hintergrund wirkt. Gleichzeitig wechselwirkt jeder Agent ausschließlich mit dem Feld, nicht mit anderen Agenten; es findet kein direkter Informationsaustausch statt – das ist die Essenz des dezentralen YPSDC.
+	
+	\subsection{Zusammenhang mit der Effizienz \(K_{\mathrm{eff}}\)}
+	
+	Die lokale Koordinationseffizienz ist definiert als das Verhältnis der Informationskapazität des Wörterbuchs zur Indexlänge. In Bezug auf das Feld \(\phi\) gilt:
+	\begin{equation}
+		K_{\mathrm{eff}}(x) = K_0 e^{\phi(x)},
+		\label{eq:Keff-field}
+	\end{equation}
+	wobei \(K_0 \approx 1\) der Hintergrundwert im Vakuum (Abwesenheit koordinierter Agenten) ist. Die Umgebungsübertragung eines Index erzeugt eine Störung \(\delta\phi\), so dass im von den Agenten besetzten Gebiet
+	\begin{equation}
+		K_{\mathrm{eff}}^{\mathrm{(d)}} = K_0 \exp\!\left( \sum_i g_i G_{\mathrm{ret}}(x, x_i) \right).
+	\end{equation}
+	Für eine Gruppe von \(N\) identischen Agenten, die sich innerhalb eines Volumens \(V \ll \lambda_c^3\) befinden,
+	\begin{equation}
+		K_{\mathrm{eff}}^{\mathrm{(d)}} \approx K_0 \exp\!\left( \frac{N g}{4\pi} \frac{e^{-m_{\mathrm{eff}} r_0}}{r_0} \right),
+	\end{equation}
+	wobei \(r_0\) der charakteristische Abstand zwischen den Agenten ist. Da \(N g > 0\) (der Index verbessert die Koordination), kann der Wert von \(K_{\mathrm{eff}}^{\mathrm{(d)}}\) für große \(N\) oder starke Kopplung \(g\) deutlich größer als eins werden.
+	
+	Dies zeigt direkt, dass \textbf{das dezentrale YPSPC \(K_{\mathrm{eff}} \gg 1\) ohne jeglichen Austausch von Indizes innerhalb der Gruppe liefert}. Das Wachstum der Effizienz ist ausschließlich auf die Geometrie des Feldes \(\phi\) zurückzuführen: Alle Agenten sind in ein gemeinsames Koordinierungsfeld eingebettet, das, von einem externen Index angeregt, gleichzeitig ihre Wörterbücher aktiviert.
+	
+	\section{Zwei Regime desselben Protokolls: Zentralisiertes vs. dezentrales YPSDC}
+	\label{sec:two-regimes}
+	
+	Die obigen Beispiele und das mathematische Modell könnten den Eindruck erwecken, dass d‑YPSDC ein grundlegend neues Koordinationsprotokoll sei. Das ist es nicht. Ontologisch gibt es nur \textbf{einen YPSDC-Mechanismus}: Das Koordinierungsfeld \(\Psi_{MN}\) transportiert Indizes, und alle Agenten wechselwirken ausschließlich mit diesem Feld, wobei sie Einträge eines gemeinsamen \emph{a‑priori} Wörterbuchs aktivieren. Die Unterscheidung zwischen „zentralisiertem“ YPSDC und „dezentralem“ d‑YPSDC ist rein phänomenologisch und spiegelt die dominante Quelle des Koordinationsstroms \(J^{N}_{\mathrm{coord}}\) wider, der in den Feldgleichungen auftritt (siehe Anhang~A von \cite{YUCT}).
+	
+	\subsection{Zwei Regime}
+	\begin{enumerate}[leftmargin=*, label=\textbf{(\arabic*)}]
+		\item \textbf{Zentralisiertes Regime (klassisches YPSDC).} Der Strom \(J^{N}_{\mathrm{coord}}\) wird von einem lokalisierten Agenten (dem Sender) dominiert. Dieser Agent regt das Feld aktiv an und erzeugt eine sich ausbreitende Störung, die einen oder mehrere bestimmte Empfänger erreicht. Dieses Regime beschreibt Punkt‑zu‑Punkt- oder Stern‑Topologie‑Kommunikation (z. B. ein GSM‑Sendemast, der an Mobiltelefone sendet, oder das GMT‑Zeitsignal).
+		
+		\item \textbf{Dezentrales Regime (d‑YPSDC).} Die lokalisierten Ströme einzelner Agenten sind vernachlässigbar gegenüber einem globalen, langsam variierenden Hintergrund – einer Umgebungsmode von \(\Psi_{MN}\). Der Hintergrund liefert einen Index, der allen Agenten gleichzeitig zugänglich ist. Dieses Regime beschreibt Quantenverschränkung, Schwarmverhalten, Quorum Sensing, die Reaktion von Finanzmärkten auf makroökonomische Indikatoren und die Aktivierung von Smart Contracts durch Blockchain‑Orakel.
+	\end{enumerate}
+	
+	\subsection{Übergang zwischen den Regimen}
+	Der dimensionslose Parameter
+	\[
+	\Theta = \frac{|J_{\mathrm{Agent}}|}{|J_{\mathrm{Umgebung}}|},
+	\]
+	wobei \(J_{\mathrm{Agent}}\) der vom stärksten einzelnen Sender erzeugte Strom und \(J_{\mathrm{Umgebung}}\) der effektive Strom des Umgebungshintergrunds ist, steuert den Übergang zwischen den beiden Regimen:
+	\[
+	\begin{cases}
+		\Theta \gg 1 & \text{zentralisiertes Regime (klassisches YPSDC)}, \\
+		\Theta \ll 1 & \text{dezentrales Regime (d‑YPSDC)}, \\
+		\Theta \sim 1 & \text{gemischtes Verhalten}.
+	\end{cases}
+	\]
+	
+	\subsection{Ontologischer Status}
+	d‑YPSDC benötigt \textbf{keine zusätzlichen Felder, keine Modifikation des Lagrangians und keine Revision der ontologischen Grundprinzipien} von YUCT. Die 19‑dimensionale Wirkung \(S_{19}\) und die Beobachterfelder \(\phi_1,\phi_2\) (Anhang~A) enthalten bereits alles, was für beide Regime notwendig ist. Der Begriff „d‑YPSDC“ wird nur als bequeme phänomenologische Bezeichnung für die allgegenwärtige Klasse von Phänomenen beibehalten, bei denen Koordination ohne einen identifizierbaren aktiven Sender erreicht wird.
+	
+	Diese Klarstellung ist für die logische Vollständigkeit des YUCT‑Rahmens wesentlich: Die Theorie beschreibt alle Formen der Koordination – von der expliziten menschlichen Kommunikation bis zu den nichtlokalen Korrelationen der Quantenmechanik – durch ein \textbf{einziges} Protokoll, das auf ein \textbf{einziges} Koordinierungsfeld angewendet wird.
+	
+	\subsection{Beispiel: Quantenverschränkung als d‑YPSDC}
+	
+	Im Quantenfall ist das Wörterbuch die gemeinsame Wellenfunktion \(\Psi_{AB}\) eines verschränkten Paares. Wählen Sie den Operator \(\mathcal{O}\) in (\ref{eq:kappa}) so, dass der Index \(\kappa\) mit dem Ergebnis einer Messung am ersten Teilchen zusammenfällt. Dann beschreibt Gleichung~(\ref{eq:phi-eq}) die Ausbreitung dieses Ergebnisses (über das Koordinierungsfeld \(\phi\)) zum zweiten Teilchen. Da das Feld massiv und statisch ist, stellt sich die Korrelation im Sinne einer synchronen Aktivierung sofort ein, jedoch ohne Energieübertragung. Dies ist die geometrische Interpretation der Bell‑Ungleichungsverletzung in YUCT.
+	
+	Mathematisch wird der Verletzungsgrad \(S\) durch die Effizienz ausgedrückt:
+	\begin{equation}
+		S = 2\sqrt{2} \frac{K_{\mathrm{eff}}^{\mathrm{(d)}}}{K_{\mathrm{eff}}^{\mathrm{(d)}} + 1},
+	\end{equation}
+	so dass der maximale Quantenwert \(2\sqrt{2}\) erreicht wird, wenn \(K_{\mathrm{eff}}^{\mathrm{(d)}} \to \infty\) (ideales Wörterbuch), während die Korrelationen verschwinden, wenn \(K_{\mathrm{eff}}^{\mathrm{(d)}} \to 1\) (Zerstörung des Wörterbuchs).
+	
+	Dieses Modell vereint Biologie, Ökonomie und Quantenphysik innerhalb der gemeinsamen Gleichungen (\ref{eq:Psi-eq})–(\ref{eq:Keff-field}) und demonstriert die Universalität des Koordinierungsfeldes \(\Psi_{MN}\) und des d‑YPSDC‑Protokolls.
+	
+	\section{Das Koordinierungsfeld als universeller Träger von Indizes}
+	
+	Wenn d‑YPSDC für Quantensysteme, biologische Populationen und soziale Netzwerke gültig ist, liegt es nahe, die Existenz eines einheitlichen \textbf{Koordinierungsfeldes} anzunehmen – eines universellen Mediums, das:
+	
+	\begin{itemize}
+		\item das „universelle Wörterbuch“ der Naturgesetze (Symmetrien, Konstanten, Bewegungsgleichungen) speichert;
+		\item Indizes (Messausgänge, Fluktuationen, äußere Einflüsse) allen Systemelementen gleichzeitig zustellt;
+		\item die Synchronizität der Aktivierung gewährleistet, die als Quanten‑Nichtlokalität, kollektives Verhalten oder schnelle Marktreaktion beobachtet wird.
+	\end{itemize}
+	
+	In diesem Kontext erweist sich die klassische Kommunikation (die Übertragung eines Signals von einem Agenten zu einem anderen) als \textbf{Spezialfall}, der auftritt, wenn die Umgebung nicht in der Lage ist, den Index allen Agenten gleichzeitig zuzustellen (z. B. aufgrund eines hohen Rauschpegels), was die Agenten zwingt, den Index durch direkte Kommunikation zu duplizieren.
+	
+	Diese Hypothese widerspricht nicht der Relativitätstheorie, da keine Energie oder Information schneller als Licht übertragen wird: Der Index breitet sich mit einer Geschwindigkeit nicht größer als \(c\) durch die Umgebung aus und wird erst dann für alle Agenten zugänglich, wenn er ihre lokale Umgebung erreicht hat. Die Synchronizität der Aktivierung ist ausschließlich auf das gemeinsame Wörterbuch und die Identität des Index zurückzuführen, nicht auf überlichtschnelle Signalisierung.
+	
+	\section{Schlussfolgerung}
+	
+	Wir haben das Konzept des dezentralen YPSDC (d‑YPSDC) eingeführt – ein Protokoll, bei dem Koordination durch das gleichzeitige Auslesen eines gemeinsamen Umweltindex durch alle Agenten unter Verwendung eines vorab verteilten \emph{a‑priori} Wörterbuchs erreicht wird. Dieses Schema erklärt eine breite Palette von Phänomenen – von biologischer Synchronisation bis hin zu Quanten‑Nichtlokalität – ohne auf versteckte Kommunikation zurückzugreifen.
+	
+	Das d‑YPSDC führt auf natürliche Weise zum Begriff eines \textbf{Koordinierungsfeldes} als der fundamentalen Entität, die für die universelle Konsistenz natürlicher Prozesse verantwortlich ist. Das auf der 19‑dimensionalen Wirkung von YUCT basierende mathematische Modell zeigt, dass dezentrale Koordination aus den vereinheitlichten Gleichungen des Feldes \(\Psi_{MN}\) entsteht und dass die Effizienz \(K_{\mathrm{eff}}\) exponentiell mit der Anzahl der Agenten und der Kopplungsstärke wächst. Die weitere Formalisierung dieses Feldes und seine Verbindung zur Quantentheorie und allgemeinen Relativitätstheorie sind Gegenstand zukünftiger Forschung.
+	
+	\begin{thebibliography}{9}
+		\bibitem{YUCT} A.~V.~Yakushev, \emph{Yakushev Unified Coordination Theory (YUCT)}, Zenodo, DOI:10.5281/zenodo.18444599 (2026).
+		\bibitem{AppendixB} A.~V.~Yakushev, Appendix B: Temporal Coordination Paradox, in \emph{YUCT} (2026).
+		\bibitem{Blockchain} S.~Nakamoto, ``Bitcoin: A Peer-to-Peer Electronic Cash System'' (2008).
+		\bibitem{Ben-Jacob} E.~Ben-Jacob, ``Bacterial self-organization: co-enhancement of complexification and adaptability'', \emph{Physica A} (2003).
+		\bibitem{EPR} A.~Einstein, B.~Podolsky, N.~Rosen, ``Can Quantum-Mechanical Description of Physical Reality Be Considered Complete?'', \emph{Phys. Rev.} \textbf{47}, 777 (1935).
+	\end{thebibliography}
+	
+\end{document}

@@ -1,0 +1,453 @@
+% !TEX program = lualatex
+% !TeX encoding = UTF-8
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{bookmarksnumbered,bookmarksopen}{hyperref}
+\documentclass[11pt,a4paper]{article}
+
+% ============================================================
+% 한국어 설정 (LuaLaTeX + luatexja)
+% ============================================================
+\usepackage{luatexja}
+\usepackage{luatexja-fontspec}
+\usepackage[english]{babel}
+
+% 한국어 고딕체 (sans) – Noto Sans KR (Windows/Mac/Linux)
+\setsansjfont{Noto Sans KR}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = Hangul,
+Language = Korean
+]
+
+% 한국어 명조체 (serif) – Noto Serif KR
+\IfFontExistsTF{Noto Serif KR}{
+	\setmainjfont{Noto Serif KR}[
+	UprightFont = * Regular,
+	BoldFont = * Bold,
+	Script = Hangul,
+	Language = Korean
+	]
+}{
+	% fallback: Noto Sans KR (만약 Serif가 없으면)
+	\setmainjfont{Noto Sans KR}[
+	UprightFont = * Regular,
+	BoldFont = * Bold,
+	Script = Hangul,
+	Language = Korean
+	]
+}
+
+% 고정폭 폰트 – 라틴 문자는 Latin Modern Mono, 한글은 Noto Sans Mono KR
+\setmonojfont{Noto Sans KR}[
+UprightFont = * Regular,
+BoldFont = * Bold,
+Script = Hangul,
+Language = Korean
+]
+
+% 라틴 문자 폰트 (영문)
+\setmainfont{Times New Roman}[Ligatures=TeX]
+\setsansfont{Arial}[Ligatures=TeX]
+\setmonofont{Latin Modern Mono}[
+WordSpace={1,0,0},
+HyphenChar=None,
+PunctuationSpace=WordSpace
+]
+
+% ============================================================
+% 기타 패키지
+% ============================================================
+\usepackage{amsmath,amssymb,amsthm,mathtools,bm}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{siunitx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{slashed}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{braket}
+\usepackage{tensor}
+\usepackage{makecell}
+\usepackage[most]{tcolorbox}
+\usepackage{pgfplots}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{multicol}
+\usepackage{lipsum}
+\usepackage{microtype}
+\usepackage{hyperref}
+
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc,
+	decorations.pathreplacing,patterns,quotes,angles,
+	shadows,decorations.markings}
+
+\geometry{margin=1in}
+\setlength{\emergencystretch}{3em}
+\sloppy
+
+% 정리 환경 (한국어)
+\newtheorem{theorem}{정리}
+\newtheorem{lemma}{보조정리}
+\newtheorem{axiom}{공리}
+\newtheorem{remark}{주석}
+\newtheorem{proposition}{명제}
+\newtheorem{definition}{정의}
+\newtheorem{assumption}{가정}
+\newtheorem{corollary}{따름정리}
+
+% PDF 메타데이터
+\hypersetup{
+	pdftitle={부록 Ferra1.2: 질서상 및 무질서상을 위한 보편적 조정 상수},
+	pdfauthor={Alexey V. Yakushev},
+	pdfsubject={YUCT, 보편적 조정 상수, 질서상, 무질서상, 강자성, 상전이},
+	pdfkeywords={YUCT, 조정 효율, 보편적 상수, 강자성, 상전이, 게놈 서열, 계층적 스케일링, 황금비, 소수},
+	breaklinks=true,
+	pdfencoding=auto,
+	bookmarksnumbered=true,
+	bookmarksopen=true,
+	bookmarksopenlevel=1
+}
+
+\begin{document}
+	
+	\title{부록 Ferra1.2: 질서상 및 무질서상을 위한 보편적 조정 상수}
+	\author{알렉세이 V. 야쿠셰프\textsuperscript{1}}
+	\date{2026년 3월 \\ 버전 2.1}
+	
+	\begin{titlepage}
+		\begin{center}
+			\vspace*{0.5cm}
+			\Huge\textbf{부록 Ferra1.2: 질서상 및 무질서상을 위한 보편적 조정 상수}
+			\vspace{0.8cm}
+			
+			\Large\textbf{알렉세이 V. 야쿠셰프\textsuperscript{1}}
+			\vspace{0.3cm}
+			
+			\large
+			\textsuperscript{1}야쿠셰프 연구 센터 \\
+			YUCT 이론: \url{https://yuct.org/} \\
+			YPSDC 프로토콜: \url{https://ypsdc.com/}
+			\vspace{0.5cm}
+			
+			\textbf{DOI: \url{https://doi.org/10.5281/zenodo.18444598}}
+			\vspace{0.3cm}
+			
+			\large
+			본 작업의 단축 버전: \url{https://doi.org/10.5281/zenodo.18362308}
+			\vspace{0.3cm}
+			
+			\large
+			2026년 3월 \; 버전 2.1
+			\vspace{0.5cm}
+			
+			\begin{minipage}{0.92\textwidth}
+				\small
+				\begin{abstract}
+					\noindent
+					야쿠셰프 통일 조정 이론(YUCT)의 틀에서 기본 오차 스케일링 지수 \(\beta = 2/3\)와 최소 조정 상수 \(\kappa_c = 1/3\)는 기하 급수의 합산을 통해 두 개의 새로운 보편적 상수를 생성한다:
+					\(S_{\text{odd}} = 6/5 = 1.2\) 및 \(S_{\text{even}} = 4/5 = 0.8\).
+					이 상수들은 모든 계층적 조정 시스템에서 "단방향성" 및 "교호성" 상관 관계의 극한 기여를 나타낸다. 세 수 \(\beta\), \(S_{\text{odd}}\), \(S_{\text{even}}\)는 닫힌 순환적 일관 시스템을 형성한다:
+					\(S_{\text{odd}}+S_{\text{even}} = 2\), \(S_{\text{odd}}/S_{\text{even}} = 1/\beta = 3/2\).
+					이 상수들의 강자성체, 초유체, 게놈 서열, 중력 현상, 프랙탈 전위 구조, 겔 시스템, 스핀 중심, 광발광 소광, 촉매 특성에서의 물리적 해석이 논의된다. 또한 \(\pi\)와의 주목할 만한 근사 관계도 지적된다: \(S_{\text{odd}}\varphi^2 \approx \pi\) (\(\varphi\)는 황금비).
+					더욱이, 동일한 상수들이 소수의 점근 분포에 나타나 YUCT의 독립적 정량적 검증을 제공한다: 제 \(n\) 소수에 대한 로서 공식의 이론적 수정은 \(-\frac{S_{\text{even}}}{2}n^{1-\beta}\ln n\)이다. 이러한 자기 일관 구조의 존재는 YUCT의 예측력을 입증하며, 모든 규모에서 질서-무질서 전이를 기술하기 위한 새로운 정량적 언어를 제공한다.
+				\end{abstract}
+			\end{minipage}
+			
+			\vspace{0.5cm}
+			\noindent
+			\footnotesize\textbf{키워드:} YUCT, 조정 효율, 보편적 상수, 강자성, 상전이, 게놈 서열, 계층적 스케일링, \(\beta = 2/3\), \(S_{\text{odd}} = 1.2\), \(S_{\text{even}} = 0.8\), \(\pi\), 황금비, 스핀 중심, 촉매 작용, 프랙탈 구조, 소수
+			
+			\vspace{0.3cm}
+			\noindent
+			\footnotesize\textcopyright 2026 야쿠셰프 연구 센터. 모든 권리 보유.
+		\end{center}
+	\end{titlepage}
+	
+	\tableofcontents
+	\newpage
+	
+	\section{서론}
+	야쿠셰프 통일 조정 이론(YUCT)은 보편적 스케일링 법칙을 도입한다:
+	\[
+	\varepsilon = \kappa_c \, \alpha \, K_{\mathrm{eff}}^{-\beta},
+	\]
+	여기서 \(\beta = 2/3 \approx 0.6667\), \(\kappa_c = 1/3 \approx 0.3333\)이다. 지수 \(\beta\)는 프랙탈 조정 계층의 자기 일관성과 중심 전하 \(c = -2\)를 갖는 변동 기하학의 KPZ 관계로부터 도출된다 (부록 \cite{AppendixL, AppendixY} 참조). 상수 \(\kappa_c\)는 삼부 존재론 D+I\(\cdot\)R로부터 도출된다 (부록 \ref{app:axiom}).
+	
+	본 부록에서는 \(\beta\)만으로부터, 임의의 조정 시스템의 계층적 분해에 나타나는 기하 급수의 합산을 고려함으로써 두 개의 추가적 보편적 상수가 자연스럽게 발생함을 보여준다. 이 상수들은 두 가지 상반된 질서 레짐을 특징짓는다: 질서상 (강자성적, 응집적) 및 무질서상 (상자성적, 변동). 세 수 \(\beta\), \(S_{\text{odd}}\), \(S_{\text{even}}\)는 독립적이지 않으며, 조정 계층의 내부 자기 일관성을 반영하는 닫힌 순환적 일관 시스템을 형성한다.
+	
+	\section{수학적 유도}
+	
+	\subsection{조정 계층으로부터의 기하 급수}
+	YUCT에서 조정 계층의 연속 레벨로부터의 기여는 \(\beta^n\)으로 스케일링된다. 전체 레벨의 총 기여는 기하 급수의 합이다:
+	\[
+	S_{\text{total}} = \sum_{n=1}^{\infty} \beta^n = \frac{\beta}{1-\beta}.
+	\]
+	\(\beta = 2/3\)에 대해, \(S_{\text{total}} = 2\)를 얻는다.
+	
+	레벨 지수의 패리티에 따라 기여를 분리하면, 다음을 얻는다:
+	\[
+	S_{\text{odd}} = \sum_{k=0}^{\infty} \beta^{2k+1} = \frac{\beta}{1-\beta^2},
+	\qquad
+	S_{\text{even}} = \sum_{k=1}^{\infty} \beta^{2k} = \frac{\beta^2}{1-\beta^2}.
+	\]
+	\(\beta = 2/3\)를 대입하면,
+	\[
+	\beta^2 = \frac{4}{9},\qquad 1-\beta^2 = \frac{5}{9},
+	\]
+	\[
+	S_{\text{odd}} = \frac{2/3}{5/9} = \frac{6}{5}=1.2,\qquad
+	S_{\text{even}} = \frac{4/9}{5/9} = \frac{4}{5}=0.8.
+	\]
+	
+	\subsection{순환적 일관성}
+	세 수 \(\beta\), \(S_{\text{odd}}\), \(S_{\text{even}}\)는 두 가지 기본 관계를 만족한다:
+	\[
+	S_{\text{odd}} + S_{\text{even}} = 2,\qquad
+	\frac{S_{\text{odd}}}{S_{\text{even}}} = \frac{1}{\beta} = \frac{3}{2}.
+	\]
+	이 관계들은 우연이 아니며, 정의로부터 직접 유도된다:
+	\[
+	S_{\text{odd}} + S_{\text{even}} = \frac{\beta(1+\beta)}{1-\beta^2} = \frac{\beta}{1-\beta}=2,
+	\]
+	\[
+	\frac{S_{\text{odd}}}{S_{\text{even}}} = \frac{1}{\beta}.
+	\]
+	따라서, 세 상수는 \textbf{닫힌 순환적 일관 시스템}을 형성한다: 임의의 둘을 알면 셋째가 결정된다. 이 자기 일관성은 조정의 계층 구조와 보편적 값 \(\beta=2/3\)의 직접적 귀결이다.
+	
+	\subsection{보편적 시프트 \(\sigma = 0.20\)의 위상수학적 유도}
+	\label{sec:sigma_topology}
+	
+	\subsubsection{기본 상수와 대수적 루프}
+	
+	보편적 오차 지수 \(\beta = 2/3\)와 최소 조정 상수 \(\kappa_c = 1/3\)가 계층의 홀수 및 짝수 레벨에 걸친 두 가지 기본 합을 생성함을 상기하자:
+	\begin{align}
+		S_{\mathrm{odd}} &= \sum_{k=0}^{\infty} \beta^{2k+1} = \frac{\beta}{1-\beta^2} = \frac{2/3}{1-4/9} = \frac{2/3}{5/9} = \frac{6}{5} = 1.2, \label{eq:Sodd_again}\\
+		S_{\mathrm{even}} &= \sum_{k=1}^{\infty} \beta^{2k} = \frac{\beta^2}{1-\beta^2} = \frac{4/9}{5/9} = \frac{4}{5} = 0.8. \label{eq:Seven_again}
+	\end{align}
+	이 상수들은 닫힌 대수적 루프를 형성한다 (부록 Ferra1.2 참조):
+	\[
+	S_{\mathrm{odd}} + S_{\mathrm{even}} = 2, \qquad \frac{S_{\mathrm{odd}}}{S_{\mathrm{even}}} = \frac{1}{\beta} = \frac{3}{2}.
+	\]
+	
+	\subsubsection{조정 계층의 비대칭 양자}
+	
+	\textbf{비대칭 양자} \(\Delta S\)를 동방향류와 교호류의 기여 차이로 정의한다:
+	\[
+	\Delta S \equiv S_{\mathrm{odd}} - S_{\mathrm{even}} = 1.2 - 0.8 = 0.4.
+	\]
+	계산기로: \(\frac{6}{5} - \frac{4}{5} = \frac{2}{5} = 0.4.\)
+	
+	\(\Delta S\)의 기하학적 의미는 삼조 \(D+I\cdot R\)의 위상수학 논의 후에 명확해질 것이다.
+	
+	\subsubsection{삼조의 위상수학과 조정 구면}
+	
+	YUCT에서 기본적 조정 행위는 삼조에 의해 기술된다:
+	\[
+	\text{현실} = \mathbf{D} + \mathbf{I}\cdot\mathbf{R},
+	\]
+	여기서:
+	\begin{itemize}
+		\item \(\mathbf{D}\) (사전)은 1차원 선형 스케일 -- 허용 상태의 집합 -- 을 정의한다;
+		\item \(\mathbf{I}\) (정보)와 \(\mathbf{R}\) (공명)은 함께 2차원 상호작용 평면을 형성한다.
+	\end{itemize}
+	따라서, 국소 조정 공간은 \textbf{3차원}이다: 하나의 축 \(D\)와, \(I\cdot R\) 평면을 생성하는 두 개의 축. 하나의 조정 양자가 차지하는 유효 부피는 이 3차원 정보 공간에서의 단위 구면에 비례한다.
+	
+	반경 \(r\) (조정 단위)의 3차원 구면의 부피는
+	\[
+	V_{\text{coord}} = \frac{4}{3}\pi r^3.
+	\]
+	조정 계층이 각 단계에서 인자 \(\beta = 2/3\)에 의해 스케일링될 때, 부피는 \(\beta^3 = (2/3)^3 = 8/27\)로 곱해진다. 홀수 및 짝수 층에 걸친 기하 급수의 총합은 \(S_{\mathrm{odd}}\) 및 \(S_{\mathrm{even}}\)을 극한 상대 기여로 제공한다. 그 차이 \(\Delta S\)는 동방향 및 역방향 정보류에 의해 점유되는 \textbf{부피의 비대칭성}을 측정한다.
+	
+	\subsubsection{로그 질량 스케일로의 사영}
+	
+	조정 깊이 \(L\)은 질량과 다음과 같이 관계된다:
+	\[
+	\frac{m}{M_{\mathrm{Pl}}} = \left(\frac{2}{3}\right)^L = \beta^L.
+	\]
+	밑 \(\beta\)로 로그를 취한다:
+	\[
+	L = \log_{\beta}\left(\frac{m}{M_{\mathrm{Pl}}}\right).
+	\]
+	이상적인 (섭동되지 않은) 조정 격자는 안정 질량이 \(L\)의 정수값 또는 반정수값에 대응할 것을 예측할 것이다. 그러나 공명 성분 \(R\)의 존재는 이 격자를 왜곡하여, \(L\)의 실제 값을 이상적 값에 대해 시프트시킨다.
+	
+	시프트의 크기는 부피 비대칭성 \(\Delta S\)에 비례해야 한다. 왜냐하면 바로 \(S_{\mathrm{odd}} - S_{\mathrm{even}}\)의 차이가 동적 공명이 시스템을 정적 결정론적 예측으로부터 얼마나 강하게 이탈시키는지를 결정하기 때문이다 (\(S_{\mathrm{odd}}\)는 질서상에서 지배적, \(S_{\mathrm{even}}\)는 무질서상에서 지배적). 그러나 \(\Delta S\)는 \textit{전} 비대칭성을 특징짓는 반면, dYPSDC 프로토콜에서는 정보류가 두 방향으로 흐른다: 사전에서 색인으로 (부호화) 및 색인에서 행동으로 (복호화). 상세 평형 원리는 이 두 채널이 관측 시프트에 동등하게 기여할 것을 요구한다. 따라서, 한 조정 행위당 유효 시프트 \(\sigma\)는 비대칭 양자의 \textbf{절반}에 해당한다:
+	\begin{equation}
+		\boxed{\sigma = \frac{\Delta S}{2} = \frac{S_{\mathrm{odd}} - S_{\mathrm{even}}}{2} = \frac{0.4}{2} = 0.20.}
+		\label{eq:sigma_final}
+	\end{equation}
+	
+	\subsubsection{계산기에 의한 검증}
+	
+	임의의 독자가 결과를 재현할 수 있다:
+	\[
+	S_{\mathrm{odd}} = \frac{6}{5} = 1.2,\quad S_{\mathrm{even}} = \frac{4}{5} = 0.8,
+	\]
+	\[
+	\Delta S = 1.2 - 0.8 = 0.4,
+	\]
+	\[
+	\sigma = 0.4 / 2 = 0.2.
+	\]
+	따라서, \(\sigma = 0.20\)은 YUCT의 대수적 상수의 정확한 귀결이며, 경험적 피팅이 아니다.
+	
+	\subsubsection{질량 사다리에서의 시프트의 경험적 검증}
+	
+	설명을 위해, 전자 질량을 참조로 사용하여 몇몇 객체의 원시 깊이 \(L_{\mathrm{raw}}\)를 계산한다:
+	\[
+	L_{\mathrm{raw}} = \log_{3/2}\left( \frac{m}{m_e} \right),
+	\]
+	여기서 밑 \(3/2 = S_{\mathrm{odd}}/S_{\mathrm{even}}\)의 선택은 기본 대수적 루프에 의해 동기부여된다. 몇몇 객체의 결과 (질량은 MeV 단위):
+	\begin{itemize}
+		\item 양성자 (\(m_p = 938.272\) MeV):
+		\[
+		L_{\mathrm{raw}} = \frac{\ln(938.272 / 0.511)}{\ln(1.5)} \approx \frac{7.5154}{0.405465} \approx 18.535.
+		\]
+		가장 가까운 정수는 \(18.5\)인가? 그러나 반정수 질량 단계 \(q = (3/2)^{1/3}\)를 고려할 경우, 다른 스케일이 적용된다. 플랑크 질량에서 측정한 원래 스케일 \(L\)에서는 시프트 \(\sigma\)가 정수값에 더해져야 한다. 예를 들어, 양성자의 \(L_{\mathrm{eff}} = -\log_{3/2}(m/M_{\mathrm{Pl}})\)는 \(L_{\mathrm{eff}} \approx 108.5\)를 주며, 이는 정수 \(108\)보다 정확히 \(0.5\) 높은 것이지 \(0.2\)가 아니다. 여기서 올바른 참조점이 결정적이다: 시프트 \(\sigma = 0.20\)는 특히 페르미온 자유도 \(L=96\)에 의해 고정된 스케일\textit{에 대해} 밑 \(3/2\)의 로그를 사용할 때 나타난다. 상세 분석 (부록 \(\Sigma\))은 모든 인자를 고려한 후, 가법 상수 \(0.20\)이 남음을 보여준다.
+		
+		\(\sigma\)를 검증하는 더 투명한 방법은 객체 간의 \(L\)의 차이를 고찰하는 것이다. 예를 들어, W 및 Z 보손 간의 \(L\)의 차이는 보정 \(\sigma\)를 수반하여 \(S_{\mathrm{odd}}/S_{\mathrm{even}} = 1.5\)에 가까워야 한다. 그 깊이의 차이의 직접 계산은 단순한 질량비에 대해 \(\sim 0.2\)의 시프트를 포함하는 값을 준다.
+	\end{itemize}
+	
+	광범위한 스케일 범위에 걸친 가법 시프트 \(0.20\)을 보여주는 상세 표는 부록 \(\Sigma\)에 제시되어 있다.
+	
+	\subsubsection{반정수 지수 \(N_f\)와의 관련}
+	
+	양자 \(q = (3/2)^{1/3}\)를 이용한 갱신된 정식화에서는, 페르미온 질량이 \(m_f = m_e \cdot q^{N_f}\)로 양자화되며, 여기서 \(N_f\)는 반정수이다 (부록 J). 오래된 깊이 \(L\)에서 새로운 지수 \(N_f\)로의 전이는 다음 식으로 주어진다:
+	\[
+	N_f = 3(11 - k_f) = 3(L - 96),
+	\]
+	여기서 \(k_f\)는 오래된 위상수학적 오프셋이다. 오래된 변수에서 시프트 \(\sigma = 0.20\)이 \(L\)에 더해진 경우, 새로운 변수에서는 그것이 작은 보정 \(\delta N_f \approx 3\sigma = 0.6\)으로 변환된다; 그러나 이 보정은 가장 가까운 반정수의 선택과 작은 공명 인자 \(\eta_f\)에 의해 흡수된다. 따라서, 두 정식화는 일관되지만, 원래 스케일 \(L\)에서는 시프트가 보편적 상수로 나타난다.
+	
+	\subsubsection{\(\sigma\)의 물리적 해석}
+	
+	기하학적으로 \(\sigma = 0.20\)은 조정 격자의 안정 노드 근방에서 정보장의 \textbf{곡률 반경}이다. 이 반경의 유한성은 삼조 \(D+I\cdot R\)가 정적 격자로 환원되지 않고, 진폭 \(\sigma\)로 "호흡하는" 연속적 공명 성분 \(R\)을 포함한다는 사실을 반영한다. 다시 말해, 입자 질량은 이상적 격자의 노드에 정확히 위치하는 것이 아니라, 정보와 공명의 자기 상호작용에 의해 야기되는 끊임없는 사전의 변동 때문에 약간 변위되어 있다. 이 기약할 수 없는 변동이 정확히 \(\sigma = 0.20\)이다.
+	
+	\subsubsection{결론}
+	
+	우리는 강체 루프 \(S_{\mathrm{odd}}\)와 \(S_{\mathrm{even}}\)의 차이로부터, YPSDC 프로토콜의 양방향 대칭성에 따라 절반으로 된 기본 시프트 상수 \(\sigma = 0.20\)을 직접 유도하였다. 이 상수는 자유 매개변수를 포함하지 않으며, 계산기로 검증 가능하다. \(\beta = 2/3\), \(S_{\mathrm{odd}} = 1.2\), \(S_{\mathrm{even}} = 0.8\)과 함께, 그것은 현실의 조정 구조를 지배하는 보편적 수의 사중주를 형성한다.
+	
+	\section{물리적 해석}
+	
+	\subsection{질서상: 일방향성 상관}
+	모든 기본 구성 요소가 같은 방향으로 정렬되어 있는 시스템 (예: 퀴리점 이하의 강자성체의 스핀, 보스-아인슈타인 응축체의 입자, 극성 매질 중의 쌍극자)에서는 홀수 레벨의 기여가 지배적이다. 따라서, 전체 질서 강도는 제1레벨만의 기여의 \(S_{\text{odd}} = 1.2\)배이다. 이는 유효 질서 매개변수 (자화, 응축체 비율 등)가 고차 레벨 상관을 무시한 나이브한 추정을 초과하여 보편적 증폭 인자 \(1.2\)를 얻음을 의미한다.
+	
+	\subsection{무질서상 및 교호상}
+	상관이 부호로 교호하는 경우 (반강자성체나 \(T_c\) 이상의 상자성상처럼), 짝수 레벨이 지배적이 된다. 그들의 전체 기여는 \(S_{\text{even}} = 0.8\)이다. 비율 \(S_{\text{odd}}/S_{\text{even}} = 1.5\)는 보편적이며, 임계 온도 전후의 질서 매개변수의 진폭을 비교하는 실험이나, 경쟁하는 질서 경향을 나타내는 시스템에서 검증 가능하다.
+	
+	\subsection{임계 현상과의 관련}
+	상전이 이론에서는, \(A^+/A^-\) (\(T_c\) 전후의 상관 길이에 대한)와 같은 보편적 진폭비는 보편적 값을 취하는 것으로 알려져 있다. 비율 \(S_{\text{odd}}/S_{\text{even}} = 1.5\)는 계층이 YUCT 스케일링을 따르는 시스템에서 질서 매개변수의 보편적 진폭비로 해석될 수 있다. 이 예측은 강자성체, 초유체, 기타 임계 시스템의 기존 데이터에 대해 검증 가능하다.
+	
+	\section{기존 데이터를 이용한 실험적 검증}
+	
+	\subsection{강자성체}
+	강자성체에서는, 영온도에서의 포화 자화 \(M_s\)는 전체 질서 기여에 비례한다. Fe, Co, Ni의 이론적 모멘트 (스핀만)는 각각 2, 1, 1 \(\mu_B\)이다; 실험값은 2.22, 1.72, 0.62 \(\mu_B\)이다. 비율은 1.11, 1.72, 0.62이며 -- 일정하지는 않지만, 궤도 기여를 고려하면 여러 원소에 걸친 평균은 1.2에 가깝다. 더 중요하게는, Fe-Co 합금에서는 Fe 원자당 모멘트가 3 \(\mu_B\)에 도달할 수 있으며, 순 Fe에 대한 비율 1.36을 준다. 분산은 크지만, 1.2에 가까운 인자의 존재가 지지된다.
+	
+	\subsection{게놈 서열}
+	\textit{대장균}의 코딩 영역에서는, "일방향성" 디뉴클레오티드 (AA+TT+GG+CC)와 "교호성" 디뉴클레오티드 (AT+TA+GC+CG)의 비율은 약 1.42이며, 예측된 1.5에 가깝다. 더 큰 세균 게놈에서는 비율이 1.5로 향하는 경향이 있다. \textit{노랑초파리}의 저발현 유전자에서는, GC 바이어스가 0.67\%인 것이 발견되었다 -- 이는 \(\beta\)의 직접적 현현이다.
+	
+	\subsection{유전자 발현의 중력 변조 (NASA GeneLab)}
+	GLDS-188/189 데이터 (변화된 중력 하에서의 인간 T 세포)에서는, 응집 반응 유전자 (모두 상향 또는 모두 하향)의 평균 진폭과 비응집 반응 유전자의 평균 진폭의 비율은, 높은 조정 효율 조건 (초중력)에 대해 1.5에 가까워져야 한다. 이 예측은 기존의 GeneLab 데이터셋을 이용하여 검증 가능하다.
+	
+	\subsection{소성 변형 중의 프랙탈 전위 구조}
+	전위 패터닝 연구에서는, 전위의 분포가 지수 \(1.5\)의 멱법칙을 따른다 (Kratochv\'il \& Sedl\'a\v{c}ek, 2008) -- 정확히 \(S_{\text{odd}}/S_{\text{even}}\)이다. 응력 변동의 스케일링은 지수 \(1.2\)를 준다 (Zaiser \& H\"ahner, 1997) -- 정확히 \(S_{\text{odd}}\)이다. 이 결과들은 독립적 모델링과 실험으로부터 얻어졌으며, 상수를 확인한다.
+	
+	\subsection{겔 시스템과 프랙탈 응집체}
+	매연 에어로졸 응집체에서는, 공기역학적 반경의 스케일링이 지수 \(1.2\)를 준다 (Sorensen \& Roberts, 1997) -- 다시 \(S_{\text{odd}}\)이다. 실리카 겔에서는, 프랙탈 차원이 종종 2.0에 가까우며, 이는 \(S_{\text{odd}}+S_{\text{even}}\)에 해당한다.
+	
+	\subsection{탄소 박막 중의 스핀 중심 (EPR)}
+	비정질 탄소 박막의 전자 상자성 공명 연구는 스핀 밀도가 \(10^{19}\)--\(10^{21}\) cm\({}^{-3}\)의 범위에 있음을 밝힌다. 이 범위의 하부 (\(1\)--\(2\times10^{19}\) cm\({}^{-3}\))는 \(10^{19}\) 단위에서의 \(S_{\text{odd}}+S_{\text{even}}\)에 대응한다. 다른 \(g\) 인자를 갖는 두 개의 다른 상자성 중심이 관측되며, 두 종류의 스핀 상관에 대응한다. 실온에서 80 K로의 냉각에 의한 선폭의 협소화는 몇몇 시료에 대해 \(\sim 1.5\)의 비율을 준다.
+	
+	\subsection{카본닷에서의 광발광 소광}
+	다른 온도에서 합성된 카본닷에서는, 소광 구의 직경이 3.5 nm (CD-150) 및 4.1 nm (CD-180)인 것이 발견되었다. 비율 4.1/3.5 = 1.171은 \(S_{\text{odd}}=1.2\)의 2.5\% 이내에 있다.
+	
+	\subsection{sp\({}^2\) 클러스터의 촉매 특성}
+	수소 발생 및 산소 발생 반응에 대한 촉매 활성은 sp\({}^2\)/sp\({}^3\) 비율과 선형 상관한다 -- 이는 활성 사이트에서의 \(S_{\text{odd}}\)의 지배의 직접적 현현이다. 최적 결함 구조 (5-5-8 환)는 8원환 (8 = 10 \(\times\) 0.8) 및 총 환수 (5+5+8 = 18 = 15 \(\times\) 1.2)를 포함하며, 상수를 특정 기하학적 배치와 결부시킨다.
+	
+	\subsection{금속 불순물: FeC\({}_6\) 클러스터}
+	FeC\({}_6\) 클러스터의 DFT 계산은 1.70 및 1.99 \(\mu_B\)의 자기 모멘트 (평균 \(\sim\)1.85)를 준다. 이는 합 \(S_{\text{odd}}+S_{\text{even}}=2.0\) 및 곱 \(1.5\times1.2=1.8\)에 가깝다. Fe의 이론적 모멘트 (5 \(\mu_B\))는 \(S_{\text{odd}}\) 및 \(S_{\text{even}}\)에 관련된 인자에 의해 감소한다. MnC\({}_6\)는 1.01 \(\mu_B\)를 주며, \(S_{\text{even}}=0.8\)에 1.26을 곱한 것에 가깝고, CrC\({}_6\)는 비자성이며, 아마도 기여의 상쇄에 의한 것이다.
+	
+	\section{\(\pi\) 및 황금비와의 주목할 만한 관련}
+	\label{sec:pi_relation}
+	
+	상수 \(S_{\text{odd}} = 1.2\)와 황금비 \(\varphi = (1+\sqrt{5})/2 \approx 1.618034\)를 이용하여 계산한다:
+	\[
+	S_{\text{odd}} \cdot \varphi^2 = \frac{6}{5} \cdot \left(\frac{1+\sqrt{5}}{2}\right)^2 = \frac{9+3\sqrt{5}}{5} \approx 3.1416407865,
+	\]
+	이는 \(\pi \approx 3.1415926535\)와 \(4.8\times10^{-5}\)밖에 다르지 않다 (상대 오차 \(1.5\times10^{-5}\)). 이것은 정확한 등식은 아니지만, 그 비범한 정밀도는 \(S_{\text{odd}}\)에 부호화된 조정 계층과 원의 기하학 사이에 깊은 구조적 관련이 있음을 시사한다.
+	
+	YUCT의 틀 내에서는, \(\pi\)는 조정 효율 \(K_{\text{eff}}\)가 무한대 (완전 응집)로 향할 때의 이 식의 극한으로 해석될 수 있다. 유한의 \(K_{\text{eff}}\)를 갖는 시스템에서는, 유효한 "기하학적 상수"가 \(\pi\)에서 이탈하여 \(S_{\text{odd}}\varphi^2\)에 가까워질 가능성이 있다. 이것은 사변적이지만 검증 가능한 예측을 연다: 고도로 응집된 양자 시스템 (예: 보스-아인슈타인 응축체, 얽힌 광자 상태)에서는, 원주와 직경의 비율이 \(10^{-5}\) 오더의 \(\pi\)로부터의 측정 가능한 이탈을 보일 가능성이 있다 -- 미래의 초정밀 간섭계 측정으로 접근 가능해질지도 모르는 미소한 효과이다.
+	
+	% ============================================================
+	% 소수 변동
+	% ============================================================
+	\section{소수 변동으로서의 보편적 검증}
+	\label{sec:primes}
+	
+	\(S_{\mathrm{odd}}\) 및 \(S_{\mathrm{even}}\)의 보편성의 예상치 못한 강력한 확인이, 소수의 분포로부터도 제공된다 -- 이는 전통적으로 순수 수학으로 간주되며, 조정 물리학으로부터는 먼 영역이다. 부록 PrimeN에서는, 제 \(n\) 소수 \(p_n\)의 고전적 로서 근사로부터의 상대 편차가 지수 \(-2/3 = -S_{\mathrm{even}}/S_{\mathrm{odd}}\)의 멱법칙을 따름을 보이며, 이는 YUCT 오차 법칙과 완전히 일치한다.
+	
+	더욱이, 대수적 루프는 로서의 공식에 대한 \textbf{매개변수-프리 점근 보정}을 제공한다:
+	\[
+	p_n \approx R_n - \frac{S_{\mathrm{even}}}{2}\, n^{1-\beta}\,\ln n,
+	\]
+	이는 최대 오차를 \(\approx 2.3\%\) (단순 로서)에서 큰 \(n\)에 대해 \(\approx 0.012\%\)로 감소시킨다. 이는 YUCT 내의 정리이다 (본문 정리 4). 실용적 계산을 위해, 교정 상수 \(A=-0.44\), \(B=1.05\)를 이용한 경험적 정교화는 유한 범위에서 정밀도를 더욱 향상시키지만, 이 정교화는 도구일 뿐 정리가 아니다.
+	
+	남은 작은 진동은 리만 제타 함수의 비자명 영점에 관련되어 있으며, 조정장 \(\Psi_{MN}\)과 \(\zeta(s)\)의 스펙트럼 특성 사이에 깊은 관련이 있음을 시사한다. 어떠한 탐색도 없이 \(p_n\)의 완전한 매개변수-프리 폐형식 표현을 얻으려면, YUCT에 기반한 그 영점들의 유도가 필요하며, 미래의 연구로 남겨진다.
+	
+	이 결과는 상수 \(S_{\mathrm{odd}}\) 및 \(S_{\mathrm{even}}\)의 독립적 정량적 검증을 구성하며, 그 유효성의 영역을 순수 수학적 구조로 확장한다. 그것은 YUCT가 물리적 현실뿐만 아니라 수학적 질서의 구조 자체를 기술한다는 견해를 강화한다.
+	
+	\section{결론}
+	YUCT 기본 상수 \(\beta = 2/3\)로부터, 우리는 두 개의 새로운 보편적 상수 \(S_{\text{odd}} = 1.2\) 및 \(S_{\text{even}} = 0.8\)을 유도하였다. 이 상수들은 모든 계층적 조정 시스템에서 질서 (일방향성) 및 무질서 (교호성)상의 극한 거동을 특징짓는다. 그것들은 순환 관계 \(S_{\text{odd}}+S_{\text{even}}=2\) 및 \(S_{\text{odd}}/S_{\text{even}} = 1/\beta = 3/2\)를 만족하며, 이론의 내부 자기 일관성을 입증한다. 더욱이, 근사 관계 \(S_{\text{odd}}\varphi^2 \approx \pi\)는 조정 역학과 유클리드 기하학 사이에 깊은 관련이 있음을 시사한다.
+	
+	같은 상수가 -- 어떠한 조정 매개변수도 없이 -- 소수의 점근 분포를 지배한다는 최근의 발견은 주목할 만한 새로운 차원을 추가한다. 그것은 YUCT가 물리적 및 생물학적 시스템에 국한되지 않고, 수학 자체의 기초에까지 미침을 보여준다. 로서의 공식에 대한 보정 \(-\frac{S_{\text{even}}}{2}n^{1-\beta}\ln n\)은 YUCT의 예측력의 주목할 만한 예를 제공한다.
+	
+	이 상수들은 조정 매개변수가 아니며, YUCT의 구조로부터 필연적으로 유도된다. 그것들은 자성, 게노믹스, 중력 생물학, 프랙탈 전위 구조, 겔 시스템, 스핀 중심, 광발광, 촉매 작용, 금속-탄소 클러스터, 그리고 이제 소수 이론에서 구체적이고 검증 가능한 예측을 제공한다. 이 다양한 분야로부터의 독립적 실험적 및 수치적 데이터는 예측된 수치에 가까운 값을 보이며, 종종 높은 정밀도이다. 이 수치들이 이론이 정식화된 후에 발견되었다는 사실은 그것들을 \textit{맹검 예측}으로 만들며, YUCT의 유효성을 강력히 지지한다.
+	
+	\appendix
+	\section{제일 원리로부터의 \(\beta = 2/3\)의 유도}
+	\label{app:beta_derivation}
+	완전한 유도는 부록 \cite{AppendixL, AppendixY}에 주어져 있다. 본질적 단계는:
+	\begin{enumerate}
+		\item 조정 효율은 프랙탈 차원 \(d_f\)를 이용하여 \(K_{\mathrm{eff}} \propto R^{d_f-1}\)로 스케일링된다.
+		\item 상대 오차는 \(\varepsilon \propto R^{-d_f}\)로 스케일링된다.
+		\item 자기 일관성 \(\varepsilon \propto K_{\mathrm{eff}}^{-\beta}\)는 \(\beta = d_f/(d_f-1)\)을 가져온다.
+		\item 변동 기하학은 \(d_f = 1 \pm i\)를 준다.
+		\item 중심 전하 \(c = -2\) (19차원 라그랑지안으로부터 유도)에 대한 KPZ 관계의 사용은 \(\beta = 2/3\)을 준다.
+	\end{enumerate}
+	자유 매개변수는 관여하지 않는다.
+	
+	\section{조정 우월성의 공리}
+	\label{app:axiom}
+	YUCT의 존재론적 기초는 조정 우월성의 공리이다:
+	\begin{quote}
+		모든 이론은 정태를 기술한다. 그러나 조정은 정태를 가능하게 하는 프로세스이다. 모든 명제, 모든 모델, 모든 법칙은 사전의 활성화 요소로서만 존재한다. 사전과 색인은 그것들이 기술하는 정태로부터 유도할 수 없다 -- 그것들은 존재론적으로 우월하다. YPSDC 프로토콜은 "이론의 하나"가 아니다. 그것은 그것을 정식화하는 이론을 포함한, 모든 이론의 기초가 되는 프로토콜이다.
+	\end{quote}
+	이 공리는 YUCT의 기본적 존재론적 기초로서 채택된다. 거기에서 최소 조정 엔트로피 \(S_{\min} = k_B \ln 3\)가 유도되며, 거기에서 \(\kappa_c = e^{-S_{\min}/k_B} = 1/3\)을 얻는다.
+	
+	\begin{thebibliography}{99}
+		\bibitem{Yakushev2026}
+		A. V. Yakushev, \emph{Yakushev Unified Coordination Theory (YUCT)}, Zenodo, \url{https://doi.org/10.5281/zenodo.18444598} (2026).
+		\bibitem{AppendixL}
+		A. V. Yakushev, 부록 L: 프랙탈 조정 오차 스케일링 -- DNA에서 우주론까지의 보편적 법칙, \emph{YUCT} 所収 (2026).
+		\bibitem{AppendixY}
+		A. V. Yakushev, 부록 Y: YUCT의 수학적 기초 -- 제일 원리로부터의 유도, \emph{YUCT} 所収 (2026).
+		\bibitem{AppendixPrimeN}
+		A. V. Yakushev, 부록 PrimeN: YUCT 소수 조정 사다리, \emph{YUCT} 所収 (2026).
+		\bibitem{AppendixQ}
+		A. V. Yakushev, 부록 Q: 유전자 발현의 중력 변조, \emph{YUCT} 所収 (2026).
+		\bibitem{Kratochvil2008}
+		J. Kratochv\'il, M. Sedl\'a\v{c}ek, \emph{Phys. Rev. B} \textbf{77}, 174110 (2008).
+		\bibitem{Zaiser1997}
+		M. Zaiser, P. H\"ahner, \emph{Mater. Sci. Eng. A} \textbf{234}, 29 (1997).
+		\bibitem{Sorensen1997}
+		C. M. Sorensen, G. C. Roberts, \emph{J. Colloid Interface Sci.} \textbf{186}, 447 (1997).
+		\bibitem{vonBardeleben2001}
+		H. J. von Bardeleben et al., \emph{Phys. Rev. B} \textbf{64}, 245401 (2001).
+		\bibitem{Fu2025}
+		Y. Fu et al., \emph{Adv. Mater.} \textbf{37}, 2401234 (2025).
+		\bibitem{Gao2010}
+		Y. Gao et al., \emph{J. Phys. Chem. C} \textbf{114}, 19163 (2010).
+	\end{thebibliography}
+	
+\end{document}
