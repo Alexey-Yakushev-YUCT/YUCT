@@ -15,27 +15,11 @@ BASE_URL = "https://api.figshare.com/v2"
 EXCLUDE_DIRS = {".git", ".github", "scripts", "__pycache__"}
 EXCLUDE_FILES = {".zenodo.json", ".DS_Store", "Thumbs.db"}
 
-DEFAULT_AUTHOR = {
-    "name": "Yakushev, Alexey V."
-}
-
-BASE_TAGS = ["YUCT", "Yakushev Unified Coordination Theory", "coordination efficiency", "K_eff"]
-
-# Если вы знаете ID категории, укажите его здесь
-# CATEGORY_ID = 25197  # например, Classical Physics
-CATEGORY_ID = None  # пока оставляем None, чтобы создать черновики без категории
-
-def load_zenodo_metadata(folder_path):
-    zenodo_file = folder_path / ".zenodo.json"
-    if not zenodo_file.exists():
-        return None
-    try:
-        with open(zenodo_file, 'r', encoding='utf-8-sig') as f:
-            return json.load(f)
-    except Exception:
-        return None
+# Ограничение на количество обрабатываемых папок (для теста)
+LIMIT_FOLDERS = 3  # Установите 0 или None, чтобы обрабатывать все
 
 def extract_abstract_from_tex(content):
+    """Извлекает заголовок и абстракт из TeX."""
     title_match = re.search(r'\\title\s*\{([^}]*)\}', content, re.DOTALL)
     title = title_match.group(1).strip() if title_match else ""
 
@@ -59,83 +43,27 @@ def extract_abstract_from_tex(content):
 
     return title, abstract
 
-def get_metadata_for_folder(folder_path):
-    zenodo = load_zenodo_metadata(folder_path)
-    if zenodo:
-        title = zenodo.get("title", folder_path.name)
-        description = zenodo.get("description", "")
-        tags = zenodo.get("keywords", [])
-        tags = list(set(BASE_TAGS + tags))
-        
-        authors = []
-        for creator in zenodo.get("creators", [DEFAULT_AUTHOR]):
-            author = {"name": creator.get("name", "Yakushev, Alexey V.")}
-            if "affiliation" in creator and creator["affiliation"]:
-                author["affiliation"] = str(creator["affiliation"])
-            if "orcid" in creator and creator["orcid"]:
-                author["orcid_id"] = creator["orcid"]
-            authors.append(author)
-        if not authors:
-            authors = [DEFAULT_AUTHOR]
-            
-        custom_fields = {}
-        for field in ["version", "language", "multilingual_version", "publication_date", "official_url"]:
-            if field in zenodo:
-                custom_fields[field] = zenodo[field]
-        defined_type = "publication" if zenodo.get("upload_type") == "publication" else "dataset"
-        return {
-            "title": title,
-            "description": description,
-            "tags": tags,
-            "authors": authors,
-            "custom_fields": custom_fields,
-            "defined_type": defined_type
-        }
-    else:
-        tex_files = list(folder_path.glob("*_en.tex"))
-        if tex_files:
-            try:
-                with open(tex_files[0], 'r', encoding='utf-8-sig', errors='ignore') as f:
-                    content = f.read()
-            except Exception:
-                with open(tex_files[0], 'r', encoding='utf-8', errors='ignore') as f:
-                    content = f.read()
-            title, abstract = extract_abstract_from_tex(content)
-            if not title:
-                title = folder_path.name
-            return {
-                "title": title,
-                "description": abstract or f"YUCT Appendix: {folder_path.name}",
-                "tags": BASE_TAGS.copy(),
-                "authors": [{"name": DEFAULT_AUTHOR["name"]}],
-                "custom_fields": {},
-                "defined_type": "dataset"
-            }
-        else:
-            return {
-                "title": folder_path.name,
-                "description": f"YUCT Appendix: {folder_path.name}",
-                "tags": BASE_TAGS.copy(),
-                "authors": [{"name": DEFAULT_AUTHOR["name"]}],
-                "custom_fields": {},
-                "defined_type": "dataset"
-            }
+def get_title_and_abstract(folder_path):
+    """Ищет *_en.tex и возвращает заголовок и абстракт."""
+    tex_files = list(folder_path.glob("*_en.tex"))
+    if not tex_files:
+        return folder_path.name, ""
+    try:
+        with open(tex_files[0], 'r', encoding='utf-8-sig', errors='ignore') as f:
+            content = f.read()
+    except Exception:
+        with open(tex_files[0], 'r', encoding='utf-8', errors='ignore') as f:
+            content = f.read()
+    return extract_abstract_from_tex(content)
 
-def create_article(metadata):
+def create_article(title, description):
     url = f"{BASE_URL}/account/articles"
     data = {
-        "title": metadata.get("title", "Untitled"),
-        "description": metadata.get("description", ""),
-        "defined_type": metadata.get("defined_type", "dataset"),
-        "public": False,
-        "tags": metadata.get("tags", []),
-        "authors": metadata.get("authors", [])
+        "title": title,
+        "description": description,
+        "defined_type": "dataset",
+        "public": False
     }
-    if CATEGORY_ID:
-        data["categories"] = [CATEGORY_ID]
-    if metadata.get("custom_fields"):
-        data["custom_fields"] = metadata["custom_fields"]
-
     resp = requests.post(url, json=data, headers=HEADERS, timeout=30)
     if resp.status_code != 201:
         print(f"❌ Ошибка создания статьи: {resp.status_code} {resp.text}")
@@ -166,6 +94,7 @@ def upload_files(article_id, folder_path):
             safe_name = safe_name.replace("!", "").replace(" ", "_")
             print(f"  ⚠️ Переименован: {file_path.name} -> {safe_name}")
 
+        # Шаг 1: Инициализация загрузки
         url = f"{BASE_URL}/account/articles/{article_id}/files"
         metadata = {"name": safe_name, "size": file_path.stat().st_size}
         headers = HEADERS.copy()
@@ -181,6 +110,7 @@ def upload_files(article_id, folder_path):
             print(f"  ❌ Нет location: {file_data}")
             continue
 
+        # Шаг 2: Получение upload_url
         location_url = file_data["location"]
         file_info_resp = requests.get(location_url, headers=HEADERS)
         if file_info_resp.status_code != 200:
@@ -193,6 +123,7 @@ def upload_files(article_id, folder_path):
             print(f"  ❌ Нет upload_url: {file_info}")
             continue
 
+        # Шаг 3: Загрузка содержимого (с path=1)
         try:
             with open(file_path, "rb") as f:
                 put_resp = requests.put(
@@ -208,6 +139,7 @@ def upload_files(article_id, folder_path):
             print(f"  ❌ Исключение при загрузке: {file_path.name} - {e}")
             continue
 
+        # Шаг 4: Подтверждение загрузки
         file_id = file_info.get("id")
         if not file_id:
             print(f"  ❌ Нет file_id: {file_info}")
@@ -225,15 +157,6 @@ def upload_files(article_id, folder_path):
 
     return uploaded
 
-def publish_article(article_id):
-    url = f"{BASE_URL}/account/articles/{article_id}/publish"
-    resp = requests.post(url, headers=HEADERS, timeout=30)
-    if resp.status_code != 202:
-        print(f"  ❌ Ошибка публикации: {resp.status_code} {resp.text}")
-        return False
-    print(f"  🚀 Опубликован! DOI будет присвоен в течение нескольких минут.")
-    return True
-
 def main():
     repo_root = Path(".")
     folders = [f for f in repo_root.iterdir() if f.is_dir() and f.name not in EXCLUDE_DIRS]
@@ -241,22 +164,28 @@ def main():
         print("❌ Папки не найдены!")
         return
 
+    # Применяем ограничение, если задано
+    if LIMIT_FOLDERS and LIMIT_FOLDERS > 0:
+        folders = folders[:LIMIT_FOLDERS]
+
     print(f"📁 Найдено {len(folders)} папок для загрузки.")
     print("-" * 60)
-
-    # Для теста обрабатываем только первые 3 папки (раскомментируйте, когда отладите)
-    folders = folders[:3]
 
     for folder in sorted(folders):
         print(f"\n📂 Обработка: {folder.name}")
 
-        metadata = get_metadata_for_folder(folder)
-        print(f"  📄 Заголовок: {metadata['title'][:60]}...")
-        print(f"  📄 Авторы: {', '.join(a['name'] for a in metadata['authors'])}")
-        print(f"  📄 Ключевые слова: {', '.join(metadata['tags'][:5])}...")
+        # Получаем заголовок и абстракт
+        title, abstract = get_title_and_abstract(folder)
+        if not title:
+            title = folder.name
+        if not abstract:
+            abstract = f"YUCT Appendix: {folder.name}"
+
+        print(f"  📄 Заголовок: {title[:60]}...")
+        print(f"  📄 Абстракт: {abstract[:60]}...")
 
         try:
-            article_id = create_article(metadata)
+            article_id = create_article(title, abstract)
         except Exception as e:
             print(f"  ❌ Ошибка создания: {e}")
             continue
@@ -271,16 +200,8 @@ def main():
             print(f"  ❌ Ошибка загрузки: {e}")
             continue
 
-        # Публикуем, только если указана категория
-        if CATEGORY_ID:
-            try:
-                publish_article(article_id)
-            except Exception as e:
-                print(f"  ❌ Ошибка публикации: {e}")
-                continue
-        else:
-            print(f"  ⏳ Публикация отложена (нет категории). Опубликуйте вручную.")
-
+        # Не публикуем автоматически — оставляем черновик
+        print(f"  ⏳ Черновик создан. Опубликуйте вручную после добавления категории.")
         time.sleep(3)
 
 if __name__ == "__main__":
