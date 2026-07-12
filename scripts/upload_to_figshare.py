@@ -16,7 +16,7 @@ EXCLUDE_DIRS = {".git", ".github", "scripts", "__pycache__"}
 EXCLUDE_FILES = {".zenodo.json", ".DS_Store", "Thumbs.db"}
 
 # Ограничение на количество обрабатываемых папок (для теста)
-LIMIT_FOLDERS = 3  # Установите 0 или None, чтобы обрабатывать все
+LIMIT_FOLDERS = 0  # Установите 0 или None, чтобы обрабатывать все
 
 def extract_abstract_from_tex(content):
     """Извлекает заголовок и абстракт из TeX."""
