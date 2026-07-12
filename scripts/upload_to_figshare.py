@@ -15,25 +15,20 @@ BASE_URL = "https://api.figshare.com/v2"
 EXCLUDE_DIRS = {".git", ".github", "scripts", "__pycache__"}
 EXCLUDE_FILES = {".zenodo.json", ".DS_Store", "Thumbs.db"}
 
-# ID лицензии CC BY 4.0 (обычно 1, но можно уточнить через API)
-LICENSE_CC_BY = 1
+LICENSE_CC_BY = 1  # ID лицензии CC BY 4.0 (по умолчанию)
 
-# Данные автора по умолчанию (если нет в .zenodo.json)
 DEFAULT_AUTHOR = {
     "name": "Yakushev, Alexey V.",
     "affiliation": "Yakushev Research, YUCT Core",
     "orcid_id": "0009-0008-0938-3032"
 }
 
-# Базовые ключевые слова (добавляются к тем, что из .zenodo.json)
 BASE_TAGS = ["YUCT", "Yakushev Unified Coordination Theory", "coordination efficiency", "K_eff"]
 
-# ID категории (если известен — укажите, иначе оставьте пустым)
-# CATEGORY_ID = 25197  # например, Classical Physics
-CATEGORY_ID = None  # пока не знаем точный ID, оставляем пустым
+# Если знаете ID категории — укажите, иначе оставьте None
+CATEGORY_ID = None
 
 def load_zenodo_metadata(folder_path):
-    """Загружает .zenodo.json из папки, если он есть."""
     zenodo_file = folder_path / ".zenodo.json"
     if not zenodo_file.exists():
         return None
@@ -44,12 +39,9 @@ def load_zenodo_metadata(folder_path):
         return None
 
 def extract_abstract_from_tex(content):
-    """Извлекает заголовок и абстракт из TeX."""
-    # Заголовок
     title_match = re.search(r'\\title\s*\{([^}]*)\}', content, re.DOTALL)
     title = title_match.group(1).strip() if title_match else ""
 
-    # Абстракт
     abstract = ""
     m = re.search(r'\\begin\{abstract\}(.*?)\\end\{abstract\}', content, re.DOTALL)
     if m:
@@ -71,27 +63,19 @@ def extract_abstract_from_tex(content):
     return title, abstract
 
 def get_metadata_for_folder(folder_path):
-    """Собирает метаданные для папки: из .zenodo.json или из _en.tex."""
     zenodo = load_zenodo_metadata(folder_path)
     if zenodo:
-        # Используем данные из .zenodo.json
         title = zenodo.get("title", folder_path.name)
         description = zenodo.get("description", "")
         tags = zenodo.get("keywords", [])
-        # Добавляем базовые теги
         tags = list(set(BASE_TAGS + tags))
         authors = zenodo.get("creators", [DEFAULT_AUTHOR])
-        # Если авторы не указаны, используем DEFAULT_AUTHOR
         if not authors:
             authors = [DEFAULT_AUTHOR]
-        # Дополнительные поля
         custom_fields = {}
         for field in ["version", "language", "multilingual_version", "publication_date", "official_url"]:
             if field in zenodo:
                 custom_fields[field] = zenodo[field]
-        # Ссылки
-        references = zenodo.get("related_identifiers", [])
-        # Определяем тип публикации
         defined_type = "dataset"
         if zenodo.get("upload_type") == "publication":
             defined_type = "publication"
@@ -101,12 +85,10 @@ def get_metadata_for_folder(folder_path):
             "tags": tags,
             "authors": authors,
             "custom_fields": custom_fields,
-            "references": references,
             "defined_type": defined_type,
             "license": LICENSE_CC_BY
         }
     else:
-        # Нет .zenodo.json — извлекаем из _en.tex
         tex_files = list(folder_path.glob("*_en.tex"))
         if tex_files:
             try:
@@ -124,35 +106,30 @@ def get_metadata_for_folder(folder_path):
                 "tags": BASE_TAGS.copy(),
                 "authors": [DEFAULT_AUTHOR],
                 "custom_fields": {},
-                "references": [],
                 "defined_type": "dataset",
                 "license": LICENSE_CC_BY
             }
         else:
-            # Нет ни .zenodo.json, ни _en.tex — минимальные данные
             return {
                 "title": folder_path.name,
                 "description": f"YUCT Appendix: {folder_path.name}",
                 "tags": BASE_TAGS.copy(),
                 "authors": [DEFAULT_AUTHOR],
                 "custom_fields": {},
-                "references": [],
                 "defined_type": "dataset",
                 "license": LICENSE_CC_BY
             }
 
 def create_article(metadata):
-    """Создаёт статью на Figshare с полными метаданными."""
     url = f"{BASE_URL}/account/articles"
     data = {
         "title": metadata.get("title", "Untitled"),
         "description": metadata.get("description", ""),
         "defined_type": metadata.get("defined_type", "dataset"),
-        "public": False,  # всегда создаём черновик
+        "public": False,
         "license": metadata.get("license", LICENSE_CC_BY),
         "tags": metadata.get("tags", []),
-        "authors": metadata.get("authors", []),
-        "references": metadata.get("references", [])
+        "authors": metadata.get("authors", [])
     }
     if CATEGORY_ID:
         data["categories"] = [CATEGORY_ID]
@@ -189,7 +166,6 @@ def upload_files(article_id, folder_path):
             safe_name = safe_name.replace("!", "").replace(" ", "_")
             print(f"  ⚠️ Переименован: {file_path.name} -> {safe_name}")
 
-        # Шаг 1: Инициализация загрузки
         url = f"{BASE_URL}/account/articles/{article_id}/files"
         metadata = {"name": safe_name, "size": file_path.stat().st_size}
         headers = HEADERS.copy()
@@ -205,7 +181,6 @@ def upload_files(article_id, folder_path):
             print(f"  ❌ Нет location: {file_data}")
             continue
 
-        # Шаг 2: Получение upload_url
         location_url = file_data["location"]
         file_info_resp = requests.get(location_url, headers=HEADERS)
         if file_info_resp.status_code != 200:
@@ -218,7 +193,6 @@ def upload_files(article_id, folder_path):
             print(f"  ❌ Нет upload_url: {file_info}")
             continue
 
-        # Шаг 3: Загрузка содержимого (с path=1)
         try:
             with open(file_path, "rb") as f:
                 put_resp = requests.put(
@@ -234,7 +208,6 @@ def upload_files(article_id, folder_path):
             print(f"  ❌ Исключение при загрузке: {file_path.name} - {e}")
             continue
 
-        # Шаг 4: Подтверждение загрузки
         file_id = file_info.get("id")
         if not file_id:
             print(f"  ❌ Нет file_id: {file_info}")
@@ -271,13 +244,12 @@ def main():
     print(f"📁 Найдено {len(folders)} папок для загрузки.")
     print("-" * 60)
 
-    # Для теста обрабатываем только первые 3 папки
-    folders = folders[:3]
+    # Для теста можно обработать только несколько папок:
+    folders = [f for f in folders if f.name.startswith("30.")]
 
     for folder in sorted(folders):
         print(f"\n📂 Обработка: {folder.name}")
 
-        # Получаем метаданные
         metadata = get_metadata_for_folder(folder)
         print(f"  📄 Заголовок: {metadata['title'][:60]}...")
         print(f"  📄 Авторы: {', '.join(a['name'] for a in metadata['authors'])}")
@@ -299,7 +271,6 @@ def main():
             print(f"  ❌ Ошибка загрузки: {e}")
             continue
 
-        # Публикуем, только если указана категория
         if CATEGORY_ID:
             try:
                 publish_article(article_id)
