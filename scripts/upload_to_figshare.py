@@ -16,7 +16,12 @@ EXCLUDE_FILES = {".zenodo.json", ".DS_Store", "Thumbs.db"}
 
 def create_article(title, description):
     url = f"{BASE_URL}/account/articles"
-    data = {"title": title, "description": description, "defined_type": "dataset", "public": False}
+    data = {
+        "title": title,
+        "description": description,
+        "defined_type": "dataset",
+        "public": False
+    }
     resp = requests.post(url, json=data, headers=HEADERS, timeout=30)
     if resp.status_code != 201:
         print(f"❌ Ошибка создания статьи: {resp.status_code} {resp.text}")
@@ -49,7 +54,10 @@ def upload_files(article_id, folder_path):
 
         # Шаг 1: Создаём запись файла
         url = f"{BASE_URL}/account/articles/{article_id}/files"
-        metadata = {"name": safe_name, "size": file_path.stat().st_size}
+        metadata = {
+            "name": safe_name,
+            "size": file_path.stat().st_size
+        }
         headers = HEADERS.copy()
         headers["Content-Type"] = "application/json"
         try:
