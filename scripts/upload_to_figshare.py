@@ -10,7 +10,6 @@ BASE_URL = "https://api.figshare.com/v2"
 EXCLUDE_DIRS = {".git", ".github", "scripts", "__pycache__"}
 
 def create_article(title, description):
-    """Создаёт черновик статьи и возвращает её ID."""
     url = f"{BASE_URL}/account/articles"
     data = {
         "title": title,
@@ -27,34 +26,40 @@ def create_article(title, description):
     return article_id
 
 def upload_files(article_id, folder_path):
-    """Загружает все файлы из папки в статью."""
     folder_path = Path(folder_path)
     if not folder_path.exists():
         print(f"  ❌ Папка не существует: {folder_path}")
         return 0
-    
-    files = list(folder_path.rglob("*"))
-    print(f"  📂 Найдено файлов в папке: {len(files)}")
+
+    files_list = list(folder_path.rglob("*"))
+    print(f"  📂 Найдено файлов в папке: {len(files_list)}")
     uploaded = 0
-    for file_path in files:
+
+    for file_path in files_list:
         if file_path.is_file():
-            # Пропускаем служебные файлы
             if file_path.name in [".DS_Store", "Thumbs.db"]:
                 continue
+
             url = f"{BASE_URL}/account/articles/{article_id}/files"
+            
+            # Открываем файл в бинарном режиме
             with open(file_path, "rb") as f:
-                files_payload = {"file": (file_path.name, f)}
-                resp = requests.post(url, files=files_payload, headers=HEADERS)
+                files = {"file": (file_path.name, f, "application/octet-stream")}
+                headers = HEADERS.copy()
+                headers["Accept"] = "application/json"
+                resp = requests.post(url, files=files, headers=headers)
+                
                 if resp.status_code == 201:
                     uploaded += 1
                     print(f"  ✅ Загружен: {file_path.name} ({file_path.stat().st_size} байт)")
                 else:
                     print(f"  ❌ Ошибка загрузки: {file_path.name} - {resp.status_code} {resp.text}")
+                
                 time.sleep(0.3)
+
     return uploaded
 
 def publish_article(article_id):
-    """Публикует статью (выдаёт DOI)."""
     url = f"{BASE_URL}/account/articles/{article_id}/publish"
     resp = requests.post(url, headers=HEADERS)
     if resp.status_code != 202:
@@ -79,14 +84,12 @@ def main():
         
         print(f"\n📂 Обработка: {title}")
         
-        # 1. Создаём статью
         try:
             article_id = create_article(title, description)
         except Exception as e:
             print(f"  ❌ Ошибка создания: {e}")
             continue
         
-        # 2. Загружаем файлы
         try:
             count = upload_files(article_id, folder)
             print(f"  📎 Загружено файлов: {count}")
@@ -97,7 +100,6 @@ def main():
             print(f"  ❌ Ошибка загрузки файлов: {e}")
             continue
         
-        # 3. Публикуем (получаем DOI)
         try:
             publish_article(article_id)
         except Exception as e:
@@ -105,7 +107,7 @@ def main():
             continue
         
         print(f"  ✅ Готово! DOI для {title} будет доступен в Figshare.")
-        time.sleep(2)  # Увеличенная пауза, чтобы не перегружать API
+        time.sleep(2)
 
 if __name__ == "__main__":
     main()
