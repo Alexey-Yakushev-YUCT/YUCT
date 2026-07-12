@@ -66,19 +66,19 @@ def upload_files(article_id, folder_path):
             print(f"  ❌ Ошибка запроса: {file_path.name} - {e}")
             continue
 
-        # ВЫВОДИМ ВСЁ, ЧТО ПРИШЛО ОТ FIGSHARE
         print(f"  📄 Статус: {resp.status_code}, Тело: {resp.text[:500]}")
         if resp.status_code != 201:
             print(f"  ❌ Ошибка создания записи: {file_path.name} - {resp.status_code} {resp.text}")
             continue
 
         file_data = resp.json()
-        if "upload_url" not in file_data:
-            print(f"  ❌ Нет upload_url! Полный ответ: {json.dumps(file_data, indent=2)}")
+        # Используем location вместо upload_url
+        if "location" not in file_data:
+            print(f"  ❌ Нет location! Полный ответ: {json.dumps(file_data, indent=2)}")
             continue
 
-        upload_url = file_data["upload_url"]
-        # Шаг 2: Загружаем содержимое
+        upload_url = file_data["location"]
+        # Шаг 2: Загружаем содержимое по location (PUT)
         try:
             with open(file_path, "rb") as f:
                 put_resp = requests.put(upload_url, data=f, headers={"Content-Type": "application/octet-stream"}, timeout=60)
