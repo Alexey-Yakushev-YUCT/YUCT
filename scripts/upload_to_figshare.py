@@ -15,17 +15,15 @@ BASE_URL = "https://api.figshare.com/v2"
 EXCLUDE_DIRS = {".git", ".github", "scripts", "__pycache__"}
 EXCLUDE_FILES = {".zenodo.json", ".DS_Store", "Thumbs.db"}
 
-LICENSE_CC_BY = 1
-
 DEFAULT_AUTHOR = {
-    "name": "Yakushev, Alexey V.",
-    "affiliation": "Yakushev Research, YUCT Core",
-    "orcid_id": "0009-0008-0938-3032"
+    "name": "Yakushev, Alexey V."
 }
 
 BASE_TAGS = ["YUCT", "Yakushev Unified Coordination Theory", "coordination efficiency", "K_eff"]
 
-CATEGORY_ID = None  # пока не знаем точный ID, оставляем None
+# Если вы знаете ID категории, укажите его здесь
+# CATEGORY_ID = 25197  # например, Classical Physics
+CATEGORY_ID = None  # пока оставляем None, чтобы создать черновики без категории
 
 def load_zenodo_metadata(folder_path):
     zenodo_file = folder_path / ".zenodo.json"
@@ -68,30 +66,30 @@ def get_metadata_for_folder(folder_path):
         description = zenodo.get("description", "")
         tags = zenodo.get("keywords", [])
         tags = list(set(BASE_TAGS + tags))
-        authors = zenodo.get("creators", [DEFAULT_AUTHOR])
+        
+        authors = []
+        for creator in zenodo.get("creators", [DEFAULT_AUTHOR]):
+            author = {"name": creator.get("name", "Yakushev, Alexey V.")}
+            if "affiliation" in creator and creator["affiliation"]:
+                author["affiliation"] = str(creator["affiliation"])
+            if "orcid" in creator and creator["orcid"]:
+                author["orcid_id"] = creator["orcid"]
+            authors.append(author)
         if not authors:
             authors = [DEFAULT_AUTHOR]
+            
         custom_fields = {}
         for field in ["version", "language", "multilingual_version", "publication_date", "official_url"]:
             if field in zenodo:
                 custom_fields[field] = zenodo[field]
-        # Исправление: references — массив строк (только идентификаторы)
-        references = []
-        for ref in zenodo.get("related_identifiers", []):
-            if "identifier" in ref:
-                references.append(ref["identifier"])
-        defined_type = "dataset"
-        if zenodo.get("upload_type") == "publication":
-            defined_type = "publication"
+        defined_type = "publication" if zenodo.get("upload_type") == "publication" else "dataset"
         return {
             "title": title,
             "description": description,
             "tags": tags,
             "authors": authors,
             "custom_fields": custom_fields,
-            "references": references,
-            "defined_type": defined_type,
-            "license": LICENSE_CC_BY
+            "defined_type": defined_type
         }
     else:
         tex_files = list(folder_path.glob("*_en.tex"))
@@ -109,22 +107,18 @@ def get_metadata_for_folder(folder_path):
                 "title": title,
                 "description": abstract or f"YUCT Appendix: {folder_path.name}",
                 "tags": BASE_TAGS.copy(),
-                "authors": [DEFAULT_AUTHOR],
+                "authors": [{"name": DEFAULT_AUTHOR["name"]}],
                 "custom_fields": {},
-                "references": [],
-                "defined_type": "dataset",
-                "license": LICENSE_CC_BY
+                "defined_type": "dataset"
             }
         else:
             return {
                 "title": folder_path.name,
                 "description": f"YUCT Appendix: {folder_path.name}",
                 "tags": BASE_TAGS.copy(),
-                "authors": [DEFAULT_AUTHOR],
+                "authors": [{"name": DEFAULT_AUTHOR["name"]}],
                 "custom_fields": {},
-                "references": [],
-                "defined_type": "dataset",
-                "license": LICENSE_CC_BY
+                "defined_type": "dataset"
             }
 
 def create_article(metadata):
@@ -134,12 +128,9 @@ def create_article(metadata):
         "description": metadata.get("description", ""),
         "defined_type": metadata.get("defined_type", "dataset"),
         "public": False,
-        "license": metadata.get("license", LICENSE_CC_BY),
         "tags": metadata.get("tags", []),
         "authors": metadata.get("authors", [])
     }
-    if metadata.get("references"):
-        data["references"] = metadata["references"]
     if CATEGORY_ID:
         data["categories"] = [CATEGORY_ID]
     if metadata.get("custom_fields"):
@@ -253,8 +244,8 @@ def main():
     print(f"📁 Найдено {len(folders)} папок для загрузки.")
     print("-" * 60)
 
-    # Для теста обрабатываем только первые 3 папки
-    # folders = folders[:3]
+    # Для теста обрабатываем только первые 3 папки (раскомментируйте, когда отладите)
+    folders = folders[:3]
 
     for folder in sorted(folders):
         print(f"\n📂 Обработка: {folder.name}")
@@ -280,6 +271,7 @@ def main():
             print(f"  ❌ Ошибка загрузки: {e}")
             continue
 
+        # Публикуем, только если указана категория
         if CATEGORY_ID:
             try:
                 publish_article(article_id)
