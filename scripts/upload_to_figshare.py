@@ -21,6 +21,7 @@ def create_article(title, description):
         "description": description,
         "defined_type": "dataset",
         "public": False
+        # categories НЕ указываем — это необязательное поле
     }
     resp = requests.post(url, json=data, headers=HEADERS, timeout=30)
     if resp.status_code != 201:
@@ -54,41 +55,31 @@ def upload_files(article_id, folder_path):
 
         # Шаг 1: Создаём запись файла
         url = f"{BASE_URL}/account/articles/{article_id}/files"
-        metadata = {
-            "name": safe_name,
-            "size": file_path.stat().st_size
-        }
+        metadata = {"name": safe_name, "size": file_path.stat().st_size}
         headers = HEADERS.copy()
         headers["Content-Type"] = "application/json"
-        try:
-            resp = requests.post(url, data=json.dumps(metadata), headers=headers, timeout=30)
-        except Exception as e:
-            print(f"  ❌ Ошибка запроса: {file_path.name} - {e}")
-            continue
+        resp = requests.post(url, data=json.dumps(metadata), headers=headers, timeout=30)
 
-        print(f"  📄 Статус: {resp.status_code}, Тело: {resp.text[:500]}")
         if resp.status_code != 201:
             print(f"  ❌ Ошибка создания записи: {file_path.name} - {resp.status_code} {resp.text}")
             continue
 
         file_data = resp.json()
-        # Используем location вместо upload_url
+        # ВАЖНО: Figshare возвращает "location", а не "upload_url"
         if "location" not in file_data:
             print(f"  ❌ Нет location! Полный ответ: {json.dumps(file_data, indent=2)}")
             continue
 
         upload_url = file_data["location"]
+
         # Шаг 2: Загружаем содержимое по location (PUT)
-        try:
-            with open(file_path, "rb") as f:
-                put_resp = requests.put(upload_url, data=f, headers={"Content-Type": "application/octet-stream"}, timeout=60)
-                if put_resp.status_code == 200:
-                    uploaded += 1
-                    print(f"  ✅ Загружен: {file_path.name} ({file_path.stat().st_size} байт)")
-                else:
-                    print(f"  ❌ Ошибка PUT: {file_path.name} - {put_resp.status_code} {put_resp.text}")
-        except Exception as e:
-            print(f"  ❌ Исключение PUT: {file_path.name} - {e}")
+        with open(file_path, "rb") as f:
+            put_resp = requests.put(upload_url, data=f, headers={"Content-Type": "application/octet-stream"}, timeout=60)
+            if put_resp.status_code == 200:
+                uploaded += 1
+                print(f"  ✅ Загружен: {file_path.name} ({file_path.stat().st_size} байт)")
+            else:
+                print(f"  ❌ Ошибка PUT: {file_path.name} - {put_resp.status_code} {put_resp.text}")
 
         time.sleep(0.5)
 
