@@ -11,14 +11,13 @@ BASE_URL = "https://api.figshare.com/v2"
 EXCLUDE_DIRS = {".git", ".github", "scripts", "__pycache__"}
 
 def create_article(title, description):
-    """Создаёт черновик статьи и возвращает её ID."""
+    """Создаёт черновик статьи и возвращает её ID (без категории)."""
     url = f"{BASE_URL}/account/articles"
     data = {
         "title": title,
         "description": description,
         "defined_type": "dataset",
-        "public": False,  # сначала черновик
-        "categories": [114]  # ID категории (можно поменять или убрать)
+        "public": False
     }
     resp = requests.post(url, json=data, headers=HEADERS)
     if resp.status_code != 201:
@@ -40,7 +39,7 @@ def upload_files(article_id, folder_path):
                     print(f"  ✅ Загружен: {file_path.name}")
                 else:
                     print(f"  ❌ Ошибка загрузки: {file_path.name} - {resp.text}")
-                time.sleep(0.3)  # небольшая пауза, чтобы не перегружать API
+                time.sleep(0.3)
     return uploaded
 
 def publish_article(article_id):
@@ -54,50 +53,36 @@ def publish_article(article_id):
     return True
 
 def main():
-    # Определяем корневую папку репозитория
     repo_root = Path(".")
-    
-    # Получаем список всех папок в корне, исключая служебные
     folders = [f for f in repo_root.iterdir() if f.is_dir() and f.name not in EXCLUDE_DIRS]
-    
     if not folders:
         print("❌ Папки с приложениями не найдены!")
         return
-    
     print(f"📁 Найдено {len(folders)} папок для загрузки.")
     print("-" * 60)
-    
     for folder in sorted(folders):
         title = folder.name.strip()
         description = f"YUCT Appendix: {title}"
-        
         print(f"\n📂 Обработка: {title}")
-        
-        # 1. Создаём статью
         try:
             article_id = create_article(title, description)
             print(f"  ✅ Создан черновик ID: {article_id}")
         except Exception as e:
             print(f"  ❌ Ошибка: {e}")
             continue
-        
-        # 2. Загружаем файлы
         try:
             count = upload_files(article_id, folder)
             print(f"  📎 Загружено файлов: {count}")
         except Exception as e:
             print(f"  ❌ Ошибка загрузки файлов: {e}")
             continue
-        
-        # 3. Публикуем (получаем DOI)
         try:
             publish_article(article_id)
         except Exception as e:
             print(f"  ❌ Ошибка публикации: {e}")
             continue
-        
         print(f"  ✅ Готово! DOI для {title} будет доступен в Figshare.")
-        time.sleep(1)  # пауза между публикациями
+        time.sleep(1)
 
 if __name__ == "__main__":
     main()
