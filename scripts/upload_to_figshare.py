@@ -15,7 +15,7 @@ BASE_URL = "https://api.figshare.com/v2"
 EXCLUDE_DIRS = {".git", ".github", "scripts", "__pycache__"}
 EXCLUDE_FILES = {".zenodo.json", ".DS_Store", "Thumbs.db"}
 
-LICENSE_CC_BY = 1  # ID лицензии CC BY 4.0 (по умолчанию)
+LICENSE_CC_BY = 1
 
 DEFAULT_AUTHOR = {
     "name": "Yakushev, Alexey V.",
@@ -25,8 +25,7 @@ DEFAULT_AUTHOR = {
 
 BASE_TAGS = ["YUCT", "Yakushev Unified Coordination Theory", "coordination efficiency", "K_eff"]
 
-# Если знаете ID категории — укажите, иначе оставьте None
-CATEGORY_ID = None
+CATEGORY_ID = None  # пока не знаем точный ID, оставляем None
 
 def load_zenodo_metadata(folder_path):
     zenodo_file = folder_path / ".zenodo.json"
@@ -76,6 +75,11 @@ def get_metadata_for_folder(folder_path):
         for field in ["version", "language", "multilingual_version", "publication_date", "official_url"]:
             if field in zenodo:
                 custom_fields[field] = zenodo[field]
+        # Исправление: references — массив строк (только идентификаторы)
+        references = []
+        for ref in zenodo.get("related_identifiers", []):
+            if "identifier" in ref:
+                references.append(ref["identifier"])
         defined_type = "dataset"
         if zenodo.get("upload_type") == "publication":
             defined_type = "publication"
@@ -85,6 +89,7 @@ def get_metadata_for_folder(folder_path):
             "tags": tags,
             "authors": authors,
             "custom_fields": custom_fields,
+            "references": references,
             "defined_type": defined_type,
             "license": LICENSE_CC_BY
         }
@@ -106,6 +111,7 @@ def get_metadata_for_folder(folder_path):
                 "tags": BASE_TAGS.copy(),
                 "authors": [DEFAULT_AUTHOR],
                 "custom_fields": {},
+                "references": [],
                 "defined_type": "dataset",
                 "license": LICENSE_CC_BY
             }
@@ -116,6 +122,7 @@ def get_metadata_for_folder(folder_path):
                 "tags": BASE_TAGS.copy(),
                 "authors": [DEFAULT_AUTHOR],
                 "custom_fields": {},
+                "references": [],
                 "defined_type": "dataset",
                 "license": LICENSE_CC_BY
             }
@@ -131,6 +138,8 @@ def create_article(metadata):
         "tags": metadata.get("tags", []),
         "authors": metadata.get("authors", [])
     }
+    if metadata.get("references"):
+        data["references"] = metadata["references"]
     if CATEGORY_ID:
         data["categories"] = [CATEGORY_ID]
     if metadata.get("custom_fields"):
@@ -244,8 +253,8 @@ def main():
     print(f"📁 Найдено {len(folders)} папок для загрузки.")
     print("-" * 60)
 
-    # Для теста можно обработать только несколько папок:
-    folders = [f for f in folders if f.name.startswith("30.")]
+    # Для теста обрабатываем только первые 3 папки
+    # folders = folders[:3]
 
     for folder in sorted(folders):
         print(f"\n📂 Обработка: {folder.name}")
