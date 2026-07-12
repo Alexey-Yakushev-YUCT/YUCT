@@ -7,7 +7,7 @@ from pathlib import Path
 # --- НАСТРОЙКИ (измените под свою структуру) ---
 FOLDER_NAME = "00. Yakushev's Law of Coordination. YUCT"
 FILE_NAME = "Yakushevs_Law_of_Coordination_YUCT_en.pdf"
-# CATEGORY_ID убран — будем добавлять вручную через интерфейс
+# CATEGORY_ID пока не используем, чтобы не было ошибок 404
 # ------------------------------------------------
 
 TOKEN = os.environ.get("FIGSHARE_TOKEN")
@@ -24,7 +24,7 @@ def create_article(title, description):
         "description": description,
         "defined_type": "dataset",
         "public": False
-        # categories НЕ указываем — это необязательно
+        # categories не указываем — добавим вручную в интерфейсе
     }
     resp = requests.post(url, json=data, headers=HEADERS, timeout=30)
     if resp.status_code != 201:
@@ -100,20 +100,11 @@ def upload_single_file(article_id, file_path):
 
     complete_url = f"{BASE_URL}/account/articles/{article_id}/files/{file_id}"
     complete_resp = requests.post(complete_url, headers=HEADERS)
-    if complete_resp.status_code != 200:
+    if complete_resp.status_code not in (200, 202):
         print(f"  ❌ Ошибка подтверждения загрузки: {complete_resp.status_code} {complete_resp.text}")
         return False
 
-    print(f"  ✅ Загрузка подтверждена")
-    return True
-
-def publish_article(article_id):
-    url = f"{BASE_URL}/account/articles/{article_id}/publish"
-    resp = requests.post(url, headers=HEADERS, timeout=30)
-    if resp.status_code != 202:
-        print(f"  ❌ Ошибка публикации: {resp.status_code} {resp.text}")
-        return False
-    print(f"  🚀 Опубликован! DOI будет присвоен в течение нескольких минут.")
+    print(f"  ✅ Загрузка подтверждена (статус {complete_resp.status_code})")
     return True
 
 def main():
@@ -140,9 +131,9 @@ def main():
             print(f"  ⚠️ Файл не загружен. Черновик {article_id} останется пустым.")
             return
 
-        publish_article(article_id)
-
-        print(f"\n✅ Готово! Проверьте Figshare: https://figshare.com/account/articles/{article_id}")
+        print(f"\n✅ Файл загружен в черновик!")
+        print(f"   Проверьте Figshare: https://figshare.com/account/articles/{article_id}")
+        print(f"   После проверки вручную выберите категорию и нажмите Publish.")
 
     except Exception as e:
         print(f"❌ Ошибка: {e}")
