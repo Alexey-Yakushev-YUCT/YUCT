@@ -89,7 +89,12 @@ def upload_files(article_id, folder_path):
 
         # Шаг 3: Загружаем содержимое по upload_url (PUT)
         with open(file_path, "rb") as f:
-            put_resp = requests.put(upload_url, data=f, headers={"Content-Type": "application/octet-stream"}, timeout=60)
+            file_data_bin = f.read()
+            headers_put = {
+                "Content-Type": "application/octet-stream",
+                "Content-Length": str(len(file_data_bin))
+            }
+            put_resp = requests.put(upload_url, data=file_data_bin, headers=headers_put, timeout=60)
             if put_resp.status_code == 200:
                 uploaded += 1
                 print(f"  ✅ Загружен: {file_path.name} ({file_path.stat().st_size} байт)")
@@ -116,13 +121,13 @@ def main():
         print("❌ Папки не найдены!")
         return
 
+    # Для отладки обрабатываем только 3 папки
+    folders = sorted(folders)[:3]
+
     print(f"📁 Найдено {len(folders)} папок для загрузки.")
     print("-" * 60)
 
-    # Для отладки обрабатываем только первую папку (раскомментируйте, когда отладите)
-    folders = folders[:3]
-
-    for folder in sorted(folders):
+    for folder in folders:
         title = folder.name.strip()
         description = f"YUCT Appendix: {title}"
 
