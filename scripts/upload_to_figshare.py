@@ -15,35 +15,54 @@ BASE_URL = "https://api.figshare.com/v2"
 EXCLUDE_DIRS = {".git", ".github", "scripts", "__pycache__"}
 EXCLUDE_FILES = {".zenodo.json", ".DS_Store", "Thumbs.db"}
 
+# ID лицензии CC BY 4.0 (обычно 1, но можно уточнить через API)
+LICENSE_CC_BY = 1
+
+# Данные автора по умолчанию (если нет в .zenodo.json)
+DEFAULT_AUTHOR = {
+    "name": "Yakushev, Alexey V.",
+    "affiliation": "Yakushev Research, YUCT Core",
+    "orcid_id": "0009-0008-0938-3032"
+}
+
+# Базовые ключевые слова (добавляются к тем, что из .zenodo.json)
+BASE_TAGS = ["YUCT", "Yakushev Unified Coordination Theory", "coordination efficiency", "K_eff"]
+
+# ID категории (если известен — укажите, иначе оставьте пустым)
+# CATEGORY_ID = 25197  # например, Classical Physics
+CATEGORY_ID = None  # пока не знаем точный ID, оставляем пустым
+
+def load_zenodo_metadata(folder_path):
+    """Загружает .zenodo.json из папки, если он есть."""
+    zenodo_file = folder_path / ".zenodo.json"
+    if not zenodo_file.exists():
+        return None
+    try:
+        with open(zenodo_file, 'r', encoding='utf-8-sig') as f:
+            return json.load(f)
+    except Exception:
+        return None
+
 def extract_abstract_from_tex(content):
-    """Извлекает заголовок и абстракт из содержимого TeX-файла."""
+    """Извлекает заголовок и абстракт из TeX."""
     # Заголовок
     title_match = re.search(r'\\title\s*\{([^}]*)\}', content, re.DOTALL)
     title = title_match.group(1).strip() if title_match else ""
 
-    # Абстракт — пробуем разные форматы
+    # Абстракт
     abstract = ""
-    # 1. \begin{abstract}...\end{abstract}
     m = re.search(r'\\begin\{abstract\}(.*?)\\end\{abstract\}', content, re.DOTALL)
     if m:
         abstract = m.group(1)
     else:
-        # 2. \textbf{Abstract:} ...
         m = re.search(r'\\textbf\s*\{[^}]*Abstract\s*:\s*\}(.*?)(?=\\vspace|\\section|\\begin\{|$)', content, re.DOTALL)
         if m:
             abstract = m.group(1)
         else:
-            # 3. \textbf{Abstract} без двоеточия
-            m = re.search(r'\\textbf\s*\{[^}]*Abstract\s*\}(?:\s*\\par|\s*\\noindent|\s*)\s*(.*?)(?=\\section|\\begin\{|$)', content, re.DOTALL)
+            m = re.search(r'(?<!\\)Abstract\s*:\s*(.*?)(?=\\section|\\begin\{|$)', content, re.DOTALL)
             if m:
                 abstract = m.group(1)
-            else:
-                # 4. Plain "Abstract:"
-                m = re.search(r'(?<!\\)Abstract\s*:\s*(.*?)(?=\\section|\\begin\{|$)', content, re.DOTALL)
-                if m:
-                    abstract = m.group(1)
 
-    # Очищаем абстракт от LaTeX-команд
     if abstract:
         abstract = re.sub(r'\\[a-zA-Z]+\s*', '', abstract)
         abstract = re.sub(r'\{|\}', '', abstract)
@@ -51,28 +70,95 @@ def extract_abstract_from_tex(content):
 
     return title, abstract
 
-def get_abstract_for_folder(folder_path):
-    """Ищет *_en.tex в папке и извлекает заголовок + абстракт."""
-    tex_files = list(folder_path.glob("*_en.tex"))
-    if not tex_files:
-        return None, None
-    try:
-        with open(tex_files[0], 'r', encoding='utf-8-sig', errors='ignore') as f:
-            content = f.read()
-    except Exception:
-        with open(tex_files[0], 'r', encoding='utf-8', errors='ignore') as f:
-            content = f.read()
-    return extract_abstract_from_tex(content)
+def get_metadata_for_folder(folder_path):
+    """Собирает метаданные для папки: из .zenodo.json или из _en.tex."""
+    zenodo = load_zenodo_metadata(folder_path)
+    if zenodo:
+        # Используем данные из .zenodo.json
+        title = zenodo.get("title", folder_path.name)
+        description = zenodo.get("description", "")
+        tags = zenodo.get("keywords", [])
+        # Добавляем базовые теги
+        tags = list(set(BASE_TAGS + tags))
+        authors = zenodo.get("creators", [DEFAULT_AUTHOR])
+        # Если авторы не указаны, используем DEFAULT_AUTHOR
+        if not authors:
+            authors = [DEFAULT_AUTHOR]
+        # Дополнительные поля
+        custom_fields = {}
+        for field in ["version", "language", "multilingual_version", "publication_date", "official_url"]:
+            if field in zenodo:
+                custom_fields[field] = zenodo[field]
+        # Ссылки
+        references = zenodo.get("related_identifiers", [])
+        # Определяем тип публикации
+        defined_type = "dataset"
+        if zenodo.get("upload_type") == "publication":
+            defined_type = "publication"
+        return {
+            "title": title,
+            "description": description,
+            "tags": tags,
+            "authors": authors,
+            "custom_fields": custom_fields,
+            "references": references,
+            "defined_type": defined_type,
+            "license": LICENSE_CC_BY
+        }
+    else:
+        # Нет .zenodo.json — извлекаем из _en.tex
+        tex_files = list(folder_path.glob("*_en.tex"))
+        if tex_files:
+            try:
+                with open(tex_files[0], 'r', encoding='utf-8-sig', errors='ignore') as f:
+                    content = f.read()
+            except Exception:
+                with open(tex_files[0], 'r', encoding='utf-8', errors='ignore') as f:
+                    content = f.read()
+            title, abstract = extract_abstract_from_tex(content)
+            if not title:
+                title = folder_path.name
+            return {
+                "title": title,
+                "description": abstract or f"YUCT Appendix: {folder_path.name}",
+                "tags": BASE_TAGS.copy(),
+                "authors": [DEFAULT_AUTHOR],
+                "custom_fields": {},
+                "references": [],
+                "defined_type": "dataset",
+                "license": LICENSE_CC_BY
+            }
+        else:
+            # Нет ни .zenodo.json, ни _en.tex — минимальные данные
+            return {
+                "title": folder_path.name,
+                "description": f"YUCT Appendix: {folder_path.name}",
+                "tags": BASE_TAGS.copy(),
+                "authors": [DEFAULT_AUTHOR],
+                "custom_fields": {},
+                "references": [],
+                "defined_type": "dataset",
+                "license": LICENSE_CC_BY
+            }
 
-def create_article(title, description):
+def create_article(metadata):
+    """Создаёт статью на Figshare с полными метаданными."""
     url = f"{BASE_URL}/account/articles"
     data = {
-        "title": title,
-        "description": description,
-        "defined_type": "dataset",
-        "public": False
-        # categories не указываем — добавим вручную или позже
+        "title": metadata.get("title", "Untitled"),
+        "description": metadata.get("description", ""),
+        "defined_type": metadata.get("defined_type", "dataset"),
+        "public": False,  # всегда создаём черновик
+        "license": metadata.get("license", LICENSE_CC_BY),
+        "tags": metadata.get("tags", []),
+        "authors": metadata.get("authors", []),
+        "references": metadata.get("references", [])
     }
+    if CATEGORY_ID:
+        data["categories"] = [CATEGORY_ID]
+    if metadata.get("custom_fields"):
+        data["custom_fields"] = metadata["custom_fields"]
+
     resp = requests.post(url, json=data, headers=HEADERS, timeout=30)
     if resp.status_code != 201:
         print(f"❌ Ошибка создания статьи: {resp.status_code} {resp.text}")
@@ -185,27 +271,24 @@ def main():
     print(f"📁 Найдено {len(folders)} папок для загрузки.")
     print("-" * 60)
 
-    # Для теста можно обработать только первые 3 папки:
+    # Для теста обрабатываем только первые 3 папки
     folders = folders[:3]
 
     for folder in sorted(folders):
         print(f"\n📂 Обработка: {folder.name}")
 
-        # Извлекаем абстракт из *_en.tex
-        title, abstract = get_abstract_for_folder(folder)
-        if not title:
-            title = folder.name
-        if not abstract:
-            abstract = f"YUCT Appendix: {folder.name}"
+        # Получаем метаданные
+        metadata = get_metadata_for_folder(folder)
+        print(f"  📄 Заголовок: {metadata['title'][:60]}...")
+        print(f"  📄 Авторы: {', '.join(a['name'] for a in metadata['authors'])}")
+        print(f"  📄 Ключевые слова: {', '.join(metadata['tags'][:5])}...")
 
-        # Создаём статью
         try:
-            article_id = create_article(title, abstract)
+            article_id = create_article(metadata)
         except Exception as e:
             print(f"  ❌ Ошибка создания: {e}")
             continue
 
-        # Загружаем файлы
         try:
             count = upload_files(article_id, folder)
             print(f"  📎 Загружено файлов: {count}")
@@ -216,12 +299,15 @@ def main():
             print(f"  ❌ Ошибка загрузки: {e}")
             continue
 
-        # Публикуем
-        try:
-            publish_article(article_id)
-        except Exception as e:
-            print(f"  ❌ Ошибка публикации: {e}")
-            continue
+        # Публикуем, только если указана категория
+        if CATEGORY_ID:
+            try:
+                publish_article(article_id)
+            except Exception as e:
+                print(f"  ❌ Ошибка публикации: {e}")
+                continue
+        else:
+            print(f"  ⏳ Публикация отложена (нет категории). Опубликуйте вручную.")
 
         time.sleep(3)
 
