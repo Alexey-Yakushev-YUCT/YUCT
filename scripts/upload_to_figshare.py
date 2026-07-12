@@ -81,6 +81,12 @@ def upload_files(article_id, folder_path):
             print(f"  ❌ Нет upload_url в информации о файле: {file_info}")
             continue
 
+        # Если upload_url относительный, добавляем базовый URL
+        if upload_url.startswith("/"):
+            upload_url = "https://figshare.com" + upload_url
+
+        print(f"  📄 upload_url: {upload_url}")  # для отладки
+
         # Шаг 3: Загружаем содержимое по upload_url (PUT)
         with open(file_path, "rb") as f:
             put_resp = requests.put(upload_url, data=f, headers={"Content-Type": "application/octet-stream"}, timeout=60)
@@ -112,6 +118,9 @@ def main():
 
     print(f"📁 Найдено {len(folders)} папок для загрузки.")
     print("-" * 60)
+
+    # Для отладки обрабатываем только первую папку (раскомментируйте, когда отладите)
+    folders = folders[:3]
 
     for folder in sorted(folders):
         title = folder.name.strip()
