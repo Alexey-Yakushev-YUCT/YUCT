@@ -6,17 +6,15 @@ from pathlib import Path
 
 TOKEN = os.environ.get("FIGSHARE_TOKEN")
 if not TOKEN:
-    raise ValueError("❌ FIGSHARE_TOKEN не установлен в переменных окружения")
+    raise ValueError("❌ FIGSHARE_TOKEN не установлен")
 
 HEADERS = {"Authorization": f"token {TOKEN}"}
 BASE_URL = "https://api.figshare.com/v2"
 
-# Папки и файлы, которые НЕ нужно загружать
 EXCLUDE_DIRS = {".git", ".github", "scripts", "__pycache__"}
 EXCLUDE_FILES = {".zenodo.json", ".DS_Store", "Thumbs.db"}
 
 def create_article(title, description):
-    """Создаёт черновик статьи (Item) и возвращает его ID."""
     url = f"{BASE_URL}/account/articles"
     data = {
         "title": title,
@@ -33,12 +31,6 @@ def create_article(title, description):
     return article_id
 
 def upload_files(article_id, folder_path):
-    """
-    Загружает все файлы из папки в созданный черновик.
-    Использует двухэтапный процесс:
-      1. POST /articles/{id}/files — создаёт запись файла (JSON)
-      2. PUT по upload_url — загружает содержимое (бинарные данные)
-    """
     folder_path = Path(folder_path)
     if not folder_path.exists():
         print(f"  ❌ Папка не существует: {folder_path}")
@@ -52,14 +44,13 @@ def upload_files(article_id, folder_path):
         if not file_path.is_file():
             continue
         if file_path.name in EXCLUDE_FILES:
-            print(f"  ⏭️ Пропущен служебный файл: {file_path.name}")
+            print(f"  ⏭️ Пропущен: {file_path.name}")
             continue
 
-        # Очищаем имя файла от проблемных символов
         safe_name = file_path.name
         if safe_name.startswith("!") or " " in safe_name:
             safe_name = safe_name.replace("!", "").replace(" ", "_")
-            print(f"  ⚠️ Переименован для загрузки: {file_path.name} -> {safe_name}")
+            print(f"  ⚠️ Переименован: {file_path.name} -> {safe_name}")
 
         # Шаг 1: Создаём запись файла
         url = f"{BASE_URL}/account/articles/{article_id}/files"
@@ -70,46 +61,39 @@ def upload_files(article_id, folder_path):
         headers = HEADERS.copy()
         headers["Content-Type"] = "application/json"
         try:
-            resp = requests.post(
-                url,
-                data=json.dumps(metadata),
-                headers=headers,
-                timeout=30
-            )
+            resp = requests.post(url, data=json.dumps(metadata), headers=headers, timeout=30)
         except Exception as e:
-            print(f"  ❌ Ошибка запроса создания файла {file_path.name}: {e}")
+            print(f"  ❌ Ошибка запроса: {file_path.name} - {e}")
             continue
 
+        print(f"  📄 Статус: {resp.status_code}, Тело: {resp.text[:500]}")
         if resp.status_code != 201:
-            print(f"  ❌ Ошибка создания записи файла {file_path.name}: {resp.status_code} {resp.text}")
+            print(f"  ❌ Ошибка создания записи: {file_path.name} - {resp.status_code} {resp.text}")
             continue
 
         file_data = resp.json()
-        upload_url = file_data["upload_url"]
+        if "upload_url" not in file_data:
+            print(f"  ❌ Нет upload_url! Полный ответ: {json.dumps(file_data, indent=2)}")
+            continue
 
-        # Шаг 2: Загружаем содержимое файла по upload_url (PUT)
+        upload_url = file_data["upload_url"]
+        # Шаг 2: Загружаем содержимое
         try:
             with open(file_path, "rb") as f:
-                put_resp = requests.put(
-                    upload_url,
-                    data=f,
-                    headers={"Content-Type": "application/octet-stream"},
-                    timeout=60
-                )
+                put_resp = requests.put(upload_url, data=f, headers={"Content-Type": "application/octet-stream"}, timeout=60)
                 if put_resp.status_code == 200:
                     uploaded += 1
                     print(f"  ✅ Загружен: {file_path.name} ({file_path.stat().st_size} байт)")
                 else:
-                    print(f"  ❌ Ошибка загрузки содержимого {file_path.name}: {put_resp.status_code} {put_resp.text}")
+                    print(f"  ❌ Ошибка PUT: {file_path.name} - {put_resp.status_code} {put_resp.text}")
         except Exception as e:
-            print(f"  ❌ Исключение при загрузке {file_path.name}: {e}")
+            print(f"  ❌ Исключение PUT: {file_path.name} - {e}")
 
-        time.sleep(0.5)  # пауза между файлами
+        time.sleep(0.5)
 
     return uploaded
 
 def publish_article(article_id):
-    """Публикует черновик (присваивает DOI)."""
     url = f"{BASE_URL}/account/articles/{article_id}/publish"
     resp = requests.post(url, headers=HEADERS, timeout=30)
     if resp.status_code != 202:
@@ -122,7 +106,7 @@ def main():
     repo_root = Path(".")
     folders = [f for f in repo_root.iterdir() if f.is_dir() and f.name not in EXCLUDE_DIRS]
     if not folders:
-        print("❌ Папки с приложениями не найдены!")
+        print("❌ Папки не найдены!")
         return
 
     print(f"📁 Найдено {len(folders)} папок для загрузки.")
@@ -144,11 +128,10 @@ def main():
             count = upload_files(article_id, folder)
             print(f"  📎 Загружено файлов: {count}")
             if count == 0:
-                print(f"  ⚠️ ВНИМАНИЕ: Файлы не загружены! Черновик {article_id} будет пустым.")
-                # Не публикуем пустой черновик, чтобы не плодить мусор
+                print(f"  ⚠️ Файлы не загружены! Черновик {article_id} будет пустым.")
                 continue
         except Exception as e:
-            print(f"  ❌ Ошибка загрузки файлов: {e}")
+            print(f"  ❌ Ошибка загрузки: {e}")
             continue
 
         try:
@@ -158,7 +141,7 @@ def main():
             continue
 
         print(f"  ✅ Готово! DOI для {title} будет доступен в Figshare.")
-        time.sleep(3)  # пауза между папками
+        time.sleep(3)
 
 if __name__ == "__main__":
     main()
