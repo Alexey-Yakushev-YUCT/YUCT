@@ -37,25 +37,34 @@ def upload_files(article_id, folder_path):
 
     for file_path in files_list:
         if file_path.is_file():
-            if file_path.name in [".DS_Store", "Thumbs.db"]:
+            if file_path.name in [".DS_Store", "Thumbs.db", ".zenodo.json"]:
                 continue
 
+            # Шаг 1: Создаём запись файла
             url = f"{BASE_URL}/account/articles/{article_id}/files"
-            
-            # Открываем файл в бинарном режиме
+            metadata = {
+                "name": file_path.name,
+                "size": file_path.stat().st_size
+            }
+            resp = requests.post(url, json=metadata, headers=HEADERS)
+            if resp.status_code != 201:
+                print(f"  ❌ Ошибка создания записи файла {file_path.name}: {resp.status_code} {resp.text}")
+                continue
+
+            file_data = resp.json()
+            file_id = file_data["id"]
+            upload_url = file_data["upload_url"]
+
+            # Шаг 2: Загружаем содержимое файла по upload_url (PUT)
             with open(file_path, "rb") as f:
-                files = {"file": (file_path.name, f, "application/octet-stream")}
-                headers = HEADERS.copy()
-                headers["Accept"] = "application/json"
-                resp = requests.post(url, files=files, headers=headers)
-                
-                if resp.status_code == 201:
+                put_resp = requests.put(upload_url, data=f, headers={"Content-Type": "application/octet-stream"})
+                if put_resp.status_code == 200:
                     uploaded += 1
                     print(f"  ✅ Загружен: {file_path.name} ({file_path.stat().st_size} байт)")
                 else:
-                    print(f"  ❌ Ошибка загрузки: {file_path.name} - {resp.status_code} {resp.text}")
-                
-                time.sleep(0.3)
+                    print(f"  ❌ Ошибка загрузки содержимого {file_path.name}: {put_resp.status_code} {put_resp.text}")
+
+            time.sleep(0.3)
 
     return uploaded
 
