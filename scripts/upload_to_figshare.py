@@ -7,7 +7,7 @@ from pathlib import Path
 # --- НАСТРОЙКИ (измените под свою структуру) ---
 FOLDER_NAME = "00. Yakushev's Law of Coordination. YUCT"
 FILE_NAME = "Yakushevs_Law_of_Coordination_YUCT_en.pdf"
-CATEGORY_ID = 25197  # Classical Physics (конечная подкатегория)
+# CATEGORY_ID убран — будем добавлять вручную через интерфейс
 # ------------------------------------------------
 
 TOKEN = os.environ.get("FIGSHARE_TOKEN")
@@ -23,8 +23,8 @@ def create_article(title, description):
         "title": title,
         "description": description,
         "defined_type": "dataset",
-        "public": False,
-        "categories": [CATEGORY_ID]
+        "public": False
+        # categories НЕ указываем — это необязательно
     }
     resp = requests.post(url, json=data, headers=HEADERS, timeout=30)
     if resp.status_code != 201:
@@ -127,7 +127,6 @@ def main():
     print(f"📁 Тестовая загрузка одного файла")
     print(f"   Папка: {FOLDER_NAME}")
     print(f"   Файл: {FILE_NAME}")
-    print(f"   Категория ID: {CATEGORY_ID}")
     print("-" * 60)
 
     try:
