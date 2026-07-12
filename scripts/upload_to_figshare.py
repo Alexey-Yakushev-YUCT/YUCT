@@ -7,7 +7,7 @@ from pathlib import Path
 # --- НАСТРОЙКИ (измените под свою структуру) ---
 FOLDER_NAME = "00. Yakushev's Law of Coordination. YUCT"
 FILE_NAME = "Yakushevs_Law_of_Coordination_YUCT_en.pdf"
-CATEGORY_ID = 25164  # Physical Sciences (точный ID из иерархии Figshare)
+CATEGORY_ID = 25197  # Classical Physics (конечная подкатегория)
 # ------------------------------------------------
 
 TOKEN = os.environ.get("FIGSHARE_TOKEN")
